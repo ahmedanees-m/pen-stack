@@ -1,0 +1,94 @@
+[project]
+name = "pen-stack"
+version = "1.0.0a1"
+description = "Comprehensive Computational Platform for Non-Destructive Genome Engineering"
+authors = [{name = "Anees Ahmed Mahaboob Ali", email = "ahmedaneesm@gmail.com"}]
+license = {text = "MIT"}
+requires-python = ">=3.10"
+readme = "README.md"
+keywords = [
+    "genome-engineering", "bridge-recombinase", "IS110", "writer-not-scissors",
+    "gene-therapy", "molecular-pen", "ISCro4", "non-destructive-editing", "PEN-STACK"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+
+dependencies = [
+    # === Upstream PEN-STACK data layer (v3.2-compat, frozen) ===
+    "genome-atlas>=0.7.2,<0.8.0",
+    "mech-class>=0.5.4,<0.6.0",
+    "pen-score>=0.1.3,<0.2.0",
+    "pen-assemble>=0.5.2,<0.6.0",
+    # === Core scientific stack ===
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "scipy>=1.10",
+    "scikit-learn>=1.3",
+    "pyyaml>=6.0",
+    "pyarrow>=14.0",
+    "click>=8.0",
+    "tqdm>=4.66",
+    "joblib>=1.3",
+    "pydantic>=2.5",
+    "requests>=2.31",
+    "biopython>=1.83",
+]
+
+[project.optional-dependencies]
+compare = ["chromadb>=0.4.20", "sentence-transformers>=2.5"]
+discover = ["transformers>=4.36", "torch>=2.0", "einops>=0.7"]
+target   = ["pyranges>=0.0.129", "pybedtools>=0.9.0", "pyensembl>=2.3"]
+monitor  = ["europepmc>=0.4.0", "schedule>=1.2", "ollama>=0.1.7"]
+safe     = ["pyranges>=0.0.129", "pyvcf3>=1.0", "aiohttp>=3.9"]
+design   = ["viennarna>=2.6", "biopython>=1.83"]
+deliver  = ["ollama>=0.1.7", "chromadb>=0.4.20"]
+bench    = ["jinja2>=3.1", "nbformat>=5.9"]
+server   = ["streamlit>=1.32", "plotly>=5.18", "matplotlib>=3.8",
+            "fastapi>=0.109", "uvicorn>=0.27"]
+dev      = ["pytest>=7.4", "pytest-cov>=4.1", "pytest-asyncio>=0.23",
+            "ruff>=0.4", "mypy>=1.8", "pre-commit>=3.5", "httpx>=0.26"]
+docs     = ["sphinx>=7.2", "sphinx-rtd-theme>=2.0", "myst-parser>=2.0",
+            "sphinx-copybutton>=0.5"]
+full     = ["pen-stack[compare,discover,target,monitor,safe,design,deliver,bench,server]"]
+everything = ["pen-stack[full,dev,docs]"]
+
+[project.scripts]
+pen-stack = "pen_stack.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/ahmedanees-m/pen-stack"
+Documentation = "https://ahmedanees-m.github.io/pen-stack"
+Repository = "https://github.com/ahmedanees-m/pen-stack"
+Issues = "https://github.com/ahmedanees-m/pen-stack/issues"
+"pen-compare (standalone)" = "https://pypi.org/project/pen-compare/0.1.0/"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks integration tests",
+    "e2e: marks end-to-end tests",
+    "gpu: marks tests requiring GPU",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+select = ["E", "F", "W", "I", "N"]
+
+[tool.coverage.run]
+source = ["pen_stack"]
+omit = ["tests/*", "scripts/*"]

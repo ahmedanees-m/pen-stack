@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+message: "If you use PEN-STACK, please cite:"
+type: software
+title: "PEN-STACK: Comprehensive Computational Platform for Non-Destructive Genome Engineering"
+version: 1.0.0
+date-released: "2026-08-XX"
+authors:
+  - family-names: Mahaboob Ali
+    given-names: Anees Ahmed
+    affiliation: "VIT University, Vellore"
+    email: ahmedaneesm@gmail.com
+repository-code: "https://github.com/ahmedanees-m/pen-stack"
+license: MIT
+keywords:
+  - genome-engineering
+  - bridge-recombinase
+  - IS110
+  - molecular-pen
+  - ISCro4
+  - non-destructive-genome-editing
+abstract: >
+  PEN-STACK is the first comprehensive computational platform for non-destructive
+  genome engineering, covering editor discovery, certification, genome targeting,
+  safety analysis, bRNA design, delivery optimization, and experimental planning
+  in a single integrated framework. Built on the IS110 bridge recombinase system
+  and the Molecular Pen paradigm.
+references:
+  - type: article
+    title: "Bridge RNAs direct programmable recombination of target and donor DNA"
+    authors:
+      - family-names: Durrant
+        given-names: Matthew G.
+      - family-names: Perry
+        given-names: Nicholas T.
+    journal: Nature
+    year: 2024
+    doi: 10.1038/s41586-024-07552-4
+  - type: article
+    title: "Structural mechanism of bridge RNA-guided recombination"
+    authors:
+      - family-names: Hiraizumi
+        given-names: Masahiro
+    journal: Nature
+    year: 2024
+    doi: 10.1038/s41586-024-07570-2

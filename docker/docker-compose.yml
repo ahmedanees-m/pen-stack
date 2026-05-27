@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  pen-stack:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: pen-stack:1.0.0
+    container_name: pen-stack-platform
+    ports:
+      - "8501:8501"     # Streamlit webserver
+      - "8000:8000"     # FastAPI REST gateway
+      - "11434:11434"   # Ollama LLM
+    volumes:
+      - ../:/workspace/pen-stack          # live code mount (edits reflected immediately)
+      - ollama-models:/root/.ollama       # Ollama model weights
+      - pen-stack-data:/data              # platform data
+      - esm2-cache:/root/.cache/esm2     # ESM-2 model cache
+      - hg38-data:/data/hg38             # hg38 genomic data
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+      - PEN_STACK_LOG_LEVEL=INFO
+      - HF_HOME=/root/.cache/esm2
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+
+volumes:
+  ollama-models:
+  pen-stack-data:
+  esm2-cache:
+  hg38-data:

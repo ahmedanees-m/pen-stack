@@ -1,0 +1,16 @@
+# Lightweight dev container — no ESM-2 pre-pull, no GPU requirement
+# Use for testing non-GPU modules (compare, target, safe, design, bench)
+# docker-compose -f docker/docker-compose.dev.yml up
+version: "3.9"
+services:
+  pen-stack-dev:
+    image: python:3.11-slim
+    container_name: pen-stack-dev
+    working_dir: /workspace/pen-stack
+    volumes:
+      - ../:/workspace/pen-stack
+    command: >
+      sh -c "pip install -e '.[dev]' --quiet &&
+             pytest tests/unit/ -v -m 'not gpu and not e2e'"
+    environment:
+      - PYTHONPATH=/workspace/pen-stack

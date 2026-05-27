@@ -1,0 +1,84 @@
+# config/triangulation_rules_v3.yaml
+# Cross-pipeline triangulation rules for PEN-COMPARE v3.2.
+# Each rule defines a discrepancy category: what data sources are involved,
+# what logical condition triggers the discrepancy, and its severity.
+#
+# Sources:
+#   GENOME_ATLAS  — PFAM domains, system memberships, atlas_system_present
+#   MECH_CLASS    — tier_a_gate, mechanism_class, mech_class_confidence
+#   PEN_SCORE     — 8 axis scores (s_dsb, s_prog, s_cargo, …), penscore,
+#                   intrinsic_cargo_mechanism, cell_based_evidence
+#   PEN_ASSEMBLE  — design catalog (source == "design" entities)
+
+schema_version: "3.2"
+
+sources:
+  - GENOME_ATLAS
+  - MECH_CLASS
+  - PEN_SCORE
+  - PEN_ASSEMBLE
+
+discrepancy_categories:
+
+  AXIS_VS_TIER:
+    description: >
+      pen-score S_DSB ≥ 0.95 (axis says DSB-free) but mech-class tier_a_gate=False
+      (mech-class does NOT classify as IS110/DSB-free Tier-A). Or conversely,
+      tier_a_gate=True but S_DSB < 0.80 (mech-class says IS110 but score is low).
+    severity: high
+    sources_involved: [MECH_CLASS, PEN_SCORE]
+    applies_to: natural
+    conditions:
+      - "(s_dsb >= 0.95) AND (tier_a_gate == False)"
+      - "(tier_a_gate == True) AND (s_dsb < 0.80)"
+
+  MECH_VS_PFAM:
+    description: >
+      Editor is in genome-atlas (atlas_system_present=True) with a known PFAM-based
+      DSB-free classification but mech-class tier_a_gate=False — suggesting mech-class
+      and PFAM-based atlas disagree on mechanism. Or: tier_a_gate=True but atlas has
+      no entry for this editor (PFAM evidence absent despite mech-class IS110 call).
+    severity: high
+    sources_involved: [GENOME_ATLAS, MECH_CLASS]
+    applies_to: natural
+    conditions:
+      - "(atlas_system_present == True) AND (tier_a_gate == False) AND (s_dsb >= 0.95)"
+      - "(tier_a_gate == True) AND (atlas_system_present == False) AND (s_dsb >= 0.95)"
+
+  CARGO_INCONSISTENCY:
+    description: >
+      intrinsic_cargo_mechanism=True (PEN-SCORE metadata says editor delivers cargo
+      as part of its native mechanism) but S_Cargo < 0.60 (cargo axis score is low,
+      suggesting limited demonstrated cargo capability). These two signals contradict
+      each other — either the metadata flag is over-generous or the scoring is
+      under-calibrated for this editor's mechanism.
+    severity: medium
+    sources_involved: [PEN_SCORE]
+    applies_to: all
+    conditions:
+      - "(intrinsic_cargo_mechanism == True) AND (s_cargo < 0.60)"
+
+  EVIDENCE_GAP:
+    description: >
+      Editor is confirmed IS110 bridge recombinase (tier_a_gate=True, s_dsb ≥ 0.95)
+      — a mechanism class that defines the Molecular Pen hypothesis — but
+      cell_based_evidence=False. Given the IS110 family's relevance to therapeutic
+      genome editing, the absence of any cell-based activity data is an evidence gap
+      worth flagging for literature follow-up.
+    severity: low
+    sources_involved: [MECH_CLASS, PEN_SCORE]
+    applies_to: natural
+    conditions:
+      - "(tier_a_gate == True) AND (s_dsb >= 0.95) AND (cell_based_evidence == False)"
+
+  SIZE_INCONSISTENCY:
+    description: >
+      length_aa is missing (None) for a natural editor that is present in genome-atlas
+      (atlas_system_present=True). Genome-atlas should have the UniProt entry and
+      thus the sequence length; pen-score missing this field represents a cross-source
+      data gap that could affect Gate 4 deliverability assessment.
+    severity: medium
+    sources_involved: [GENOME_ATLAS, PEN_SCORE]
+    applies_to: natural
+    conditions:
+      - "(atlas_system_present == True) AND (length_aa IS NULL)"

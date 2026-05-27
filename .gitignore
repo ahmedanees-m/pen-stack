@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Data (large files not tracked)
+data/esm2_embeddings.parquet
+data/hg38/
+data/cache/
+pen_stack/safe/data/cosmic_cgc.csv
+pen_stack/safe/data/depmap_essential_genes.csv
+
+# Models cache
+.cache/
+*.pt
+*.onnx
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+*.pem
+*.key
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/*.nbconvert.ipynb
+
+# Docs build
+docs/_build/
