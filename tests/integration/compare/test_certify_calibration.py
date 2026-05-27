@@ -5,7 +5,7 @@ their pre-registered expected tiers.  Any failure here is a framework bug,
 not a scientific finding.
 """
 
-from pen_stack.compare.core.certify import certify
+from pen_stack.compare.certify import certify
 
 
 def test_iscro4_is_true_writer():

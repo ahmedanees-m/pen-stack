@@ -2,7 +2,7 @@
 
 import pytest
 
-from pen_stack.compare.core.certify import TrueWriterResult, certify
+from pen_stack.compare.certify import TrueWriterResult, certify
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 

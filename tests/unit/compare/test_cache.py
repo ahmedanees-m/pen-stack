@@ -1,4 +1,4 @@
-"""Unit tests for pen_compare.server.cache.build_caches.
+"""Unit tests for pen_stack.server.cache.build_caches.
 
 Uses tmp_path to avoid needing real parquets on disk.
 Patches module-level Path constants before importing.
@@ -98,11 +98,11 @@ def cache_env(tmp_path, monkeypatch):
     di.to_parquet(di_path)
 
     # Patch module constants before importing (or reload if already imported)
-    mod_name = "pen_compare.server.cache"
+    mod_name = "pen_stack.server.cache"
     if mod_name in sys.modules:
         del sys.modules[mod_name]
 
-    import pen_stack.compare.server.cache as cache_mod
+    import pen_stack.server.cache as cache_mod
 
     monkeypatch.setattr(cache_mod, "CACHE_DIR", cache_dir)
     monkeypatch.setattr(cache_mod, "_SC", sc_path)

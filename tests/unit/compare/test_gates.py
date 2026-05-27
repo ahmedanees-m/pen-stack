@@ -1,6 +1,6 @@
 """Unit tests for the 5 TrueWriterScore gate functions."""
 
-from pen_stack.compare.core.gates import (
+from pen_stack.compare.gates import (
     GateRole,
     gate_1_dsb,
     gate_2_programmability,

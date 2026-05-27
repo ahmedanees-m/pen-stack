@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from pen_stack.compare.core.sensitivity import run_sensitivity_parallel
+from pen_stack.compare.sensitivity import run_sensitivity_parallel
 
 
 def _make_frames():

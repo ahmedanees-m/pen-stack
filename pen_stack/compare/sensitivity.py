@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 
-from pen_stack.compare.core.certify import certify
+from pen_stack.compare.certify import certify
 
 SENSITIVITY_GRID = {
     "g1_threshold": np.round(np.arange(0.85, 1.00, 0.01), 2).tolist(),  # 15 values

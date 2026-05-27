@@ -5,7 +5,7 @@ import textwrap
 import pandas as pd
 import pytest
 
-from pen_stack.compare.triangulation.triangulator import (
+from pen_stack.compare.triangulator import (
     DiscrepancyRecord,
     Triangulator,
     _float,

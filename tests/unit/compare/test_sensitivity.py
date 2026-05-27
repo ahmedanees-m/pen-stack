@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from pen_stack.compare.core.sensitivity import (
+from pen_stack.compare.sensitivity import (
     SENSITIVITY_GRID,
     build_sensitivity_rows,
     sensitivity_for_entity,

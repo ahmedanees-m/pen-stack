@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from pen_stack.compare.core.gates import (
+from pen_stack.compare.gates import (
     GateResult,
     GateRole,
     gate_1_dsb,
