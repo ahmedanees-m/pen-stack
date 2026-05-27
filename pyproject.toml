@@ -46,7 +46,8 @@ dependencies = [
 compare = ["chromadb>=0.4.20", "sentence-transformers>=2.5"]
 discover = ["transformers>=4.36", "torch>=2.0", "einops>=0.7"]
 target   = ["pyranges>=0.0.129", "pybedtools>=0.9.0", "pyensembl>=2.3"]
-monitor  = ["europepmc>=0.4.0", "schedule>=1.2", "ollama>=0.1.7"]
+# europepmc not on PyPI; Europe PMC REST API called directly via requests (core dep)
+monitor  = ["schedule>=1.2", "ollama>=0.1.7"]
 safe     = ["pyranges>=0.0.129", "pyvcf3>=1.0", "aiohttp>=3.9"]
 design   = ["viennarna>=2.6", "biopython>=1.83"]
 deliver  = ["ollama>=0.1.7", "chromadb>=0.4.20"]
