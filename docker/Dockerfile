@@ -8,9 +8,13 @@ LABEL org.opencontainers.image.description="Comprehensive platform for non-destr
 LABEL org.opencontainers.image.source="https://github.com/ahmedanees-m/pen-stack"
 
 # System dependencies
-# zstd: required by Ollama installer (v0.4+) for archive extraction
+# - build-essential, g++: C/C++ compilation for pybedtools and other native exts
+# - zlib1g-dev, libbz2-dev, liblzma-dev: headers needed by pybedtools (zlib.h etc.)
+# - zstd: required by Ollama installer (v0.4+) for archive extraction
+# - tabix samtools bedtools: genomics CLI tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl git build-essential ca-certificates wget zstd \
+    zlib1g-dev libbz2-dev liblzma-dev libncurses5-dev \
     tabix samtools bedtools \
     && rm -rf /var/lib/apt/lists/*
 
