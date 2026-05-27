@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import click
 
-from pen_stack._version import __version__
+from pen_stack.compare._version import __version__
 
 
 @click.group(invoke_without_command=True)
