@@ -50,3 +50,9 @@ notebooks/*.nbconvert.ipynb
 
 # Docs build
 docs/_build/
+
+# Strategic/internal planning documents — keep local, not public
+PEN_STACK_PLATFORM_*.md
+VERIFICATION_REPORT.md
+EXECUTION_PLAN*.md
+*_EXECUTION_PLAN.md
