@@ -1,12 +1,12 @@
 # PEN-STACK PLATFORM — Execution Plan v1.0
 **The First Comprehensive Computational Platform for Non-Destructive Genome Engineering**
 
-**Status:** Part A COMPLETE — Part B pending
+**Status:** Part A COMPLETE ✅ — Part B COMPLETE ✅ — Part C pending
 **Author:** Anees Ahmed Mahaboob Ali (VIT Vellore)
 **Date drafted:** 2026-05-26
-**Last updated:** 2026-05-27 (verification + Part A execution log added)
+**Last updated:** 2026-05-27 (Part B execution log added)
 **Repository target:** `github.com/ahmedanees-m/pen-stack` (single unified repo)
-**GitHub:** https://github.com/ahmedanees-m/pen-stack (tag: `v1.0.0a1-part-a`)
+**GitHub:** https://github.com/ahmedanees-m/pen-stack (latest tag: `v1.0.0a2-part-b`)
 **Prerequisite:** `pen-compare v0.1.0` live on PyPI; NAR Webserver manuscript submitted
 **Execution window:** 12 working weeks
 **Target venue (primary):** *Nature Methods*
@@ -309,6 +309,80 @@ Packages verified in image:
   compare module   0.1.0      (pen_stack/compare/_version.py)
   ESM-2 650M       pre-cached (/root/.cache/esm2)
 ```
+
+---
+
+## §0.10 — Part B Execution Log (2026-05-27)
+
+### Steps 5–9: PEN-DISCOVER Module (pen_stack/discover/) — COMPLETE ✅
+
+**Tag:** `v1.0.0a2-part-b` pushed to https://github.com/ahmedanees-m/pen-stack
+
+#### API Discovery (probe run before coding)
+
+Key corrections from the execution plan vs actual upstream API:
+
+| Plan assumption | Actual API (verified) |
+|---|---|
+| `pen_score.load_editor_universe()` | `pen_score.data.loader.load_editor_universe()` |
+| Returns object with `.editors` | Returns `list[EditorEntry]` (29 items) |
+| `EditorEntry.sequence` exists | No `.sequence` — fetch from UniProt by `canonical_accession` |
+| `score(eid)` | `Scorer().score_editor(eid)` |
+| `s.axes["S_DSB"]` | `s.axes.S_DSB` (attribute, not dict key) |
+| IS110 mechanism = `IS110` | mechanism_bucket = `DSB_FREE_TRANSEST_RECOMBINASE` |
+| `certify` returns simple result | Returns `TrueWriterResult` with `.gate_results` tuple |
+| GateResult access: dict | `GateResult.gate_id`, `.passes`, `.observed_value`, `.threshold` |
+| NCBI eutils reachable | NCBI eutils blocked on this VM — used UniProt REST API instead |
+
+#### Step 5 ✅ — ESM-2 Embedding Extraction
+
+- 29 editors total; 24 with real UniProt accessions (5 have `REQUIRES_STEP7`/`NO_UNIPROT`)
+- UniProt sequences fetched by `canonical_accession` via REST API
+- 15 unique sequences embedded (some editors share accession, e.g. PE2/PE5max use SpCas9 Q99ZW2)
+- 24 total rows (one per editor_id) saved to `data/esm2_embeddings.parquet` (24×1283)
+- ESM-2 650M loaded on CUDA (RTX A4000), ~5 min wall time
+- `data/esm2_embeddings.parquet` excluded from git by `.gitignore` (large binary)
+
+#### Step 6 ✅ — Gate-Probability Model Training
+
+- 3 editors skipped due to pen_score v0.1.3 pydantic bug: `S_Mature > 1.0` for SpCas9, SpuFz1, ABE7_10
+- 21 editors successfully certified via `pen_stack.compare.certify`
+- S_DSB=1.0 assigned for all `DSB_FREE_TRANSEST_RECOMBINASE` editors (correct: they cause no DSBs)
+- Gate label distribution: `gate_1_dsb`: 67% pass, `gate_5_evidence`: 71% pass; gates 2–4: 0% pass (strict thresholds)
+- Only `gate_1_dsb` and `gate_5_evidence` models trained (gates 2–4 skipped: single class)
+- TrueWriter probability Ridge regressor trained on tier-based labels
+- **Smoke test results:**
+  - ISCro4: TW_prob=0.979, tier=TRUE_WRITER ✅
+  - IS621: TW_prob=0.411, tier=PROBABLE_WRITER ✅
+  - SpCas9: TW_prob=0.100, tier=NOT_WRITER ✅
+- Models saved: `data/discover_models/{gate_1_dsb,gate_5_evidence,tw_probability}_model.joblib`
+
+#### Step 7 ✅ — IS110 Orthologue Screening
+
+- NCBI eutils (`eutils.ncbi.nlm.nih.gov`) blocked from VM (Search Backend failed / timeout)
+- **Fix:** UniProt REST API used instead — `protein_name:"IS110"`, `protein_name:"transposase IS110"`, `protein_name:"serine recombinase"` queries
+- 1417 unique IS110/serine-recombinase sequences found in UniProt (screened first 500)
+- 500 sequences embedded on GPU (RTX A4000, ~15 min)
+- All 500 assigned `recommendation=uncertain` (scientifically correct: N=21 training data → high entropy)
+- Top candidates by TW probability ranked in `data/discover_screen_results.parquet`
+- Note: `uncertain` + `tw_probability=1.0` = "high predicted TrueWriter probability but small training set"
+
+#### Step 8 ✅ — PEN-DISCOVER API
+
+- `pen_stack.discover.predict_from_fasta(fasta_path)` one-call API
+- Full API: `ESM2Embedder`, `DiscoverPredictor`, `DiscoverPrediction`, `screen_orthologues`, `fetch_is110_sequences`
+
+#### Step 9 ✅ — Unit Tests
+
+- 7/7 tests passed (`pytest tests/unit/test_discover.py -v`)
+- Tests cover: `_tw_from_gates`, `_estimate_uncertainty`, `DiscoverPredictor` (smoke + fake training)
+
+#### Known Issues / Future Fixes
+
+1. **pen_score v0.1.3 pydantic bug**: `S_Mature > 1.0` causes ValidationError for SpCas9, SpuFz1, ABE7_10 — tracked upstream
+2. **Single-class gates**: Gates 2–4 (S_Prog, S_Cargo, S_Deliv) all fail for every editor in the universe → models not trainable → all predictions depend only on gates 1 and 5
+3. **NCBI blocked**: screen.py uses UniProt; the `fetch_is110_sequences` function docstring documents this
+4. **Training N=21**: Scientific limitation; paper should note N=21 and use uncertainty bands honestly
 
 ---
 
