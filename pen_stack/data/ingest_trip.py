@@ -19,23 +19,24 @@ import pandas as pd
 
 
 def load_trip(txt_gz: str, promoter: str) -> pd.DataFrame:
-    rows = []
+    """Robust to both TRIP schemas: GSE49807 (plain) and GSE49806 (leading '#' comment + multi-Dox
+    columns; we use the 100 ng full-induction normalization/expression pair)."""
     with gzip.open(txt_gz, "rt") as fh:
-        header = fh.readline().rstrip("\n").split("\t")
-        idx = {c: i for i, c in enumerate(header)}
-        for line in fh:
-            f = line.rstrip("\n").split("\t")
-            try:
-                rows.append((
-                    f[idx["chromosome"]],
-                    int(f[idx["position"]]),
-                    f[idx.get("strand", -1)] if "strand" in idx else ".",
-                    float(f[idx["normalization_counts"]]),
-                    float(f[idx["expression_counts"]]),
-                ))
-            except (ValueError, IndexError):
-                continue
-    df = pd.DataFrame(rows, columns=["chrom", "pos", "strand", "norm_counts", "expr_counts"])
+        raw = pd.read_csv(fh, sep="\t", comment="#", dtype=str)
+    cols = {c.lower().strip(): c for c in raw.columns}
+    chrom_c = cols.get("chromosome")
+    pos_c = cols.get("position")
+    norm_c = cols.get("normalization_counts_100ng_1") or cols.get("normalization_counts")
+    expr_c = cols.get("expression_counts_100ng_1") or cols.get("expression_counts")
+    if not all([chrom_c, pos_c, norm_c, expr_c]):
+        raise ValueError(f"{txt_gz}: missing expected columns; have {list(raw.columns)[:8]}")
+    df = pd.DataFrame({
+        "chrom": raw[chrom_c].astype(str),
+        "pos": pd.to_numeric(raw[pos_c], errors="coerce"),
+        "norm_counts": pd.to_numeric(raw[norm_c], errors="coerce"),
+        "expr_counts": pd.to_numeric(raw[expr_c], errors="coerce"),
+    }).dropna()
+    df["pos"] = df["pos"].astype(int)
     df["promoter"] = promoter
     return df
 
