@@ -19,7 +19,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from pen_stack.wgenome.durability import CHROMATIN as DUR_MARKS
 from pen_stack.wgenome.features import feature_columns
 
 

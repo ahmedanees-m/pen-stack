@@ -20,7 +20,7 @@ import pandas as pd
 import pybedtools
 import requests
 
-from pen_stack.data.genome import MAIN_CHROMS, load_chrom_sizes
+from pen_stack.data.genome import MAIN_CHROMS
 
 GENCODE_GTF = ("https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/"
                "release_46/gencode.v46.basic.annotation.gtf.gz")
