@@ -11,8 +11,25 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-CHROMATIN_TRACKS = ["atac", "dnase", "H3K27ac", "H3K4me1", "H3K4me3", "H3K9me3", "H3K27me3"]
+# Unified chromatin feature set: ONE accessibility feature (ATAC where present, else DNase) +
+# the 5 core histone marks. This makes every cell type share an IDENTICAL schema, so a cell type
+# that lacks a specific accessibility assay (e.g. CD34+ HSPC has DNase but no ATAC) is fully
+# specified rather than "partial" — ATAC and DNase are interchangeable open-chromatin assays.
+CHROMATIN_TRACKS = ["accessibility", "H3K27ac", "H3K4me1", "H3K4me3", "H3K9me3", "H3K27me3"]
+ACCESS_SOURCES = ["atac", "dnase"]
 SAFETY_DIST = ["dist_oncogene", "dist_tsg", "dist_essential", "dist_tss"]
+
+
+def add_accessibility(m: pd.DataFrame) -> pd.DataFrame:
+    """Derive the unified `accessibility` column: prefer ATAC, fall back to DNase."""
+    if "accessibility" not in m.columns:
+        if "atac" in m.columns:
+            m["accessibility"] = m["atac"]
+            if "dnase" in m.columns:                      # fill any ATAC gaps with DNase
+                m["accessibility"] = m["accessibility"].fillna(m["dnase"])
+        elif "dnase" in m.columns:
+            m["accessibility"] = m["dnase"]
+    return m
 
 
 def _log_dist(s: pd.Series) -> pd.Series:
@@ -27,6 +44,7 @@ def assemble_matrix(chromatin_parquet: str, safety_parquet: str,
     chrom = pd.read_parquet(chromatin_parquet)
     safe = pd.read_parquet(safety_parquet)
     m = chrom.merge(safe, on=["chrom", "bin"], how="inner")
+    m = add_accessibility(m)                               # unify ATAC/DNase -> accessibility
 
     # log-scaled distance features (raw kept too, for transparency)
     for d in SAFETY_DIST:
