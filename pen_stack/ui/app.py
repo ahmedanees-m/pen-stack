@@ -52,7 +52,8 @@ hr { border-color:var(--line); }
 st.markdown(CSS, unsafe_allow_html=True)
 PLOTLY = dict(template="plotly_dark", paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
               font=dict(color="#dfe9ff"), margin=dict(l=10, r=10, t=30, b=10))
-CT_LABEL = {"k562": "K562 (erythroleukemia)", "hepg2": "HepG2 (hepatocellular)"}
+CT_LABEL = {"k562": "K562 (erythroleukemia)", "hepg2": "HepG2 (hepatocellular)",
+            "hspc": "HSPC (CD34+ progenitor)"}
 
 
 # ----------------------------------------------------------------------------- data loading
@@ -139,7 +140,9 @@ st.sidebar.markdown("## 🧬 PEN-STACK")
 st.sidebar.caption("The Writable Genome · v3.0")
 page = st.sidebar.radio("Navigate", ["Overview", "Forward query", "Site finder (inverse)",
                                      "Atlas browser", "Validation", "Cross-cell-type"])
-ct = st.sidebar.selectbox("Cell type", ["k562", "hepg2"], format_func=lambda c: CT_LABEL[c])
+_available_cts = sorted(p.stem.replace("atlas_", "") for p in DATA.glob("atlas_*.parquet")
+                        if p.stem.replace("atlas_", "") in CT_LABEL) or ["k562"]
+ct = st.sidebar.selectbox("Cell type", _available_cts, format_func=lambda c: CT_LABEL.get(c, c.upper()))
 st.sidebar.markdown("---")
 st.sidebar.caption("Writability = **safety × durability × reachability**, learned blind on public data.")
 if not (DATA / "atlas_k562.parquet").exists():
