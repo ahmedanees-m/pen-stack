@@ -15,6 +15,7 @@ import gzip
 import os
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pybedtools
 import requests
@@ -105,7 +106,9 @@ def nearest_dist(bins_bed: pybedtools.BedTool, feat_df: pd.DataFrame, name: str)
     closest = bins_bed.closest(fb, d=True)
     out = closest.to_dataframe(header=None, usecols=[0, 1, closest.field_count() - 1],
                                names=["chrom", "start", name])
-    out[name] = out[name].clip(lower=0)
+    # bedtools closest -d returns -1 when there is NO feature on that chromosome; that means
+    # "no nearby feature" (effectively infinite distance), NOT distance 0. Map the sentinel to NaN.
+    out[name] = out[name].where(out[name] >= 0, other=np.nan)
     return out.groupby(["chrom", "start"], as_index=False)[name].min()
 
 
