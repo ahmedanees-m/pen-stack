@@ -34,9 +34,15 @@ def apply_safety(matrix: pd.DataFrame, safety_model) -> np.ndarray:
 
 
 def apply_durability(matrix: pd.DataFrame, dur_models: dict) -> tuple[np.ndarray, np.ndarray]:
-    """Apply the mouse-trained conditional function to the human epigenome's histone marks."""
-    feats = [f for f in dur_models["features"] if f in matrix.columns]
-    X = matrix[feats].astype("float32").fillna(0.0)
+    """Apply the mouse-trained conditional function to the human epigenome's histone marks.
+
+    ROBUST to partial chromatin panels (e.g. CD34+ HSPC lacks some tracks): every model feature is
+    provided in the trained order; tracks absent from this cell type are passed as NaN, which LightGBM
+    handles natively. This is the 'graceful degradation under partial annotation' behaviour, by design.
+    """
+    X = pd.DataFrame(index=matrix.index)
+    for f in dur_models["features"]:                 # exact training feature set + order
+        X[f] = matrix[f].astype("float32") if f in matrix.columns else np.nan
     expr = dur_models["reg"].predict(X)
     p_silenced = dur_models["clf"].predict_proba(X)[:, 1]
     return expr, 1.0 - p_silenced     # predicted expression, P(durable)
