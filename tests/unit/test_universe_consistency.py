@@ -4,7 +4,7 @@ One canonical assembly path; the classifier/scorer/scorecard must consume identi
 """
 import pandas as pd
 
-from pen_stack.atlas.universe import CANONICAL_INPUTS, assemble, canonical_inputs
+from pen_stack.atlas.universe import assemble, canonical_inputs
 
 
 def test_assemble_is_deterministic():

@@ -5,7 +5,6 @@ any enzyme-conditioned score override: the scoring modules must be enzyme-agnost
 comments AND string literals first, so docstrings that *describe* the old bug do not trip the check —
 only executable code is inspected.
 """
-import io
 import re
 import tokenize
 from pathlib import Path
