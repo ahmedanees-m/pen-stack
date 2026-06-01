@@ -1,0 +1,208 @@
+# config/gates_v3.yaml
+# PRE-REGISTERED — SHA-256 locked at Step 8.
+# DO NOT EDIT AFTER LOCK.
+#
+# Pairs with: prereg/predictions_v3.yaml, prereg/methodology_v3.md
+# Manifesto reference: PEN-STACK v2.2 §1.4.3 (Molecular Pen Properties)
+
+schema_version: "3.2"
+truewriterscore_version: "3.2.0"
+manifesto_reference: "PEN-STACK v2.2 §1.4.3 (Molecular Pen Properties)"
+architecture: "hierarchical_with_necessary_gate"
+
+# ============================================================
+# GATE STRUCTURE: 1 necessary + 4 qualifying
+# ============================================================
+
+necessary_gates:
+  gate_1_dsb:
+    name: "DSB Avoidance"
+    axis: S_DSB
+    threshold: 0.95
+    direction: ">="
+    manifesto_property: "Property 1: DSB Avoidance"
+    necessity_rationale: |
+      The pen-vs-scissors distinction is fundamentally about DSB. An editor
+      that induces double-strand breaks is, by definition, a scissor. SpCas9
+      (S_DSB=0) and AsCas12a (S_DSB=0) auto-fail and are categorically
+      NOT_WRITER regardless of other gates. Failing G1 is final.
+
+qualifying_gates:
+  gate_2_programmability:
+    name: "Programmability"
+    axis: S_Prog
+    threshold: 0.95
+    direction: ">="
+    manifesto_property: "Property 3: Target Specificity (programmable)"
+    rationale: |
+      Site-specific recombinases (Bxb1, Cre, phiC31, Lambda_Int) fail this gate.
+      They are non-programmable writers — fixed att sites, not sequence-programmable.
+
+  gate_3_native_cargo:
+    name: "Native Cargo Capability"
+    axis: S_Cargo
+    threshold: 0.90
+    direction: ">="
+    requires: "intrinsic_cargo_mechanism == true"
+    reformulation_note: |
+      Cargo capability via exogenous repair template (HDR donor) does NOT count.
+      The editor must deliver/insert cargo as part of its native catalytic mechanism.
+      This excludes SpCas9+HDR template from gaming this gate.
+      S_Cargo >= 0.90 is necessary but not sufficient; intrinsic_cargo_mechanism
+      must also be True.
+
+  gate_4_deliverability:
+    name: "Deliverability"
+    condition: "length_aa <= 900 OR split_aav_eligible == True"
+    manifesto_property: "Property 4: Therapeutic Deliverability"
+    size_max_aa: 900
+    rationale: |
+      AAV cargo limit ~4.7 kb single, ~9 kb split. 900 aa admits IS110 family
+      and site-specific recombinases while excluding most multi-subunit CAST complexes
+      (unless split-AAV eligible is flagged explicitly).
+
+  gate_5_evidence:
+    name: "Evidence"
+    condition: "len(evidence_sources_passing) >= 2"
+    eligible_sources:
+      - biochemical
+      - structural
+      - computational
+      - cell_based
+    manifesto_property: "Scientific confidence floor"
+    rationale: |
+      Multi-source corroboration prevents undifferentiated computational predictions
+      from advancing. At least 2 of {biochemical, structural, computational,
+      cell_based} must be present.
+
+# ============================================================
+# REMOVED IN v3: gate_6_energy
+# ============================================================
+# Walker A/B regex was biochemically trivial and excluded CAST family on
+# superficial grounds. S_Energy is retained as descriptive metadata only
+# (shown in editor profiles) but NOT used in tier assignment.
+removed_gates:
+  gate_6_energy:
+    reason: |
+      Walker A/B regex test was biochemically trivial. CAST family (evoCAST,
+      CAST_VK, CAST_IF) honestly lands in PROBABLE_WRITER or TRUE_WRITER —
+      multi-subunit ATP-dependent transposases are legitimate writer architectures,
+      architecturally distinct from single-protein bridge recombinases.
+    retained_as_metadata: true
+    metadata_field: S_Energy
+
+# ============================================================
+# TIER RULES
+# ============================================================
+
+tiers:
+  TRUE_WRITER:
+    description: "Full Molecular Pen certification with cell-based evidence."
+    requires_all:
+      - "necessary_gates.gate_1_dsb passes"
+      - "qualifying_gates.gate_2_programmability passes"
+      - "qualifying_gates.gate_3_native_cargo passes"
+      - "qualifying_gates.gate_4_deliverability passes"
+      - "qualifying_gates.gate_5_evidence passes"
+      - "cell_based in evidence_sources_passing"
+    rationale: |
+      cell_based_evidence required. Distinguishes ISCro4 (>6% insertion in
+      human cells; Pelea 2026 Science) from IS621 (E. coli + cryo-EM only;
+      weak HEK293T signal in Perry 2025). TRUE_WRITER = the benchmark system
+      all future editors are compared against.
+
+  PROBABLE_WRITER:
+    description: "Most writer properties present; one gate failed OR cell-based evidence lacking."
+    requires_all:
+      - "necessary_gates.gate_1_dsb passes"
+    requires_one_of:
+      - "passes 3 of 4 qualifying gates AND cell_based in evidence_sources_passing"
+      - "passes all 4 qualifying gates BUT cell_based NOT in evidence_sources_passing"
+    examples:
+      - "IS621 (all 4 qualifying pass but cell_based=False)"
+      - "evoCAST (cargo gate depends on intrinsic_cargo_mechanism value)"
+      - "Bxb1 (fails gate_2 programmability)"
+
+  EMERGING_WRITER:
+    description: "DSB-free but multiple writer properties undemonstrated."
+    requires_all:
+      - "necessary_gates.gate_1_dsb passes"
+      - "passes 1 OR 2 of 4 qualifying gates"
+    examples:
+      - "Many pen-assemble engineered designs"
+      - "Uncharacterized IS110 orthologs with structural data only"
+
+  NOT_WRITER:
+    description: "Fails necessary gate OR passes 0 qualifying gates."
+    requires_one_of:
+      - "necessary_gates.gate_1_dsb FAILS"
+      - "necessary_gates.gate_1_dsb passes BUT 0 qualifying gates pass"
+    examples:
+      - "SpCas9 (S_DSB=0.0 → auto-fail, NOT_WRITER regardless of all other gates)"
+      - "AsCas12a (same)"
+
+# ============================================================
+# CALIBRATION ANCHORS
+# (These are the 4 fixed reference points for all tier logic)
+# ============================================================
+
+calibration_anchors:
+  TRUE_WRITER_anchor:
+    editor: ISCro4
+    aliases: ["IS622"]
+    uniprot: D2TGM5
+    organism: "Citrobacter rodentium ICC168"
+    expected_tier: TRUE_WRITER
+    cell_based_evidence: true
+    sources:
+      - "Pelea et al. 2026 Science DOI:10.1126/science.adz1884 (>6% insertion in human cells)"
+      - "Perry et al. 2025 bioRxiv 10.1101/2025.05.14.653916 (20% insertion, 0.93 Mb)"
+
+  PROBABLE_WRITER_anchor_1:
+    editor: IS621
+    organism: "Escherichia coli"
+    expected_tier: PROBABLE_WRITER
+    failing_aspect: "cell_based_evidence=False (lacks robust human cell data)"
+    sources:
+      - "Durrant et al. 2024 Nature DOI:10.1038/s41586-024-07552-4 (E. coli ~80%)"
+      - "Hiraizumi et al. 2024 Nature (cryo-EM structure)"
+
+  PROBABLE_WRITER_anchor_2:
+    editor: Bxb1
+    expected_tier: PROBABLE_WRITER
+    failing_gate: gate_2_programmability
+    rationale: "Site-specific recombinase; fixed attB/attP, not sequence-programmable."
+
+  NOT_WRITER_anchor:
+    editor: SpCas9
+    expected_tier: NOT_WRITER
+    failing_gate: gate_1_dsb
+    rationale: "Auto-fail via necessary gate. S_DSB=0.0 categorically excludes from any writer tier."
+
+# ============================================================
+# UNCERTAINTY QUANTIFICATION
+# ============================================================
+
+uncertainty_method: sensitivity_analysis
+sensitivity_grid:
+  g1_dsb_threshold:
+    range: [0.85, 1.00]
+    step: 0.01
+    n_values: 15
+  g2_prog_threshold:
+    range: [0.85, 1.00]
+    step: 0.01
+    n_values: 15
+  g3_cargo_threshold:
+    range: [0.80, 0.96]
+    step: 0.01
+    n_values: 16
+  g4_size_max:
+    values: [600, 750, 900, 1050, 1200]
+    n_values: 5
+total_combinations: 18000  # 15 × 15 × 16 × 5
+
+robustness_thresholds:
+  robust: 0.80         # >= 80% of threshold combinations agree on tier
+  boundary_case: 0.50  # < 50% agree → boundary case (informative finding)
+  note: "robustness_fraction = (combinations agreeing with default-threshold tier) / 18000"
