@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use PEN-STACK, please cite it as below."
+title: "PEN-STACK: open infrastructure for genome writing"
+version: 3.0.0a0
+date-released: 2026-06-01
+authors:
+  - family-names: "Mahaboob Ali"
+    given-names: "Anees Ahmed"
+    affiliation: "VIT University, Vellore"
+    email: ahmedaneesm@gmail.com
+repository-code: "https://github.com/ahmedanees-m/pen-stack"
+license: MIT
+keywords:
+  - genome writing
+  - writable genome
+  - writer atlas
+  - bridge recombinase
+  - safe harbor
+  - write planner

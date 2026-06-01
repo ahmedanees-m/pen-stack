@@ -1,0 +1,29 @@
+# PEN-STACK v3.0 — pinned in-image dependencies (one source of truth for all phases).
+# Resolve/refresh against PyPI at build time; record actually-installed versions in configs/datasets.yaml.
+numpy==1.26.4
+pandas==2.2.2
+pyarrow==16.1.0
+scipy==1.13.1
+scikit-learn==1.5.1
+lightgbm==4.5.0
+xgboost==2.1.1
+torch==2.3.1            # CUDA wheels; ChromBPNet/Borzoi-class inference
+biopython==1.84
+pysam==0.22.1
+pyBigWig==0.3.22
+pybedtools==0.10.0
+statsmodels==0.14.2     # bootstrap / McNemar CIs (Paper 3)
+fastapi==0.111.0
+uvicorn==0.30.1
+pydantic==2.8.2
+requests==2.32.3
+tqdm==4.66.4
+matplotlib==3.9.0
+wandb==0.17.4           # offline experiment logging
+# --- platform-services layer (Phase 2/3) ---
+litellm==1.44.0         # provider-agnostic LLM calls; targets a LOCAL model by default
+paper-qa==5.10.0        # PaperQA2: retrieval-grounded, cited literature QA
+streamlit==1.37.1
+fastmcp==2.3.0
+beautifulsoup4==4.12.3  # Europe PMC / preprint parsing (PEN-MONITOR)
+ViennaRNA==2.6.4        # bRNA fold/QC (Phase 1.5)

@@ -1,0 +1,94 @@
+# PEN-STACK v3.0 — pinned datasets, sources, and verified identifiers.
+# Every external dataset is pinned to a version/accession + retrieval date + checksum (filled at fetch time).
+# Identifiers below were independently verified 2026-06-01 (see Final_Part_v3.0/VERIFICATION_REPORT_v3.0.md).
+# Large data are fetched-not-committed; only manifests + small curated tables live in git.
+
+genome:
+  hg38:
+    source: "UCSC/Ensembl GRCh38"
+    note: "primary coordinate system"
+  mm10:
+    note: "for TRIP mouse data + function-transfer test (kept in mm10, not lifted 1:1)"
+
+chromatin:
+  encode: { portal: "https://www.encodeproject.org", tracks: [ATAC, DNase, H3K27ac, H3K4me1, H3K4me3, H3K9me3, H3K27me3] }
+  roadmap: { portal: "https://egg2.wustl.edu/roadmap/web_portal/" }
+  hic_compartments: { note: "A/B compartments per cell type" }
+  lad: { note: "lamina-associated domain calls per cell type" }
+
+durability_supervision:
+  trip:
+    name: "Thousands of Reporters Integrated in Parallel"
+    ref: "Akhtar et al. 2013, Cell 154(4):914-927"
+    portal: "https://trip.nki.nl"
+    note: ">27,000 integrations (mESC, two promoters); ~1000-fold expression range; LADs attenuate"
+
+safety_supervision:
+  rid:
+    name: "Retrovirus Integration Database"
+    portal: "https://rid.cancer.gov"
+    caveat: "limited to 3 human retroviruses, largely computational — supplementary source only"
+  visdb:
+    name: "Viral Integration Site Database"
+    portal: "https://bioinfo.uth.edu/VISDB"
+    ref: "NAR 2020 48:D633"
+    note: "MLV/HIV/HTLV retroviral + DNA-virus integration sites; manually curated"
+  mlv_k562_hepg2:
+    note: ">3.7M MLV-in-K562/HepG2 integration events (primary safety supervision)"
+  genotoxic_cis:   # clinically validated genotoxic common integration sites (positive controls)
+    loci: [LMO2, MECOM, EVI1, CCND2, PRDM16, HMGA2]
+
+safety_annotations:
+  cosmic:
+    name: "COSMIC Cancer Gene Census"
+    portal: "https://cancer.sanger.ac.uk/cosmic"
+    file: "cancer_gene_census.csv"     # verified filename (not Census_all.csv)
+    registration: required
+  depmap:
+    portal: "https://depmap.org"
+    file: "CRISPR_gene_effect.csv"      # verified filename
+    use: "essential-gene list"
+    registration: required
+  gnomad: { version: "v4", use: "variant density / avoid variant-disrupted target sites" }
+  gtex: { use: "ubiquitous-expression / cell-type context" }
+  gencode: { use: "gene/TSS distances" }
+
+safe_harbours:   # blind concordance anchors (Phase 1/3)
+  - { name: AAVS1, gene: PPP1R12C }
+  - { name: CCR5 }
+  - { name: Rogi1, chrom: chr1, ref: "Aznauryan et al. 2022, Cell Reports Methods (Region Optimal for Gene Insertions 1)" }
+  - { name: Rogi2, chrom: chr3, ref: "Aznauryan et al. 2022, Cell Reports Methods (Region Optimal for Gene Insertions 2)" }
+  - { name: H11 }
+  - { name: Rosa26, species: mouse }
+
+enzyme_families:
+  uniprot: { portal: "https://www.uniprot.org" }
+  pfam_interpro: { portal: "https://www.ebi.ac.uk/interpro", note: "InterPro-audited 18-family whitelist (genome-atlas v1.2.1)" }
+  verified_ids:
+    ISCro4:  { uniprot: D2TGM5, length_aa: 326, organism: "Citrobacter rodentium", pfam: [PF01548, PF02371], mechanism: DSB_FREE_TRANSEST_RECOMBINASE }
+    IS621:   { uniprot: A0A2X3M8B0, length_aa: 342, organism: "Escherichia coli" }
+    SpCas9:  { uniprot: Q99ZW2, length_aa: 1368 }
+    AsCas12a:{ uniprot: U2UMQ6 }
+
+bridge_recombinase_data:   # Paper 4 (Phase 1.5) supervision
+  pdb_structure: "8WT6"    # cryo-EM IS621 recombinase + bRNA + donor + target (pre-strand-exchange)
+  core_dinucleotide: "CT"  # verified (NOT TT); IS621 target = 9 + CT + 9 = 20 nt; ISCro4 guides = 14 nt
+  designer: { tool: bridgernadesigner, install: "pip install bridgernadesigner", scaffold: ISCro4_enhanced, org: "Arc Institute (hsulab-arc)" }
+  literature:
+    durrant_2024:   { journal: Nature,  doi: "10.1038/s41586-024-07552-4", note: "bridge RNA / IS110 / IS621 discovery" }
+    hiraizumi_2024: { journal: Nature,  doi: "10.1038/s41586-024-07570-2", note: "structural mechanism (PDB 8WT6)" }
+    perry_2025:     { journal: Science, doi: "10.1126/science.adz0276", note: "ISCro4; 72-system screen; ~20% insertion, ~82% specificity; off-target profile" }
+    pelea_2025:     { journal: Science, doi: "10.1126/science.adz1884", note: "programmable editing in human cells (labelled 'Pelea 2026' in plan; published 2025)" }
+
+literature_monitor:
+  europe_pmc: { api: "https://www.ebi.ac.uk/europepmc/webservices/rest/search" }
+  backtest_target: { name: ISPpu10, ref: "bioRxiv 2026-03-19", note: "IS110 bridge recombinase, P. putida — PEN-MONITOR back-test" }
+
+sequence_models:   # inference only (no from-scratch training); we do not claim to beat them
+  options: [ChromBPNet, Borzoi, Enformer]
+  use: "sequence -> chromatin/accessibility features per window"
+
+llm_backend:
+  ollama: { image: "ollama/ollama", endpoint: "http://localhost:11434" }
+  model: "qwen2.5:7b-instruct"   # Apache-2.0 (7B & 14B only; 3B/72B are Qwen Research Licence)
+  embedding: "nomic-embed-text"  # Apache-2.0

@@ -1,0 +1,39 @@
+# data is fetched, not committed (manifests + small curated tables only)
+data/raw/
+data/interim/
+data/features/
+data/models/
+data/out/
+*.bw
+*.bam
+*.fa
+*.fasta
+*.gz
+# large parquet artifacts (curated small tables are force-added explicitly)
+features/
+models/
+out/
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# secrets — NEVER commit
+.pen/
+secrets.env
+*.pat
+Keys.txt
+
+# os/editor
+.DS_Store
+.ipynb_checkpoints/
+.vscode/
