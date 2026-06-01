@@ -1,0 +1,8 @@
+# Phase-1 image: adds bio + genomics libs on top of the existing torch/lightgbm base image.
+# Build on the VM:  docker build -t penstack:phase1 -f docker/Dockerfile.phase1 docker
+FROM pen-stack:1.0.0
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        bedtools libcurl4-openssl-dev zlib1g-dev libbz2-dev liblzma-dev && \
+    rm -rf /var/lib/apt/lists/*
+RUN pip3 install --no-cache-dir pyBigWig pybedtools biopython pyliftover

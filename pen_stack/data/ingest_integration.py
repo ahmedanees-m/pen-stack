@@ -58,12 +58,49 @@ def density_per_bin(integ: pd.DataFrame, bin_grid: str, out_parquet: str) -> pd.
     return out
 
 
+def lafave_density(bed_gz: str, chain_file: str, bin_grid: str, out_parquet: str) -> pd.DataFrame:
+    """Cell-type-specific MLV integration density from a LaFave et al. 2014 BED (hg19 -> hg38 lift).
+
+    The LaFave K562/HepG2 MLV integration BEDs are on hg19; lift each site to hg38 with the UCSC
+    chain, then bin to 1 kb. This is the plan's >3.7M MLV-in-K562/HepG2 supervision (Bushman/NHGRI).
+    """
+    from pyliftover import LiftOver
+    lo = LiftOver(chain_file)
+    sites = []
+    with __import__("gzip").open(bed_gz, "rt") as fh:
+        for line in fh:
+            if line.startswith("track") or not line.strip():
+                continue
+            f = line.split("\t")
+            chrom, start = f[0], int(f[1])
+            conv = lo.convert_coordinate(chrom, start)
+            if conv:
+                nc, npos = conv[0][0], conv[0][1]
+                if nc in MAIN_CHROMS:
+                    sites.append((nc, npos))
+    integ = pd.DataFrame(sites, columns=["chrom", "pos"])
+    print(f"lifted {len(integ)} / sites to hg38")
+    out = density_per_bin(integ, bin_grid, out_parquet)
+    out = out.rename(columns={"integ_density": "integ_mlv_density",
+                              "integ_log_density": "integ_mlv_log_density"})
+    out.to_parquet(out_parquet, index=False)
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--mode", choices=["visdb", "lafave"], default="visdb")
     ap.add_argument("--visdb-dir", default="/data/external/visdb")
+    ap.add_argument("--lafave-bed", default=None)
+    ap.add_argument("--chain", default="/data/external/hg19ToHg38.over.chain.gz")
     ap.add_argument("--bin-grid", default="/data/features/bin_grid_1kb.parquet")
     ap.add_argument("--out", default="/data/features/integration_density.parquet")
     a = ap.parse_args()
+    if a.mode == "lafave":
+        out = lafave_density(a.lafave_bed, a.chain, a.bin_grid, a.out)
+        nz = int((out["integ_mlv_density"] > 0).sum())
+        print(f"MLV density: bins={len(out)} nonzero={nz} max={int(out['integ_mlv_density'].max())} -> {a.out}")
+        return
     integ = load_visdb(a.visdb_dir)
     print(f"loaded {len(integ)} integration sites; by virus: {integ['virus'].value_counts().to_dict()}")
     out = density_per_bin(integ, a.bin_grid, a.out)
