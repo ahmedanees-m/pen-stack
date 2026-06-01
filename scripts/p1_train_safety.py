@@ -10,7 +10,7 @@ import json
 import pickle
 from pathlib import Path
 
-from pen_stack.wgenome.features import assemble_matrix
+from pen_stack.wgenome.features import assemble_matrix, resolve_integration
 from pen_stack.wgenome.safety import train_safety
 
 
@@ -22,11 +22,10 @@ def main() -> None:
     ap.add_argument("--label", default="genotoxic_cis")
     a = ap.parse_args()
 
-    integ = Path(a.feat_dir) / f"integration_{a.ct}.parquet"
     m = assemble_matrix(
         f"{a.feat_dir}/chromatin_{a.ct}.parquet",
         f"{a.feat_dir}/safety_annot.parquet",
-        str(integ) if integ.exists() else None,
+        resolve_integration(a.feat_dir, a.ct),
     )
     res = train_safety(m, label=a.label)
 

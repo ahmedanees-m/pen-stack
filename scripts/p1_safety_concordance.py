@@ -8,7 +8,6 @@ score rank validated genotoxic CIS (LMO2/MECOM/CCND2/PRDM16/HMGA2) ABOVE validat
 import argparse
 import gzip
 
-import numpy as np
 import pandas as pd
 
 from pen_stack.wgenome.features import assemble_matrix

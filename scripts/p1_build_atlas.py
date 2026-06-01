@@ -11,9 +11,8 @@ import gzip
 import json
 from pathlib import Path
 
-import pandas as pd
 
-from pen_stack.wgenome.features import assemble_matrix
+from pen_stack.wgenome.features import assemble_matrix, resolve_integration
 from pen_stack.wgenome.writability import build_writability, load_pickle
 
 SAFE_GENES = {"PPP1R12C": "AAVS1", "CCR5": "CCR5", "CLYBL": "CLYBL"}
@@ -43,10 +42,9 @@ def main():
     ap.add_argument("--gtf", default="/data/raw/gencode.v46.basic.gtf.gz")
     a = ap.parse_args()
 
-    integ = Path(a.feat_dir) / f"integration_{a.ct}.parquet"
     m = assemble_matrix(f"{a.feat_dir}/chromatin_{a.ct}.parquet",
                         f"{a.feat_dir}/safety_annot.parquet",
-                        str(integ) if integ.exists() else None)
+                        resolve_integration(a.feat_dir, a.ct))
     safety = load_pickle(f"{a.out_dir}/safety_{a.ct}.pkl")
     dur = load_pickle(f"{a.out_dir}/durability.pkl")
 

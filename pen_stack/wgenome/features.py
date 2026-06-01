@@ -63,6 +63,17 @@ def assemble_matrix(chromatin_parquet: str, safety_parquet: str,
     return m
 
 
+def resolve_integration(feat_dir: str, ct: str) -> str | None:
+    """Integration-feature parquet for a cell type: prefer the cell-type-specific MLV set
+    (LaFave K562/HepG2); fall back to the cell-type-agnostic VISDB retroviral-propensity track so a
+    cell type without its own integration assay (e.g. CD34+ HSPC) still gets an integration feature."""
+    ct_specific = Path(feat_dir) / f"integration_{ct}.parquet"
+    if ct_specific.exists():
+        return str(ct_specific)
+    fallback = Path(feat_dir) / "integration_density.parquet"
+    return str(fallback) if fallback.exists() else None
+
+
 def feature_columns(df: pd.DataFrame) -> list[str]:
     """The model feature set: chromatin marks + log-distances + any integration features."""
     feats = [c for c in CHROMATIN_TRACKS if c in df.columns]
