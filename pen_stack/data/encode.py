@@ -21,6 +21,8 @@ _PREF_OUTPUT = [
 
 def _search(params: dict) -> list[dict]:
     r = requests.get(f"{ENCODE}/search/", params=params, headers=HEADERS, timeout=60)
+    if r.status_code == 404:
+        return []   # ENCODE returns 404 for zero-result searches with some param combos
     r.raise_for_status()
     return r.json().get("@graph", [])
 
@@ -70,11 +72,12 @@ DEFAULT_PANEL = [
 ]
 
 
-def resolve_panel(biosample: str, panel=DEFAULT_PANEL) -> dict[str, dict]:
-    """Return {track_name: file_record} for the panel, skipping assays with no released bigWig."""
+def resolve_panel(biosample: str, panel=DEFAULT_PANEL, assembly: str = "GRCh38") -> dict[str, dict]:
+    """Return {track_name: file_record} for the panel, skipping assays with no released bigWig.
+    Partial panels are returned as-is (e.g. a cell type lacking some histone marks) — graceful."""
     out = {}
     for assay, target in panel:
-        rec = find_bigwig(biosample, assay, target)
+        rec = find_bigwig(biosample, assay, target, assembly=assembly)
         name = target or assay.split("-")[0].lower()   # H3K27ac / atac / dnase
         if rec:
             out[name] = rec
