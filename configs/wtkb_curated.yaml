@@ -1,0 +1,165 @@
+# PEN-STACK v3.0 — Writer-Targeting Knowledge Base (WT-KB), curated source table (Phase 0, Step 0.2).
+# The artifact that does NOT exist in any prior repo: per-family targeting requirements + reachability tier.
+# Every target_site_spec / guide_architecture / reachability_constraints value carries a DOI in key_dois.
+# IDs and DOIs independently verified 2026-06-01 (see Final_Part_v3.0/VERIFICATION_REPORT_v3.0.md).
+# Tiers: Tier1_scannable | Tier2_context_candidate | Tier3_not_predictable.
+
+bridge_IS110:
+  family: bridge_IS110
+  representative_system: ISCro4
+  uniprot: D2TGM5
+  mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+  pfam_signature: [PF01548, PF02371]
+  targeting_modality: RNA-guided
+  target_site_spec: "bipartite ~14 nt target with central CT dinucleotide core; target and donor loops reprogrammable independently"
+  guide_architecture: "bridge RNA: target-binding loop (LTG/RTG) + donor-binding loop (LDG/RDG)"
+  cargo_mechanism: intrinsic
+  cargo_capacity_bp: 5000
+  dsb_free: true
+  length_aa: 326
+  human_cell_activity: "insertion ~20%, specificity ~82% in human cells (Perry 2025, science.adz0276); large rearrangements (Pelea 2025, science.adz1884)"
+  deliverability: AAV
+  reachability_tier: Tier1_scannable
+  reachability_constraints: "scan hg38 for bipartite core match around the CT dinucleotide; both loops reprogrammable; sites with <=2 mismatches are off-target risk (Perry 2025)"
+  confidence: measured
+  key_dois: ["10.1126/science.adz0276", "10.1126/science.adz1884", "10.1038/s41586-024-07552-4"]
+
+seek_IS1111:
+  family: seek_IS1111
+  representative_system: IS1111-family seekRNA recombinase
+  uniprot: null
+  mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+  pfam_signature: [PF01548, PF02371]
+  targeting_modality: RNA-guided
+  target_site_spec: "bipartite RNA-specified target/donor (seekRNA); IS1111 subfamily of the IS110 superfamily; bridge-RNA mechanism general across the family"
+  guide_architecture: "seekRNA bipartite guide (target-binding + donor-binding segments), analogous to the IS110 bridge RNA"
+  cargo_mechanism: intrinsic
+  cargo_capacity_bp: 5000
+  dsb_free: true
+  length_aa: null
+  human_cell_activity: "not measured in human cells (bacterial characterisation)"
+  deliverability: AAV
+  reachability_tier: Tier1_scannable
+  reachability_constraints: "scan hg38 for the seekRNA-specified bipartite target; mechanism computationally identified across diverse IS110/IS1111 members (Durrant 2024)"
+  confidence: inferred
+  key_dois: ["10.1038/s41586-024-07552-4"]
+
+CAST_VK:
+  family: CAST_VK
+  representative_system: ShCAST (Scytonema hofmanni, Cas12k)
+  uniprot: null
+  mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+  pfam_signature: [PF11426]   # TnsC; CAST V-K lacks TnsA — detect via TnsB+TnsC+Cas12k
+  targeting_modality: RNA-guided
+  target_site_spec: "Cas12k sgRNA protospacer + PAM; insertion ~60-66 bp DOWNSTREAM of the protospacer (fixed distance)"
+  guide_architecture: "single guide RNA (Cas12k); Tn7-like TnsB/TnsC + TniQ recruitment"
+  cargo_mechanism: fixed-donor
+  cargo_capacity_bp: 10000
+  dsb_free: true
+  length_aa: null
+  human_cell_activity: "low in human cells (efficient in E. coli, up to ~80%); untargeted-integration tendency reported"
+  deliverability: mRNA-RNP
+  reachability_tier: Tier2_context_candidate
+  reachability_constraints: "protospacer + PAM + fixed +60-66 bp insertion distance + recruitment context; candidate site — requires experimental validation"
+  confidence: measured
+  key_dois: ["10.1126/science.aax9181", "10.1038/s41586-022-05059-4"]
+
+serine_integrase_Bxb1:
+  family: serine_integrase
+  representative_system: Bxb1
+  uniprot: null
+  mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+  pfam_signature: [PF07508]
+  targeting_modality: fixed-att
+  target_site_spec: "attB x attP recombination; native genomic pseudo-att sites match the integrase specificity profile; installed attB/P sites are deterministic"
+  guide_architecture: "none (protein-encoded specificity; no guide RNA)"
+  cargo_mechanism: fixed-donor
+  cargo_capacity_bp: 50000
+  dsb_free: true
+  length_aa: 500
+  human_cell_activity: "high at installed att sites in human cells; used in eePASSIGE / landing-pad strategies"
+  deliverability: mRNA-RNP
+  reachability_tier: Tier2_context_candidate
+  reachability_constraints: "scan for native pseudo-att against the Bxb1 specificity profile (candidate); an INSTALLED att collapses to Tier 1 (deterministic) via PE/landing pad"
+  confidence: measured
+  key_dois: ["10.1128/microbiolspec.MDNA3-0046-2014"]
+
+PE_integrase_PASTE:
+  family: PE_integrase
+  representative_system: PASTE (Cas9-nickase + RT + serine integrase)
+  uniprot: null
+  mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+  pfam_signature: [PF07508, PF16595]   # serine integrase + Cas9 PAM-interacting (fusion)
+  targeting_modality: PE-installable
+  target_site_spec: "pegRNA installs an attB landing site at the nicked locus, then the serine integrase inserts the attP-cargo; insertions demonstrated up to ~36 kb"
+  guide_architecture: "pegRNA (installs att) + integrase attP donor"
+  cargo_mechanism: templated
+  cargo_capacity_bp: 36000
+  dsb_free: true
+  length_aa: null
+  human_cell_activity: "integration in human cell lines, primary T cells, and non-dividing hepatocytes (Yarnall 2023)"
+  deliverability: mRNA-RNP
+  reachability_tier: Tier1_scannable
+  reachability_constraints: "Tier-1 via PE-installability check (can a pegRNA be efficiently designed at the locus?), bounded by prime-editing context; after install the att step is deterministic"
+  confidence: measured
+  key_dois: ["10.1038/s41587-022-01527-4"]
+
+Cas9_SpCas9:
+  family: Cas9
+  representative_system: SpCas9
+  uniprot: Q99ZW2
+  mechanism_bucket: DSB_NUCLEASE
+  pfam_signature: [PF13395, PF18541, PF16595]
+  targeting_modality: RNA-guided
+  target_site_spec: "20 nt protospacer + NGG PAM; blunt DSB ~3 bp upstream of PAM (for completeness; a cutter, not a DSB-free writer)"
+  guide_architecture: "single guide RNA (crRNA:tracrRNA or sgRNA)"
+  cargo_mechanism: templated
+  cargo_capacity_bp: null
+  dsb_free: false
+  length_aa: 1368
+  human_cell_activity: "high (clinical); DSB-dependent HDR/NHEJ for insertion"
+  deliverability: split-AAV
+  reachability_tier: Tier1_scannable
+  reachability_constraints: "scan for 20 nt protospacer + NGG PAM; insertion requires a DSB + HDR template (not DSB-free); included for completeness/comparison"
+  confidence: measured
+  key_dois: ["10.1126/science.1225829", "10.1016/j.cell.2014.02.001"]
+
+Cas12a_AsCas12a:
+  family: Cas12a
+  representative_system: AsCas12a
+  uniprot: U2UMQ6
+  mechanism_bucket: DSB_NUCLEASE
+  pfam_signature: [PF18516]
+  targeting_modality: RNA-guided
+  target_site_spec: "23 nt protospacer + 5' TTTV PAM; staggered DSB distal to PAM (for completeness)"
+  guide_architecture: "single crRNA (no tracrRNA)"
+  cargo_mechanism: templated
+  cargo_capacity_bp: null
+  dsb_free: false
+  length_aa: 1307
+  human_cell_activity: "high; compact, single-RNA; DSB-dependent"
+  deliverability: AAV
+  reachability_tier: Tier1_scannable
+  reachability_constraints: "scan for 5' TTTV PAM + 23 nt protospacer; DSB-dependent insertion; completeness/comparison entry"
+  confidence: measured
+  key_dois: ["10.1016/j.cell.2015.09.038"]
+
+TnpB_Fanzor:
+  family: TnpB_Fanzor
+  representative_system: ISDra2 TnpB / Fanzor
+  uniprot: Q7DF80
+  mechanism_bucket: DSB_NUCLEASE
+  pfam_signature: [PF07282]
+  targeting_modality: RNA-guided
+  target_site_spec: "omega/reRNA-guided; short TAM (transposon-associated motif); compact ancestral Cas12 relative"
+  guide_architecture: "omegaRNA (TnpB) / reRNA (Fanzor)"
+  cargo_mechanism: templated
+  cargo_capacity_bp: null
+  dsb_free: false
+  length_aa: 408
+  human_cell_activity: "demonstrated in human cells (engineered TnpB/Fanzor); modest"
+  deliverability: AAV
+  reachability_tier: Tier3_not_predictable
+  reachability_constraints: "TAM + omegaRNA target; insertion preferences not yet genome-scale predictable — flagged not-yet-predictable"
+  confidence: inferred
+  key_dois: ["10.1126/science.abj6856"]
