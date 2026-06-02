@@ -1,0 +1,57 @@
+# PEN-STACK v3.0 — Paper 3 (The Write Planner) pre-registered success criteria.
+# SHA-locked. The two-stratum, goal-conditioned recovery@k benchmark (Step 3.5) is the paper-defining,
+# gating artifact; the panel (data/benchmark_panel.csv) is FROZEN here before any tuning so non-obvious
+# entries cannot be reverse-fit.
+paper: 3
+title: "The Write Planner: end-to-end inverse design of genomic writes"
+prepared: "2026-06-02"
+
+edit_intent:
+  enum: [safe_harbour_insertion, knock_in_with_disruption, high_durability_insertion,
+         regulatory_excision, repeat_excision]
+  load_bearing: true        # target_gene_sign flips whether hitting the target gene is rewarded/penalised
+  success:
+    intent_changes_ranking: true   # in-gene site ranks #1 for knock-in, low for safe-harbour (TRAC verified)
+
+benchmark:
+  panel_file: data/benchmark_panel.csv
+  strata:
+    control: [AAVS1, CCR5, CLYBL]               # safe-harbour writes; baseline-recoverable
+    discriminating: [TRAC, ALB, BCL11A, FXN, PDCD1, B2M, HBG1]   # therapeutic-into-functional-locus
+  scoring_protocol: "goal + edit_intent only; precise site held out; recovery@k over a fixed candidate pool (panel genes + decoy genes); baseline = intent-blind safety ranker over the same pool"
+  k: 10
+  success_PAPER_DEFINING:
+    discriminating_planner_beats_baseline: true
+    discriminating_gap_ci_excludes_zero: true   # bootstrap 95% CI of (planner - baseline) recovery > 0
+    control_planner_not_worse_than_baseline: true
+  open_risk: "discriminating N=7 — small; McNemar exact p reported alongside the bootstrap CI"
+
+cargo_delivery:
+  success:
+    size_deliverability_correct: true           # ISCro4 326aa + 3.2kb cassette -> single AAV
+    offtarget_attached_for_bridge_seek: "Phase-1.5 hook (pending until 1.5)"
+
+forward_hypotheses:
+  success:
+    concrete_site_writer_construct: true
+    registered_before_submission: true
+    numeric_fields_from_models_not_llm: true
+    ranking_rationale_cited: true
+
+agent:
+  success:
+    no_fabrication: true        # every numeric field in an agent plan == the direct tool call
+    plan_equivalence: true      # agent top plan == plan_write() for the same goal
+    refuses_clinical_directives: true
+
+locked_files:
+  - prereg/paper3.yaml
+  - data/benchmark_panel.csv
+  - configs/intent_weights.yaml
+  - configs/delivery_rules.yaml
+
+notes: >
+  Wet-lab confirmation (Step 3.7) is a strictly additive bonus and gates nothing. The benchmark is
+  adversarial to the baseline by construction: an intent-blind safety ranker keeps proposing safe
+  harbours and misses therapeutic-into-functional-locus writes, which the intent-conditioned Planner
+  recovers. Citations in the panel were resolved against Europe PMC primary sources.
