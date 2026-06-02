@@ -37,7 +37,7 @@ def available(cfg: dict | None = None, timeout: int = 3) -> bool:
         return False
 
 
-def phrase(facts: str, cfg: dict | None = None, timeout: int = 60) -> str | None:
+def phrase(facts: str, cfg: dict | None = None, timeout: int = 180) -> str | None:
     """Rephrase grounded facts via Ollama. Returns None on any failure (caller keeps the tool answer)."""
     cfg = cfg or load_llm_config()
     base = cfg.get("api_base", "http://localhost:11434")
