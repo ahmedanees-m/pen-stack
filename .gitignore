@@ -4,6 +4,7 @@ data/interim/
 data/features/
 data/models/
 data/out/
+data/external/
 *.bw
 *.bam
 *.fa
