@@ -10,8 +10,8 @@ and durably write new DNA — and **which enzyme** can write it there.*
 [![CI](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-37e6e0.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-3.0.0a3-3dffa2.svg)](CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-46%20passing-3dffa2.svg)](tests/)
+[![Version](https://img.shields.io/badge/version-3.0.0a4-3dffa2.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-63%20passing-3dffa2.svg)](tests/)
 [![Code style: ruff](https://img.shields.io/badge/lint-ruff-FFC857.svg)](https://github.com/astral-sh/ruff)
 [![Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Pre-registered](https://img.shields.io/badge/validation-pre--registered-ff5d6c.svg)](prereg/)
@@ -63,9 +63,10 @@ bulk-downloadable public data and validated against an honest baseline before re
 | 🟣 **Writable Genome** (flagship) | `pen_stack.wgenome` | learned per-locus safety × durability × reachability | ✅ **Paper 1** |
 | 🔵 **Writer Atlas** (companion) | `pen_stack.atlas`, `.mech`, `.score` | cross-family enzyme catalogue + Writer-Targeting KB | ✅ **Paper 2** |
 | 🔗 **Cross-link** | `pen_stack.atlas.crosslink` | bidirectional writer ↔ locus queries | ✅ Paper 2 |
-| ⚙️ **Write Planner** (engine) | `pen_stack.planner` | inverse design: destination × writer × cargo × delivery | 🚧 Paper 3 |
+| ⚙️ **Write Planner** (engine) | `pen_stack.planner` | inverse design: destination × writer × cargo × delivery, `edit_intent`-conditioned | ✅ **Paper 3** |
+| 🤖 **Agentic platform** | `pen_stack.agent` | goal → cited, auditable plan; MCP server; one-command deploy | ✅ Paper 3 |
 | 🌉 **Bridge off-target engine** | `pen_stack.bridge` | "CRISPOR for bridge recombinases" (ships first) | 🚧 Paper 4 |
-| 🛰️ **Platform services** | `monitor`, `rag`, `agent`, `ui`, `server` | living-DB, grounded RAG, agent/MCP, Streamlit UI, REST API | ✅ monitor / rag / ui / server · 🚧 agent |
+| 🛰️ **Platform services** | `monitor`, `rag`, `ui`, `server` | living-DB, grounded RAG, Streamlit UI, REST API | ✅ |
 
 ### The three learned layers (the flagship — Paper 1)
 
@@ -153,8 +154,17 @@ pen-stack/
 │   │   ├── qa.py                     #    numbers from tool calls; claims cited; clinical directives refused
 │   │   ├── index.py                  #    cited fact-card retriever over the atlas/WT-KB
 │   │   └── llm.py                    #    optional Ollama/Qwen phrasing layer (presentation only)
-│   ├── agent/guardrails.py           # 🆕 grounded / cited / defer-to-tools / decision-support contract
-│   ├── server/api.py                 # 🆕 FastAPI REST (atlas, crosslink, writable, ask)
+│   ├── planner/                      # ⚙️ Write Planner (Paper 3) — inverse design
+│   │   ├── optimize.py               #    edit_intent-conditioned optimiser (load-bearing target_gene_sign)
+│   │   ├── cargo.py  delivery.py     #    donor design (insulators/polyA/size) + delivery rule table
+│   │   ├── pipeline.py  report.py    #    plan_write() -> ranked, traceable plans + human-readable report
+│   ├── agent/                        # 🤖 agentic platform (Paper 3)
+│   │   ├── tools.py                  #    5 validated tools + Ollama tool-calling schemas
+│   │   ├── orchestrator.py           #    goal -> cited plan (tool-calling loop, auditable trace, refusals)
+│   │   ├── mcp_server.py             #    MCP server (fastmcp) — tools for any external agent
+│   │   └── guardrails.py             #    grounded / cited / defer-to-tools / decision-support contract
+│   ├── validate/                     #    paper3_benchmark.py · forward_hypotheses.py · agent_eval.py
+│   ├── server/api.py                 # 🆕 FastAPI REST (atlas, crosslink, writable, plan, ask)
 │   ├── ui/app.py                     # 🛰️ Streamlit platform UI (10 pages: Writable Genome + Writer Atlas + Ask + …)
 │   ├── data/                         # ingestion (all public sources)
 │   │   ├── genome.py  encode.py      #    hg38 grid · ENCODE REST resolver (no hard-coded accessions)
@@ -162,8 +172,8 @@ pen-stack/
 │   │   ├── ingest_safety_annot.py    #    COSMIC + DepMap + GENCODE → per-bin safety distances
 │   │   ├── ingest_integration.py     #    LaFave MLV (hg19→hg38) + VISDB integration density
 │   │   └── ingest_trip.py            #    TRIP durability supervision (GSE49806/49807, mm9)
-│   ├── planner/  bridge/             #    Papers 3–4 (in progress)
-│   └── cli.py                        #    unified CLI (info / atlas / writable / crosslink / monitor)
+│   ├── bridge/                       #    bridge off-target engine (Paper 4, Phase 1.5 — in progress)
+│   └── cli.py                        #    unified CLI (info / atlas / writable / crosslink / plan / monitor)
 ├── scripts/                          # reproducible pipeline drivers
 │   ├── p1_*.py                       #    Paper-1: train safety, build durability/atlas, export, validate
 │   └── p2_build_atlas.py             #    🆕 Paper-2: expand → mechanism → therapeutic readiness
@@ -224,7 +234,15 @@ pen-stack atlas --family bridge_IS110            # systems in a family
 export PEN_ATLAS_DIR=/path/to/atlas_release
 pen-stack writable --gene CCR5 --ct k562         # rank writable loci near a gene
 pen-stack crosslink --chrom chr19 --bin 55090    # which writers reach AAVS1
+pen-stack plan --gene TRAC --intent knock_in_with_disruption --cargo-bp 2000   # inverse-design plans
 pen-stack monitor --back-test                    # PEN-MONITOR living-database scan (surfaces ISPpu10)
+```
+
+**Self-host the whole platform (API + UI + Agent + MCP + local LLM), one command:**
+```bash
+docker compose up -d
+docker compose exec ollama ollama pull qwen2.5:7b-instruct   # first run only
+# UI :8501 (incl. the Agent page) · API :8000 (/plan, /ask) · MCP :8765 — see docs/DEPLOY.md
 ```
 
 **REST API & web app:**
@@ -272,7 +290,7 @@ penctl run python scripts/p1_build_atlas.py --ct k562
 |---|---|---|---|
 | **1** (flagship) | *The Writable Genome: a predictive, writer-aware atlas of safe & durable insertion sites* | 1 | ✅ atlas + validation complete |
 | **2** (platform) | *PEN-STACK: unified open infrastructure for non-destructive genome writing* | 2 | ✅ Writer Atlas + cross-link + services complete |
-| **3** (capstone) | *The Write Planner: end-to-end inverse design of genomic writes* | 3 | 🚧 next |
+| **3** (capstone) | *The Write Planner: end-to-end inverse design of genomic writes* | 3 | ✅ Planner + recovery@k benchmark + agent complete |
 | **4** (beachhead) | *Genome-wide off-target prediction for RNA-guided bridge recombinases* | 1.5 | 🚧 ships first |
 
 Per-phase build records: [`Final_Part_v3.0/phase_*/`](https://github.com/ahmedanees-m/pen-stack) (execution
@@ -287,7 +305,7 @@ summaries + build logs). Data releases: **Zenodo** (Paper 1 atlas; Paper 2 Write
   author  = {Mahaboob Ali, Anees Ahmed},
   title   = {PEN-STACK: open infrastructure for genome writing (The Writable Genome + Writer Atlas)},
   year    = {2026},
-  version = {3.0.0a3},
+  version = {3.0.0a4},
   url     = {https://github.com/ahmedanees-m/pen-stack}
 }
 ```

@@ -3,6 +3,33 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [3.0.0a4] — 2026-06-02 — Phase 3 (The Write Planner + agentic platform → Paper 3, CAPSTONE)
+
+Inverse design + the paper-defining recovery@k benchmark + the agentic platform.
+
+### Added
+- **Inverse-design optimiser** (`pen_stack/planner/optimize.py`, `configs/intent_weights.yaml`): an
+  `edit_intent`-conditioned objective whose `target_gene_sign` flips whether hitting the target gene is
+  penalised or rewarded — the same TRAC site ranks #1 (knock-in) vs #101 (safe-harbour).
+- **Cargo/delivery** (`planner/cargo.py`, `planner/delivery.py`): donor spec + size check + delivery rule
+  table; bridge/seek off-target via an optional Phase-1.5 hook (pending until 1.5).
+- **End-to-end Planner** (`planner/pipeline.py`, `report.py`, `/plan` API, `pen-stack plan` CLI): ranked,
+  fully traceable plans with per-field provenance.
+- **Two-stratum recovery@k benchmark** (`validate/paper3_benchmark.py`, `data/benchmark_panel.csv`,
+  `prereg/paper3.yaml`): **discriminating stratum planner 1.00 vs baseline 0.00, McNemar p=0.0156, gap CI
+  [1.0,1.0] excludes zero; control tie 0.67=0.67**. Panel cited to Europe-PMC-verified sources.
+- **Forward hypotheses** (`validate/forward_hypotheses.py`): date-stamped novel F8/SERPINA1/CISH/HBA1
+  proposals + grounded cited ranking.
+- **Agentic platform**: `agent/tools.py` + `agent/orchestrator.py` (Ollama tool-calling, auditable trace,
+  no-fabrication, refusals), `agent/mcp_server.py` (fastmcp), `docker-compose.yml` + `docker/ui.Dockerfile`
+  + Streamlit **Agent** page + `docs/DEPLOY.md`/`docs/MCP.md`, `validate/agent_eval.py`.
+- Shipped `data/curated/gene_coords.parquet` (GENCODE-derived) so tools work in any container.
+
+### Notes
+- **Phase 3 COMPLETE** — pre-registered criteria met (`prereg/paper3.yaml` + `SHA256_LOCK_phase3.json`).
+  Agent verified on the VM in LLM mode (no-fabrication + plan-equivalence + refusals all pass). 63 tests
+  green; ruff clean. Wet-lab (3.7) skipped — non-gating. Bridge off-target hook completes with Phase 1.5.
+
 ## [3.0.0a3] — 2026-06-02 — Phase 2 (Writer Atlas + Unified Stack → Paper 2)
 
 The broad, cross-family Writer Atlas, the writer↔locus cross-link, and the installable platform.
