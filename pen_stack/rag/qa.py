@@ -39,7 +39,7 @@ def _family_in(question: str) -> str | None:
     return None
 
 
-def answer(question: str, ct: str = "k562") -> dict:
+def answer(question: str, ct: str = "k562", use_llm: bool = False) -> dict:
     refusal = out_of_scope(question)
     if refusal:
         return {"refused": True, "answer": refusal, "citations": [], "provenance": [],
@@ -95,4 +95,11 @@ def answer(question: str, ct: str = "k562") -> dict:
 
     out = {"refused": False, "answer": " ".join(parts), "citations": citations,
            "provenance": provenance, "disclaimer": DISCLAIMER}
-    return enforce_grounded(out)
+    out = enforce_grounded(out)
+    # optional LLM phrasing — presentation only; numbers/citations stay tool-derived (additive field)
+    if use_llm:
+        from pen_stack.rag.llm import phrase
+        phrased = phrase(out["answer"])
+        if phrased:
+            out["answer_phrased"] = phrased
+    return out
