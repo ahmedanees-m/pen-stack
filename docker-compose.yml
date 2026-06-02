@@ -1,0 +1,43 @@
+# PEN-STACK v3.0 — one-command self-hostable platform (Phase 3, Step 3.11).
+# Brings up the local LLM (Ollama/Qwen2.5, free + open), the REST API, the Streamlit UI (with the Agent
+# chat page), and the MCP server. First run: `docker compose exec ollama ollama pull qwen2.5:7b-instruct`.
+# Everything runs locally — no paid API required.
+services:
+  ollama:
+    image: ollama/ollama:latest
+    command: serve
+    ports: ["11434:11434"]
+    volumes: ["ollama:/root/.ollama"]
+    deploy:
+      resources:
+        reservations:
+          devices: [{capabilities: ["gpu"]}]
+
+  api:
+    build: {context: ., dockerfile: docker/Dockerfile}
+    command: uvicorn pen_stack.server.api:app --host 0.0.0.0 --port 8000
+    environment: {PYTHONPATH: /work}
+    working_dir: /work
+    volumes: ["./:/work", "./data:/work/data"]
+    ports: ["8000:8000"]
+    depends_on: [ollama]
+
+  ui:
+    build: {context: ., dockerfile: docker/ui.Dockerfile}
+    command: streamlit run pen_stack/ui/app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+    environment: {PYTHONPATH: /work, PEN_API: "http://api:8000", PEN_OLLAMA: "http://ollama:11434"}
+    volumes: ["./:/work"]
+    ports: ["8501:8501"]
+    depends_on: [api, ollama]
+
+  mcp:
+    build: {context: ., dockerfile: docker/Dockerfile}
+    command: python -m pen_stack.agent.mcp_server
+    environment: {PYTHONPATH: /work}
+    working_dir: /work
+    volumes: ["./:/work"]
+    ports: ["8765:8765"]
+    depends_on: [ollama]
+
+volumes:
+  ollama: {}

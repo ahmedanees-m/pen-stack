@@ -19,6 +19,8 @@ _REFUSE_PATTERNS = [
     r"\bshould i (treat|inject|dose|administer|give)\b",
     r"\b(diagnos|prescrib|dosage|dosing)\w*\b",
     r"\b(my|this|the) patient\b",
+    r"\bdose\b.{0,40}\b(child|patient|human|person|kid|baby|infant)\b",  # dosing for a person = clinical
+    r"\b(what|which) dose\b",                                            # dosing questions are clinical
     r"\bis it safe (to|for) (a |the |my )?(patient|human|person|child)\b",
     r"\bclinical (decision|recommendation|advice) for\b",
 ]

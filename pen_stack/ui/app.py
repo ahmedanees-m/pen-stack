@@ -147,7 +147,8 @@ st.sidebar.markdown("## 🧬 PEN-STACK")
 st.sidebar.caption("The Writable Genome · v3.0")
 page = st.sidebar.radio("Navigate", ["Overview", "Forward query", "Site finder (inverse)",
                                      "Atlas browser", "Validation", "Cross-cell-type",
-                                     "Writer Atlas", "Bridge design", "Write Planner", "Ask (RAG)"])
+                                     "Writer Atlas", "Bridge design", "Write Planner", "Ask (RAG)",
+                                     "Agent"])
 _available_cts = sorted(p.stem.replace("atlas_", "") for p in DATA.glob("atlas_*.parquet")
                         if p.stem.replace("atlas_", "") in CT_LABEL) or ["k562"]
 ct = st.sidebar.selectbox("Cell type", _available_cts, format_func=lambda c: CT_LABEL.get(c, c.upper()))
@@ -443,6 +444,28 @@ elif page == "Ask (RAG)":
                 st.write(", ".join(a["citations"]))
         st.caption(a.get("disclaimer", ""))
 
+elif page == "Agent":
+    st.markdown("### Agent — *natural-language goal → cited, auditable write plan*")
+    st.caption("The PEN-STACK agent orchestrates every validated tool. It obtains numbers ONLY from tool "
+               "calls (no fabrication), refuses clinical directives, and logs an auditable trace.")
+    goal = st.text_input("Goal", "Knock a CAR into TRAC, disrupting the TCR for allogeneic CAR-T.")
+    if st.button("Plan with agent", type="primary"):
+        from pen_stack.agent.orchestrator import run_agent
+        with st.spinner("Agent calling validated tools…"):
+            res = run_agent(goal)
+        if res.get("refused"):
+            st.markdown(f'<div class="verdict v-no">{res["plan"]}</div>', unsafe_allow_html=True)
+        else:
+            mode = "LLM tool-calling" if res.get("llm") else "deterministic fallback (no LLM reachable)"
+            st.caption(f"mode: {mode}")
+            st.markdown(f'<div class="card">{res["plan"]}</div>', unsafe_allow_html=True)
+            if res.get("trace"):
+                st.markdown("##### Auditable trace (every number traces to a tool call)")
+                for i, step in enumerate(res["trace"], 1):
+                    with st.expander(f"step {i}: {step['tool']}({step['args']})"):
+                        st.json(step["result"])
+        st.caption(res.get("disclaimer", ""))
+
 st.markdown("---")
-st.caption("PEN-STACK v3.0 · The Writable Genome + Writer Atlas + platform services · decision-support, "
+st.caption("PEN-STACK v3.0 · The Writable Genome + Writer Atlas + Write Planner + agent · decision-support, "
            "not a clinical directive · every score traceable to public data + a pre-registered model.")
