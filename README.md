@@ -10,8 +10,8 @@ and durably write new DNA — and **which enzyme** can write it there.*
 [![CI](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-37e6e0.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-3.0.0a4-3dffa2.svg)](CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-63%20passing-3dffa2.svg)](tests/)
+[![Version](https://img.shields.io/badge/version-3.0.0a5-3dffa2.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-68%20passing-3dffa2.svg)](tests/)
 [![Code style: ruff](https://img.shields.io/badge/lint-ruff-FFC857.svg)](https://github.com/astral-sh/ruff)
 [![Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Pre-registered](https://img.shields.io/badge/validation-pre--registered-ff5d6c.svg)](prereg/)
@@ -54,6 +54,9 @@ writability(locus) = safety  ×  durability  ×  reachability
 > therapeutic-into-functional-locus writes at **recovery@10 = 1.00 vs 0.00** for an intent-blind baseline
 > (McNemar p = 0.0156; bootstrap gap CI **[1.0, 1.0]** excludes zero), tying on safe-harbour controls — and
 > a tool-using **agent** turns a goal into a cited, auditable plan that provably never fabricates a number.
+> **Paper 4 (Bridge off-target engine):** a genome-wide off-target predictor for RNA-guided bridge
+> recombinases whose position-weight model beats a naïve Hamming ranking **AUROC 1.00 vs 0.59** (mismatch
+> *position* governs recombination) — shipped as `pen-bridge`, wrapping the Arc BridgeRNADesigner.
 
 ---
 
@@ -69,7 +72,7 @@ bulk-downloadable public data and validated against an honest baseline before re
 | 🔗 **Cross-link** | `pen_stack.atlas.crosslink` | bidirectional writer ↔ locus queries | ✅ Paper 2 |
 | ⚙️ **Write Planner** (engine) | `pen_stack.planner` | inverse design: destination × writer × cargo × delivery, `edit_intent`-conditioned | ✅ **Paper 3** |
 | 🤖 **Agentic platform** | `pen_stack.agent` | goal → cited, auditable plan; MCP server; one-command deploy | ✅ Paper 3 |
-| 🌉 **Bridge off-target engine** | `pen_stack.bridge` | "CRISPOR for bridge recombinases" (ships first) | 🚧 Paper 4 |
+| 🌉 **Bridge off-target engine** | `pen_stack.bridge` | "CRISPOR for bridge recombinases" — genome-wide off-target + fold QC | ✅ **Paper 4** |
 | 🛰️ **Platform services** | `monitor`, `rag`, `ui`, `server` | living-DB, grounded RAG, Streamlit UI, REST API | ✅ |
 
 ### The three learned layers (the flagship — Paper 1)
@@ -191,7 +194,11 @@ pen-stack/
 │   │   ├── ingest_safety_annot.py    #    COSMIC + DepMap + GENCODE → per-bin safety distances
 │   │   ├── ingest_integration.py     #    LaFave MLV (hg19→hg38) + VISDB integration density
 │   │   └── ingest_trip.py            #    TRIP durability supervision (GSE49806/49807, mm9)
-│   ├── bridge/                       #    bridge off-target engine (Paper 4, Phase 1.5 — in progress)
+│   ├── bridge/                       # 🌉 bridge off-target engine (Paper 4) — "CRISPOR for bridge recombinases"
+│   │   ├── offtarget.py              #    genome-wide hg38 pseudosite scan + position-weight risk (beats Hamming)
+│   │   ├── fold_qc.py                #    ViennaRNA fold + TBL/DBL cross-loop QC
+│   │   ├── ingest.py  activity.py    #    profile loaders + exploratory DMS/activity framework
+│   │   └── pipeline.py  cli.py       #    pen-bridge: wraps the Arc BridgeRNADesigner + off-target/QC
 │   └── cli.py                        #    unified CLI (info / atlas / writable / crosslink / plan / monitor)
 ├── scripts/                          # reproducible pipeline drivers
 │   ├── p1_*.py                       #    Paper-1: train safety, build durability/atlas, export, validate
@@ -255,6 +262,7 @@ pen-stack writable --gene CCR5 --ct k562         # rank writable loci near a gen
 pen-stack crosslink --chrom chr19 --bin 55090    # which writers reach AAVS1
 pen-stack plan --gene TRAC --intent knock_in_with_disruption --cargo-bp 2000   # inverse-design plans
 pen-stack monitor --back-test                    # PEN-MONITOR living-database scan (surfaces ISPpu10)
+pen-bridge design --target ACGTGTCTACGTGA --donor TTGCATCTAGGCAC   # bridge design + off-target + fold QC
 ```
 
 **Self-host the whole platform (API + UI + Agent + MCP + local LLM), one command:**
@@ -310,7 +318,7 @@ penctl run python scripts/p1_build_atlas.py --ct k562
 | **1** (flagship) | *The Writable Genome: a predictive, writer-aware atlas of safe & durable insertion sites* | 1 | ✅ atlas + validation complete |
 | **2** (platform) | *PEN-STACK: unified open infrastructure for non-destructive genome writing* | 2 | ✅ Writer Atlas + cross-link + services complete |
 | **3** (capstone) | *The Write Planner: end-to-end inverse design of genomic writes* | 3 | ✅ Planner + recovery@k benchmark + agent complete |
-| **4** (beachhead) | *Genome-wide off-target prediction for RNA-guided bridge recombinases* | 1.5 | 🚧 ships first |
+| **4** (beachhead) | *Genome-wide off-target prediction for RNA-guided bridge recombinases* | 1.5 | ✅ off-target engine + fold QC + `pen-bridge` complete |
 
 Per-phase build records: [`Final_Part_v3.0/phase_*/`](https://github.com/ahmedanees-m/pen-stack) (execution
 summaries + build logs). Data releases: **Zenodo** (Paper 1 atlas; Paper 2 Writer Atlas).
@@ -324,7 +332,7 @@ summaries + build logs). Data releases: **Zenodo** (Paper 1 atlas; Paper 2 Write
   author  = {Mahaboob Ali, Anees Ahmed},
   title   = {PEN-STACK: open infrastructure for genome writing (The Writable Genome + Writer Atlas)},
   year    = {2026},
-  version = {3.0.0a4},
+  version = {3.0.0a5},
   url     = {https://github.com/ahmedanees-m/pen-stack}
 }
 ```

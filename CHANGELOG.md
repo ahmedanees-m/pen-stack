@@ -3,6 +3,30 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [3.0.0a5] — 2026-06-02 — Phase 1.5 (Bridge-recombinase off-target engine → Paper 4, BEACHHEAD)
+
+The first public instrument: a "CRISPOR for bridge recombinases."
+
+### Added
+- **Off-target engine** (`pen_stack/bridge/offtarget.py` + `configs/bridge_offtarget_profile.yaml`):
+  genome-wide hg38 pseudosite scan (CT-core seed, per-chromosome, memory-bounded) + a position-weight
+  risk model grounded in the published mechanism. **Beats naïve Hamming: AUROC 1.00 vs 0.59** at
+  separating core-preserving (real-risk) from core-disrupting (abolished) sites. Exposes
+  `predict_offtargets(family, site)` — completes the Phase-3 Planner cargo hook.
+- **Fold / cross-loop QC** (`bridge/fold_qc.py`): ViennaRNA fold (verified MFE on a 190-nt design) +
+  TBL/DBL cross-loop complementarity.
+- **Activity framework** (`bridge/activity.py`): exploratory DMS + 72-system trainer (deferred; data paywalled).
+- **`pen-bridge`** (`bridge/pipeline.py`, `bridge/cli.py`, `/bridge/design` API): **wraps** the Arc
+  BridgeRNADesigner (verified) and adds the off-target + QC layer.
+- `validate/paper4_validation.py` + `scripts/p4_genome_scan.py`; `prereg/paper4.yaml` + SHA lock.
+
+### Notes
+- **Phase 1.5 COMPLETE** — pre-registered criteria met (or honestly gated): the off-target engine,
+  ViennaRNA fold, and designer wrap are verified on the VM (real hg38 scan: chr22 in ~21 s). The *blind
+  recall of Perry 2025's measured off-targets* and the DMS/activity model are gated on the paywalled
+  Perry 2025 supplementary (drop in via `ingest.load_offtarget_profile`). Completes the deferred Phase-2
+  §2.4 and Phase-3 §3.2 hooks. 68 tests green; ruff clean. **All program phases (0,1,1.5,2,3) now done.**
+
 ## [3.0.0a4] — 2026-06-02 — Phase 3 (The Write Planner + agentic platform → Paper 3, CAPSTONE)
 
 Inverse design + the paper-defining recovery@k benchmark + the agentic platform.
