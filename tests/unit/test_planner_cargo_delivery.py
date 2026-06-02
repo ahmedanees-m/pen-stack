@@ -11,8 +11,9 @@ def test_cargo_elements_and_size_check():
     assert c["size_ok"] is True
     assert {"insulator_5", "promoter", "polyA", "insulator_3"} <= set(c["elements"])
     assert c["codon_optimised"] is True
-    # bridge family -> off-target field present; Phase-1.5 engine not built -> pending (graceful)
-    assert c["offtargets"]["status"] == "pending_phase_1_5"
+    # bridge family -> off-target field present; the Phase-1.5 engine is now built, so the hook is
+    # engine-backed (engine_ready without a genome/core, or scanned when one is supplied).
+    assert c["offtargets"]["status"] in {"engine_ready", "scanned"}
 
 
 def test_cargo_oversize_flagged():

@@ -102,6 +102,22 @@ def writable(gene: str, ct: str = "k562", top: int = Query(20, le=200)):
     return {"gene": gene, "ct": ct, "loci": g[cols].head(top).to_dict("records"), "disclaimer": _DISCLAIMER}
 
 
+@app.get("/bridge/design")
+def bridge_design(target: str, donor: str, scaffold: str = "ISCro4_enhanced",
+                  ct: str | None = None, scan: bool = False):
+    """Bridge-recombinase design + off-target/QC (Phase 1.5). scan=false by default (genome scan is heavy)."""
+    from pen_stack.bridge.pipeline import design_and_assess
+    res = design_and_assess(target, donor, scaffold, ct=ct, scan=scan)
+    off = res["offtargets"]
+    if off.get("scanned") and "table" in off:
+        t = off["table"]
+        off = {"scanned": True, "n_candidates": off["n_candidates"], "n_exact": off["n_exact"],
+               "top": t.head(20).to_dict("records")}
+    return {"brna": {k: v for k, v in res["brna"].items() if k != "bridge_sequence"} |
+            ({"bridge_sequence_len": len(res["brna"]["bridge_sequence"])} if res["brna"].get("available") else {}),
+            "qc": res["qc"], "offtargets": off, "disclaimer": res["disclaimer"]}
+
+
 @app.get("/ask")
 def ask(q: str):
     """Grounded, cited Q&A (Step 2.8). Numeric claims are resolved by tool calls, never guessed."""
