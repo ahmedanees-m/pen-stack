@@ -135,7 +135,8 @@ def plan(gene: str, intent: EditIntent | str, cargo_bp: int, writable_df: pd.Dat
     if sub.empty:
         return pd.DataFrame()
     # on_target = bin overlaps the gene body (not just the flank)
-    g = _gene_coords(); gr = g[g["gene"] == gene].iloc[0]
+    g = _gene_coords()
+    gr = g[g["gene"] == gene].iloc[0]
     sub["on_target"] = sub["bin"].between(int(gr["start"]) // BIN_BP, int(gr["end"]) // BIN_BP)
     scored = score_candidates(sub, intent, cargo_bp)
     cols = ["chrom", "bin", "writer", "safety", "p_durable", "writer_activity",
