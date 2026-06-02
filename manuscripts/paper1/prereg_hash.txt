@@ -1,0 +1,2 @@
+Pre-registration SHA-256 (prereg/paper1.yaml), locked before models saw held-out test data:
+4d6d7f4fc908a5a0c483f0ad826602263dc927243f4aad44083dcedc774a38e9
