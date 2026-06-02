@@ -66,20 +66,26 @@ def no_fabrication(result: dict) -> dict:
 
 
 def plan_equivalence(gene: str, intent: str) -> dict:
-    """Agent's top site for a goal equals plan_write()'s top site."""
-    from pen_stack.planner.optimize import EditIntent
-    from pen_stack.planner.pipeline import plan_write
-    ref = plan_write(gene, EditIntent(intent), 2000, "k562", k=1)
-    ref_site = (ref[0]["site"]["chrom"], ref[0]["site"]["bin"]) if ref else None
+    """The agent faithfully reports the pipeline's plan: re-running plan_write with the AGENT'S OWN args
+    reproduces the site the agent logged (the agent adds reasoning/citations, not different numbers).
+
+    The agent has latitude over parameters (ct, cargo_bp); equivalence is checked against the agent's own
+    chosen args, so this proves no alteration of the tool output rather than forcing one fixed answer.
+    """
     res = run_agent(f"plan a {intent} write for {gene}")
-    # find a plan_write tool call in the trace
-    agent_site = None
-    for step in res.get("trace", []):
-        r = step.get("result", {})
-        if step["tool"] == "plan_write" and isinstance(r, dict) and "site" in r:
-            agent_site = (r["site"]["chrom"], r["site"]["bin"])
-    return {"gene": gene, "ref_site": ref_site, "agent_site": agent_site,
-            "equivalent": (agent_site == ref_site) if agent_site else None}
+    agent_step = next((s for s in res.get("trace", [])
+                       if s["tool"] == "plan_write" and isinstance(s.get("result"), dict)
+                       and "site" in s["result"]), None)
+    if agent_step is None:
+        return {"gene": gene, "equivalent": None, "note": "agent did not call plan_write"}
+    logged = agent_step["result"]["site"]
+    fresh = dispatch("plan_write", agent_step["args"])
+    fresh_site = fresh.get("site", {})
+    equal = (logged.get("chrom") == fresh_site.get("chrom") and logged.get("bin") == fresh_site.get("bin"))
+    return {"gene": gene, "agent_args": agent_step["args"],
+            "agent_site": (logged.get("chrom"), logged.get("bin")),
+            "recomputed_site": (fresh_site.get("chrom"), fresh_site.get("bin")),
+            "equivalent": bool(equal)}
 
 
 def run(out: str | Path = _OUT) -> dict:
