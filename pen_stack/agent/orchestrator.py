@@ -49,7 +49,7 @@ def _ollama_chat(messages: list[dict], tools: list[dict], cfg: dict, timeout: in
         return None
 
 
-def run_agent(goal: str, max_steps: int = 8, cfg: dict | None = None) -> dict:
+def run_agent(goal: str, max_steps: int = 12, cfg: dict | None = None) -> dict:
     """Turn a goal into a cited, auditable plan. Numbers come only from tool calls."""
     refusal = out_of_scope(goal)
     if refusal:
@@ -58,6 +58,7 @@ def run_agent(goal: str, max_steps: int = 8, cfg: dict | None = None) -> dict:
     cfg = cfg or _llm_cfg()
     msgs = [{"role": "system", "content": _SYSTEM}, {"role": "user", "content": goal}]
     trace: list[dict] = []
+    seen: set = set()
 
     for _ in range(max_steps):
         resp = _ollama_chat(msgs, SCHEMAS, cfg)
@@ -75,6 +76,13 @@ def run_agent(goal: str, max_steps: int = 8, cfg: dict | None = None) -> dict:
             args = fn.get("arguments", {})
             if isinstance(args, str):
                 args = json.loads(args or "{}")
+            key = f"{name}:{json.dumps(args, sort_keys=True, default=str)}"
+            if key in seen:
+                # already answered this exact call — nudge the model to finish instead of looping
+                msgs.append({"role": "tool", "content": json.dumps(
+                    {"note": "already called with these args; use prior result and finalise the plan"})})
+                continue
+            seen.add(key)
             try:
                 result = dispatch(name, args)            # VALIDATED tool only
             except Exception as e:  # noqa: BLE001

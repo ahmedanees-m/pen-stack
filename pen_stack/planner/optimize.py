@@ -107,10 +107,18 @@ def score_candidates(cands: pd.DataFrame, intent: EditIntent | str, cargo_bp: in
     return out.sort_values("score", ascending=False).reset_index(drop=True)
 
 
+def gene_coords_path() -> Path:
+    """Locate gene_coords.parquet: packaged copy first (works in any container), then phase_1."""
+    for p in (_ROOT / "data" / "curated" / "gene_coords.parquet",
+              _ROOT.parent / "phase_1" / "app_data" / "gene_coords.parquet"):
+        if p.exists():
+            return p
+    return _ROOT / "data" / "curated" / "gene_coords.parquet"
+
+
 @lru_cache(maxsize=8)
 def _gene_coords(path: str | None = None) -> pd.DataFrame:
-    p = Path(path) if path else (_ROOT.parent / "phase_1" / "app_data" / "gene_coords.parquet")
-    return pd.read_parquet(p)
+    return pd.read_parquet(Path(path) if path else gene_coords_path())
 
 
 def gene_region(gene: str, flank_kb: int = 50) -> tuple[str, int, int] | None:

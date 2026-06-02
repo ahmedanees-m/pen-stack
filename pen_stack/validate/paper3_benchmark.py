@@ -38,7 +38,8 @@ SEED = 20260602
 
 @lru_cache(maxsize=4)
 def _gene_coords() -> pd.DataFrame:
-    return pd.read_parquet(_ROOT.parent / "phase_1" / "app_data" / "gene_coords.parquet")
+    from pen_stack.planner.optimize import gene_coords_path
+    return pd.read_parquet(gene_coords_path())
 
 
 def _gene_candidate(gene: str, writable_df: pd.DataFrame) -> dict | None:

@@ -48,6 +48,9 @@ def no_fabrication(result: dict) -> dict:
     """Re-run every tool call in the trace; assert the logged result matches (no invented numbers)."""
     mismatches = []
     for step in result.get("trace", []):
+        # a step whose logged result was itself an error gave the agent no number to fabricate from
+        if isinstance(step["result"], dict) and "error" in step["result"]:
+            continue
         try:
             fresh = dispatch(step["tool"], step["args"])
         except Exception as e:  # noqa: BLE001

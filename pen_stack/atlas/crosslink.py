@@ -92,7 +92,11 @@ def writers_for_locus(chrom: str, bin_idx: int, ct: str = "k562") -> pd.DataFram
 
 def loci_for_gene(gene: str, ct: str = "k562", gene_coords: str | Path | None = None) -> pd.DataFrame:
     """Writable bins overlapping a gene body (forward query helper)."""
-    gc_path = Path(gene_coords) if gene_coords else (_FINAL / "phase_1" / "app_data" / "gene_coords.parquet")
+    if gene_coords:
+        gc_path = Path(gene_coords)
+    else:
+        from pen_stack.planner.optimize import gene_coords_path
+        gc_path = gene_coords_path()
     gc = pd.read_parquet(gc_path)
     g = gc[gc["gene"] == gene]
     if g.empty:
