@@ -5,7 +5,7 @@ Canonical environment definition (program doc §0.A). Reused verbatim by every p
 ## Three-tier architecture
 
 ```
-LAPTOP (2.5 GHz, 8 GB)  --paramiko SSH/SFTP-->  VM sjt418scope025 (10.30.158.35)
+LAPTOP (2.5 GHz, 8 GB)  --paramiko SSH/SFTP-->  VM <vm-hostname> (<your-vm-ip>)
   - edit code/notebooks                            24 cores, 64 GB RAM, ~16 GB GPU (RTX A4000)
   - orchestrate via penctl                         500 GB scratch disk, Ubuntu 22.04
   - light unit tests                               ALL heavy compute, Docker-only
@@ -33,13 +33,13 @@ pip install -e ".[orchestrate]"   # paramiko, scp, click, rich, python-dotenv
 `~/.pen/secrets.env` (git-ignored):
 
 ```bash
-VM_HOST=10.30.158.35
+VM_HOST=<your-vm-ip>
 VM_PORT=22
-VM_USER=anees_22phd0670
+VM_USER=<your-vm-user>
 VM_KEY=~/.ssh/penstack_ed25519        # or omit and set VM_PASS for password auth
-PEN_DRIVE="G:/My Drive/PEN-STACK"
-VM_WORK=/home/anees_22phd0670/penstack
-VM_DATA=/home/anees_22phd0670/data
+PEN_DRIVE="/path/to/Google Drive/PEN-STACK"
+VM_WORK=/home/<your-vm-user>/penstack
+VM_DATA=/home/<your-vm-user>/data
 DOCKER_IMG=penstack:0.1
 ```
 

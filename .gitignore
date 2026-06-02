@@ -32,6 +32,10 @@ build/
 secrets.env
 *.pat
 Keys.txt
+GitHub_Access_Token.txt
+
+# unpublished manuscripts — kept local only, never public
+manuscripts/
 
 # os/editor
 .DS_Store
