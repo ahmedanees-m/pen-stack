@@ -1,0 +1,25 @@
+site_name: PEN-STACK
+site_description: Open infrastructure for genome writing — the Writable Genome, the Writer Atlas, and the Write Planner.
+site_author: Anees Ahmed Mahaboob Ali
+repo_url: https://github.com/ahmedanees-m/pen-stack
+theme:
+  name: readthedocs
+nav:
+  - Home: index.md
+  - Infrastructure: INFRA.md
+  - Reproducibility: REPRO.md
+  - Writer-Targeting KB: wtkb.md
+  - Scorecard: scorecard.md
+  - Tutorials:
+      - Where can I write X in cell type Y: tutorials/where-can-i-write.md
+      - Which writer reaches locus Z: tutorials/which-writer-reaches-locus.md
+      - Compare CAST vs bridge vs PASTE: tutorials/compare-families.md
+      - Score my construct for AAV deliverability: tutorials/score-deliverability.md
+  - Model & data cards:
+      - Safety layer: cards/safety.md
+      - Durability layer: cards/durability.md
+      - Atlas: cards/atlas.md
+markdown_extensions:
+  - admonition
+  - tables
+  - fenced_code
