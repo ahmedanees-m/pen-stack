@@ -107,3 +107,20 @@ def ask(q: str):
     """Grounded, cited Q&A (Step 2.8). Numeric claims are resolved by tool calls, never guessed."""
     from pen_stack.rag.qa import answer
     return answer(q)
+
+
+@app.get("/plan")
+def plan(gene: str, intent: str, cargo_bp: int = 2000, ct: str = "k562", k: int = Query(5, le=20)):
+    """Write Planner (Step 3.4): goal + edit_intent -> ranked, traceable plans."""
+    from pen_stack.planner.optimize import EditIntent
+    from pen_stack.planner.pipeline import plan_write
+    try:
+        intent_e = EditIntent(intent)
+    except ValueError as e:
+        raise HTTPException(422, f"unknown edit_intent: {intent}") from e
+    try:
+        plans = plan_write(gene, intent_e, cargo_bp, ct, k=k)
+    except FileNotFoundError as e:
+        raise HTTPException(503, str(e)) from e
+    return {"gene": gene, "intent": intent, "ct": ct, "n": len(plans), "plans": plans,
+            "disclaimer": _DISCLAIMER}

@@ -91,6 +91,26 @@ def crosslink(family, chrom, bin_idx, ct, top):
 
 
 @main.command()
+@click.option("--gene", required=True, help="Target gene symbol.")
+@click.option("--intent", required=True,
+              type=click.Choice(["safe_harbour_insertion", "knock_in_with_disruption",
+                                 "high_durability_insertion", "regulatory_excision", "repeat_excision"]))
+@click.option("--cargo-bp", default=2000, help="Payload size (bp).")
+@click.option("--ct", default="k562", help="Cell type (k562/hepg2/hspc).")
+@click.option("--k", default=3, help="Number of ranked plans.")
+def plan(gene, intent, cargo_bp, ct, k):
+    """Write Planner: goal + edit_intent -> ranked, traceable plans."""
+    from pen_stack.planner.optimize import EditIntent
+    from pen_stack.planner.pipeline import plan_write
+    from pen_stack.planner.report import render_plans
+    try:
+        plans = plan_write(gene, EditIntent(intent), cargo_bp, ct, k=k)
+    except FileNotFoundError as e:
+        raise click.ClickException(f"Phase-1 writability atlas not available: {e}") from e
+    click.echo(render_plans(plans))
+
+
+@main.command()
 @click.option("--since", default="2026-01-01", help="Earliest publication date (YYYY-MM-DD).")
 @click.option("--back-test", is_flag=True, help="Run the ISPpu10 back-test window.")
 def monitor(since, back_test):
