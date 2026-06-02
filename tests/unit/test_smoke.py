@@ -5,7 +5,8 @@ import pen_stack
 
 
 def test_version():
-    assert pen_stack.__version__ == "3.0.0a0"
+    # don't pin the exact version (it bumps per phase) — just assert it's a valid v3.0 string
+    assert pen_stack.__version__.startswith("3.0.0")
 
 
 def test_all_modules_import():
