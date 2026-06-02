@@ -19,6 +19,7 @@ Outputs: out/crosslink_cache_<ct>.parquet (per-family reachable-loci summary).
 """
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -31,18 +32,24 @@ _OUT = _ROOT / "out"
 BIN_BP = 1000
 
 # Phase-1 writability atlas can live in a few places (fetched-not-committed). First match wins.
-_WRITABILITY_SEARCH = [
-    _ROOT / "data" / "out",
-    _FINAL / "phase_1" / "out",
-]
+# PEN_ATLAS_DIR (also used by the UI) is honoured first so every cross-link-backed feature — the Write
+# Planner, the agent, and the RAG numeric route — finds the same atlas the UI does in any deployment.
+def _writability_search() -> list[Path]:
+    bases: list[Path] = []
+    env = os.environ.get("PEN_ATLAS_DIR")
+    if env:
+        bases.append(Path(env))
+    bases += [_ROOT / "data" / "out", _FINAL / "phase_1" / "out"]
+    return bases
 
 
 def writability_path(ct: str) -> Path:
-    for base in _WRITABILITY_SEARCH:
+    bases = _writability_search()
+    for base in bases:
         p = base / f"atlas_{ct}.parquet"
         if p.exists():
             return p
-    raise FileNotFoundError(f"atlas_{ct}.parquet not found in {[str(b) for b in _WRITABILITY_SEARCH]}")
+    raise FileNotFoundError(f"atlas_{ct}.parquet not found in {[str(b) for b in bases]}")
 
 
 @lru_cache(maxsize=4)
