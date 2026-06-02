@@ -1,0 +1,241 @@
+# Pfam whitelist v1.2.1 - PEN-STACK genome-writing enzyme families
+# AUDIT STATUS: Every accession below independently verified against InterPro
+# on 2026-04-22. v1.2.0 audit was also checked and found to contain 3 critical
+# accession errors (PF03400, PF18543, PF16593); corrected in v1.2.1.
+#
+# Verification discipline applied:
+#   1. InterPro API name-match against stored interpro_name
+#   2. Example UniProt protein spot-check (validator --strict)
+#   3. Literature cross-check for biological relevance
+
+# Mechanism buckets (Tier A of MECH-CLASS):
+#   DSB_NUCLEASE | DSB_FREE_TRANSEST_RECOMBINASE | TRANSPOSASE
+
+domains:
+  # === CRISPR-Cas Class 2 — Cas9 (multi-domain; >=2 of 3 co-occurring define Cas9) ===
+  - accession: PF13395
+    name: HNH_4
+    interpro_name: "HNH endonuclease"
+    mechanism_bucket: DSB_NUCLEASE
+    example_systems: [SpCas9, SaCas9]
+    example_uniprot: [Q99ZW2]
+    reference: "Jinek 2012 Science"
+    doi: "10.1126/science.1225829"
+    co_occurs_with: [PF18541, PF16595]
+    notes: "HNH nuclease domain found in CRISPR-related proteins (including Cas9). Not exclusively Cas9-specific — also found in other HNH endonucleases. Cleaves target DNA strand in Cas9."
+
+  - accession: PF18541
+    name: RuvC_III
+    interpro_name: "RuvC endonuclease subdomain 3"
+    mechanism_bucket: DSB_NUCLEASE
+    example_systems: [SpCas9]
+    example_uniprot: [Q99ZW2]
+    reference: "Jinek 2012 Science"
+    doi: "10.1126/science.1225829"
+    co_occurs_with: [PF13395, PF16595]
+    notes: "Cas9 RuvC subdomain 3; cleaves non-target strand. Part of composite Cas9 set. NOT the same as Cas12a RuvC (PF18516)."
+
+  - accession: PF16595
+    name: Cas9_PI
+    interpro_name: "PAM-interacting domain of CRISPR-associated endonuclease Cas9"
+    mechanism_bucket: DSB_NUCLEASE
+    example_systems: [SpCas9]
+    example_uniprot: [Q99ZW2]
+    reference: "Nishimasu 2014 Cell"
+    doi: "10.1016/j.cell.2014.02.001"
+    co_occurs_with: [PF13395, PF18541]
+    notes: "PAM-interacting domain; recognises NGG PAM in SpCas9. Part of composite Cas9 set."
+
+  # === CRISPR-Cas Class 2 — Cas12a (RuvC-only single lobe) ===
+  - accession: PF18516
+    name: RuvC_1
+    interpro_name: "RuvC nuclease domain"
+    mechanism_bucket: DSB_NUCLEASE
+    example_systems: [AsCas12a, LbCas12a, FnCas12a]
+    example_uniprot: [U2UMQ6]
+    reference: "Zetsche 2015 Cell; Yamano 2016 Cell"
+    doi: "10.1016/j.cell.2015.09.038"
+    notes: "Cas12a RuvC nuclease domain. Single-lobe architecture; produces staggered cuts. Distinct from Cas9 RuvC (PF18541)."
+
+  # === IS110 / Bridge Recombinase composite (both domains required) ===
+  - accession: PF01548
+    name: DEDD_Tnp_IS110
+    interpro_name: "Transposase"
+    mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+    example_systems: [IS621, IS110, ISEc11, ISEc21]
+    example_uniprot: [Q8X7L4]
+    reference: "Durrant 2024 Nature; Hiraizumi 2024 Nature"
+    doi: "10.1038/s41586-024-07552-4"
+    co_occurs_with: [PF02371]
+    notes: "N-terminal RuvC-fold DEDD catalytic domain of IS110/IS1111 transposases. Paired with PF02371 CTD. Uses bridge/seeker RNA for targeting."
+
+  - accession: PF02371
+    name: Transposase_20
+    interpro_name: "Transposase IS116/IS110/IS902 family"
+    mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+    example_systems: [IS621, IS110, IS1111, IS902]
+    example_uniprot: [Q8X7L4]
+    reference: "Prudhomme 2002 J Bacteriol"
+    doi: "10.1128/JB.184.1.129-137.2002"
+    co_occurs_with: [PF01548]
+    notes: "C-terminal CTD of IS110 transposase. Contains HHH motif. DEDD chemistry (not serine recombinase). DNA binding + complex assembly."
+
+  # === TnpB / IscB / Fanzor ancestor family ===
+  - accession: PF07282
+    name: Cas12f1-like_TNB
+    interpro_name: "Cas12f1-like, TNB domain"
+    mechanism_bucket: DSB_NUCLEASE
+    example_systems: [ISDra2_TnpB, IscB, Fanzor1, Fanzor2]
+    example_uniprot: [Q7DF80]
+    reference: "Altae-Tran 2021 Science; Saito 2023 Nature"
+    doi: "10.1126/science.abj6856"
+    notes: "C-terminal zinc-ribbon / TNB domain of TnpB/IscB/Fanzor/Cas12f umbrella. Formerly called OrfB_Zn_ribbon. Broad ancestral marker; specific Fanzor/Cas12f ID needs structural features (Paper 2)."
+
+  # === Classical DDE transposases ===
+  - accession: PF00665
+    name: rve
+    interpro_name: "Integrase core domain"
+    mechanism_bucket: TRANSPOSASE
+    example_systems: [HIV_integrase, Tn5, TnsB]
+    example_uniprot: [P03008, P03366]
+    reference: "Rice 1995 Cell"
+    doi: "10.1016/0092-8674(95)90308-2"
+    notes: "RNase H / integrase core fold (rve superfamily). Shared by retroviral integrases and TnsB of Tn7. TnsB specificity comes from co-occurrence with TnsA (PF08721)."
+
+  - accession: PF01609
+    name: DDE_Tnp_1
+    interpro_name: "Transposase DDE domain"
+    mechanism_bucket: TRANSPOSASE
+    example_systems: [Tn5, IS3_family, IS4_family]
+    example_uniprot: [P03008]
+    reference: "Reznikoff 2008 Annu Rev Genet"
+    doi: "10.1146/annurev.genet.42.110807.091656"
+    notes: "Canonical DDE transposase catalytic domain. Found in Tn5 and many insertion sequences."
+
+  - accession: PF13586
+    name: DDE_Tnp
+    interpro_name: "Transposase DDE domain"
+    mechanism_bucket: TRANSPOSASE
+    example_systems: [DDE_transposases_diverse]
+    example_uniprot: [Q9U6K4]
+    reference: "Chandler 2013 Nat Rev Microbiol"
+    doi: "10.1038/nrmicro3067"
+    notes: "Additional DDE transposase domain family. Generic DDE-fold diversity — not exclusively hAT or Mariner. Complements PF01609 coverage."
+
+  # === Tn7 and CAST (I-F and V-K) system components ===
+  - accession: PF08721
+    name: Tn7_Tnp_TnsA_C
+    interpro_name: "TnsA endonuclease C terminal"
+    mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+    example_systems: [Tn7, CAST-I-F]
+    example_uniprot: [P13990]
+    reference: "Hickman 2000 Mol Cell"
+    doi: "10.1016/S1097-2765(00)80267-1"
+    notes: "TnsA endonuclease C-terminal domain. Cleaves 5' transposon end. CAST V-K lacks TnsA; detect via TnsB+TnsC co-occurrence instead."
+
+  - accession: PF11426
+    name: TnsC
+    interpro_name: "Tn7 transposition regulator TnsC"
+    mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+    example_systems: [Tn7, CAST-I-F, CAST-V-K]
+    example_uniprot: [P05846]
+    reference: "Hoffmann 2022 Nature; Peters 2017 PNAS"
+    doi: "10.1038/s41586-022-05059-4"
+    notes: "AAA+ ATPase regulator of Tn7 transposition. Bridges target selection (TniQ/Cascade) and transposase (TnsB). Core to all CAST systems. CORRECTED from PF03400 (was IS1 transposase — completely unrelated)."
+
+  - accession: PF05621
+    name: TniB
+    interpro_name: "Bacterial TniB protein"
+    mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+    example_systems: [Tn5053, Tn7-related_targeting]
+    example_uniprot: [P0CW70]
+    reference: "Kholodii 1997 Res Microbiol"
+    doi: "10.1016/S0923-2508(97)83011-0"
+    notes: "TniB P-loop NTPase. Related to TnsC-family regulators but distinct protein. Found in Tn5053 and related Tn7-like elements."
+
+  # === Site-specific recombinases ===
+  - accession: PF00589
+    name: Phage_integrase
+    interpro_name: "Phage integrase family"
+    mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+    example_systems: [Cre, Flp, lambda-Int, XerC, XerD]
+    example_uniprot: [P06956, P03700]
+    reference: "Grainge 2002 J Mol Biol"
+    doi: "10.1016/S0022-2836(02)00517-X"
+    notes: "Tyrosine recombinase family. 5'-phosphotyrosine covalent intermediate."
+
+  - accession: PF00239
+    name: Resolvase
+    interpro_name: "Resolvase, N terminal domain"
+    mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+    example_systems: [gamma-delta_resolvase, Sin, Tn3_resolvase]
+    example_uniprot: [P03016, P20384]
+    reference: "Smith 2004 Mol Microbiol"
+    doi: "10.1111/j.1365-2958.2003.03927.x"
+    notes: "Small serine recombinase family. 5'-phosphoserine covalent intermediate."
+
+  - accession: PF07508
+    name: Recombinase
+    interpro_name: "Recombinase"
+    mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
+    example_systems: [Bxb1, phiC31, TP901-1, R4]
+    example_uniprot: [O25753, Q9T1S6]
+    reference: "Stark 2014 Microbiol Spectr"
+    doi: "10.1128/microbiolspec.MDNA3-0046-2014"
+    notes: "Large serine integrase family. Used in eePASSIGE and landing-pad strategies."
+
+  # === Other DNA-cleaving enzymes relevant to genome writing ===
+  - accession: PF01844
+    name: HNH
+    interpro_name: "HNH endonuclease"
+    mechanism_bucket: DSB_NUCLEASE
+    example_systems: [I-HmuI, homing_endonucleases]
+    example_uniprot: [P03880]
+    reference: "Stoddard 2011 Structure"
+    doi: "10.1016/j.str.2010.12.005"
+    notes: "Standalone HNH endonuclease family. Distinct from HNH_4 (PF13395). Appears in IscB and homing endonucleases."
+
+  - accession: PF02486
+    name: Rep_3
+    interpro_name: "Replication initiation factor"
+    mechanism_bucket: TRANSPOSASE
+    example_systems: [IS91, ISCR, helitrons, rolling-circle_initiators]
+    example_uniprot: [P03856]
+    reference: "Chandler 2013 Nat Rev Microbiol"
+    doi: "10.1038/nrmicro3067"
+    notes: "HUH-domain rolling-circle replication initiator. 5'-phosphotyrosine intermediate. Covers IS91 / ISCR / helitron families."
+
+# === Auxiliary domains (NOT entry criteria — recorded if co-occurring with primary) ===
+auxiliary:
+  - accession: PF18061
+    name: WED
+    interpro_name: "CRISPR-Cas9 WED domain"
+    notes: "Wedge domain between REC and NUC lobes in Cas9."
+  - accession: PF16592
+    name: REC_lobe
+    interpro_name: "REC lobe of CRISPR-associated endonuclease Cas9"
+    notes: "Alpha-helical recognition lobe of Cas9. CORRECTED from PF18543 (was unrelated intracellular delivery domain)."
+  - accession: PF16593
+    name: Bridge_helix
+    interpro_name: "Bridge helix of CRISPR-associated endonuclease Cas9"
+    notes: "Arginine-rich helix connecting REC and NUC lobes in Cas9."
+  - accession: PF13639
+    name: ZnF_RING
+    interpro_name: "Ring finger domain"
+    notes: "RING/zinc-finger; sometimes appears in engineered fusions."
+  - accession: PF03377
+    name: TAL_effector
+    interpro_name: "TAL effector repeat"
+    notes: "TALE repeat — outgroup comparison for programmable DNA binding. CORRECTED from PF03374 (was KilAC phage antirepressor)."
+
+# === Version metadata ===
+version: "1.2.1"
+created: "2026-04-22"
+previous_version: "1.2.0"
+curator: "Anees Ahmed"
+audit_status: "Independently verified against InterPro API on 2026-04-22; v1.2.0 errors corrected"
+change_log:
+  - "2026-04-22 v1.2.1: Fixed 3 critical accession errors found during independent verification of v1.2.0: PF03400->PF11426 (TnsC), PF18543->PF16592 (REC), PF16593->PF16595 (PI). Fixed PF07282 example protein Q9RVU2->Q7DF80. Corrected descriptions for PF13395, PF13586. Added PF16593 (Bridge helix) to auxiliary."
+  - "2026-04-22 v1.2.0: Comprehensive audit. Replaced 13 incorrect/mismatched accessions from v1.1.0."
+  - "2026-04-22 v1.1.0: Added DOIs; fixed 3 reference mismatches."
+  - "2026-04-22 v1.0.0: Initial release."
