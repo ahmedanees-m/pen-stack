@@ -72,7 +72,7 @@ curated_representatives:
     uniprot: null
     confidence: inferred
     human_cell_activity: "IS110 bridge recombinase, P. putida KT2440; structure-gated (bioRxiv 2026-03-19)"
-    key_dois: ["10.1101/2026.03.19.000000"]    # bioRxiv ISPpu10 2026-03-19 (placeholder DOI; resolved at build)
+    key_dois: ["10.64898/2026.03.19.712850"]    # bioRxiv ISPpu10 (Europe PMC PPR1218813; resolved via PEN-MONITOR)
   - representative_system: phiC31
     family: serine_integrase
     uniprot: Q9T2A6

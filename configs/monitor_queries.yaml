@@ -1,0 +1,33 @@
+# PEN-STACK v3.0 — PEN-MONITOR query terms (Phase 2, Step 2.7).
+# Europe PMC search terms covering the writer families. The atlas decays without this: the field
+# publishes new writers monthly (ISPpu10, March 2026). Each query maps to a candidate family so triage
+# can pre-classify. PEN-MONITOR NEVER auto-edits the atlas — every hit goes to a human-reviewed queue.
+
+queries:
+  - terms: "ISPpu10"
+    family: bridge_IS110
+  - terms: '"bridge recombinase" AND IS110'
+    family: bridge_IS110
+  - terms: '"bridge RNA" AND recombinase'
+    family: bridge_IS110
+  - terms: "seekRNA AND IS1111"
+    family: seek_IS1111
+  - terms: '"CRISPR-associated transposase" OR CAST'
+    family: CAST_VK
+  - terms: '"prime editing" AND integrase AND insertion'
+    family: PE_integrase
+  - terms: '"serine integrase" AND "landing pad"'
+    family: serine_integrase
+  - terms: "TnpB OR Fanzor AND genome editing"
+    family: TnpB_Fanzor
+
+# Keyword cues triage uses to extract candidate fields from a title/abstract (grounded, rule-based).
+family_cues:
+  bridge_IS110: ["bridge recombinase", "bridge rna", "is110", "is621", "isppu", "iscro"]
+  seek_IS1111: ["seekrna", "is1111"]
+  CAST_VK: ["cast", "crispr-associated transposase", "cas12k", "tn7"]
+  PE_integrase: ["prime editing", "paste", "passige", "pegrna", "twin prime"]
+  serine_integrase: ["serine integrase", "bxb1", "phic31", "landing pad", "attb", "attp"]
+  TnpB_Fanzor: ["tnpb", "fanzor", "omegarna", "iscb"]
+
+human_cell_cues: ["human cell", "human cells", "hek293", "primary t cell", "hepatocyte", "hspc", "k562"]
