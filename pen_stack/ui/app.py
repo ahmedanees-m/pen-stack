@@ -91,6 +91,13 @@ def load_validation() -> dict | None:
     return json.loads(p.read_text()) if p.exists() else None
 
 
+@st.cache_data(show_spinner=False)
+def load_writer_atlas() -> pd.DataFrame:
+    """Phase-2 Writer Atlas (33k systems x measured axes). Ships inside the package."""
+    p = Path(__file__).resolve().parents[1] / "atlas" / "atlas.parquet"
+    return pd.read_parquet(p) if p.exists() else pd.DataFrame()
+
+
 def region_bins(df, chrom, start, end):
     return df[(df.chrom == chrom) & (df.bin * BIN_BP >= start) & (df.bin * BIN_BP <= end)]
 
@@ -139,7 +146,8 @@ def track_fig(sub, center=None):
 st.sidebar.markdown("## 🧬 PEN-STACK")
 st.sidebar.caption("The Writable Genome · v3.0")
 page = st.sidebar.radio("Navigate", ["Overview", "Forward query", "Site finder (inverse)",
-                                     "Atlas browser", "Validation", "Cross-cell-type"])
+                                     "Atlas browser", "Validation", "Cross-cell-type",
+                                     "Writer Atlas", "Bridge design", "Write Planner", "Ask (RAG)"])
 _available_cts = sorted(p.stem.replace("atlas_", "") for p in DATA.glob("atlas_*.parquet")
                         if p.stem.replace("atlas_", "") in CT_LABEL) or ["k562"]
 ct = st.sidebar.selectbox("Cell type", _available_cts, format_func=lambda c: CT_LABEL.get(c, c.upper()))
@@ -349,6 +357,92 @@ elif page == "Cross-cell-type":
     st.caption("The model is cell-type-specific in inputs, agnostic in function: writability correlates "
                "across cell types yet differs locus-by-locus — the quantified transfer, not a footnote.")
 
+elif page == "Writer Atlas":
+    st.markdown("### Writer Atlas — *every genome-writing family on common, measured axes*")
+    wa = load_writer_atlas()
+    if wa.empty:
+        st.info("atlas.parquet not found — run `python scripts/p2_build_atlas.py`.")
+    else:
+        cov = (wa.groupby("family")
+                 .agg(systems=("representative_system", "size"),
+                      measured=("confidence", lambda s: int((s == "measured").sum())),
+                      tier=("reachability_tier", "first"),
+                      mechanism=("mechanism_bucket", "first"),
+                      deliv=("deliv_class", "first"),
+                      cargo_bp=("cargo_capacity_bp", "max"))
+                 .reset_index().sort_values("systems", ascending=False))
+        k = st.columns(3)
+        k[0].markdown(f'<div class="card"><div class="kpi-l">writer families</div>'
+                      f'<div class="kpi mono">{wa.family.nunique()}</div></div>', unsafe_allow_html=True)
+        k[1].markdown(f'<div class="card"><div class="kpi-l">catalogued systems</div>'
+                      f'<div class="kpi mono">{len(wa):,}</div></div>', unsafe_allow_html=True)
+        k[2].markdown(f'<div class="card"><div class="kpi-l">IS110 orthologs</div>'
+                      f'<div class="kpi mono" style="color:#3dffa2">{int((wa.family=="bridge_IS110").sum()):,}</div></div>',
+                      unsafe_allow_html=True)
+        st.markdown("##### Family coverage (measured axes + reachability tier)")
+        st.dataframe(cov, use_container_width=True, height=320)
+        fams = st.multiselect("Compare families", sorted(wa.family.unique()),
+                              default=["bridge_IS110", "CAST_VK", "serine_integrase", "PE_integrase"])
+        comp = wa[wa.family.isin(fams) & wa.entry_kind.eq("curated_core")] if "entry_kind" in wa else wa[wa.family.isin(fams)]
+        if not comp.empty and "readiness" in comp:
+            fig = go.Figure(go.Bar(x=comp.representative_system, y=comp.readiness,
+                                   marker_color="#37e6e0", text=comp.deliv_class))
+            fig.update_layout(height=320, yaxis_title="therapeutic readiness",
+                              xaxis_title="representative system", **PLOTLY)
+            st.plotly_chart(fig, use_container_width=True)
+        st.caption("Reachability tiers: Tier-1 directly scannable · Tier-2 candidate (requires validation) "
+                   "· Tier-3 not yet predictable. Every system carries a confidence tag + source DOI.")
+
+elif page == "Bridge design":
+    st.markdown("### Bridge design + off-target — *the first instrument of PEN-STACK*")
+    st.markdown('<div class="verdict v-cau">Phase 1.5 deliverable — the bridge-recombinase off-target '
+                'engine (a "CRISPOR for bridge recombinases") ships here.</div>', unsafe_allow_html=True)
+    st.markdown("This page will wrap the authoritative bridge-RNA designer and add genome-wide "
+                "off-target prediction (mismatch-position model calibrated on the ISCro4 profile), "
+                "bRNA fold QC, and the exploratory activity model. The WT-KB Tier-1 bridge core spec is "
+                "already in the Writer Atlas; the per-site hg38 scan is built in Phase 1.5.")
+
+elif page == "Write Planner":
+    st.markdown("### Write Planner — *inverse design (Phase 3 capstone)*")
+    st.markdown('<div class="verdict v-cau">Phase 3 deliverable — goal + edit_intent → ranked '
+                'site × writer × cargo × delivery plans.</div>', unsafe_allow_html=True)
+    gene = st.text_input("Target gene", "TRAC")
+    intent = st.selectbox("Edit intent", ["safe_harbour_insertion", "knock_in_with_disruption",
+                                          "high_durability_insertion", "regulatory_excision", "repeat_excision"])
+    st.number_input("Cargo size (bp)", 100, 40000, 3200)
+    if st.button("Preview (uses the cross-link today)"):
+        try:
+            from pen_stack.atlas.crosslink import loci_for_gene
+            g = loci_for_gene(gene, ct)
+            if g.empty:
+                st.warning("Gene not found in the writability atlas.")
+            else:
+                st.caption(f"intent = {intent} · cross-link writable bins for {gene} (full optimiser in Phase 3)")
+                st.dataframe(g[["chrom", "bin", "safety", "p_durable", "writability"]].head(10).round(3),
+                             use_container_width=True)
+        except FileNotFoundError as e:
+            st.error(str(e))
+
+elif page == "Ask (RAG)":
+    st.markdown("### Ask — *grounded, cited Q&A over the platform*")
+    st.caption("Numbers come from validated tool calls (never guessed); clinical-directive questions are refused.")
+    q = st.text_input("Ask a question",
+                      "Which bridge recombinase works in human cells, and where can I write into CCR5?")
+    if st.button("Ask", type="primary") or q:
+        from pen_stack.rag.qa import answer as rag_answer
+        a = rag_answer(q, ct=ct)
+        if a.get("refused"):
+            st.markdown(f'<div class="verdict v-no">{a["answer"]}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="card">{a["answer"]}</div>', unsafe_allow_html=True)
+            if a.get("provenance"):
+                st.markdown("##### Tool provenance (every number traces here)")
+                st.json(a["provenance"])
+            if a.get("citations"):
+                st.markdown("##### Citations")
+                st.write(", ".join(a["citations"]))
+        st.caption(a.get("disclaimer", ""))
+
 st.markdown("---")
-st.caption("PEN-STACK v3.0 · The Writable Genome · decision-support, not a clinical directive · "
-           "every score traceable to public data + a pre-registered model.")
+st.caption("PEN-STACK v3.0 · The Writable Genome + Writer Atlas + platform services · decision-support, "
+           "not a clinical directive · every score traceable to public data + a pre-registered model.")
