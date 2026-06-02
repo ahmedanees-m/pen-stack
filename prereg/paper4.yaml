@@ -1,0 +1,46 @@
+# PEN-STACK v3.0 — Paper 4 (Bridge-recombinase off-target engine) pre-registered success criteria.
+# SHA-locked. Paper 4 is the beachhead: "a CRISPOR for bridge recombinases."
+paper: 4
+title: "Genome-wide off-target prediction for RNA-guided bridge recombinases"
+prepared: "2026-06-02"
+
+data:
+  offtarget_profile: "configs/bridge_offtarget_profile.yaml (literature-grounded position weights)"
+  measured_profile: "Perry 2025 supplementary (Science adz0276) — paywalled, not bulk-downloadable here"
+  genome: "hg38 (UCSC) — pysam FastaFile, per-chromosome (memory-bounded)"
+
+offtarget_engine:
+  method: "CT-core-seeded pseudosite scan + position-weight risk model"
+  success_HEADLINE:
+    beats_naive_hamming: true            # position model distinguishes core-disrupting from distal
+                                         # 2-mismatch sites; Hamming scores them identically
+    core_mismatch_abolishes: true        # a mismatch at the central CT core -> risk 0 (recombination off)
+    genome_scan_runs_on_hg38: true       # real per-chromosome scan (verified on chr22)
+  gated_on_measured_data:
+    blind_recall_of_perry_offtargets: "GATED — requires the Perry 2025 measured off-target coordinates
+      (paywalled). The engine + scan are complete; this specific recall runs when the supplementary is obtained."
+
+fold_qc:
+  success:
+    vienna_fold_in_image: true           # ViennaRNA folds the bridge_sequence (verified, MFE computed)
+    cross_loop_separates_complementary: true
+
+activity_model:
+  status: "EXPLORATORY — DMS + 72-system screen are Perry 2025 supplementary (paywalled); framework ready, model deferred"
+
+ship:
+  success:
+    designer_wrapped_not_reimplemented: true   # wraps bridgernadesigner (Arc) — verified design + 190nt bRNA
+    pen_bridge_cli: true
+    api_route: true
+
+locked_files:
+  - prereg/paper4.yaml
+  - configs/bridge_offtarget_profile.yaml
+
+notes: >
+  Lead with off-target/specificity (robust, the clinical gatekeeper); activity is exploratory. Positioned
+  as "the first instrument of PEN-STACK," not the product. The position-weight profile is grounded in the
+  published, verified mechanism (central CT core, ~2-mismatch tolerance; Durrant 2024, Hiraizumi 2024 /
+  PDB 8WT6, Perry 2025); the measured per-position rates and the blind off-target recall are gated on the
+  paywalled Perry 2025 supplementary and drop in via pen_stack/bridge/ingest.load_offtarget_profile.
