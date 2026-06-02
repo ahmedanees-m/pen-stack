@@ -50,6 +50,10 @@ writability(locus) = safety  ×  durability  ×  reachability
 > validated safe harbours as highly writable and clinical genotoxic loci as non-writable — *blind*.
 > **Paper 2 (Writer Atlas):** **33,370 genome-writing enzyme systems across 8 families** on common measured
 > axes, joined to the Writable Genome by a bidirectional **writer↔locus cross-link**.
+> **Paper 3 (Write Planner):** on a frozen, goal-conditioned recovery@k benchmark the Planner recovers
+> therapeutic-into-functional-locus writes at **recovery@10 = 1.00 vs 0.00** for an intent-blind baseline
+> (McNemar p = 0.0156; bootstrap gap CI **[1.0, 1.0]** excludes zero), tying on safe-harbour controls — and
+> a tool-using **agent** turns a goal into a cited, auditable plan that provably never fabricates a number.
 
 ---
 
@@ -91,6 +95,21 @@ bulk-downloadable public data and validated against an honest baseline before re
 The durability model is *conditional on chromatin*, never on coordinates — so it transfers across cell types
 (supply a cell type's epigenome and it scores that cell type). On the **CD34+ HSPC** partial panel (no ATAC),
 it degrades gracefully and still validates — a built-in robustness result.
+
+### The Write Planner + agent (Paper 3, capstone)
+
+| Capability | Module | Result |
+|---|---|---|
+| **`edit_intent`-conditioned optimiser** | `planner/optimize.py` | the same in-TRAC site ranks **#1** (knock-in) vs **#101** (safe-harbour) — intent is load-bearing |
+| **End-to-end planner** | `planner/pipeline.py` (`plan_write`) | ranked, fully traceable plans (site + writer + cargo + delivery + provenance) |
+| **recovery@k benchmark** (gating) | `validate/paper3_benchmark.py` | discriminating stratum **1.00 vs 0.00**, McNemar p=0.0156, gap CI [1.0,1.0]; control tie 0.67 |
+| **Forward hypotheses** | `validate/forward_hypotheses.py` | date-stamped novel F8/SERPINA1/CISH/HBA1 proposals + cited reviews |
+| **Tool-using agent** | `agent/orchestrator.py` | goal → cited plan; **no-fabrication + plan-equivalence + refusals** all verified |
+| **MCP server + one-command deploy** | `agent/mcp_server.py`, `docker-compose.yml` | tools for any external agent; self-hostable stack |
+
+The benchmark panel is **frozen and SHA-locked before tuning** (`prereg/paper3.yaml`); every documented write
+is cited to a Europe-PMC-verified primary source. The agent obtains every number from a validated tool call
+(never the LLM) and refuses clinical directives.
 
 ---
 
