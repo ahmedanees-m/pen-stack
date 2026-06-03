@@ -78,6 +78,11 @@ bridge_recombinase_data:   # Paper 4 (Phase 1.5) supervision
     durrant_2024:   { journal: Nature,  doi: "10.1038/s41586-024-07552-4", note: "bridge RNA / IS110 / IS621 discovery" }
     hiraizumi_2024: { journal: Nature,  doi: "10.1038/s41586-024-07570-2", note: "structural mechanism (PDB 8WT6)" }
     perry_2025:     { journal: Science, doi: "10.1126/science.adz0276", note: "ISCro4; 72-system screen; ~20% insertion, ~82% specificity; off-target profile" }
+    perry_2025_supp:
+      doi: "10.1126/science.adz0276"
+      tables: { S1: "72 orthologs (seqs, target/donor)", S2: "genome-wide insertion sites = measured off-targets (6865 rows)", S3: "deep mutational scan (Z-scores)" }
+      local_dir: "Final_Part_v3.0/Perry_et_al/  (PEN_PERRY_DIR; copyrighted — NOT committed/redistributed)"
+      derived: "data/curated/bridge_offtarget_profile_measured.parquet (per-position weights, committable)"
     pelea_2025:     { journal: Science, doi: "10.1126/science.adz1884", note: "programmable editing in human cells (labelled 'Pelea 2026' in plan; published 2025)" }
 
 literature_monitor:

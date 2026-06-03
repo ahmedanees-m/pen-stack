@@ -2,8 +2,10 @@
   "phase": "1.5",
   "paper": 4,
   "prepared": "2026-06-02",
+  "updated": "2026-06-03 (Perry 2025 supplementary obtained)",
   "sha256": {
-    "prereg/paper4.yaml": "9ea43befed7eae9a92137d07d6a176af6bc8923aad6f9f98333fb254493843d0",
-    "configs/bridge_offtarget_profile.yaml": "124b3950145899b4e47295e296ac7b6553ca46a74a1bfd49fd691e5f55e61942"
+    "prereg/paper4.yaml": "57727375922b2f3e302b7695ad9d42d4751860c070580fcee2bb26fecc8c6db6",
+    "configs/bridge_offtarget_profile.yaml": "124b3950145899b4e47295e296ac7b6553ca46a74a1bfd49fd691e5f55e61942",
+    "data/curated/bridge_offtarget_profile_measured.parquet": "b065e68b7437cbc6b2e14a6860d5454862a67f3e8221ef2daf500fc5f09e4076"
   }
 }

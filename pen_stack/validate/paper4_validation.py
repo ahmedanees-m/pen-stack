@@ -54,7 +54,9 @@ def build_controlled_set(core: str, n: int = 400, seed: int = 20260602) -> list[
 
 
 def run(core: str = "ACGTGTCTACGTGA", out: str | Path = _OUT) -> dict:
-    weights = position_weights()
+    # synthetic, data-independent demonstration -> pin to the literature profile (the measured Perry
+    # profile is used by paper4_real_validation; here position 8 weight 1.0 makes the mechanism crisp).
+    weights = position_weights(prefer_measured=False)
     rows = build_controlled_set(core)
     model_scores, ham_scores, labels = [], [], []
     for r in rows:

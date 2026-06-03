@@ -29,7 +29,7 @@ def test_profile_covers_14_core_positions():
 
 
 def test_position_model_beats_hamming_on_position():
-    w = position_weights()
+    w = position_weights(prefer_measured=False)   # literature profile: core weight 1.0 -> crisp mechanism
     distal = _CORE[:0] + "C" + _CORE[1:13] + "C"      # 2 mismatches at distal (tolerant) positions
     core_dis = _CORE[:6] + "A" + "A" + _CORE[8:]       # 2 mismatches at the critical CT core
     mm_d, mm_c = mismatches(distal, _CORE), mismatches(core_dis, _CORE)

@@ -19,13 +19,21 @@ from pathlib import Path
 
 import pandas as pd
 
-from pen_stack.bridge.ingest import load_profile_config, protective_weights
+from pen_stack.bridge.ingest import derive_measured_profile, load_profile_config, protective_weights
 
 _COMP = {"A": "T", "T": "A", "G": "C", "C": "G", "N": "N"}
 
 
-def position_weights() -> dict[int, float]:
-    """0-based protective weight per core position (1 = mismatch abolishes recombination)."""
+def position_weights(prefer_measured: bool = True) -> dict[int, float]:
+    """0-based protective weight per core position (1 = mismatch abolishes recombination).
+
+    Prefers the MEASURED profile derived from the Perry 2025 off-targets when available; otherwise the
+    literature-grounded config weights.
+    """
+    if prefer_measured:
+        m = derive_measured_profile()
+        if not m.empty:
+            return {int(p) - 1: float(w) for p, w in zip(m["position"], m["protective_weight"])}
     return {p - 1: w for p, w in protective_weights().items()}
 
 
