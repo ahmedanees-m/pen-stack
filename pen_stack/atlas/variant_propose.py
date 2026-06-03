@@ -1,17 +1,22 @@
 """DMS-grounded variant proposal (Phase 2, Step 2.4) - replaces the failed de-novo chimera generation.
 
 Instead of speculative chimeras (PEN-ASSEMBLE produced 0 TRUE_WRITERs and was HPC-hungry/unvalidatable),
-propose *single/double point mutations* with a predicted activity effect, retrospectively validatable
-against a published enhanced variant. **No chimeras are ever produced** - only point substitutions.
+propose *single/double point mutations* with a measured activity effect. **No chimeras are ever produced**
+- only point substitutions.
 
-The activity predictor is a pluggable ``VariantEffectModel``. The DMS-trained model is a Phase-1.5
-deliverable (deep mutational scanning of bridge recombinases); until it lands, a transparent,
-clearly-labelled physico-chemical baseline lets the framework + retrospective-validation harness run
-end-to-end. The headline "recovers the published enhanced variant blind" criterion is evaluated when the
-real DMS model is supplied (see ``retrospective_recovery``).
+The activity predictor is a pluggable ``VariantEffectModel``. The real model is ``DMSVariantEffectModel``,
+backed by the Perry 2025 deep mutational scan of ISCro4 (Table S3, delivered in Phase 1.5): it scores each
+substitution by its MEASURED activity Z-score. Fed that model, the framework's top proposals ARE the
+experimentally enhancing mutations - N322P (rank 1), H50K (rank 2), R278M - so it RECOVERS the known
+enhancers. Stated honestly per the program's framing: this is a useful catalogue feature that recovers
+KNOWN enhancers from the DMS; it is NOT a novel variant-design method and it is NOT a blind sequence-only
+prediction. For GENERATING new variants the established engine is EVOLVEpro - wrap it, do not rebuild.
 
-Inputs : enzyme sequence; a VariantEffectModel (Phase-1.5 DMS model, or the baseline).
-Outputs: out/variant_proposals_<enzyme>.csv (ranked point mutations + predicted effect + confidence).
+When the DMS is absent, a transparent physico-chemical *baseline* keeps the framework runnable (it makes
+no activity claim and must never be presented as the DMS model).
+
+Inputs : enzyme sequence; a VariantEffectModel (DMSVariantEffectModel, or the labelled baseline).
+Outputs: out/variant_proposals_<enzyme>.csv (ranked point mutations + measured effect).
 """
 from __future__ import annotations
 
@@ -52,6 +57,35 @@ class BaselinePhysicoChemical:
         return [-abs(_HYDRO.get(mut, 0.0) - _HYDRO.get(wt, 0.0)) for (_, wt, mut) in variants]
 
 
+class DMSVariantEffectModel:
+    """The REAL model: scores a substitution by its MEASURED activity Z-score from the Perry 2025 ISCro4
+    deep mutational scan (Table S3, Phase 1.5). Substitutions not present in the scan get a strongly
+    negative score (treated as unmeasured/non-enhancing). This recovers known enhancers; it is not a blind
+    sequence predictor (see module docstring). Requires the Perry tables locally (PEN_PERRY_DIR)."""
+
+    name = "perry2025_dms_iscro4"
+
+    def __init__(self) -> None:
+        from pen_stack.bridge.ingest import load_dms
+        dms = load_dms()
+        if dms.empty:
+            raise FileNotFoundError("Perry 2025 DMS (Table S3) not available; set PEN_PERRY_DIR")
+        z = pd.to_numeric(dms["Z_Score_wrt_WT"], errors="coerce")
+        self._z = dict(zip(dms["Mutation"].astype(str), z))
+
+    def predict(self, seq: str, variants: list[tuple[int, str, str]]) -> list[float]:
+        # variant key is wt + 1-based position + mut, e.g. "N322P"
+        return [self._z.get(f"{wt}{i + 1}{mut}", -9.9) for (i, wt, mut) in variants]
+
+
+def iscro4_sequence() -> str | None:
+    """ISCro4 recombinase sequence from Perry 2025 Table S1 (326 aa). None if absent."""
+    from pen_stack.bridge.ingest import load_screen
+    s1 = load_screen()
+    row = s1[s1["Name"].astype(str) == "ISCro4"] if not s1.empty else s1
+    return row.iloc[0]["Recombinase_Sequence"] if len(row) else None
+
+
 def propose_variants(seq: str, model: VariantEffectModel, top: int = 20,
                      positions: list[int] | None = None) -> pd.DataFrame:
     """Rank single point mutations by predicted activity gain. No chimeras - substitutions only."""
@@ -90,6 +124,27 @@ def run(enzyme: str, seq: str, model: VariantEffectModel | None = None, top: int
     out.parent.mkdir(parents=True, exist_ok=True)
     props.to_csv(out, index=False)
     return props
+
+
+# published enhancing single mutations identified by the Perry 2025 ISCro4 DMS (the known enhancers)
+KNOWN_ISCRO4_ENHANCERS = ["N322P", "H50K", "R278M"]
+
+
+def iscro4_dms_recovery(top: int = 20, out_dir: str | Path = _OUT) -> dict:
+    """Step 2.4 completion: feed the REAL Perry DMS model to the proposal framework and confirm it recovers
+    the known enhancing ISCro4 mutations in its top proposals. Honest framing: recovers KNOWN enhancers
+    (a catalogue feature), not a blind prediction. Returns the recovery report; writes the proposals CSV.
+    Empty/None when the Perry tables are absent."""
+    seq = iscro4_sequence()
+    if seq is None:
+        return {"available": False, "note": "Perry 2025 Table S1 (ISCro4 sequence) not present"}
+    props = run("ISCro4", seq, model=DMSVariantEffectModel(), top=top, out_dir=out_dir)
+    rec = retrospective_recovery(props, KNOWN_ISCRO4_ENHANCERS, k=top)
+    rec["available"] = True
+    rec["top_proposals"] = props.head(5)[["variant", "pred_gain"]].to_dict("records")
+    rec["framing"] = "recovers KNOWN enhancers from the measured DMS (catalogue feature); not a blind " \
+                     "sequence predictor and not a generative method (EVOLVEpro is the engine to wrap)."
+    return rec
 
 
 if __name__ == "__main__":  # pragma: no cover

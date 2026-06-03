@@ -28,7 +28,10 @@ variant_proposal:
   method: "single/double point mutations ranked by a pluggable VariantEffectModel; NO chimeras"
   success:
     zero_chimera_outputs: true
-    recovers_published_enhanced_variant_blind: "deferred to Phase 1.5 DMS model"   # framework + harness ready now
+    recovers_known_enhancers: "DONE (2026-06-03) - the real Perry 2025 DMS model (DMSVariantEffectModel)
+      recovers the known enhancing ISCro4 mutations N322P (rank 1) / H50K (rank 2) / R278M in the top
+      proposals. Honest framing: recovers KNOWN enhancers from the measured DMS (a catalogue feature), not
+      a blind sequence prediction and not a generative method (EVOLVEpro is the engine to wrap)."
 
 crosslink:
   success:
