@@ -40,8 +40,9 @@ jobs:
         run: |
           python tools/make_coverage_badge.py coverage.xml .github/badges/coverage.svg
           if ! git diff --quiet .github/badges/coverage.svg; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
+            # author as the single repository owner so automation does not appear as a second contributor
+            git config user.name "Anees Ahmed Mahaboob Ali"
+            git config user.email "ahmedaneesm@gmail.com"
             git add .github/badges/coverage.svg
             git commit -m "ci: refresh coverage badge [skip ci]"
             git push
