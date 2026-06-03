@@ -2,25 +2,22 @@
 
 Given a natural-language goal ("durably express factor IX in hepatocytes"), the agent plans the whole
 write by calling validated tools (writability -> reachable writers -> writer axes -> plan_write -> cited
-literature) in a tool-calling loop driven by a local LLM (Ollama/Qwen2.5-7B). Guardrails: it obtains
-numbers ONLY from tool calls (no free-text predictions), refuses clinical-directive prompts, and logs an
-auditable trace (every tool call's inputs + outputs + source).
+literature) in a tool-calling loop driven by the configured LLM (hybrid: NVIDIA Nemotron with Ollama
+fallback, via ``pen_stack.rag.llm.chat``). Guardrails: it obtains numbers ONLY from tool calls (no
+free-text predictions), refuses clinical-directive prompts, and logs an auditable trace.
 
-Graceful: if no LLM endpoint is reachable, ``run_agent`` returns a refusal-free deterministic fallback
+Graceful: if no LLM provider is reachable, ``run_agent`` returns a refusal-free deterministic fallback
 that calls plan_write directly - so the platform degrades to the validated pipeline rather than failing.
 """
 from __future__ import annotations
 
 import json
-import urllib.request
 from pathlib import Path
-
-import yaml
 
 from pen_stack.agent.guardrails import DISCLAIMER, out_of_scope
 from pen_stack.agent.tools import SCHEMAS, dispatch
+from pen_stack.rag.llm import chat as llm_chat
 
-_LLM_CFG = Path(__file__).resolve().parents[2] / "configs" / "llm.yaml"
 _TRACES = Path(__file__).resolve().parents[2] / "out" / "agent_traces"
 
 _SYSTEM = (
@@ -31,22 +28,12 @@ _SYSTEM = (
     "only - never give clinical directives.")
 
 
-def _llm_cfg() -> dict:
-    return yaml.safe_load(_LLM_CFG.read_text(encoding="utf-8"))
-
-
-def _ollama_chat(messages: list[dict], tools: list[dict], cfg: dict, timeout: int = 180) -> dict | None:
-    base = cfg.get("api_base", "http://localhost:11434")
-    model = str(cfg.get("model", "qwen2.5:7b-instruct")).split("/")[-1]
-    payload = {"model": model, "messages": messages, "tools": tools, "stream": False,
-               "options": {"temperature": float(cfg.get("temperature", 0.1))}}
-    try:
-        req = urllib.request.Request(f"{base}/api/chat", data=json.dumps(payload).encode(),
-                                     headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(req, timeout=timeout) as r:
-            return json.load(r)
-    except Exception:  # noqa: BLE001
-        return None
+def _tool_response(style: str, call_id: str | None, content: str) -> dict:
+    """Format a tool-result message for the provider's API style."""
+    m = {"role": "tool", "content": content}
+    if style == "openai" and call_id is not None:
+        m["tool_call_id"] = call_id
+    return m
 
 
 def run_agent(goal: str, max_steps: int = 12, cfg: dict | None = None) -> dict:
@@ -55,32 +42,29 @@ def run_agent(goal: str, max_steps: int = 12, cfg: dict | None = None) -> dict:
     if refusal:
         return {"refused": True, "plan": refusal, "trace": [], "disclaimer": DISCLAIMER}
 
-    cfg = cfg or _llm_cfg()
     msgs = [{"role": "system", "content": _SYSTEM}, {"role": "user", "content": goal}]
     trace: list[dict] = []
     seen: set = set()
 
     for _ in range(max_steps):
-        resp = _ollama_chat(msgs, SCHEMAS, cfg)
+        resp = llm_chat(msgs, tools=SCHEMAS, cfg=cfg, timeout=180)
         if resp is None:
             return _fallback(goal, trace)
-        msg = resp.get("message", {})
-        calls = msg.get("tool_calls") or []
+        provider, style = resp.get("provider"), resp.get("style", "openai")
+        calls = resp.get("tool_calls") or []
         if not calls:
-            return {"refused": False, "plan": msg.get("content", "").strip(),
-                    "trace": trace, "disclaimer": DISCLAIMER, "llm": True}
-        msgs.append(msg)
-        for c in calls:
-            fn = c.get("function", {})
-            name = fn.get("name")
-            args = fn.get("arguments", {})
-            if isinstance(args, str):
-                args = json.loads(args or "{}")
+            return {"refused": False, "plan": resp.get("content", "").strip(),
+                    "trace": trace, "disclaimer": DISCLAIMER, "llm": True, "provider": provider}
+        msgs.append(resp["raw"])                          # append the assistant turn verbatim
+        raw_calls = resp["raw"].get("tool_calls") or []
+        for i, c in enumerate(calls):
+            name = c["function"]["name"]
+            args = c["function"]["arguments"]
+            call_id = (raw_calls[i].get("id") if i < len(raw_calls) else None)
             key = f"{name}:{json.dumps(args, sort_keys=True, default=str)}"
             if key in seen:
-                # already answered this exact call - nudge the model to finish instead of looping
-                msgs.append({"role": "tool", "content": json.dumps(
-                    {"note": "already called with these args; use prior result and finalise the plan"})})
+                msgs.append(_tool_response(style, call_id, json.dumps(
+                    {"note": "already called with these args; use prior result and finalise the plan"})))
                 continue
             seen.add(key)
             try:
@@ -88,7 +72,7 @@ def run_agent(goal: str, max_steps: int = 12, cfg: dict | None = None) -> dict:
             except Exception as e:  # noqa: BLE001
                 result = {"error": str(e)}
             trace.append({"tool": name, "args": args, "result": result})
-            msgs.append({"role": "tool", "content": json.dumps(result, default=str)})
+            msgs.append(_tool_response(style, call_id, json.dumps(result, default=str)))
     return {"refused": False, "plan": "(max steps reached)", "trace": trace,
             "disclaimer": DISCLAIMER, "llm": True}
 

@@ -1,7 +1,14 @@
 # Deploying PEN-STACK (self-hosted, one command)
 
-PEN-STACK ships as a `docker-compose` stack - API + Streamlit UI + MCP server + a local LLM
-(Ollama/Qwen2.5-7B, Apache-2.0). Everything runs locally and free; **no paid API is required.**
+PEN-STACK ships as a `docker-compose` stack - API + Streamlit UI + MCP server + an LLM backend.
+Everything can run locally and free; **no paid API is required.**
+
+**Hybrid LLM (one switch, `configs/llm.yaml`).** The agent/RAG/PEN-MONITOR use a strong hosted model for
+reasoning/tool-use (default `provider: nvidia`, NVIDIA Nemotron, free, OpenAI-compatible) with automatic
+**fallback** to the local Ollama model (`fallback: ollama`), then to a deterministic no-LLM path. To use
+the hosted model, provide a key via the `NVIDIA_API_KEY` env var or a gitignored `configs/nvidia_api_key.txt`
+(in docker-compose, pass it to the `api`/`ui`/`mcp` services as `NVIDIA_API_KEY`). To run fully local,
+set `provider: ollama`. The LLM is non-load-bearing - all numbers/citations come from validated tools.
 
 ## Prerequisites
 - Docker + Docker Compose, an NVIDIA GPU (16 GB is enough) with the NVIDIA Container Toolkit.

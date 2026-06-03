@@ -1,13 +1,36 @@
-# PEN-STACK v3.0 - the single LLM switch every service (RAG, PEN-MONITOR, agent) reads via LiteLLM.
-# Default is a local, free, OSI-open model on the VM GPU. Switching model/provider is a one-line change.
-provider: ollama                      # ollama | vllm | openai | anthropic | ...
-model: ollama/qwen2.5:7b-instruct     # Apache-2.0, native tool-calling, ~4.7 GB Q4_K_M (fits 16 GB GPU)
-api_base: http://localhost:11434      # Ollama OpenAI-compatible endpoint
-temperature: 0.1
-embedding: ollama/nomic-embed-text    # local, free embeddings for the RAG (Apache-2.0)
-
-# Upgrade later (optional, NEVER required):
-#   model: ollama/qwen2.5:14b-instruct          # bigger local model, ~9.0 GB Q4_K_M (still fits 16 GB)
-#   provider: openai  + OPENAI_API_KEY          # paid, opt-in only
+# PEN-STACK v3.0 - the single LLM switch every service (RAG, PEN-MONITOR, agent) reads.
 #
-# NOTE: Qwen2.5 3B and 72B are NOT Apache-2.0 (Qwen Research Licence) - use 7B or 14B only.
+# HYBRID pattern: a strong hosted model for reasoning/agent/Q&A (NVIDIA Nemotron, free, no expiry) with
+# automatic fallback to a local, free, private model (Ollama). The LLM is NON-load-bearing: every number
+# and citation comes from validated tools, so the model choice never affects scientific reproducibility -
+# only orchestration/prose quality. Core scientific compute stays local/VM and uses no LLM at all.
+#
+# Switching is a one-line change to `provider`. Secrets are read from an env var or a gitignored file;
+# keys are NEVER committed.
+
+provider: nvidia          # active provider: nvidia | ollama | openai
+fallback: ollama          # used automatically when the active provider is unreachable/unauthorised
+temperature: 0.1
+embedding: ollama/nomic-embed-text   # local, free embeddings for the RAG (Apache-2.0)
+
+providers:
+  nvidia:                 # NVIDIA NIM, OpenAI-compatible. Stronger reasoning + tool-use; free, ~40 RPM.
+    style: openai
+    api_base: https://integrate.api.nvidia.com/v1
+    model: nvidia/nemotron-3-super-120b-a12b
+    api_key_env: NVIDIA_API_KEY                 # checked first
+    api_key_file: configs/nvidia_api_key.txt    # gitignored fallback (never committed)
+    max_tokens: 1024
+
+  ollama:                 # local/VM, free, private; the offline fallback + fast iterative dev/demos.
+    style: ollama
+    api_base: http://localhost:11434
+    model: qwen2.5:7b-instruct                  # Apache-2.0, native tool-calling, ~4.7 GB (fits 16 GB GPU)
+
+  openai:                 # optional, paid, opt-in only
+    style: openai
+    api_base: https://api.openai.com/v1
+    model: gpt-4o-mini
+    api_key_env: OPENAI_API_KEY
+
+# NOTE: Qwen2.5 3B and 72B are NOT Apache-2.0 (Qwen Research Licence) - use 7B or 14B for the local model.

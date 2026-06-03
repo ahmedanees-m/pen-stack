@@ -213,13 +213,20 @@ pen-bridge design --target ACGTGTCTACGTGA --donor TTGCATCTAGGCAC               #
 pen-stack monitor --back-test                             # PEN-MONITOR living-database scan
 ```
 
-Self-host the whole platform (API + web app + agent + MCP + local LLM), one command:
+Self-host the whole platform (API + web app + agent + MCP + LLM), one command:
 
 ```bash
 docker compose up -d
-docker compose exec ollama ollama pull qwen2.5:7b-instruct   # first run only
+docker compose exec ollama ollama pull qwen2.5:7b-instruct   # first run only (local fallback model)
 # Web app :8501  .  API :8000 (/plan, /bridge/design, /ask)  .  MCP :8765   (see docs/DEPLOY.md)
 ```
+
+**LLM backend (hybrid).** Services (agent, RAG, PEN-MONITOR) use one switch in `configs/llm.yaml`: a
+strong hosted model for reasoning/tool-use (default NVIDIA Nemotron, free) with **automatic fallback** to
+the local Ollama model, then to a deterministic no-LLM path. The LLM is non-load-bearing - every number
+and citation comes from validated tools - so the choice never affects scientific reproducibility, only
+orchestration quality. Set `NVIDIA_API_KEY` (or a gitignored `configs/nvidia_api_key.txt`) to use the
+hosted model; otherwise it runs fully local. The core scientific compute stays local/VM and uses no LLM.
 
 ## The web platform
 

@@ -3,7 +3,18 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
-## [Unreleased] - 2026-06-03 - honest reframing, repository polish, coverage
+## [Unreleased] - 2026-06-03 - honest reframing, repository polish, coverage, hybrid LLM
+
+### Added
+- **Hybrid LLM backend** (`pen_stack/rag/llm.py`, `configs/llm.yaml`): a strong hosted model for
+  reasoning/agent/Q&A (NVIDIA Nemotron, OpenAI-compatible, free) with **automatic fallback** to the local
+  Ollama model, then to the deterministic no-LLM path. One `provider` switch. The agent and RAG were
+  refactored onto a single provider-agnostic `chat()` (NVIDIA tool-call IDs and Ollama native message
+  threading both handled). The LLM stays non-load-bearing - every number/citation still comes from
+  validated tools - so the model choice does not affect scientific reproducibility; it only improves
+  orchestration (Nemotron planned a goal in 2 tool calls vs the local 7B's 8-call loop). Core scientific
+  compute stays local/VM and uses no LLM. API keys are read from an env var or a **gitignored** file and
+  are never committed.
 
 ### Changed
 - **Paper 4 reframed to its honest scope.** `pen-bridge` is positioned as the first measured-data-validated
