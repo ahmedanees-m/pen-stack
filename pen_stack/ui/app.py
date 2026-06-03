@@ -405,7 +405,7 @@ elif page == "Bridge design":
     scan_chrom = st.selectbox("Off-target scan", ["none (QC only)", "chr22", "chr21", "chrX"])
     if st.button("Design + assess", type="primary"):
         from pen_stack.bridge.fold_qc import qc_verdict
-        from pen_stack.bridge.ingest import derive_measured_profile
+        from pen_stack.bridge.ingest import load_measured_profile
         from pen_stack.bridge.pipeline import design_brna
         brna = design_brna(target, donor, scaffold)
         st.markdown(f'<div class="card"><b>Bridge RNA</b> ({scaffold}) — target {brna["target"]} · '
@@ -418,7 +418,7 @@ elif page == "Bridge design":
                     f'cross-loop {qc["cross_loop"]}' +
                     (f' · fold MFE {qc["fold"]["mfe"]}' if qc.get("fold", {}).get("available") else "") +
                     '</div>', unsafe_allow_html=True)
-        mp = derive_measured_profile()
+        mp = load_measured_profile()
         if not mp.empty:
             st.caption("Measured off-target position profile (Perry 2025, 6,856 real off-targets) — "
                        "central core (7–9) is the specificity determinant:")

@@ -70,6 +70,17 @@ def load_insertion_sites() -> pd.DataFrame:
     return df.dropna(subset=["Insertion_Site_Sequence", "Plasmid_Encoded_Sequence"])
 
 
+_MEASURED_PARQUET = _ROOT / "data" / "curated" / "bridge_offtarget_profile_measured.parquet"
+
+
+def load_measured_profile() -> pd.DataFrame:
+    """The MEASURED per-position profile. Prefers the committed derived parquet (available everywhere via
+    git); otherwise re-derives from the raw Perry tables (local only). Empty if neither is present."""
+    if _MEASURED_PARQUET.exists():
+        return pd.read_parquet(_MEASURED_PARQUET)
+    return derive_measured_profile()
+
+
 def derive_measured_profile() -> pd.DataFrame:
     """Per-position protective weight derived from the MEASURED off-targets (UMI-weighted conservation).
 
