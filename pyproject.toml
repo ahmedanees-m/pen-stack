@@ -74,6 +74,16 @@ omit = [
     "pen_stack/agent/mcp_server.py",    # MCP server (fastmcp runtime)
     "pen_stack/cli.py",          # thin CLI wrappers
     "pen_stack/__init__.py",
+    # modules whose tests REQUIRE the large Phase-1 writability atlas (Zenodo, not committed) or the
+    # copyrighted Perry 2025 tables (local only); they run in the VM/local integration suite, and their
+    # tests auto-skip in CI, so measuring them in CI would unfairly report 0%.
+    "pen_stack/atlas/crosslink.py",            # needs the Phase-1 atlas
+    "pen_stack/planner/pipeline.py",           # needs the Phase-1 atlas
+    "pen_stack/validate/paper3_benchmark.py",  # needs the Phase-1 atlas
+    "pen_stack/validate/forward_hypotheses.py",# needs the Phase-1 atlas
+    "pen_stack/validate/agent_eval.py",        # needs the Phase-1 atlas
+    "pen_stack/validate/paper4_real_validation.py",  # needs the Perry 2025 tables
+    "pen_stack/bridge/ortholog_screen.py",     # needs the Perry 2025 Table S1
 ]
 
 [tool.coverage.report]
