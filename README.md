@@ -55,8 +55,10 @@ writability(locus) = safety  ×  durability  ×  reachability
 > (McNemar p = 0.0156; bootstrap gap CI **[1.0, 1.0]** excludes zero), tying on safe-harbour controls — and
 > a tool-using **agent** turns a goal into a cited, auditable plan that provably never fabricates a number.
 > **Paper 4 (Bridge off-target engine):** a genome-wide off-target predictor for RNA-guided bridge
-> recombinases whose position-weight model beats a naïve Hamming ranking **AUROC 1.00 vs 0.59** (mismatch
-> *position* governs recombination) — shipped as `pen-bridge`, wrapping the Arc BridgeRNADesigner.
+> recombinases. Validated on the **measured Perry 2025 data** (6,856 real off-targets): the per-position
+> profile confirms the central core (positions 7–9) is the specificity determinant, and the position-weight
+> model beats a naïve Hamming ranking **AUROC 0.77 vs 0.62 on real off-targets** (1.00 vs 0.59 idealised).
+> Shipped as `pen-bridge`, wrapping the Arc BridgeRNADesigner.
 
 ---
 
@@ -91,7 +93,7 @@ bulk-downloadable public data and validated against an honest baseline before re
 | **Mechanism at scale** — homology→mechanism | `mech/whitelist.py`, `classify_atlas.py` | audited 18-family Pfam whitelist v1.2.1; **core agreement 1.00** |
 | **Therapeutic readiness** | `score/therapeutic.py` | deliverability / cargo / human-cell axes, components retained |
 | **Cross-link** — writer ↔ Writable Genome | `atlas/crosslink.py` | AAVS1 (*PPP1R12C*) scores **0.90 writability** and is bridge-reachable |
-| **Variant proposal** (DMS-grounded) | `atlas/variant_propose.py` | point mutations only (no chimeras); model plugs in at Phase 1.5 |
+| **Variant proposal** (DMS-grounded) | `atlas/variant_propose.py` | point mutations only (no chimeras); DMS model delivered in Phase 1.5 (Perry S3) |
 | **PEN-MONITOR** — living database | `monitor/` | Europe PMC scan; back-test **surfaces ISPpu10**; never auto-edits the atlas |
 | **Grounded RAG / Q&A** | `rag/`, `agent/guardrails.py` | numbers from tool calls, claims cited, clinical directives refused |
 
@@ -113,6 +115,21 @@ it degrades gracefully and still validates — a built-in robustness result.
 The benchmark panel is **frozen and SHA-locked before tuning** (`prereg/paper3.yaml`); every documented write
 is cited to a Europe-PMC-verified primary source. The agent obtains every number from a validated tool call
 (never the LLM) and refuses clinical directives.
+
+### The bridge off-target engine (Paper 4, beachhead — `pen-bridge`)
+
+| Capability | Module | Result |
+|---|---|---|
+| **Genome-wide off-target scan** | `bridge/offtarget.py` | CT-core-seeded hg38 pseudosite scan + position-weight risk (per-chromosome, memory-bounded) |
+| **Measured-data validation** | `validate/paper4_real_validation.py` | Perry 2025 (6,856 real off-targets): central core (7–9) confirmed; **model AUROC 0.77 vs Hamming 0.62** on real off-targets |
+| **Deep mutational scan** | `bridge/ingest.py` (Perry S3) | recovers top enhancers **N322P, H50K, R278M** — completes the Phase-2 §2.4 DMS variant step |
+| **Fold + cross-loop QC** | `bridge/fold_qc.py` | ViennaRNA fold (verified MFE) + TBL/DBL cross-loop check |
+| **Shipped tool** | `bridge/pipeline.py`, `bridge/cli.py` | `pen-bridge design` wraps the Arc BridgeRNADesigner + off-target/QC; `/bridge/design` API |
+
+**Key measured finding:** real off-targets carry a *median of 5 mismatches* (not ≤2) — recombination
+tolerance is **core-driven**, vindicating a position-weight model over a mismatch-count cap. The raw Perry
+2025 tables are copyrighted (kept local, never redistributed); only the derived measured profile
+(`data/curated/bridge_offtarget_profile_measured.parquet`) and validation results are released.
 
 ---
 
