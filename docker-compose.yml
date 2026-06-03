@@ -1,7 +1,7 @@
-# PEN-STACK v3.0 — one-command self-hostable platform (Phase 3, Step 3.11).
+# PEN-STACK v3.0 - one-command self-hostable platform (Phase 3, Step 3.11).
 # Brings up the local LLM (Ollama/Qwen2.5, free + open), the REST API, the Streamlit UI (with the Agent
 # chat page), and the MCP server. First run: `docker compose exec ollama ollama pull qwen2.5:7b-instruct`.
-# Everything runs locally — no paid API required.
+# Everything runs locally - no paid API required.
 services:
   ollama:
     image: ollama/ollama:latest

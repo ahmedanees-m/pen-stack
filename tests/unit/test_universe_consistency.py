@@ -1,4 +1,4 @@
-"""Cross-module universe consistency (Step 0.4) — the headline Phase-0 fix.
+"""Cross-module universe consistency (Step 0.4) - the headline Phase-0 fix.
 
 One canonical assembly path; the classifier/scorer/scorecard must consume identical metadata.
 """

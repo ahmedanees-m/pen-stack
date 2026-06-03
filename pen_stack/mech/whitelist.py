@@ -3,8 +3,8 @@
 Tier-A of MECH-CLASS: maps a Pfam domain architecture to a mechanism bucket
 (``DSB_NUCLEASE`` / ``DSB_FREE_TRANSEST_RECOMBINASE`` / ``TRANSPOSASE``) using domain presence plus
 *composite co-occurrence rules* (e.g. Cas9 requires >=2 of its 3 signature domains; IS110 requires
-both PF01548 and PF02371). This is the audited backbone the program carries forward (§9); the retired
-ESM-2 "PEN-DISCOVER" head is not used — domain evidence is the load-bearing mechanism signal.
+both PF01548 and PF02371). This is the audited backbone the program carries forward (Section 9); the retired
+ESM-2 "PEN-DISCOVER" head is not used - domain evidence is the load-bearing mechanism signal.
 
 The source YAML ``pfam_whitelist.yaml`` is the genome-atlas asset, accessions verified against InterPro
 on 2026-04-22 (v1.2.1 corrected three v1.2.0 accession errors).
@@ -43,7 +43,7 @@ class PfamWhitelist:
         self.version = "1.2.1"
 
     def classify(self, pfam_signature) -> MechCall:
-        """Mechanism from a Pfam domain set — independent of any inherited/family label."""
+        """Mechanism from a Pfam domain set - independent of any inherited/family label."""
         sig = {str(a).strip() for a in (pfam_signature or []) if str(a).strip()}
         hits = sorted(sig & set(self.bucket_of))
         if not hits:

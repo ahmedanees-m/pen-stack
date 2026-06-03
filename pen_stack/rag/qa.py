@@ -3,12 +3,12 @@
 The front door for non-expert users. Contract (enforced by pen_stack.agent.guardrails):
   * clinical-directive questions are refused;
   * every *quantitative* claim is produced by a validated tool call (writability / atlas / cross-link),
-    never guessed by the LLM — the answer's ``provenance`` block names the tool;
+    never guessed by the LLM - the answer's ``provenance`` block names the tool;
   * every factual claim carries a citation (DOIs from the curated atlas/WT-KB).
 
 An optional LLM (Ollama/Qwen via litellm) only *phrases* the grounded facts; it is never the source of a
 number or a citation. With no LLM available the deterministic tool+retrieval path still satisfies the
-contract — that is the whole point.
+contract - that is the whole point.
 """
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ _FAMILY_HINTS = {
 _WRITABLE_CUES = ("where", "writable", "safe harbour", "safe harbor", "insert", "insertion site", "locus")
 # Standing citation for tool-derived writability claims: the Phase-1 Writable Genome atlas
 # (TRIP durability supervision + clinical-CIS safety supervision).
-_WRITABILITY_CITATIONS = ["10.1016/j.cell.2013.07.018"]   # Akhtar 2013 (TRIP) — durability supervision
+_WRITABILITY_CITATIONS = ["10.1016/j.cell.2013.07.018"]   # Akhtar 2013 (TRIP) - durability supervision
 
 
 def _family_in(question: str) -> str | None:
@@ -96,7 +96,7 @@ def answer(question: str, ct: str = "k562", use_llm: bool = False) -> dict:
     out = {"refused": False, "answer": " ".join(parts), "citations": citations,
            "provenance": provenance, "disclaimer": DISCLAIMER}
     out = enforce_grounded(out)
-    # optional LLM phrasing — presentation only; numbers/citations stay tool-derived (additive field)
+    # optional LLM phrasing - presentation only; numbers/citations stay tool-derived (additive field)
     if use_llm:
         from pen_stack.rag.llm import phrase
         phrased = phrase(out["answer"])

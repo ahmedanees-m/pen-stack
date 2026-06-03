@@ -1,5 +1,5 @@
 site_name: PEN-STACK
-site_description: Open infrastructure for genome writing — the Writable Genome, the Writer Atlas, and the Write Planner.
+site_description: Open infrastructure for genome writing - the Writable Genome, the Writer Atlas, and the Write Planner.
 site_author: Anees Ahmed Mahaboob Ali
 repo_url: https://github.com/ahmedanees-m/pen-stack
 theme:

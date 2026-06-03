@@ -1,4 +1,4 @@
-"""Safety layer (Phase 1, Step 1.6) — calibrated genotoxicity-risk model.
+"""Safety layer (Phase 1, Step 1.6) - calibrated genotoxicity-risk model.
 
 Position features -> P(genotoxic) with isotonic calibration and CHROMOSOME-BLOCK cross-validation
 (so adjacent 1 kb bins never leak between train/test). Always reported against the honest baseline:

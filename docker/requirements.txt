@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — pinned in-image dependencies (one source of truth for all phases).
+# PEN-STACK v3.0 - pinned in-image dependencies (one source of truth for all phases).
 # Resolve/refresh against PyPI at build time; record actually-installed versions in configs/datasets.yaml.
 numpy==1.26.4
 pandas==2.2.2

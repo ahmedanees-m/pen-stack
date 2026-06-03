@@ -1,10 +1,10 @@
 """Inverse-design optimiser with edit_intent (Phase 3, Step 3.1).
 
-Given a goal (gene/locus, edit_intent, cargo, cell type), search destination × writer for the joint
-optimum of safety × durability × reachability × writer-activity, conditioned on an explicit
+Given a goal (gene/locus, edit_intent, cargo, cell type), search destination x writer for the joint
+optimum of safety x durability x reachability x writer-activity, conditioned on an explicit
 ``edit_intent``. The intent is *load-bearing*: its ``target_gene_sign`` decides whether hitting the
 named target gene/element is penalised (safe-harbour: avoid) or rewarded (knock-in / excision: intended)
-— so the same locus ranks high or low depending only on the stated goal.
+- so the same locus ranks high or low depending only on the stated goal.
 
 Components are retained on every candidate row; the score is a transparent linear combination read from
 ``configs/intent_weights.yaml``. Reachability is a hard filter (Tier-1 high-confidence; Tier-2 candidate

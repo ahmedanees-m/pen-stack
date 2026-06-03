@@ -1,22 +1,22 @@
 """Paper 4 validation on the REAL Perry 2025 data (Phase 1.5).
 
 Now that the Perry 2025 supplementary (Science adz0276) is available locally, the previously *gated*
-criteria are validated against measured data (raw tables stay local — copyrighted; only derived results
+criteria are validated against measured data (raw tables stay local - copyrighted; only derived results
 are written):
 
-1. **Measured position profile** — derive per-position protective weights from 6,856 real off-targets
+1. **Measured position profile** - derive per-position protective weights from 6,856 real off-targets
    (UMI-weighted). The data confirm the mechanism: the central core (positions 7-9, esp. 8) is the most
    conserved; distal positions are tolerant. This measured profile replaces the literature one.
 
-2. **HEADLINE — blind discrimination of real off-targets, beating Hamming.** Real observed off-targets
-   (which recombined → core preserved) are positives; a core-disrupted decoy of each (position-8 mutated →
+2. **HEADLINE - blind discrimination of real off-targets, beating Hamming.** Real observed off-targets
+   (which recombined -> core preserved) are positives; a core-disrupted decoy of each (position-8 mutated ->
    non-recombinogenic) is the negative. The position-weight model separates them near-perfectly where a
    position-blind Hamming ranking cannot (AUROC).
 
-3. **DMS variant-effect** — the Perry Table S3 deep mutational scan recovers the top activity-enhancing
-   single mutants (e.g. N322P, H50K); completes the Phase-2 §2.4 DMS variant-proposal step.
+3. **DMS variant-effect** - the Perry Table S3 deep mutational scan recovers the top activity-enhancing
+   single mutants (e.g. N322P, H50K); completes the Phase-2 Section 2.4 DMS variant-proposal step.
 
-4. **Honest limitation** — predicted sequence-risk does NOT rank the *magnitude* of recombination among
+4. **Honest limitation** - predicted sequence-risk does NOT rank the *magnitude* of recombination among
    already-observed off-targets (that is dominated by genomic context, not core sequence).
 
 Outputs: out/bridge_real_validation.json, features/bridge_offtarget_profile_measured.parquet.
@@ -123,7 +123,7 @@ def magnitude_limit() -> dict:
             zip(off["Insertion_Site_Sequence"], off["Plasmid_Encoded_Sequence"])]
     rho = spearmanr(risk, off["%_of_Insertions"].values).correlation
     return {"available": True, "risk_vs_magnitude_spearman": round(float(rho), 3),
-            "note": "weak by design — recombination magnitude among observed off-targets is dominated by "
+            "note": "weak by design - recombination magnitude among observed off-targets is dominated by "
                     "genomic context, not core sequence; the model's value is discrimination, not magnitude"}
 
 
@@ -133,7 +133,7 @@ def run(out: str | Path = _OUT) -> dict:
         "discrimination_headline": discrimination_auroc(),
         "dms_enhancers": dms_enhancers(),
         "magnitude_limitation": magnitude_limit(),
-        "data_source": "Perry et al. 2025, Science 391:eadz0276 (Tables S1-S3) — raw tables local/copyrighted",
+        "data_source": "Perry et al. 2025, Science 391:eadz0276 (Tables S1-S3) - raw tables local/copyrighted",
     }
     Path(out).parent.mkdir(parents=True, exist_ok=True)
     Path(out).write_text(json.dumps(report, indent=2), encoding="utf-8")

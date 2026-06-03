@@ -1,4 +1,4 @@
-"""PEN-STACK — The Writable Genome | Streamlit atlas browser.
+"""PEN-STACK - The Writable Genome | Streamlit atlas browser.
 
 A scientific front-end over the 3M-locus Writable Genome atlas. Two core queries:
   - Forward:  a gene/coordinate -> is it safe + durable to WRITE here?  (decomposed verdict)
@@ -20,7 +20,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 # ----------------------------------------------------------------------------- config / theme
-st.set_page_config(page_title="PEN-STACK · The Writable Genome", page_icon="🧬",
+st.set_page_config(page_title="PEN-STACK | The Writable Genome", page_icon="",
                    layout="wide", initial_sidebar_state="expanded")
 
 CSS = """
@@ -104,10 +104,10 @@ def region_bins(df, chrom, start, end):
 
 def verdict(writ_pct, safety_pct):
     if safety_pct < 0.15 or writ_pct < 0.20:
-        return "AVOID — high genotoxic risk / poor durability", "v-no"
+        return "AVOID - high genotoxic risk / poor durability", "v-no"
     if writ_pct < 0.55:
-        return "CAUTION — sub-optimal; consider nearby alternatives", "v-cau"
-    return "WRITABLE — safe & durable insertion locus", "v-go"
+        return "CAUTION - sub-optimal; consider nearby alternatives", "v-cau"
+    return "WRITABLE - safe & durable insertion locus", "v-go"
 
 
 # ----------------------------------------------------------------------------- viz helpers
@@ -143,8 +143,8 @@ def track_fig(sub, center=None):
 
 
 # ----------------------------------------------------------------------------- sidebar
-st.sidebar.markdown("## 🧬 PEN-STACK")
-st.sidebar.caption("The Writable Genome · v3.0")
+st.sidebar.markdown("##  PEN-STACK")
+st.sidebar.caption("The Writable Genome | v3.0")
 page = st.sidebar.radio("Navigate", ["Overview", "Forward query", "Site finder (inverse)",
                                      "Atlas browser", "Validation", "Cross-cell-type",
                                      "Writer Atlas", "Bridge design", "Write Planner", "Ask (RAG)",
@@ -153,7 +153,7 @@ _available_cts = sorted(p.stem.replace("atlas_", "") for p in DATA.glob("atlas_*
                         if p.stem.replace("atlas_", "") in CT_LABEL) or ["k562"]
 ct = st.sidebar.selectbox("Cell type", _available_cts, format_func=lambda c: CT_LABEL.get(c, c.upper()))
 st.sidebar.markdown("---")
-st.sidebar.caption("Writability = **safety × durability × reachability**, learned blind on public data.")
+st.sidebar.caption("Writability = **safety x durability x reachability**, learned blind on public data.")
 if not (DATA / "atlas_k562.parquet").exists():
     st.sidebar.error(f"Atlas not found in {DATA}. Set PEN_ATLAS_DIR.")
     st.stop()
@@ -170,7 +170,7 @@ def gene_row(name):
 if page == "Overview":
     st.markdown('<div class="hero">The Writable Genome</div>', unsafe_allow_html=True)
     st.markdown('<p class="sub">A predictive, writer-aware atlas of <b>where in the genome you can '
-                'safely and durably write new DNA</b> — and which enzyme can write it there.</p>',
+                'safely and durably write new DNA</b> - and which enzyme can write it there.</p>',
                 unsafe_allow_html=True)
     df = load_atlas(ct)
     c = st.columns(4)
@@ -191,7 +191,7 @@ if page == "Overview":
         st.markdown("##### Three learned layers")
         st.markdown('<div class="card mono">'
                     '<span class="badge">SAFETY</span> genotoxicity risk<br>'
-                    '<span style="color:#7e8db5">COSMIC · DepMap · 3.7M MLV sites</span><br><br>'
+                    '<span style="color:#7e8db5">COSMIC | DepMap | 3.7M MLV sites</span><br><br>'
                     '<span class="badge">DURABILITY</span> will it stay expressed<br>'
                     '<span style="color:#7e8db5">TRIP position-effect model</span><br><br>'
                     '<span class="badge">REACHABILITY</span> which writer reaches it<br>'
@@ -199,7 +199,7 @@ if page == "Overview":
                     unsafe_allow_html=True)
     v = load_validation()
     if v:
-        st.markdown("##### Blind validation — all pre-registered checks")
+        st.markdown("##### Blind validation - all pre-registered checks")
         cols = st.columns(len(v.get("prereg_checks", {})) or 1)
         for col, (k, ok) in zip(cols, v.get("prereg_checks", {}).items()):
             col.markdown(f'<div class="card"><div class="kpi-l">{k}</div>'
@@ -207,7 +207,7 @@ if page == "Overview":
                          f'{"PASS" if ok else "FAIL"}</div></div>', unsafe_allow_html=True)
 
 elif page == "Forward query":
-    st.markdown("### Forward query — *is it safe to write here?*")
+    st.markdown("### Forward query - *is it safe to write here?*")
     df = load_atlas(ct)
     c1, c2, c3 = st.columns([2, 1, 1])
     q = c1.text_input("Gene symbol or coordinate (chr:pos)", "AAVS1")
@@ -235,7 +235,7 @@ elif page == "Forward query":
                 sfp = float((df.safety < sf).mean())
                 msg, cls = verdict(wrp, sfp)
                 st.markdown(f'<div class="verdict {cls}">{msg}</div>', unsafe_allow_html=True)
-                st.caption(f"{chrom}:{max(0,start):,}-{end:,}  ·  {CT_LABEL[ct]}  ·  {len(sub)} loci")
+                st.caption(f"{chrom}:{max(0,start):,}-{end:,}  |  {CT_LABEL[ct]}  |  {len(sub)} loci")
                 g = st.columns(3)
                 g[0].plotly_chart(gauge(wr, "Writability", "#3dffa2"), use_container_width=True)
                 g[1].plotly_chart(gauge(sf, "Safety", "#37e6e0"), use_container_width=True)
@@ -248,11 +248,11 @@ elif page == "Forward query":
                             unsafe_allow_html=True)
 
 elif page == "Site finder (inverse)":
-    st.markdown("### Site finder — *the safest writable loci near a target*")
+    st.markdown("### Site finder - *the safest writable loci near a target*")
     df = load_atlas(ct)
     c1, c2, c3, c4 = st.columns([2, 1, 1, 1])
     gname = c1.text_input("Disease / target gene", "HBB")
-    span = c2.number_input("search ±(Mb)", 0.1, 5.0, 1.0)
+    span = c2.number_input("search  +/- (Mb)", 0.1, 5.0, 1.0)
     topn = c3.number_input("top N", 5, 200, 50)
     find = c4.button("Find sites", type="primary", use_container_width=True)
     if find or gname:
@@ -263,7 +263,7 @@ elif page == "Site finder (inverse)":
             lo, hi = gr.start - int(span * 1e6), gr.end + int(span * 1e6)
             sub = region_bins(df, gr.chrom, max(0, lo), hi).copy()
             top = sub.nlargest(int(topn), "writability")
-            st.caption(f"{gname} ({gr.chrom}:{gr.start:,}) · searching ±{span} Mb · {len(sub)} loci scanned")
+            st.caption(f"{gname} ({gr.chrom}:{gr.start:,}) | searching  +/- {span} Mb | {len(sub)} loci scanned")
             k = st.columns(3)
             k[0].markdown(f'<div class="card"><div class="kpi-l">candidate loci</div>'
                           f'<div class="kpi mono">{len(sub):,}</div></div>', unsafe_allow_html=True)
@@ -290,11 +290,11 @@ elif page == "Site finder (inverse)":
             out = out[["chrom", "position", "writability", "safety", "p_durable", "reachable_tier1"]]
             st.markdown(f"##### Top {topn} writable loci")
             st.dataframe(out.round(3), use_container_width=True, height=360)
-            st.download_button("⬇ Download ranked loci (CSV)", out.to_csv(index=False),
+            st.download_button("v Download ranked loci (CSV)", out.to_csv(index=False),
                                f"writable_loci_{gname}_{ct}.csv", "text/csv")
 
 elif page == "Atlas browser":
-    st.markdown("### Atlas browser — *genome-wide tracks*")
+    st.markdown("### Atlas browser - *genome-wide tracks*")
     df = load_atlas(ct)
     c1, c2, c3 = st.columns([1, 2, 2])
     chrom = c1.selectbox("chromosome", sorted(df.chrom.unique(), key=lambda x: (len(x), x)))
@@ -305,10 +305,10 @@ elif page == "Atlas browser":
     if len(sub) > 8000:
         sub = sub.iloc[:: len(sub) // 8000]
     st.plotly_chart(track_fig(sub), use_container_width=True)
-    st.caption(f"{chrom}:{int(rng[0]*1e6):,}-{int(rng[1]*1e6):,} · {len(sub):,} bins shown · {CT_LABEL[ct]}")
+    st.caption(f"{chrom}:{int(rng[0]*1e6):,}-{int(rng[1]*1e6):,} | {len(sub):,} bins shown | {CT_LABEL[ct]}")
 
 elif page == "Validation":
-    st.markdown("### Blind validation — *recovering known truth*")
+    st.markdown("### Blind validation - *recovering known truth*")
     v = load_validation()
     if not v:
         st.info("validation_report.json not found in the data directory.")
@@ -316,7 +316,7 @@ elif page == "Validation":
         d = v.get("durability") or {}
         a = v.get("atlas", {})
         c = st.columns(3)
-        c[0].markdown(f'<div class="card"><div class="kpi-l">durability Spearman ρ</div>'
+        c[0].markdown(f'<div class="card"><div class="kpi-l">durability Spearman rho</div>'
                       f'<div class="kpi mono" style="color:#3dffa2">{d.get("expr_spearman",0):.2f}</div></div>',
                       unsafe_allow_html=True)
         c[1].markdown(f'<div class="card"><div class="kpi-l">silenced/stable AUROC</div>'
@@ -327,7 +327,7 @@ elif page == "Validation":
         c[2].markdown(f'<div class="card"><div class="kpi-l">pre-registered checks</div>'
                       f'<div class="kpi" style="color:{"#3dffa2" if allok else "#ff5d6c"}">'
                       f'{"ALL PASS" if allok else "REVIEW"}</div></div>', unsafe_allow_html=True)
-        st.markdown("##### Safe harbours vs genotoxic CIS — writability percentile")
+        st.markdown("##### Safe harbours vs genotoxic CIS - writability percentile")
         rows = []
         for cell, av in a.items():
             for name, (cls, pct) in av.get("loci", {}).items():
@@ -337,32 +337,32 @@ elif page == "Validation":
             fig = go.Figure()
             for cls, color in [("SAFE", "#3dffa2"), ("GTOX", "#ff5d6c")]:
                 s = rdf[rdf["class"] == cls]
-                fig.add_trace(go.Bar(x=s.locus + " · " + s.cell, y=s.pct, name=cls, marker_color=color))
+                fig.add_trace(go.Bar(x=s.locus + " | " + s.cell, y=s.pct, name=cls, marker_color=color))
             fig.update_layout(height=360, yaxis_title="writability percentile",
                               barmode="group", **PLOTLY)
             st.plotly_chart(fig, use_container_width=True)
             st.caption("Validated safe harbours (green) score high; clinical genotoxic loci (red) score "
-                       "near zero — recovered blind, never trained on these labels.")
+                       "near zero - recovered blind, never trained on these labels.")
 
 elif page == "Cross-cell-type":
-    st.markdown("### Cross-cell-type — *function transfer, reported honestly*")
+    st.markdown("### Cross-cell-type - *function transfer, reported honestly*")
     a = load_atlas("k562")[["chrom", "bin", "writability"]].rename(columns={"writability": "k562"})
     b = load_atlas("hepg2")[["chrom", "bin", "writability"]].rename(columns={"writability": "hepg2"})
     m = a.merge(b, on=["chrom", "bin"]).sample(min(40000, len(a)), random_state=0)
     rho = float(pd.Series(m.k562).corr(pd.Series(m.hepg2), method="spearman"))
-    st.markdown(f'<div class="card"><div class="kpi-l">K562 ↔ HepG2 writability Spearman</div>'
+    st.markdown(f'<div class="card"><div class="kpi-l">K562 <-> HepG2 writability Spearman</div>'
                 f'<div class="kpi mono" style="color:#37e6e0">{rho:.2f}</div></div>', unsafe_allow_html=True)
     fig = go.Figure(go.Histogram2d(x=m.k562, y=m.hepg2, colorscale="Tealgrn", nbinsx=50, nbinsy=50))
     fig.update_layout(height=420, xaxis_title="K562 writability", yaxis_title="HepG2 writability", **PLOTLY)
     st.plotly_chart(fig, use_container_width=True)
     st.caption("The model is cell-type-specific in inputs, agnostic in function: writability correlates "
-               "across cell types yet differs locus-by-locus — the quantified transfer, not a footnote.")
+               "across cell types yet differs locus-by-locus - the quantified transfer, not a footnote.")
 
 elif page == "Writer Atlas":
-    st.markdown("### Writer Atlas — *every genome-writing family on common, measured axes*")
+    st.markdown("### Writer Atlas - *every genome-writing family on common, measured axes*")
     wa = load_writer_atlas()
     if wa.empty:
-        st.info("atlas.parquet not found — run `python scripts/p2_build_atlas.py`.")
+        st.info("atlas.parquet not found - run `python scripts/p2_build_atlas.py`.")
     else:
         cov = (wa.groupby("family")
                  .agg(systems=("representative_system", "size"),
@@ -391,11 +391,11 @@ elif page == "Writer Atlas":
             fig.update_layout(height=320, yaxis_title="therapeutic readiness",
                               xaxis_title="representative system", **PLOTLY)
             st.plotly_chart(fig, use_container_width=True)
-        st.caption("Reachability tiers: Tier-1 directly scannable · Tier-2 candidate (requires validation) "
-                   "· Tier-3 not yet predictable. Every system carries a confidence tag + source DOI.")
+        st.caption("Reachability tiers: Tier-1 directly scannable | Tier-2 candidate (requires validation) "
+                   ". Tier-3 not yet predictable. Every system carries a confidence tag + source DOI.")
 
 elif page == "Bridge design":
-    st.markdown("### Bridge design + off-target — *the first instrument of PEN-STACK*")
+    st.markdown("### Bridge design + off-target - *the first instrument of PEN-STACK*")
     st.caption("Design a bridge RNA (wraps the Arc BridgeRNADesigner) and assess fold + cross-loop QC and "
                "genome-wide off-target risk (position-weight model; measured profile from Perry 2025).")
     c1, c2 = st.columns(2)
@@ -408,20 +408,20 @@ elif page == "Bridge design":
         from pen_stack.bridge.ingest import load_measured_profile
         from pen_stack.bridge.pipeline import design_brna
         brna = design_brna(target, donor, scaffold)
-        st.markdown(f'<div class="card"><b>Bridge RNA</b> ({scaffold}) — target {brna["target"]} · '
+        st.markdown(f'<div class="card"><b>Bridge RNA</b> ({scaffold}) - target {brna["target"]} | '
                     f'donor {brna["donor"]}' +
-                    (f' · scaffold {len(brna["bridge_sequence"])} nt' if brna.get("available")
-                     else f' · <i>{brna["note"]}</i>') + '</div>', unsafe_allow_html=True)
+                    (f' | scaffold {len(brna["bridge_sequence"])} nt' if brna.get("available")
+                     else f' | <i>{brna["note"]}</i>') + '</div>', unsafe_allow_html=True)
         qc = qc_verdict(brna["target"], brna["donor"], brna.get("bridge_sequence"))
         vclass = "v-yes" if qc["pass"] else "v-cau"
-        st.markdown(f'<div class="verdict {vclass}">QC {"PASS" if qc["pass"] else "REVIEW"} — '
+        st.markdown(f'<div class="verdict {vclass}">QC {"PASS" if qc["pass"] else "REVIEW"} - '
                     f'cross-loop {qc["cross_loop"]}' +
-                    (f' · fold MFE {qc["fold"]["mfe"]}' if qc.get("fold", {}).get("available") else "") +
+                    (f' | fold MFE {qc["fold"]["mfe"]}' if qc.get("fold", {}).get("available") else "") +
                     '</div>', unsafe_allow_html=True)
         mp = load_measured_profile()
         if not mp.empty:
-            st.caption("Measured off-target position profile (Perry 2025, 6,856 real off-targets) — "
-                       "central core (7–9) is the specificity determinant:")
+            st.caption("Measured off-target position profile (Perry 2025, 6,856 real off-targets) - "
+                       "central core (7-9) is the specificity determinant:")
             st.bar_chart(mp.set_index("position")["protective_weight"])
         if scan_chrom != "none (QC only)":
             from pen_stack.bridge.pipeline import _hg38
@@ -430,7 +430,7 @@ elif page == "Bridge design":
                 st.warning("hg38 fasta not found on this host (set PEN_HG38); QC shown above.")
             else:
                 from pen_stack.bridge.offtarget import scan_offtargets
-                with st.spinner(f"scanning {scan_chrom} for off-target pseudosites…"):
+                with st.spinner(f"scanning {scan_chrom} for off-target pseudosites..."):
                     df = scan_offtargets(fa, brna["target"], [scan_chrom])
                 st.caption(f"{len(df)} off-target pseudosites on {scan_chrom} "
                            f"({int((df.risk>0.5).sum()) if len(df) else 0} high-risk):")
@@ -440,8 +440,8 @@ elif page == "Bridge design":
         st.caption("Decision-support only; predicted off-targets require experimental validation.")
 
 elif page == "Write Planner":
-    st.markdown("### Write Planner — *inverse design (Phase 3 capstone)*")
-    st.caption("goal + edit_intent → ranked, traceable site × writer × cargo × delivery plans. "
+    st.markdown("### Write Planner - *inverse design (Phase 3 capstone)*")
+    st.caption("goal + edit_intent -> ranked, traceable site x writer x cargo x delivery plans. "
                "edit_intent is load-bearing (an in-gene site ranks high for knock-in, low for safe-harbour).")
     gene = st.text_input("Target gene", "TRAC")
     intent = st.selectbox("Edit intent", ["knock_in_with_disruption", "safe_harbour_insertion",
@@ -451,7 +451,7 @@ elif page == "Write Planner":
         from pen_stack.planner.optimize import EditIntent
         from pen_stack.planner.pipeline import plan_write
         try:
-            with st.spinner("optimising destination × writer × cargo × delivery…"):
+            with st.spinner("optimising destination x writer x cargo x delivery..."):
                 plans = plan_write(gene, EditIntent(intent), cargo_bp, ct, k=5)
         except FileNotFoundError as e:
             st.error(str(e))
@@ -460,19 +460,19 @@ elif page == "Write Planner":
             st.warning("No plan found (gene not in the atlas, or no reachable site).")
         for i, p in enumerate(plans, 1):
             s = p["site"]
-            st.markdown(f'<div class="card"><b>Plan {i}</b> — {s["chrom"]}:{s["pos"]:,} '
-                        f'(on_target={p["on_target"]}) · writer <b>{p["writer"]}</b> '
-                        f'[{p["reachability_tier"]}]<br>safety {p["safety"]} · durability {p["durability"]} '
-                        f'· writer-activity {p["writer_activity"]} · score {p["score"]}<br>'
-                        f'cargo {p["cargo"]["payload_bp"]}bp→{p["cargo"]["assembled_bp"]}bp '
-                        f'(size_ok={p["cargo"]["size_ok"]}) · delivery <b>{p["delivery"]["delivery"]}</b> · '
+            st.markdown(f'<div class="card"><b>Plan {i}</b> - {s["chrom"]}:{s["pos"]:,} '
+                        f'(on_target={p["on_target"]}) | writer <b>{p["writer"]}</b> '
+                        f'[{p["reachability_tier"]}]<br>safety {p["safety"]} | durability {p["durability"]} '
+                        f'. writer-activity {p["writer_activity"]} | score {p["score"]}<br>'
+                        f'cargo {p["cargo"]["payload_bp"]}bp->{p["cargo"]["assembled_bp"]}bp '
+                        f'(size_ok={p["cargo"]["size_ok"]}) | delivery <b>{p["delivery"]["delivery"]}</b> | '
                         f'off-target {p["cargo"].get("offtargets",{}).get("status","n/a")}</div>',
                         unsafe_allow_html=True)
         if plans:
             st.caption(plans[0]["disclaimer"])
 
 elif page == "Ask (RAG)":
-    st.markdown("### Ask — *grounded, cited Q&A over the platform*")
+    st.markdown("### Ask - *grounded, cited Q&A over the platform*")
     st.caption("Numbers come from validated tool calls (never guessed); clinical-directive questions are refused.")
     q = st.text_input("Ask a question",
                       "Which bridge recombinase works in human cells, and where can I write into CCR5?")
@@ -492,13 +492,13 @@ elif page == "Ask (RAG)":
         st.caption(a.get("disclaimer", ""))
 
 elif page == "Agent":
-    st.markdown("### Agent — *natural-language goal → cited, auditable write plan*")
+    st.markdown("### Agent - *natural-language goal -> cited, auditable write plan*")
     st.caption("The PEN-STACK agent orchestrates every validated tool. It obtains numbers ONLY from tool "
                "calls (no fabrication), refuses clinical directives, and logs an auditable trace.")
     goal = st.text_input("Goal", "Knock a CAR into TRAC, disrupting the TCR for allogeneic CAR-T.")
     if st.button("Plan with agent", type="primary"):
         from pen_stack.agent.orchestrator import run_agent
-        with st.spinner("Agent calling validated tools…"):
+        with st.spinner("Agent calling validated tools..."):
             res = run_agent(goal)
         if res.get("refused"):
             st.markdown(f'<div class="verdict v-no">{res["plan"]}</div>', unsafe_allow_html=True)
@@ -514,5 +514,5 @@ elif page == "Agent":
         st.caption(res.get("disclaimer", ""))
 
 st.markdown("---")
-st.caption("PEN-STACK v3.0 · The Writable Genome + Writer Atlas + Write Planner + agent · decision-support, "
-           "not a clinical directive · every score traceable to public data + a pre-registered model.")
+st.caption("PEN-STACK v3.0 | The Writable Genome + Writer Atlas + Write Planner + agent | decision-support, "
+           "not a clinical directive | every score traceable to public data + a pre-registered model.")

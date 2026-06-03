@@ -1,13 +1,13 @@
-"""The PEN-STACK agent (Phase 3, Step 3.9) — tool-use orchestration.
+"""The PEN-STACK agent (Phase 3, Step 3.9) - tool-use orchestration.
 
 Given a natural-language goal ("durably express factor IX in hepatocytes"), the agent plans the whole
-write by calling validated tools (writability → reachable writers → writer axes → plan_write → cited
+write by calling validated tools (writability -> reachable writers -> writer axes -> plan_write -> cited
 literature) in a tool-calling loop driven by a local LLM (Ollama/Qwen2.5-7B). Guardrails: it obtains
 numbers ONLY from tool calls (no free-text predictions), refuses clinical-directive prompts, and logs an
 auditable trace (every tool call's inputs + outputs + source).
 
 Graceful: if no LLM endpoint is reachable, ``run_agent`` returns a refusal-free deterministic fallback
-that calls plan_write directly — so the platform degrades to the validated pipeline rather than failing.
+that calls plan_write directly - so the platform degrades to the validated pipeline rather than failing.
 """
 from __future__ import annotations
 
@@ -25,10 +25,10 @@ _TRACES = Path(__file__).resolve().parents[2] / "out" / "agent_traces"
 
 _SYSTEM = (
     "You are the PEN-STACK genome-writing planning agent. You MUST obtain every fact and number by "
-    "calling the provided tools — never invent a number, gene, score, or citation. Plan a write by "
+    "calling the provided tools - never invent a number, gene, score, or citation. Plan a write by "
     "calling: writability, reachable_writers, writer_axes, plan_write, ask_literature. When you have "
     "enough tool results, write a short plan that cites which tool produced each number. Decision-support "
-    "only — never give clinical directives.")
+    "only - never give clinical directives.")
 
 
 def _llm_cfg() -> dict:
@@ -78,7 +78,7 @@ def run_agent(goal: str, max_steps: int = 12, cfg: dict | None = None) -> dict:
                 args = json.loads(args or "{}")
             key = f"{name}:{json.dumps(args, sort_keys=True, default=str)}"
             if key in seen:
-                # already answered this exact call — nudge the model to finish instead of looping
+                # already answered this exact call - nudge the model to finish instead of looping
                 msgs.append({"role": "tool", "content": json.dumps(
                     {"note": "already called with these args; use prior result and finalise the plan"})})
                 continue

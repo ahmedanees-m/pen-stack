@@ -1,7 +1,7 @@
 """Therapeutic-readiness scoring across families (Phase 2, Step 2.3).
 
 The motto's "therapeutic-ready" axis, realised and *measured*: score every Writer-Atlas system for
-deliverability, cargo capacity, immunogenicity proxy, and human-cell compatibility — using the Phase-0
+deliverability, cargo capacity, immunogenicity proxy, and human-cell compatibility - using the Phase-0
 re-grounded axes (configs/score_axes.yaml is the single source of thresholds; no per-enzyme overrides).
 All components are retained on the row (a transparent profile, never collapsed to one opaque number).
 

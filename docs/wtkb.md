@@ -1,6 +1,6 @@
 # Writer-Targeting Knowledge Base (WT-KB)
 
-_Generated from `configs/wtkb_curated.yaml` — 8 writer families. Every row is schema-validated and carries >=1 DOI (sourcing rule)._
+_Generated from `configs/wtkb_curated.yaml` - 8 writer families. Every row is schema-validated and carries >=1 DOI (sourcing rule)._
 
 | Family | Representative | Mechanism | Modality | Target site | Tier | Confidence | DOIs |
 |---|---|---|---|---|---|---|---|
@@ -17,9 +17,9 @@ _Generated from `configs/wtkb_curated.yaml` — 8 writer families. Every row is 
 
 - **bridge_IS110** (Tier1_scannable): scan hg38 for bipartite core match around the CT dinucleotide; both loops reprogrammable; sites with <=2 mismatches are off-target risk (Perry 2025)
 - **seek_IS1111** (Tier1_scannable): scan hg38 for the seekRNA-specified bipartite target; mechanism computationally identified across diverse IS110/IS1111 members (Durrant 2024)
-- **CAST_VK** (Tier2_context_candidate): protospacer + PAM + fixed +60-66 bp insertion distance + recruitment context; candidate site — requires experimental validation
+- **CAST_VK** (Tier2_context_candidate): protospacer + PAM + fixed +60-66 bp insertion distance + recruitment context; candidate site - requires experimental validation
 - **serine_integrase** (Tier2_context_candidate): scan for native pseudo-att against the Bxb1 specificity profile (candidate); an INSTALLED att collapses to Tier 1 (deterministic) via PE/landing pad
 - **PE_integrase** (Tier1_scannable): Tier-1 via PE-installability check (can a pegRNA be efficiently designed at the locus?), bounded by prime-editing context; after install the att step is deterministic
 - **Cas9** (Tier1_scannable): scan for 20 nt protospacer + NGG PAM; insertion requires a DSB + HDR template (not DSB-free); included for completeness/comparison
 - **Cas12a** (Tier1_scannable): scan for 5' TTTV PAM + 23 nt protospacer; DSB-dependent insertion; completeness/comparison entry
-- **TnpB_Fanzor** (Tier3_not_predictable): TAM + omegaRNA target; insertion preferences not yet genome-scale predictable — flagged not-yet-predictable
+- **TnpB_Fanzor** (Tier3_not_predictable): TAM + omegaRNA target; insertion preferences not yet genome-scale predictable - flagged not-yet-predictable

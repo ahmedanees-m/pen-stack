@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — the single LLM switch every service (RAG, PEN-MONITOR, agent) reads via LiteLLM.
+# PEN-STACK v3.0 - the single LLM switch every service (RAG, PEN-MONITOR, agent) reads via LiteLLM.
 # Default is a local, free, OSI-open model on the VM GPU. Switching model/provider is a one-line change.
 provider: ollama                      # ollama | vllm | openai | anthropic | ...
 model: ollama/qwen2.5:7b-instruct     # Apache-2.0, native tool-calling, ~4.7 GB Q4_K_M (fits 16 GB GPU)
@@ -10,4 +10,4 @@ embedding: ollama/nomic-embed-text    # local, free embeddings for the RAG (Apac
 #   model: ollama/qwen2.5:14b-instruct          # bigger local model, ~9.0 GB Q4_K_M (still fits 16 GB)
 #   provider: openai  + OPENAI_API_KEY          # paid, opt-in only
 #
-# NOTE: Qwen2.5 3B and 72B are NOT Apache-2.0 (Qwen Research Licence) — use 7B or 14B only.
+# NOTE: Qwen2.5 3B and 72B are NOT Apache-2.0 (Qwen Research Licence) - use 7B or 14B only.

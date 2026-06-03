@@ -3,7 +3,7 @@
 The prior `prog`/`cargo` axes were effectively hand-set flags (`s_prog=1.0` for everything) that
 required per-enzyme overrides to pass any gate. Here each axis is a documented, continuous function
 of a *measured* input read from ``configs/score_axes.yaml``. There are NO per-enzyme override
-constants in this module — that invariant is checked by ``tests/unit/test_no_overrides.py``.
+constants in this module - that invariant is checked by ``tests/unit/test_no_overrides.py``.
 """
 from __future__ import annotations
 

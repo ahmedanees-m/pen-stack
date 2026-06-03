@@ -1,6 +1,6 @@
-"""Phase 3, Step 3.1 — inverse-design optimiser with edit_intent.
+"""Phase 3, Step 3.1 - inverse-design optimiser with edit_intent.
 
-Pre-registered criterion: edit_intent changes the ranking sensibly — an in-gene site ranks high for
+Pre-registered criterion: edit_intent changes the ranking sensibly - an in-gene site ranks high for
 knock_in_with_disruption and low for safe_harbour_insertion. Uses a synthetic candidate frame (offline)
 plus, when present, the Phase-1 writability atlas for an end-to-end check.
 """

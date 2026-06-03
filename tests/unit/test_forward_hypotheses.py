@@ -1,4 +1,4 @@
-"""Phase 3, Step 3.6 — forward hypotheses + grounded ranking.
+"""Phase 3, Step 3.6 - forward hypotheses + grounded ranking.
 
 Criterion: hypotheses are concrete (site + writer), registered with a date; numeric fields come from the
 validated models (not the LLM); the ranking is produced over cited reviews.

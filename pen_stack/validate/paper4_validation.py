@@ -1,4 +1,4 @@
-"""Paper 4 validation (Phase 1.5) — off-target engine vs naive Hamming.
+"""Paper 4 validation (Phase 1.5) - off-target engine vs naive Hamming.
 
 The headline criterion that does NOT need the paywalled measured data: the position-weight model is
 strictly more informative than a position-blind Hamming ranking. On a controlled set of pseudosites with
@@ -26,7 +26,7 @@ _BASES = "ACGT"
 
 
 def _auroc(scores: list[float], labels: list[int]) -> float:
-    """AUROC via the Mann–Whitney U statistic (ties counted as 0.5)."""
+    """AUROC via the Mann-Whitney U statistic (ties counted as 0.5)."""
     pos = [s for s, y in zip(scores, labels) if y == 1]
     neg = [s for s, y in zip(scores, labels) if y == 0]
     if not pos or not neg:

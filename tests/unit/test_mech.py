@@ -1,4 +1,4 @@
-"""Phase 2, Step 2.2 — mechanism classification at scale.
+"""Phase 2, Step 2.2 - mechanism classification at scale.
 
 Asserts the pre-registered criterion: the Pfam-whitelist classifier agrees with the audited 18-family
 labels on the curated core, and that homology-derived mechanism is computed independently of the

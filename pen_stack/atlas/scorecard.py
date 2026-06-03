@@ -1,10 +1,10 @@
 """Descriptive writer scorecard (Phase 0, Step 0.5).
 
-Reframes the prior 5-gate "TRUE_WRITER certification" (circular — it pre-registered ISCro4 *by name*
+Reframes the prior 5-gate "TRUE_WRITER certification" (circular - it pre-registered ISCro4 *by name*
 and depended on hand-set scores) into a transparent, DESCRIPTIVE scorecard computed from the
 re-grounded axes. No enzyme is named in any pre-registered prediction. We additionally report a
 *blind concordance* outcome: does the ranking place ISCro4 at the top of the bridge family using only
-generic measured axes (cell-based evidence, DSB-freeness, programmability, cargo) — without any
+generic measured axes (cell-based evidence, DSB-freeness, programmability, cargo) - without any
 ISCro4-specific value being asserted? This is reported, never asserted as an input.
 """
 from __future__ import annotations
@@ -72,7 +72,7 @@ def _descriptive_tier(row, th) -> str:
 def composite(row) -> float:
     """Transparent composite; components stay visible on the scorecard.
 
-    Includes human-cell evidence (``has_cell_based``) as a generic readiness axis — this is the
+    Includes human-cell evidence (``has_cell_based``) as a generic readiness axis - this is the
     signal that distinguishes the standout human-cell bridge recombinase. It is a generic column
     present for every editor, NOT an ISCro4-specific asserted value (so the concordance stays blind).
     """

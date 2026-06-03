@@ -1,7 +1,7 @@
-"""PEN-STACK agent tools (Phase 3, Step 3.9) — the validated capabilities the agent may call.
+"""PEN-STACK agent tools (Phase 3, Step 3.9) - the validated capabilities the agent may call.
 
 Each tool wraps a *validated* module function and returns a JSON-serialisable, provenance-tagged result.
-The agent may obtain numbers ONLY by calling these — never by free-text generation (the no-fabrication
+The agent may obtain numbers ONLY by calling these - never by free-text generation (the no-fabrication
 guarantee, enforced by the eval harness). Schemas are the Ollama/OpenAI tool-calling format.
 """
 from __future__ import annotations

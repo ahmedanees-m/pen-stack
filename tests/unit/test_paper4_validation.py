@@ -1,4 +1,4 @@
-"""Phase 1.5 — off-target engine validation (position model beats naive Hamming)."""
+"""Phase 1.5 - off-target engine validation (position model beats naive Hamming)."""
 from __future__ import annotations
 
 from pen_stack.validate.paper4_validation import run

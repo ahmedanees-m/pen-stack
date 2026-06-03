@@ -1,13 +1,13 @@
 # config/gates_v3.yaml
-# PRE-REGISTERED — SHA-256 locked at Step 8.
+# PRE-REGISTERED - SHA-256 locked at Step 8.
 # DO NOT EDIT AFTER LOCK.
 #
 # Pairs with: prereg/predictions_v3.yaml, prereg/methodology_v3.md
-# Manifesto reference: PEN-STACK v2.2 §1.4.3 (Molecular Pen Properties)
+# Manifesto reference: PEN-STACK v2.2 Section 1.4.3 (Molecular Pen Properties)
 
 schema_version: "3.2"
 truewriterscore_version: "3.2.0"
-manifesto_reference: "PEN-STACK v2.2 §1.4.3 (Molecular Pen Properties)"
+manifesto_reference: "PEN-STACK v2.2 Section 1.4.3 (Molecular Pen Properties)"
 architecture: "hierarchical_with_necessary_gate"
 
 # ============================================================
@@ -36,7 +36,7 @@ qualifying_gates:
     manifesto_property: "Property 3: Target Specificity (programmable)"
     rationale: |
       Site-specific recombinases (Bxb1, Cre, phiC31, Lambda_Int) fail this gate.
-      They are non-programmable writers — fixed att sites, not sequence-programmable.
+      They are non-programmable writers - fixed att sites, not sequence-programmable.
 
   gate_3_native_cargo:
     name: "Native Cargo Capability"
@@ -85,7 +85,7 @@ removed_gates:
   gate_6_energy:
     reason: |
       Walker A/B regex test was biochemically trivial. CAST family (evoCAST,
-      CAST_VK, CAST_IF) honestly lands in PROBABLE_WRITER or TRUE_WRITER —
+      CAST_VK, CAST_IF) honestly lands in PROBABLE_WRITER or TRUE_WRITER -
       multi-subunit ATP-dependent transposases are legitimate writer architectures,
       architecturally distinct from single-protein bridge recombinases.
     retained_as_metadata: true
@@ -138,7 +138,7 @@ tiers:
       - "necessary_gates.gate_1_dsb FAILS"
       - "necessary_gates.gate_1_dsb passes BUT 0 qualifying gates pass"
     examples:
-      - "SpCas9 (S_DSB=0.0 → auto-fail, NOT_WRITER regardless of all other gates)"
+      - "SpCas9 (S_DSB=0.0 -> auto-fail, NOT_WRITER regardless of all other gates)"
       - "AsCas12a (same)"
 
 # ============================================================
@@ -200,9 +200,9 @@ sensitivity_grid:
   g4_size_max:
     values: [600, 750, 900, 1050, 1200]
     n_values: 5
-total_combinations: 18000  # 15 × 15 × 16 × 5
+total_combinations: 18000  # 15 x 15 x 16 x 5
 
 robustness_thresholds:
   robust: 0.80         # >= 80% of threshold combinations agree on tier
-  boundary_case: 0.50  # < 50% agree → boundary case (informative finding)
+  boundary_case: 0.50  # < 50% agree -> boundary case (informative finding)
   note: "robustness_fraction = (combinations agreeing with default-threshold tier) / 18000"

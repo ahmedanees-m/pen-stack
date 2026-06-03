@@ -1,4 +1,4 @@
-"""Phase 2, Step 2.7 — PEN-MONITOR living-database engine.
+"""Phase 2, Step 2.7 - PEN-MONITOR living-database engine.
 
 Offline: triage classifies a synthetic ISPpu10 hit to bridge_IS110, carries a citation, and marks it
 pending_review (never auto-accepted). Network (optional): the back-test surfaces ISPpu10 (PPR1218813).
@@ -27,7 +27,7 @@ def test_triage_classifies_and_cites():
 
 
 def test_triage_never_autoedits():
-    # the triage row is a *candidate* only — confidence inferred, status pending
+    # the triage row is a *candidate* only - confidence inferred, status pending
     row = triage_hit(_ISPPU10_HIT)
     assert row["confidence"] == "inferred"
     assert row["status"] != "accepted"

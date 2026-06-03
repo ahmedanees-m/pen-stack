@@ -1,4 +1,4 @@
-"""LLM guardrails for PEN-STACK platform services (Phase 2, §2B).
+"""LLM guardrails for PEN-STACK platform services (Phase 2, Section 2B).
 
 The contract every service obeys: **grounded** (answers from the curated atlas + indexed literature),
 **cited** (every factual claim carries a source), **defer-to-models** (any quantitative claim is produced
@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import re
 
-DISCLAIMER = ("Decision-support only — PEN-STACK returns calibrated risk/durability/reachability "
+DISCLAIMER = ("Decision-support only - PEN-STACK returns calibrated risk/durability/reachability "
               "estimates, not clinical directives. Tier-2/3 reachability is candidate and requires "
               "experimental validation. Verify all designs experimentally.")
 
@@ -44,6 +44,6 @@ def enforce_grounded(answer: dict) -> dict:
     # if the answer reports numbers, there must be a tool-call provenance entry backing them
     has_number = bool(re.search(r"\d", str(answer.get("answer", ""))))
     if has_number and not answer["provenance"]:
-        answer["warning"] = "numeric claim without tool provenance — suppressed"
+        answer["warning"] = "numeric claim without tool provenance - suppressed"
         answer["answer"] = "(suppressed: a number was produced without a backing tool call)"
     return answer

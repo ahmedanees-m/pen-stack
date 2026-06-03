@@ -1,4 +1,4 @@
-"""Phase 3, Step 3.5 — two-stratum recovery@k benchmark (paper-defining).
+"""Phase 3, Step 3.5 - two-stratum recovery@k benchmark (paper-defining).
 
 Pre-registered criterion: on the discriminating stratum the Planner beats the intent-blind baseline with
 a bootstrap CI excluding zero; on the control stratum the Planner is not worse. Skips when the Phase-1

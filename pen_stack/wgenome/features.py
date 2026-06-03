@@ -14,7 +14,7 @@ import pandas as pd
 # Unified chromatin feature set: ONE accessibility feature (ATAC where present, else DNase) +
 # the 5 core histone marks. This makes every cell type share an IDENTICAL schema, so a cell type
 # that lacks a specific accessibility assay (e.g. CD34+ HSPC has DNase but no ATAC) is fully
-# specified rather than "partial" — ATAC and DNase are interchangeable open-chromatin assays.
+# specified rather than "partial" - ATAC and DNase are interchangeable open-chromatin assays.
 CHROMATIN_TRACKS = ["accessibility", "H3K27ac", "H3K4me1", "H3K4me3", "H3K9me3", "H3K27me3"]
 ACCESS_SOURCES = ["atac", "dnase"]
 SAFETY_DIST = ["dist_oncogene", "dist_tsg", "dist_essential", "dist_tss"]

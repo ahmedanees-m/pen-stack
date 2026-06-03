@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — Writer-Targeting Knowledge Base (WT-KB), curated source table (Phase 0, Step 0.2).
+# PEN-STACK v3.0 - Writer-Targeting Knowledge Base (WT-KB), curated source table (Phase 0, Step 0.2).
 # The artifact that does NOT exist in any prior repo: per-family targeting requirements + reachability tier.
 # Every target_site_spec / guide_architecture / reachability_constraints value carries a DOI in key_dois.
 # IDs and DOIs independently verified 2026-06-01 (see Final_Part_v3.0/VERIFICATION_REPORT_v3.0.md).
@@ -49,7 +49,7 @@ CAST_VK:
   representative_system: ShCAST (Scytonema hofmanni, Cas12k)
   uniprot: null
   mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
-  pfam_signature: [PF11426]   # TnsC; CAST V-K lacks TnsA — detect via TnsB+TnsC+Cas12k
+  pfam_signature: [PF11426]   # TnsC; CAST V-K lacks TnsA - detect via TnsB+TnsC+Cas12k
   targeting_modality: RNA-guided
   target_site_spec: "Cas12k sgRNA protospacer + PAM; insertion ~60-66 bp DOWNSTREAM of the protospacer (fixed distance)"
   guide_architecture: "single guide RNA (Cas12k); Tn7-like TnsB/TnsC + TniQ recruitment"
@@ -60,7 +60,7 @@ CAST_VK:
   human_cell_activity: "low in human cells (efficient in E. coli, up to ~80%); untargeted-integration tendency reported"
   deliverability: mRNA-RNP
   reachability_tier: Tier2_context_candidate
-  reachability_constraints: "protospacer + PAM + fixed +60-66 bp insertion distance + recruitment context; candidate site — requires experimental validation"
+  reachability_constraints: "protospacer + PAM + fixed +60-66 bp insertion distance + recruitment context; candidate site - requires experimental validation"
   confidence: measured
   key_dois: ["10.1126/science.aax9181", "10.1038/s41586-022-05059-4"]
 
@@ -160,6 +160,6 @@ TnpB_Fanzor:
   human_cell_activity: "demonstrated in human cells (engineered TnpB/Fanzor); modest"
   deliverability: AAV
   reachability_tier: Tier3_not_predictable
-  reachability_constraints: "TAM + omegaRNA target; insertion preferences not yet genome-scale predictable — flagged not-yet-predictable"
+  reachability_constraints: "TAM + omegaRNA target; insertion preferences not yet genome-scale predictable - flagged not-yet-predictable"
   confidence: inferred
   key_dois: ["10.1126/science.abj6856"]

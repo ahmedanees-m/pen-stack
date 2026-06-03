@@ -1,4 +1,4 @@
-"""PEN-STACK REST API (Phase 2, Step 2.6) — atlas + cross-link endpoints over FastAPI.
+"""PEN-STACK REST API (Phase 2, Step 2.6) - atlas + cross-link endpoints over FastAPI.
 
 Extends the Phase-1 atlas with the Writer Atlas and the writer<->locus cross-link. Every quantitative
 result is computed by the validated library functions (never guessed); the ``/ask`` route defers numeric
@@ -24,7 +24,7 @@ _ATLAS = Path(__file__).resolve().parents[1] / "atlas" / "atlas.parquet"
 app = FastAPI(title="PEN-STACK API", version=__version__,
               description="Open infrastructure for genome writing: Writer Atlas + Writable Genome cross-link.")
 
-_DISCLAIMER = ("Decision-support only — predictions are calibrated risk/durability estimates, not "
+_DISCLAIMER = ("Decision-support only - predictions are calibrated risk/durability estimates, not "
                "clinical directives. Tier-2/3 reachability is candidate and requires experimental validation.")
 
 

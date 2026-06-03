@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — delivery recommendation rules (Phase 3, Step 3.3).
+# PEN-STACK v3.0 - delivery recommendation rules (Phase 3, Step 3.3).
 # Choose a delivery modality from the TOTAL payload (writer effector + cargo, in bp) and the target cell
 # type. AAV single ~4.7 kb packaging limit; dual-AAV ~9 kb via split/recombination; larger or ex-vivo
 # contexts use LNP-mRNA/RNP or electroporation.

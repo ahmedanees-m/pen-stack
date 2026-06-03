@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — universe crosswalk (Phase 0, Step 0.4).
+# PEN-STACK v3.0 - universe crosswalk (Phase 0, Step 0.4).
 # Maps each natural editor (entity_id) to a WT-KB writer family + its measured targeting modality.
 # The ONE documented place the universe-assembly path reads so classifier/scorer/scorecard share
 # identical metadata. cargo_capacity_bp + reachability_tier come from the WT-KB (joined by family).

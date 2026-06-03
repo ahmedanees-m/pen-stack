@@ -1,4 +1,4 @@
-"""Build the Writer-Targeting Knowledge Base (WT-KB) — Phase 0, Step 0.2.
+"""Build the Writer-Targeting Knowledge Base (WT-KB) - Phase 0, Step 0.2.
 
 Reads the curated YAML (one block per writer family), validates every row against the
 ``WriterEntry`` schema (which enforces the sourcing rule: >=1 DOI per row), and emits both a
@@ -44,7 +44,7 @@ def _to_markdown(df: pd.DataFrame) -> str:
     lines = [
         "# Writer-Targeting Knowledge Base (WT-KB)",
         "",
-        f"_Generated from `configs/wtkb_curated.yaml` — {len(df)} writer families. "
+        f"_Generated from `configs/wtkb_curated.yaml` - {len(df)} writer families. "
         "Every row is schema-validated and carries >=1 DOI (sourcing rule)._",
         "",
         "| Family | Representative | Mechanism | Modality | Target site | Tier | Confidence | DOIs |",

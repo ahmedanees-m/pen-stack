@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — bridge-recombinase off-target position profile (Phase 1.5, Step 1.5.1).
+# PEN-STACK v3.0 - bridge-recombinase off-target position profile (Phase 1.5, Step 1.5.1).
 #
 # A TRANSPARENT, literature-grounded position-weight model for the IS110/ISCro4 bridge-RNA target core.
 # The measured per-position recombination rates live in the Perry 2025 supplementary (Science adz0276),
@@ -6,10 +6,10 @@
 # *published, verified* mechanism so the off-target engine runs end-to-end. Every value cites a source.
 # When the measured profile is loaded (pen_stack/bridge/ingest.load_offtarget_profile), it OVERRIDES this.
 #
-# Mechanism (verified — see Final_Part_v3.0/VERIFICATION_REPORT_v3.0.md):
+# Mechanism (verified - see Final_Part_v3.0/VERIFICATION_REPORT_v3.0.md):
 #   - bipartite ~14 nt target, recognised by the bridge RNA's target-binding loop (Durrant 2024).
 #   - a CENTRAL CT dinucleotide core is essential for strand exchange (Hiraizumi 2024, PDB 8WT6;
-#     the core dinucleotide is CT, not TT — a corrected fact).
+#     the core dinucleotide is CT, not TT - a corrected fact).
 #   - recombination tolerates up to ~2 mismatches in the target; the core + immediate flanks are the
 #     specificity determinants, distal positions are more tolerant (Perry 2025: ~82% specificity).
 #
@@ -24,20 +24,20 @@ central_core_positions: [7, 8]      # the CT dinucleotide core (1-based, central
 max_mismatches: 2                    # empirically observed tolerance (Perry 2025)
 
 protective_weight:
-  1: 0.20      # distal 5' — tolerant
+  1: 0.20      # distal 5' - tolerant
   2: 0.25
   3: 0.35
   4: 0.45
   5: 0.60
-  6: 0.80      # immediate flank of the core — important
-  7: 1.00      # C of the central CT core — critical (mismatch abolishes recombination)
-  8: 1.00      # T of the central CT core — critical
+  6: 0.80      # immediate flank of the core - important
+  7: 1.00      # C of the central CT core - critical (mismatch abolishes recombination)
+  8: 1.00      # T of the central CT core - critical
   9: 0.80      # immediate flank
   10: 0.60
   11: 0.45
   12: 0.35
   13: 0.25
-  14: 0.20     # distal 3' — tolerant
+  14: 0.20     # distal 3' - tolerant
 
 # donor-binding core: writing requires BOTH loops to match; the donor end is scored with the same model
 # (its own specificity profile is also in Perry 2025; reuse target weights until measured values load).
@@ -45,7 +45,7 @@ donor_uses_target_weights: true
 
 provenance:
   key_dois:
-    - "10.1038/s41586-024-07552-4"   # Durrant 2024 — bridge RNA / IS110
-    - "10.1038/s41586-024-07570-2"   # Hiraizumi 2024 — structural mechanism, PDB 8WT6
-    - "10.1126/science.adz0276"      # Perry 2025 — ISCro4, ~82% specificity, ~2-mismatch tolerance
+    - "10.1038/s41586-024-07552-4"   # Durrant 2024 - bridge RNA / IS110
+    - "10.1038/s41586-024-07570-2"   # Hiraizumi 2024 - structural mechanism, PDB 8WT6
+    - "10.1126/science.adz0276"      # Perry 2025 - ISCro4, ~82% specificity, ~2-mismatch tolerance
   note: "literature-derived position weights; replace with measured per-position rates from Perry 2025 supplementary when obtained"

@@ -1,12 +1,14 @@
-"""Bridge-recombinase activity model (Phase 1.5, Step 1.5.4) — EXPLORATORY add-on.
+"""Bridge-recombinase variant-effect, from the deep mutational scan (Phase 1.5, Step 1.5.4) - SECONDARY.
 
-Predict human-cell activity of a recombinase ortholog/variant. Framed explicitly as exploratory: the DMS
-is deep for one enzyme and the screen is only ~72 systems. Both training tables come from the Perry 2025
-supplementary (paywalled, not bulk-downloadable here), so this provides the **framework** — a pluggable
-trainer + retrospective-recovery harness — that trains and validates the moment the tables are supplied
-(the same deferral pattern as the Phase-2 DMS variant proposal, which this also completes).
+A pluggable trainer over the Perry 2025 DMS (Table S3). Used retrospectively it RECOVERS KNOWN
+activity-enhancing mutants (N322P, H50K, R278M; see pen_stack/validate/paper4_real_validation.py),
+completing the Phase-2 Step-2.4 DMS variant-proposal feature.
 
-Headline of the phase is the off-target engine; this is a secondary result with an explicit N caveat.
+Scope, stated plainly: this is a useful catalogue feature that recovers KNOWN enhancers; it is NOT a novel
+variant-design method. For GENERATING new variants the established engine is EVOLVEpro - when PEN-STACK
+reaches generative variant design it should wrap EVOLVEpro rather than rebuild it. The 72-system ortholog
+screen (Table S1) carries no per-system activity label, so it supports only the descriptive characterisation
+in ortholog_screen.py (N ~72, exploratory). The headline of the phase is the off-target screening engine.
 """
 from __future__ import annotations
 
@@ -29,7 +31,7 @@ def train_variant_effect(dms_df: pd.DataFrame):
 def train_ortholog_activity(screen_df: pd.DataFrame, embed_fn=None):
     """Train ortholog -> human-cell activity on the 72-system screen. Returns None if absent.
 
-    N caveat is the caller's responsibility to report — the screen is ~72 systems.
+    N caveat is the caller's responsibility to report - the screen is ~72 systems.
     """
     if screen_df is None or screen_df.empty:
         return None
@@ -47,4 +49,4 @@ def status() -> dict:
     dms, screen = load_dms(), load_screen()
     return {"dms_rows": len(dms), "screen_rows": len(screen),
             "trainable": have_training_data(dms, screen),
-            "note": "exploratory; DMS+screen are Perry 2025 supplementary (paywalled) — model trains when supplied"}
+            "note": "exploratory; DMS+screen are Perry 2025 supplementary (paywalled) - model trains when supplied"}

@@ -1,4 +1,4 @@
-"""Phase 2, Step 2.4 — DMS-grounded variant proposal framework.
+"""Phase 2, Step 2.4 - DMS-grounded variant proposal framework.
 
 Asserts the structural criteria: only point substitutions are proposed (NO chimeras), the model is
 pluggable, and the retrospective-recovery harness functions. The headline "recover the published
@@ -21,7 +21,7 @@ def test_proposals_are_point_substitutions_only():
     for _, r in props.iterrows():
         assert r["wt"] == seq[r["pos"]]
         assert r["mut"] != r["wt"]
-        assert len(r["variant"]) >= 3   # e.g. M1A — never a chimera/multi-segment string
+        assert len(r["variant"]) >= 3   # e.g. M1A - never a chimera/multi-segment string
 
 
 def test_model_is_pluggable():

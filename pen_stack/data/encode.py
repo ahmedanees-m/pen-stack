@@ -1,7 +1,7 @@
 """ENCODE REST resolver (Phase 1, Step 1.1).
 
 Resolves released hg38 bigWig SIGNAL files for a (biosample, assay/target) pair via the ENCODE
-Portal REST API — so we never hard-code possibly-wrong file accessions. Returns accession + href.
+Portal REST API - so we never hard-code possibly-wrong file accessions. Returns accession + href.
 """
 from __future__ import annotations
 
@@ -74,7 +74,7 @@ DEFAULT_PANEL = [
 
 def resolve_panel(biosample: str, panel=DEFAULT_PANEL, assembly: str = "GRCh38") -> dict[str, dict]:
     """Return {track_name: file_record} for the panel, skipping assays with no released bigWig.
-    Partial panels are returned as-is (e.g. a cell type lacking some histone marks) — graceful."""
+    Partial panels are returned as-is (e.g. a cell type lacking some histone marks) - graceful."""
     out = {}
     for assay, target in panel:
         rec = find_bigwig(biosample, assay, target, assembly=assembly)

@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — Phase 0 pre-registered success criteria.
+# PEN-STACK v3.0 - Phase 0 pre-registered success criteria.
 # Written before downstream analysis; SHA-lock the file set and print the hash into any report.
 phase: 0
 title: "Harden the Writer Core (the Reachability Backbone)"

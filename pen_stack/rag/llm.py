@@ -1,4 +1,4 @@
-"""Optional LLM phrasing layer for the RAG (Phase 2, §2B).
+"""Optional LLM phrasing layer for the RAG (Phase 2, Section 2B).
 
 Reads the single LLM switch (``configs/llm.yaml``) and calls the local Ollama OpenAI-compatible endpoint
 to *rephrase* already-grounded facts into fluent prose. It is strictly a presentation layer: it is given
@@ -6,7 +6,7 @@ the tool-derived facts and must not introduce numbers or citations. Every quanti
 citation still comes from the deterministic tool/retrieval path in ``qa.py``.
 
 Graceful by design: if the config, the endpoint, or the model is unavailable, ``phrase()`` returns
-``None`` and the caller falls back to the deterministic answer — the contract holds with no LLM at all.
+``None`` and the caller falls back to the deterministic answer - the contract holds with no LLM at all.
 """
 from __future__ import annotations
 

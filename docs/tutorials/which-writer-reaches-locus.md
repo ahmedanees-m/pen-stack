@@ -33,7 +33,7 @@ curl 'http://localhost:8000/crosslink/writers?chrom=chr19&bin=55090&ct=k562'
 | Tier | Meaning | Families (v1) |
 |---|---|---|
 | **Tier 1** | directly scannable (high confidence) | bridge_IS110, seek_IS1111, PE_integrase, Cas9, Cas12a |
-| **Tier 2** | context-dependent **candidate — requires validation** | CAST_VK, serine_integrase |
+| **Tier 2** | context-dependent **candidate - requires validation** | CAST_VK, serine_integrase |
 | **Tier 3** | not yet genome-scale predictable | TnpB_Fanzor |
 
 Reachability is released at the **locus** level in v1 (Tier-1 reprogrammable families are near-universal

@@ -1,8 +1,8 @@
-"""PEN-STACK MCP server (Phase 3, Step 3.10) — expose the validated tools to any external agent.
+"""PEN-STACK MCP server (Phase 3, Step 3.10) - expose the validated tools to any external agent.
 
 Wraps the Step-3.9 tools as a Model Context Protocol server (fastmcp) so any MCP client (Claude, etc.)
 can call ``writability``, ``reachable_writers``, ``writer_axes``, ``plan_write``, ``ask_literature`` and
-receive correct, provenance-tagged results — turning PEN-STACK into shared agentic infrastructure.
+receive correct, provenance-tagged results - turning PEN-STACK into shared agentic infrastructure.
 
 Run: ``python -m pen_stack.agent.mcp_server`` (needs the ``services`` extra: ``pip install fastmcp``).
 """

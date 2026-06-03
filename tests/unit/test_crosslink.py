@@ -1,4 +1,4 @@
-"""Phase 2, Step 2.5 — Writer Atlas <-> Writable Genome cross-link.
+"""Phase 2, Step 2.5 - Writer Atlas <-> Writable Genome cross-link.
 
 Pre-registered criterion: cross-link queries return correct sets on a held-out check (the bridge family
 <-> bridge-reachable loci, and a validated safe harbour scores highly writable AND bridge-reachable).

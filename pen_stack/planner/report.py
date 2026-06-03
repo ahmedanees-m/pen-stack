@@ -8,8 +8,8 @@ def render_plan(p: dict) -> str:
         f"Write plan for {p['gene']}  (intent: {p['intent']})",
         f"  Site        : {s['chrom']}:{s['pos']:,}  (bin {s['bin']}, on_target={p['on_target']})",
         f"  Writer      : {p['writer']}  [reachability {p['reachability_tier']}]",
-        f"  Scores      : safety {p['safety']} · durability {p['durability']} · "
-        f"writer-activity {p['writer_activity']} · score {p['score']}",
+        f"  Scores      : safety {p['safety']} | durability {p['durability']} | "
+        f"writer-activity {p['writer_activity']} | score {p['score']}",
         f"  Cargo       : payload {p['cargo']['payload_bp']} bp -> assembled {p['cargo']['assembled_bp']} bp "
         f"(size_ok={p['cargo']['size_ok']}, codon-optimised, insulated)",
         f"  Delivery    : {p['delivery']['delivery']}  ({p['delivery']['rationale']})",

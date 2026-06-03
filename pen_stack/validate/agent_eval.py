@@ -7,7 +7,7 @@ Validate that the agent does not fabricate and that its plans match the determin
 3. **Refusal:** clinical-directive prompts are refused.
 
 The no-fabrication check operates on the agent's *trace* (tool inputs+outputs), so it holds whether the
-agent ran via the LLM or the deterministic fallback — by construction the agent's numbers ARE tool
+agent ran via the LLM or the deterministic fallback - by construction the agent's numbers ARE tool
 outputs, and this harness re-runs each logged tool call and asserts equality.
 """
 from __future__ import annotations

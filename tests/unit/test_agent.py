@@ -1,4 +1,4 @@
-"""Phase 3, Steps 3.9 + 3.12 — PEN-STACK agent + evaluation harness.
+"""Phase 3, Steps 3.9 + 3.12 - PEN-STACK agent + evaluation harness.
 
 Pre-registered criteria: every numeric field in an agent plan comes from a tool call (no-fabrication);
 plan-equivalence holds (agent top site == plan_write); clinical-directive prompts are refused. Runs in

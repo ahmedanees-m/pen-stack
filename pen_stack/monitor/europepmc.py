@@ -1,7 +1,7 @@
 """Europe PMC client for PEN-MONITOR (Phase 2, Step 2.7).
 
 Europe PMC is the right primary source: open REST API, full-text + preprints, no licence friction.
-This module only *fetches* — triage + queueing live in triage.py / run.py.
+This module only *fetches* - triage + queueing live in triage.py / run.py.
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ def search(query: str, since_date: str | None = None, page_size: int = 100,
             with urllib.request.urlopen(url, timeout=timeout) as r:
                 data = json.load(BytesIO(r.read()))
             return data.get("resultList", {}).get("result", [])
-        except Exception as e:  # noqa: BLE001 — network best-effort
+        except Exception as e:  # noqa: BLE001 - network best-effort
             last = e
             time.sleep(2 * (attempt + 1))
     raise RuntimeError(f"Europe PMC search failed for {query!r}: {last}")

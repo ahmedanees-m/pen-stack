@@ -1,8 +1,8 @@
-"""WT-KB schema — the Writer-Targeting Knowledge Base row model (Phase 0, Step 0.2).
+"""WT-KB schema - the Writer-Targeting Knowledge Base row model (Phase 0, Step 0.2).
 
 One row per writer family/representative system: its targeting requirements and a reachability tier.
 This is the spine of the Writer Atlas and the reachability layer of the Writable Genome. Every
-targeting field must carry at least one DOI in ``key_dois`` — nothing is asserted without a citation.
+targeting field must carry at least one DOI in ``key_dois`` - nothing is asserted without a citation.
 """
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ class MechBucket(str, Enum):
 
 class Tier(str, Enum):
     T1 = "Tier1_scannable"          # bridge/seek cores, PE-installable att
-    T2 = "Tier2_context_candidate"  # CAST, native pseudo-att integrases (candidate — requires validation)
+    T2 = "Tier2_context_candidate"  # CAST, native pseudo-att integrases (candidate - requires validation)
     T3 = "Tier3_not_predictable"    # retroelement preferences
 
 

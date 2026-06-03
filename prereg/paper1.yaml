@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — Paper 1 (Writable Genome) pre-registered success criteria.
+# PEN-STACK v3.0 - Paper 1 (Writable Genome) pre-registered success criteria.
 # SHA-locked BEFORE any model sees the held-out test data; the hash is printed into the manuscript.
 paper: 1
 title: "The Writable Genome: a predictive, writer-aware atlas of safe and durable insertion sites"

@@ -1,6 +1,6 @@
 """End-to-end Write Planner (Phase 3, Step 3.4).
 
-One call — ``plan_write(gene, intent, payload_bp, ct)`` — composes the inverse-design optimiser (3.1),
+One call - ``plan_write(gene, intent, payload_bp, ct)`` - composes the inverse-design optimiser (3.1),
 cargo/donor design (3.2), and delivery recommendation (3.3) into ranked, fully traceable plans. Every
 numeric field is tagged with the module/dataset that produced it (provenance), so nothing is asserted
 without a source. Heavy data (the Phase-1 writability atlas) is loaded lazily via the cross-link.

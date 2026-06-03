@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — Write Planner edit_intent weights (Phase 3, Step 3.1).
+# PEN-STACK v3.0 - Write Planner edit_intent weights (Phase 3, Step 3.1).
 # The objective is a documented, intent-dependent weighting over the Writable-Genome components
 # (safety, durability) + writer activity. `on_target` = candidate overlaps the named target gene/element.
 # `target_gene_sign` decides whether hitting the target gene is PENALISED (+1 -> safe-harbour: avoid it)

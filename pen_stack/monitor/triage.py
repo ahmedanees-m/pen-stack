@@ -3,7 +3,7 @@
 Grounded extraction: pull candidate fields (family, organism cue, human-cell evidence) from a hit's
 title/abstract using documented keyword cues, **always** carrying the source citation (Europe PMC id +
 DOI). An optional LLM pass (Ollama/Qwen via litellm) can enrich the abstract extraction, but it never
-invents a citation and never auto-edits the atlas — its output is just another candidate for the queue.
+invents a citation and never auto-edits the atlas - its output is just another candidate for the queue.
 
 The rule-based path is the reliable default (works offline, fully reproducible, satisfies the back-test).
 """
@@ -58,6 +58,6 @@ def triage_hit(hit: dict, default_family: str | None = None, cfg: dict | None = 
         "source_db": hit.get("source"),
         "doi": hit.get("doi"),
         "pub_date": hit.get("firstPublicationDate"),
-        "confidence": "inferred",       # candidate — stays inferred until a human reviews/measures
+        "confidence": "inferred",       # candidate - stays inferred until a human reviews/measures
         "status": "pending_review",     # NEVER auto-accepted into the atlas
     }

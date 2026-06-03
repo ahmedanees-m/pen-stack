@@ -24,7 +24,7 @@ from pen_stack.planner.pipeline import plan_write
 _OUT = Path(__file__).resolve().parents[2] / "out"
 _REVIEWS = _OUT / "hypothesis_reviews"
 
-# Forward therapeutic goals (not in the retrospective benchmark panel) — the Planner proposes the site.
+# Forward therapeutic goals (not in the retrospective benchmark panel) - the Planner proposes the site.
 FORWARD_GOALS = [
     {"name": "F8_haemophiliaA", "gene": "F8", "intent": EditIntent.HIGH_DURABILITY, "ct": "hepg2", "cargo_bp": 4400},
     {"name": "SERPINA1_AAT", "gene": "SERPINA1", "intent": EditIntent.HIGH_DURABILITY, "ct": "hepg2", "cargo_bp": 1400},
@@ -56,7 +56,7 @@ def register_hypotheses(goals=FORWARD_GOALS, out_csv: str | Path | None = None) 
 
 
 def cited_reviews(hyps: pd.DataFrame) -> dict:
-    """One grounded, cited mini-review per hypothesis (from the RAG — numbers stay tool-derived)."""
+    """One grounded, cited mini-review per hypothesis (from the RAG - numbers stay tool-derived)."""
     from pen_stack.rag.qa import answer
     _REVIEWS.mkdir(parents=True, exist_ok=True)
     reviews = {}

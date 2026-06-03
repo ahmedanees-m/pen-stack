@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""penctl — orchestrate the VM over SSH/SFTP from the laptop. Docker-only on the VM.
+"""penctl - orchestrate the VM over SSH/SFTP from the laptop. Docker-only on the VM.
 
 Laptop runs only this; all heavy compute is `docker run` on the VM, artifacts pulled to the
 Google Drive folder over SFTP (no rclone). See docs/INFRA.md.
@@ -62,12 +62,12 @@ def _docker(inner, gpus=True):
 
 @click.group()
 def cli():
-    """penctl — laptop-side orchestrator for the PEN-STACK VM."""
+    """penctl - laptop-side orchestrator for the PEN-STACK VM."""
 
 
 @cli.command()
 def bootstrap():
-    """Create VM dirs (mkdir only — no installs)."""
+    """Create VM dirs (mkdir only - no installs)."""
     dirs = [WORK, f"{DATA}/raw", f"{DATA}/interim", f"{DATA}/features",
             f"{DATA}/models", f"{DATA}/out", f"{DATA}/logs"]
     _run("mkdir -p " + " ".join(dirs))

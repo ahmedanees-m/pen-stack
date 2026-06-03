@@ -1,4 +1,4 @@
-"""Phase 1.5 — validation on the REAL Perry 2025 data.
+"""Phase 1.5 - validation on the REAL Perry 2025 data.
 
 Skips automatically when the (copyrighted, not-committed) Perry supplementary is absent, so CI stays green
 without it; runs the measured-profile + discrimination + DMS checks when the tables are present locally.

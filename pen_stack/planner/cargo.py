@@ -3,7 +3,7 @@
 Assemble a donor construct spec for a chosen writer + site: insulators (protect durability), promoter +
 polyA, codon optimisation flag for the host cell type, and a size check against the writer's
 deliverability/cargo class. For bridge/seek writers, attach the Phase-1.5 off-target prediction *if the
-bridge engine is available* — otherwise the field is marked pending (Phase 1.5), so the Planner runs
+bridge engine is available* - otherwise the field is marked pending (Phase 1.5), so the Planner runs
 end-to-end now and the off-target annotation drops in once Phase 1.5 lands.
 
 We design at the level of construct *elements + sizes* (the payload sequence is the user's CDS/regulatory
@@ -19,7 +19,7 @@ def _bridge_offtarget(writer_family: str, site: tuple) -> dict:
     """Optional Phase-1.5 hook. Returns the off-target prediction if the bridge engine exists, else pending."""
     try:
         from pen_stack.bridge.offtarget import predict_offtargets  # Phase 1.5 deliverable
-    except Exception:  # noqa: BLE001 — engine not built yet
+    except Exception:  # noqa: BLE001 - engine not built yet
         return {"status": "pending_phase_1_5", "note": "bridge off-target engine ships in Phase 1.5"}
     return predict_offtargets(writer_family, site)
 

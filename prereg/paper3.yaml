@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — Paper 3 (The Write Planner) pre-registered success criteria.
+# PEN-STACK v3.0 - Paper 3 (The Write Planner) pre-registered success criteria.
 # SHA-locked. The two-stratum, goal-conditioned recovery@k benchmark (Step 3.5) is the paper-defining,
 # gating artifact; the panel (data/benchmark_panel.csv) is FROZEN here before any tuning so non-obvious
 # entries cannot be reverse-fit.
@@ -24,7 +24,7 @@ benchmark:
     discriminating_planner_beats_baseline: true
     discriminating_gap_ci_excludes_zero: true   # bootstrap 95% CI of (planner - baseline) recovery > 0
     control_planner_not_worse_than_baseline: true
-  open_risk: "discriminating N=7 — small; McNemar exact p reported alongside the bootstrap CI"
+  open_risk: "discriminating N=7 - small; McNemar exact p reported alongside the bootstrap CI"
 
 cargo_delivery:
   success:

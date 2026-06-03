@@ -1,4 +1,4 @@
-"""Phase 2, Step 2.8 — grounded, cited Q&A.
+"""Phase 2, Step 2.8 - grounded, cited Q&A.
 
 Pre-registered criteria: every quantitative answer traces to a tool call (no LLM-guessed numbers);
 every factual claim carries a citation; out-of-scope/clinical-directive questions are refused.

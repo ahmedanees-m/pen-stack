@@ -1,4 +1,4 @@
-"""pen-bridge CLI (Phase 1.5, Step 1.5.5) — the first public instrument of PEN-STACK.
+"""pen-bridge CLI (Phase 1.5, Step 1.5.5) - the first public instrument of PEN-STACK.
 
     pen-bridge design --target <14nt> --donor <14nt> [--scaffold ISCro4_enhanced] [--ct k562]
 
@@ -13,7 +13,7 @@ import click
 
 @click.group()
 def main():
-    """pen-bridge — bridge-recombinase design + off-target/QC (PEN-STACK)."""
+    """pen-bridge - bridge-recombinase design + off-target/QC (PEN-STACK)."""
 
 
 @main.command()
@@ -32,7 +32,7 @@ def design(target, donor, scaffold, ct, no_scan, chroms):
     brna, off, qc = res["brna"], res["offtargets"], res["qc"]
     click.echo(f"Bridge RNA ({scaffold}): target={brna['target']} donor={brna['donor']}")
     if brna.get("available"):
-        click.echo(f"  bridge_sequence: {brna['bridge_sequence'][:80]}… ({len(brna['bridge_sequence'])} nt)")
+        click.echo(f"  bridge_sequence: {brna['bridge_sequence'][:80]}... ({len(brna['bridge_sequence'])} nt)")
     else:
         click.echo(f"  (designer: {brna['note']})")
     click.echo(f"QC: cross-loop {qc['cross_loop']}  pass={qc['pass']}")

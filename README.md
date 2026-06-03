@@ -2,12 +2,13 @@
 
 # PEN-STACK
 
-### The Writable Genome — open infrastructure for genome *writing*
+### The Writable Genome - open infrastructure for genome *writing*
 
 *Editing tools tell you **how** to change a base. PEN-STACK tells you **where** in the genome you can safely
 and durably write new DNA, **which enzyme** can write it there, and **how** to design the write end-to-end.*
 
 [![CI](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml)
+[![coverage](https://raw.githubusercontent.com/ahmedanees-m/pen-stack/main/.github/badges/coverage.svg)](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
@@ -35,7 +36,7 @@ PEN-STACK is a single, installable, pre-registered computational stack that buil
 layer the genome-**writing** era lacks. It consolidates five earlier research projects into one citable
 package, then adds the two reference maps and the design engine the field was missing.
 
-Genome **editing** changes a base or short stretch in place. Genome **writing** installs *new* information —
+Genome **editing** changes a base or short stretch in place. Genome **writing** installs *new* information -
 inserting genes, flipping or excising kilobases, placing programmable landing pads. Writing is the harder,
 less-tooled, and more clinically transformative modality, and it is gated by questions that today have no
 canonical answer.
@@ -46,10 +47,10 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 | Gap | The problem today | What PEN-STACK provides |
 |---|---|---|
-| **Where can you write?** | Each lab re-derives an ad-hoc "safe harbour" shortlist from inconsistent criteria; published lists range from ~2,000 sites to 25, none predict expression durability from a learned model, none are writer-aware, most cover one cell type. | **The Writable Genome** — a learned, cell-type-aware, writer-aware atlas scoring every locus for *safety* (genotoxicity risk) × *durability* (will the cassette stay expressed) × *reachability* (which enzyme can engage it). |
-| **What can write there, and how well?** | Enzyme capabilities are scattered across papers; no catalogue places all genome-writing families on common, measured axes with their targeting requirements. | **The Writer Atlas** — 33,370 enzyme systems across 8 families on common measured axes, joined to the Writable Genome by a bidirectional cross-link. |
-| **How do I design the actual write?** | Destination, enzyme, cargo and delivery are interdependent and goal-dependent; no tool optimises them jointly. | **The Write Planner** — inverse design that, given a goal and an `edit_intent`, returns ranked, traceable site × writer × cargo × delivery plans. |
-| **Will my bridge-recombinase design go off-target?** | Bridge recombinases are the most programmable writers, but had no genome-wide off-target predictor (a "CRISPOR" equivalent). | **The bridge off-target engine** (`pen-bridge`) — genome-wide off-target prediction validated on measured data. |
+| **Where can you write?** | Each lab re-derives an ad-hoc "safe harbour" shortlist from inconsistent criteria; published lists range from ~2,000 sites to 25, none predict expression durability from a learned model, none are writer-aware, most cover one cell type. | **The Writable Genome** - a learned, cell-type-aware, writer-aware atlas scoring every locus for *safety* (genotoxicity risk) x *durability* (will the cassette stay expressed) x *reachability* (which enzyme can engage it). |
+| **What can write there, and how well?** | Enzyme capabilities are scattered across papers; no catalogue places all genome-writing families on common, measured axes with their targeting requirements. | **The Writer Atlas** - 33,370 enzyme systems across 8 families on common measured axes, joined to the Writable Genome by a bidirectional cross-link. |
+| **How do I design the actual write?** | Destination, enzyme, cargo and delivery are interdependent and goal-dependent; no tool optimises them jointly. | **The Write Planner** - inverse design that, given a goal and an `edit_intent`, returns ranked, traceable site x writer x cargo x delivery plans. |
+| **Where might my bridge-recombinase design go off-target?** | Bridge recombinases are the most programmable writers, but had no genome-wide off-target screening tool (a "CRISPOR" equivalent); their developers list this as future work. | **The bridge off-target engine** (`pen-bridge`) - measured-data-validated screening that *nominates and ranks candidate off-target locations* (a screen, not a per-site risk calculator). |
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
@@ -97,7 +98,7 @@ PEN-STACK is organised as **two reference layers + one engine + a services layer
 | **Write Planner** (engine) | `pen_stack.planner` | inverse design, `edit_intent`-conditioned | Paper 3 |
 | **Agentic platform** | `pen_stack.agent` | goal to cited, auditable plan; MCP server; one-command deploy | Paper 3 |
 | **Bridge off-target engine** | `pen_stack.bridge` | "CRISPOR for bridge recombinases" | Paper 4 |
-| **Platform services** | `monitor`, `rag`, `ui`, `server` | living database, grounded RAG, web app, REST API | — |
+| **Platform services** | `monitor`, `rag`, `ui`, `server` | living database, grounded RAG, web app, REST API | - |
 
 ### Headline results (all blind / pre-registered)
 
@@ -110,10 +111,14 @@ PEN-STACK is organised as **two reference layers + one engine + a services layer
   therapeutic-into-functional-locus writes at recovery@10 = 1.00 vs 0.00 for an intent-blind baseline
   (McNemar p = 0.0156; bootstrap gap CI [1.0, 1.0] excludes zero); a tool-using agent never fabricates a
   number (every value traces to a validated tool call).
-- **Paper 4 (Bridge off-target engine):** validated on the measured Perry 2025 data (6,856 real
-  off-targets) — the per-position profile confirms the central core (positions 7–9) is the specificity
-  determinant, and the position-weight model beats a naive Hamming ranking AUROC 0.77 vs 0.62 on real
-  off-targets; the deep mutational scan recovers the top activity-enhancing variants.
+- **Paper 4 (Bridge off-target engine):** to our knowledge the first measured-data-validated tool that
+  **nominates and ranks candidate off-target *locations*** for bridge recombinases. On the measured Perry
+  2025 data (6,856 real off-targets) the per-position profile confirms the central core (positions 7-9) is
+  the specificity determinant, and the model ranks real off-targets above core-disrupted decoys at AUROC
+  0.77 vs 0.62 for Hamming. Stated plainly: it is a **screening tool, not a quantitative safety
+  calculator**, it does not quantify how much recombination occurs at each site (sequence-risk vs measured
+  magnitude, rho approximately 0.30). A first-of-its-kind beachhead for a genuinely unoccupied gap, not a
+  Nature-tier breakthrough; the Writable Genome (Paper 1) remains the flagship novelty.
 
 ## How PEN-STACK connects to the prior repositories
 
@@ -131,7 +136,7 @@ PEN-STACK "the thing you cite instead of rebuilding the pipeline."
 
 | Prior repo | Pinned version | What v3.0 reuses | What changed |
 |---|---|---|---|
-| [genome-atlas](https://github.com/ahmedanees-m/genome-atlas) | v0.7.2 | the audited 18-family Pfam backbone — spine of the WT-KB and the at-scale mechanism classifier | GraphSAGE link-prediction framing retired |
+| [genome-atlas](https://github.com/ahmedanees-m/genome-atlas) | v0.7.2 | the audited 18-family Pfam backbone - spine of the WT-KB and the at-scale mechanism classifier | GraphSAGE link-prediction framing retired |
 | [mech-class](https://github.com/ahmedanees-m/mech-class) | v0.5.4 | the mechanism classifier (Pfam + RHEA + CRISPRcasdb + UniProt) | reused as the family/mechanism caller |
 | [pen-score](https://github.com/ahmedanees-m/pen-score) | v0.1.3 | the scoring axes (deliv / immuno / cargo, ...) | prog/cargo re-grounded; hand-set overrides removed |
 | [pen-assemble](https://github.com/ahmedanees-m/pen-assemble) | v0.5.2 | the ortholog sequence set | de-novo chimera generation retired -> DMS-grounded point-variant proposal |
@@ -184,7 +189,7 @@ pen-stack/
 ```
 
 > **Data policy.** Large artifacts (3 M-row atlases, BigWig tracks, models) and any third-party copyrighted
-> data are *not* committed — they are released via Zenodo (DOI) or fetched from the original source, and are
+> data are *not* committed - they are released via Zenodo (DOI) or fetched from the original source, and are
 > reproducible by re-running the scripts. Only small curated tables and derived products live in git.
 
 ## Installation and quick start
@@ -220,20 +225,20 @@ docker compose exec ollama ollama pull qwen2.5:7b-instruct   # first run only
 
 `pen_stack/ui/app.py` is a single Streamlit app over the whole stack (11 pages):
 
-- **Writable Genome** — Overview, Forward query (gene to writability/safety/durability), Site finder
+- **Writable Genome** - Overview, Forward query (gene to writability/safety/durability), Site finder
   (inverse), Atlas browser, Validation dashboard, Cross-cell-type transfer.
-- **Writer Atlas** — family coverage and measured-axis comparison.
-- **Write Planner** — goal + `edit_intent` to ranked, traceable plans.
-- **Bridge design** — design a bridge RNA, fold/cross-loop QC, genome-wide off-target scan.
-- **Ask** — grounded, cited Q&A (numbers from validated tools).
-- **Agent** — a goal to a cited, auditable end-to-end plan.
+- **Writer Atlas** - family coverage and measured-axis comparison.
+- **Write Planner** - goal + `edit_intent` to ranked, traceable plans.
+- **Bridge design** - design a bridge RNA, fold/cross-loop QC, genome-wide off-target scan.
+- **Ask** - grounded, cited Q&A (numbers from validated tools).
+- **Agent** - a goal to a cited, auditable end-to-end plan.
 
 ## Data sources (all public)
 
 hg38 (UCSC); ENCODE / Roadmap chromatin (ATAC/DNase + histone marks; K562, HepG2, CD34+ progenitor, mouse
 ES-Bruce4); GENCODE v46; COSMIC Cancer Gene Census v104; DepMap Public 26Q1; LaFave 2014 (NHGRI GeIST) MLV
 integrations; VISDB; TRIP / Akhtar 2013 (GEO GSE49806/49807); UniProt orthologs; Pfam/InterPro; Europe PMC;
-Addgene; Perry 2025 bridge-recombinase off-target + DMS data (Science adz0276; copyrighted — kept local,
+Addgene; Perry 2025 bridge-recombinase off-target + DMS data (Science adz0276; copyrighted - kept local,
 only derived products released). Every accession and DOI is pinned in `configs/datasets.yaml` and
 independently verified.
 
@@ -243,11 +248,11 @@ independently verified.
   `prereg/` (paper1..4) before any model sees test data.
 - **Always report an honest baseline** (oncogene-distance for safety; H3K9me3/LAD for durability;
   intent-blind ranking for the Planner; Hamming for the bridge engine).
-- **Blind external concordance** — recover validated safe harbours, clinical genotoxic loci, documented
+- **Blind external concordance** - recover validated safe harbours, clinical genotoxic loci, documented
   writes, and measured off-targets the model never trained on.
-- **Report failure honestly** — cross-cell-type degradation, small benchmark N, and the limits of
+- **Report failure honestly** - cross-cell-type degradation, small benchmark N, and the limits of
   sequence-only off-target magnitude prediction are quantified results, not footnotes.
-- **Grounded services** — every quantitative answer comes from a validated tool call (never a language
+- **Grounded services** - every quantitative answer comes from a validated tool call (never a language
   model); the living database never auto-edits the atlas; clinical directives are refused.
 
 ## Papers and phases
@@ -276,5 +281,5 @@ plan. Data releases are deposited on Zenodo (one per paper).
 
 **Author:** Anees Ahmed Mahaboob Ali, VIT University, Vellore. MIT licensed.
 
-*Decision-support, not a clinical directive — every score is traceable to public data and a pre-registered
+*Decision-support, not a clinical directive - every score is traceable to public data and a pre-registered
 model.*

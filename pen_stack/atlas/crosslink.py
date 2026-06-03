@@ -8,7 +8,7 @@ Phase-2 atlas, 33k systems by family) and loci (the Phase-1 Writable Genome, 3M 
 - ``writers_for_locus(chrom, bin)`` -> atlas systems whose family reaches that locus, with readiness.
 - ``loci_for_gene(gene, ct)``       -> writable bins overlapping a gene (forward query helper).
 
-Honest scope (Phase-1 D1.8-1): reachability is released at the *locus* level — the Tier-1
+Honest scope (Phase-1 D1.8-1): reachability is released at the *locus* level - the Tier-1
 reprogrammable families (bridge_IS110 / Cas9 / Cas12a) are near-universal at 1 kb, so the cross-link's
 discriminating signal is the *writability ranking* and the *family -> atlas-system* join (each carrying
 therapeutic readiness). Per-site reachability (does a specific bridge core exist here?) is Planner work.
@@ -32,8 +32,8 @@ _OUT = _ROOT / "out"
 BIN_BP = 1000
 
 # Phase-1 writability atlas can live in a few places (fetched-not-committed). First match wins.
-# PEN_ATLAS_DIR (also used by the UI) is honoured first so every cross-link-backed feature — the Write
-# Planner, the agent, and the RAG numeric route — finds the same atlas the UI does in any deployment.
+# PEN_ATLAS_DIR (also used by the UI) is honoured first so every cross-link-backed feature - the Write
+# Planner, the agent, and the RAG numeric route - finds the same atlas the UI does in any deployment.
 def _writability_search() -> list[Path]:
     bases: list[Path] = []
     env = os.environ.get("PEN_ATLAS_DIR")
@@ -140,5 +140,5 @@ if __name__ == "__main__":  # pragma: no cover
         try:
             c = build_crosslink_cache(ct)
             print(f"[{ct}] crosslink cache:\n{c.to_string(index=False)}\n")
-        except Exception as e:  # noqa: BLE001 — a missing/partial cell-type atlas is non-fatal
+        except Exception as e:  # noqa: BLE001 - a missing/partial cell-type atlas is non-fatal
             print(f"[{ct}] skip: {e}")

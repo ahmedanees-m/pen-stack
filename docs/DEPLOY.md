@@ -1,6 +1,6 @@
 # Deploying PEN-STACK (self-hosted, one command)
 
-PEN-STACK ships as a `docker-compose` stack — API + Streamlit UI + MCP server + a local LLM
+PEN-STACK ships as a `docker-compose` stack - API + Streamlit UI + MCP server + a local LLM
 (Ollama/Qwen2.5-7B, Apache-2.0). Everything runs locally and free; **no paid API is required.**
 
 ## Prerequisites
@@ -10,7 +10,7 @@ PEN-STACK ships as a `docker-compose` stack — API + Streamlit UI + MCP server 
 ## Bring it up
 ```bash
 docker compose up -d
-# first run only — pull the local model once (~4.7 GB):
+# first run only - pull the local model once (~4.7 GB):
 docker compose exec ollama ollama pull qwen2.5:7b-instruct
 ```
 

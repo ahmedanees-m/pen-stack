@@ -1,10 +1,10 @@
 # Score my construct for AAV deliverability
 
 **Goal:** decide whether a writer effector fits in a single AAV, needs split-AAV, or must be delivered
-as mRNA-RNP — and read its full therapeutic-readiness profile.
+as mRNA-RNP - and read its full therapeutic-readiness profile.
 
-Deliverability is a function of effector size (a single AAV packages roughly a ≤4.7 kb payload, i.e. a
-≤~730 aa effector). Thresholds live in `configs/score_axes.yaml` (no per-enzyme overrides).
+Deliverability is a function of effector size (a single AAV packages roughly a <=4.7 kb payload, i.e. a
+<=~730 aa effector). Thresholds live in `configs/score_axes.yaml` (no per-enzyme overrides).
 
 ## Python
 
@@ -27,10 +27,10 @@ print(prof[prof.representative_system == "ISCro4"]
 
 | Class | Effector size | S_Deliv |
 |---|---|---|
-| `AAV` | ≤ 730 aa | 1.0 |
-| `split-AAV` | ≤ 1500 aa | 0.6 |
+| `AAV` | <= 730 aa | 1.0 |
+| `split-AAV` | <= 1500 aa | 0.6 |
 | `mRNA-RNP` | > 1500 aa | 0.4 |
 
 The `readiness` score is the mean of available components (`S_Deliv`, `S_Cargo`, `S_HumanCell`,
-`S_DSBfree`) — **always inspect the components**, never just the composite. Cargo design (insulation,
+`S_DSBfree`) - **always inspect the components**, never just the composite. Cargo design (insulation,
 promoter, polyA) is a separate, composable factor handled by the Write Planner.

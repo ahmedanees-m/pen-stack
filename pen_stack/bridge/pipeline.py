@@ -1,6 +1,6 @@
 """pen-bridge: design + assess a bridge-RNA (Phase 1.5, Step 1.5.5).
 
-WRAPS the authoritative Arc BridgeRNADesigner (``bridgernadesigner``) — does not reimplement it — and adds
+WRAPS the authoritative Arc BridgeRNADesigner (``bridgernadesigner``) - does not reimplement it - and adds
 the PEN-STACK layer on top: genome-wide off-target prediction (1.5.2), fold + cross-loop QC (1.5.3), and
 optional overlay with the Phase-1 safety layer (is an off-target in a dangerous locus?).
 
@@ -79,5 +79,5 @@ def annotate_with_safety(off_df, ct: str):
         out = off_df.copy()
         out["bin"] = (out["pos"] // 1000).astype(int)
         return out.merge(wdf, on=["chrom", "bin"], how="left")
-    except Exception:  # noqa: BLE001 — safety overlay is optional
+    except Exception:  # noqa: BLE001 - safety overlay is optional
         return off_df

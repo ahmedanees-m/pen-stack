@@ -1,4 +1,4 @@
-"""Durability layer (Phase 1, Step 1.7) — the conditional chromatin-context model.
+"""Durability layer (Phase 1, Step 1.7) - the conditional chromatin-context model.
 
 Learns ONE function: `local chromatin features -> (expression level, silenced/stable)` on TRIP
 integrations. The model never sees a coordinate, so it is cell-type-agnostic in function: to score a

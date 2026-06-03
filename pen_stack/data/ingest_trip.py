@@ -2,7 +2,7 @@
 
 Ingests the Akhtar et al. 2013 TRIP data (GEO GSE49806 tet-O + GSE49807 mPGK; mouse mESC): each row is
 one integrated reporter at a genomic position with expression. Produces (position, expression level,
-silenced/expressed label) — the supervision for the conditional chromatin-context durability model.
+silenced/expressed label) - the supervision for the conditional chromatin-context durability model.
 
 The model learns `local chromatin features -> expression`; it never sees the coordinate. So TRIP being
 mouse is fine: attach mouse (mES) chromatin features at these positions, train the function, then apply

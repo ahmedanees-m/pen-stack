@@ -1,4 +1,4 @@
-"""Safety concordance evaluation (Phase 1, Step 1.10 — the CORRECT safety validation).
+"""Safety concordance evaluation (Phase 1, Step 1.10 - the CORRECT safety validation).
 
 AUROC on the `genotoxic_cis` label is circular (the label = proximity to 5 oncogenes = the distance
 baseline's own definition). The scientifically meaningful test is CONCORDANCE: does the learned risk

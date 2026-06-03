@@ -1,20 +1,20 @@
-# Data Card — The Writable Genome atlas
+# Data Card - The Writable Genome atlas
 
-**Artifacts:** `atlas_{k562,hepg2,hspc}.parquet` + BigWig/BED tracks · **Phase 1, Steps 1.9–1.11**
-**Release:** Zenodo (DOI on upload) · CC-BY-4.0 (tracks) · MIT (code)
+**Artifacts:** `atlas_{k562,hepg2,hspc}.parquet` + BigWig/BED tracks | **Phase 1, Steps 1.9-1.11**
+**Release:** Zenodo (DOI on upload) | CC-BY-4.0 (tracks) | MIT (code)
 
 ## What it is
-A genome-wide, decomposable **writability** atlas: **3,031,030 loci × 3 cell types** (K562, HepG2, CD34+ HSPC),
-1 kb resolution, hg38. `writability = 0.5·safety + 0.5·p_durable` with components retained.
+A genome-wide, decomposable **writability** atlas: **3,031,030 loci x 3 cell types** (K562, HepG2, CD34+ HSPC),
+1 kb resolution, hg38. `writability = 0.5.safety + 0.5.p_durable` with components retained.
 
 ## Schema (`atlas_<ct>.parquet`)
-`chrom, bin` (position = bin×1000) · `safety` (1−P(genotoxic)) · `pred_expression` · `p_durable`
-(P(durable|epigenome)) · `reachable_tier1` (locus-level Tier-1 writer families) · `writability`.
+`chrom, bin` (position = binx1000) | `safety` (1-P(genotoxic)) | `pred_expression` | `p_durable`
+(P(durable|epigenome)) | `reachable_tier1` (locus-level Tier-1 writer families) | `writability`.
 
 ## Provenance (all public)
-hg38 (UCSC) · ENCODE bigWig signal (accessibility + 5 histones; K562, HepG2, CD34+ common myeloid progenitor,
-mouse ES-Bruce4) · GENCODE v46 · COSMIC CGC v104 · DepMap 26Q1 · LaFave 2014 MLV (NHGRI GeIST) · VISDB ·
-TRIP GSE49806/49807 · UniProt/Pfam (WT-KB). Accessions pinned in `configs/datasets.yaml`.
+hg38 (UCSC) | ENCODE bigWig signal (accessibility + 5 histones; K562, HepG2, CD34+ common myeloid progenitor,
+mouse ES-Bruce4) | GENCODE v46 | COSMIC CGC v104 | DepMap 26Q1 | LaFave 2014 MLV (NHGRI GeIST) | VISDB .
+TRIP GSE49806/49807 | UniProt/Pfam (WT-KB). Accessions pinned in `configs/datasets.yaml`.
 
 ## Validation (blind, pre-registered)
 All pre-registered checks pass (`validation_report.json`). Safe harbours score high, clinical genotoxic CIS low:
@@ -30,12 +30,12 @@ All pre-registered checks pass (`validation_report.json`). Safe harbours score h
   (bridge/Cas9/Cas12a) are broadly available at 1 kb; fine-grained per-site reachability is a design-time
   concern handled by the Write Planner (Phase 3).
 - **Sequence-derived features** (pretrained ChromBPNet/Borzoi inference, Step 1.5) are **not** included in this
-  release — an optional enrichment, deferred; the atlas validates without them.
-- Cross-cell-type writability varies locus-by-locus (e.g. AAVS1 0.78–0.88) — the quantified function-transfer
+  release - an optional enrichment, deferred; the atlas validates without them.
+- Cross-cell-type writability varies locus-by-locus (e.g. AAVS1 0.78-0.88) - the quantified function-transfer
   behaviour, reported as a result.
 - Compares favourably to criteria-based safe-harbour lists by being *learned, durability-aware, and writer-coupled*.
 
 ## Intended use
 Rank candidate insertion loci for genome-writing projects; surface safe + durable + reachable sites. Inputs to
-the Write Planner. **Decision-support, not a clinical directive** — every score traces to public data + a
+the Write Planner. **Decision-support, not a clinical directive** - every score traces to public data + a
 pre-registered model.

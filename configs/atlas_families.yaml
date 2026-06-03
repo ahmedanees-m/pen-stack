@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — Writer Atlas family ingestion config (Phase 2, Step 2.1).
+# PEN-STACK v3.0 - Writer Atlas family ingestion config (Phase 2, Step 2.1).
 # Drives pen_stack/atlas/expand.py. One block per writer family: the UniProt query that defines the
 # ortholog set, the WT-KB family key it rolls up to (so it inherits targeting modality + reachability
 # tier + measured cargo from the Phase-0 WT-KB), and a default confidence for sequence-only homologs.
@@ -23,7 +23,7 @@ families:
     pfam_signature: [PF01548, PF02371]
     default_confidence: predicted
     cap: 32000                          # full IS110 superfamily (~31,883)
-    discovery_doi: "10.1038/s41586-024-07552-4"   # Durrant 2024 — bridge RNA / IS110 superfamily
+    discovery_doi: "10.1038/s41586-024-07552-4"   # Durrant 2024 - bridge RNA / IS110 superfamily
 
   CAST_VK:
     wtkb_family: CAST_VK
@@ -31,7 +31,7 @@ families:
     pfam_signature: [PF11426]
     default_confidence: predicted
     cap: 300
-    discovery_doi: "10.1126/science.aax9181"      # Strecker 2019 — RNA-guided CAST
+    discovery_doi: "10.1126/science.aax9181"      # Strecker 2019 - RNA-guided CAST
 
   serine_integrase:
     wtkb_family: serine_integrase
@@ -51,13 +51,13 @@ families:
 
   TnpB_Fanzor:
     wtkb_family: TnpB_Fanzor
-    query: "(xref:pfam-PF07282) AND reviewed:true"   # reviewed only — OrfB/TnpB family is huge (~41k)
+    query: "(xref:pfam-PF07282) AND reviewed:true"   # reviewed only - OrfB/TnpB family is huge (~41k)
     pfam_signature: [PF07282]
     default_confidence: predicted
     cap: 2000
     discovery_doi: "10.1126/science.abj6856"
 
-# Named, experimentally characterised systems — upgraded above sequence-only homology. These overlay
+# Named, experimentally characterised systems - upgraded above sequence-only homology. These overlay
 # the ortholog sets with measured human-cell activity / cargo and a per-system DOI. seek_IS1111 and
 # PE_integrase have no clean single Pfam query, so they live here as curated representatives.
 curated_representatives:

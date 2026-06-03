@@ -2,7 +2,7 @@
 
 THE single entry point that joins the upstream editor universe + the WT-KB + the crosswalk and
 applies the re-grounded axes. The classifier, the scorer, and the scorecard must all consume the
-output of ``assemble()`` — never re-derive metadata independently (the prior PEN-DISCOVER vs
+output of ``assemble()`` - never re-derive metadata independently (the prior PEN-DISCOVER vs
 PEN-COMPARE gate inconsistency must not recur). Cross-module consistency is asserted by
 ``tests/unit/test_universe_consistency.py``.
 """
@@ -49,7 +49,7 @@ def assemble(
         for col in ("family", "targeting_modality"):
             uni.loc[need, col] = uni.loc[need, "parent_editor"].map(parent_map[col])
 
-    # 3) bring WT-KB measured fields (cargo bp, reachability tier, dsb_free) in by family — single source
+    # 3) bring WT-KB measured fields (cargo bp, reachability tier, dsb_free) in by family - single source
     wt_fields = wt[["family", "cargo_capacity_bp", "reachability_tier", "dsb_free"]].drop_duplicates("family")
     uni = uni.merge(wt_fields, on="family", how="left")
 

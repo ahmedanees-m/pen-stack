@@ -3,7 +3,7 @@
 Grow the Phase-0 curated 8-family core into a comprehensive cross-family catalogue: ingest ortholog
 sets at scale (the IS110/IS1111 superfamily, CAST, large serine integrases, Cas12a, TnpB/Fanzor) from
 UniProt, place every entry on the WT-KB targeting axes by *inheriting* family-level metadata from the
-Phase-0 ``wtkb.parquet`` (single source of truth — the classifier/scorer must not re-derive it), and
+Phase-0 ``wtkb.parquet`` (single source of truth - the classifier/scorer must not re-derive it), and
 tag each row with an explicit ``confidence`` (measured / inferred / predicted) and provenance.
 
 Heavy per-ortholog featurisation (ESM embeddings for mechanism classification at scale, Step 2.2) runs
@@ -59,7 +59,7 @@ def fetch_uniprot(query: str, fields: str, cache: Path, timeout: int = 120,
             df = pd.read_csv(StringIO(text), sep="\t", dtype=str)
             cache.write_text(text, encoding="utf-8")
             return df
-        except Exception as e:  # noqa: BLE001 — network is best-effort; surfaced after retries
+        except Exception as e:  # noqa: BLE001 - network is best-effort; surfaced after retries
             last = e
             time.sleep(2 * (attempt + 1))
     raise RuntimeError(f"UniProt fetch failed for query {query!r}: {last}")
@@ -98,7 +98,7 @@ def _orthologs_for_family(fam_key: str, fam: dict, fields: str, wtkb_row: pd.Ser
 def _curated_rows(cfg: dict, wtkb: pd.DataFrame) -> pd.DataFrame:
     """Named, characterised systems: the 8 WT-KB families themselves + extra reps from config."""
     rows = []
-    # (a) the WT-KB curated core — measured/inferred, full targeting spec
+    # (a) the WT-KB curated core - measured/inferred, full targeting spec
     for _, w in wtkb.iterrows():
         rows.append({
             "representative_system": w["representative_system"],
@@ -169,7 +169,7 @@ def build_atlas(cfg_path: str | Path = _CFG, wtkb_path: str | Path = _WTKB,
 
     atlas = pd.concat(tables, ignore_index=True)
     # named curated rows win over a homolog row for the same accession. Dedup ONLY among rows that
-    # carry a UniProt id — rows without one (seekRNA, PASTE, ShCAST, Bxb1, ISPpu10) are all distinct
+    # carry a UniProt id - rows without one (seekRNA, PASTE, ShCAST, Bxb1, ISPpu10) are all distinct
     # systems and must never collapse together (pandas treats every NaN as equal under drop_duplicates).
     atlas["_pri"] = atlas["entry_kind"].map({"curated_core": 0, "curated_rep": 1, "ortholog": 2})
     has_acc = atlas["uniprot"].notna() & (atlas["uniprot"].astype(str).str.strip() != "")

@@ -1,4 +1,4 @@
-"""Phase 3, Step 3.4 — end-to-end Write Planner.
+"""Phase 3, Step 3.4 - end-to-end Write Planner.
 
 Pre-registered criterion: a goal returns ranked, traceable plans; every field has provenance.
 """

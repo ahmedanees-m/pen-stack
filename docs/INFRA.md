@@ -1,6 +1,6 @@
-# PEN-STACK v3.0 — Infrastructure & Workflow
+# PEN-STACK v3.0 - Infrastructure & Workflow
 
-Canonical environment definition (program doc §0.A). Reused verbatim by every phase.
+Canonical environment definition (program doc Section 0.A). Reused verbatim by every phase.
 
 ## Three-tier architecture
 
@@ -18,8 +18,8 @@ LAPTOP (2.5 GHz, 8 GB)  --paramiko SSH/SFTP-->  VM <vm-hostname> (<your-vm-ip>)
 ## Golden rules (non-negotiable)
 
 1. **Docker-only on the VM.** Never `apt/pip install` on the host. All tools live in `penstack:0.1`.
-2. **SFTP, not rclone**, for VM↔laptop transfer (paramiko SFTP).
-3. **500 GB discipline.** Stage → process → pull-to-Drive → clean. Keep `/data` under ~400 GB; `penctl df` before heavy steps.
+2. **SFTP, not rclone**, for VM<->laptop transfer (paramiko SFTP).
+3. **500 GB discipline.** Stage -> process -> pull-to-Drive -> clean. Keep `/data` under ~400 GB; `penctl df` before heavy steps.
 4. **Reproducible.** Pinned image digests, pinned dataset versions, SHA-locked prereg files.
 5. **No secrets in git.** Keys/tokens live only in `~/.pen/secrets.env` on the laptop.
 

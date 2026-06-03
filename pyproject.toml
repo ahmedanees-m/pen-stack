@@ -59,6 +59,27 @@ include = ["pen_stack*"]
 testpaths = ["tests"]
 addopts = "-q"
 
+[tool.coverage.run]
+source = ["pen_stack"]
+# exclude code that REQUIRES external resources (GPU/VM/network/LLM/browser) and so cannot be unit-tested
+# in CI; it is integration-tested on the VM instead. Coverage reflects the unit-tested core logic.
+omit = [
+    "pen_stack/data/*",          # dataset ingestion (network, bedtools, VM)
+    "pen_stack/wgenome/*",       # genotoxicity/durability model training (GPU/VM)
+    "pen_stack/ui/*",            # Streamlit app (tested headless via AppTest on the VM)
+    "pen_stack/server/*",        # FastAPI service (integration)
+    "pen_stack/monitor/*",       # Europe PMC polling (network)
+    "pen_stack/rag/llm.py",      # Ollama LLM client (needs a model server)
+    "pen_stack/agent/orchestrator.py",  # LLM tool-calling loop (needs a model server)
+    "pen_stack/agent/mcp_server.py",    # MCP server (fastmcp runtime)
+    "pen_stack/cli.py",          # thin CLI wrappers
+    "pen_stack/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if __name__ == .__main__.:", "raise NotImplementedError"]
+precision = 0
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"

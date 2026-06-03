@@ -1,11 +1,11 @@
-"""PEN-MONITOR orchestrator (Phase 2, Step 2.7) — the Europe PMC living-database engine.
+"""PEN-MONITOR orchestrator (Phase 2, Step 2.7) - the Europe PMC living-database engine.
 
 Poll Europe PMC for every writer-family query, triage each hit into a candidate row (always cited),
 de-duplicate, and write a human-reviewed curation queue. The atlas is **never** auto-edited; accepted
 entries flow into the WT-KB/atlas with confidence=inferred only after a human accepts them.
 
 Back-test: with ``back_test=True`` and a date window covering March 2026, the engine must surface the
-known recent writer ISPpu10 (Europe PMC PPR1218813) into the queue — the pre-registered success check.
+known recent writer ISPpu10 (Europe PMC PPR1218813) into the queue - the pre-registered success check.
 """
 from __future__ import annotations
 

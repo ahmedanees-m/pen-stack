@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — re-grounded scoring axes (Phase 0, Step 0.3).
+# PEN-STACK v3.0 - re-grounded scoring axes (Phase 0, Step 0.3).
 # The prior prog/cargo axes failed every editor at the gate thresholds without hand-set overrides
 # (e.g. the ISCro4 s_prog=1.0 / s_cargo=1.0 patch). Here every axis is a documented, continuous
 # function of a MEASURED input. NO per-enzyme override constants exist anywhere in the code.

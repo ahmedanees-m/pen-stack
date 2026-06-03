@@ -1,4 +1,4 @@
-"""Phase 1.5 — genome-wide bridge off-target scan for a design (reproducible runner).
+"""Phase 1.5 - genome-wide bridge off-target scan for a design (reproducible runner).
 
     python scripts/p4_genome_scan.py --target ACGTGTCTACGTGA --fasta /path/hg38.fa --out out/offtargets_demo
 

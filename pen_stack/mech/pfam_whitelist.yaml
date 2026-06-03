@@ -12,7 +12,7 @@
 #   DSB_NUCLEASE | DSB_FREE_TRANSEST_RECOMBINASE | TRANSPOSASE
 
 domains:
-  # === CRISPR-Cas Class 2 — Cas9 (multi-domain; >=2 of 3 co-occurring define Cas9) ===
+  # === CRISPR-Cas Class 2 - Cas9 (multi-domain; >=2 of 3 co-occurring define Cas9) ===
   - accession: PF13395
     name: HNH_4
     interpro_name: "HNH endonuclease"
@@ -22,7 +22,7 @@ domains:
     reference: "Jinek 2012 Science"
     doi: "10.1126/science.1225829"
     co_occurs_with: [PF18541, PF16595]
-    notes: "HNH nuclease domain found in CRISPR-related proteins (including Cas9). Not exclusively Cas9-specific — also found in other HNH endonucleases. Cleaves target DNA strand in Cas9."
+    notes: "HNH nuclease domain found in CRISPR-related proteins (including Cas9). Not exclusively Cas9-specific - also found in other HNH endonucleases. Cleaves target DNA strand in Cas9."
 
   - accession: PF18541
     name: RuvC_III
@@ -46,7 +46,7 @@ domains:
     co_occurs_with: [PF13395, PF18541]
     notes: "PAM-interacting domain; recognises NGG PAM in SpCas9. Part of composite Cas9 set."
 
-  # === CRISPR-Cas Class 2 — Cas12a (RuvC-only single lobe) ===
+  # === CRISPR-Cas Class 2 - Cas12a (RuvC-only single lobe) ===
   - accession: PF18516
     name: RuvC_1
     interpro_name: "RuvC nuclease domain"
@@ -120,7 +120,7 @@ domains:
     example_uniprot: [Q9U6K4]
     reference: "Chandler 2013 Nat Rev Microbiol"
     doi: "10.1038/nrmicro3067"
-    notes: "Additional DDE transposase domain family. Generic DDE-fold diversity — not exclusively hAT or Mariner. Complements PF01609 coverage."
+    notes: "Additional DDE transposase domain family. Generic DDE-fold diversity - not exclusively hAT or Mariner. Complements PF01609 coverage."
 
   # === Tn7 and CAST (I-F and V-K) system components ===
   - accession: PF08721
@@ -141,7 +141,7 @@ domains:
     example_uniprot: [P05846]
     reference: "Hoffmann 2022 Nature; Peters 2017 PNAS"
     doi: "10.1038/s41586-022-05059-4"
-    notes: "AAA+ ATPase regulator of Tn7 transposition. Bridges target selection (TniQ/Cascade) and transposase (TnsB). Core to all CAST systems. CORRECTED from PF03400 (was IS1 transposase — completely unrelated)."
+    notes: "AAA+ ATPase regulator of Tn7 transposition. Bridges target selection (TniQ/Cascade) and transposase (TnsB). Core to all CAST systems. CORRECTED from PF03400 (was IS1 transposase - completely unrelated)."
 
   - accession: PF05621
     name: TniB
@@ -205,7 +205,7 @@ domains:
     doi: "10.1038/nrmicro3067"
     notes: "HUH-domain rolling-circle replication initiator. 5'-phosphotyrosine intermediate. Covers IS91 / ISCR / helitron families."
 
-# === Auxiliary domains (NOT entry criteria — recorded if co-occurring with primary) ===
+# === Auxiliary domains (NOT entry criteria - recorded if co-occurring with primary) ===
 auxiliary:
   - accession: PF18061
     name: WED
@@ -226,7 +226,7 @@ auxiliary:
   - accession: PF03377
     name: TAL_effector
     interpro_name: "TAL effector repeat"
-    notes: "TALE repeat — outgroup comparison for programmable DNA binding. CORRECTED from PF03374 (was KilAC phage antirepressor)."
+    notes: "TALE repeat - outgroup comparison for programmable DNA binding. CORRECTED from PF03374 (was KilAC phage antirepressor)."
 
 # === Version metadata ===
 version: "1.2.1"

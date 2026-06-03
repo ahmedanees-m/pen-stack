@@ -2,7 +2,7 @@
 
 The prior pipeline injected per-enzyme axis values (e.g. for ISCro4) to make gates pass. v3.0 forbids
 any enzyme-conditioned score override: the scoring modules must be enzyme-agnostic. The scan strips
-comments AND string literals first, so docstrings that *describe* the old bug do not trip the check —
+comments AND string literals first, so docstrings that *describe* the old bug do not trip the check -
 only executable code is inspected.
 """
 import re

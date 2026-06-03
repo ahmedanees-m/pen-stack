@@ -6,7 +6,7 @@ chromatin and is a feature for both the safety layer and "where insertions land"
 
 NOTE (honest scope): VISDB's MLV set is tiny (~32 sites); the large >3.7M MLV-in-K562/HepG2 sets
 referenced in the plan live in specific papers'/GEO supplements and are sourced separately. The
-GENOTOXIC labels (clonal-outcome CIS) come from the clinical gene list (Step 1.4) — this module
+GENOTOXIC labels (clonal-outcome CIS) come from the clinical gene list (Step 1.4) - this module
 supplies the integration-DENSITY feature, not the danger label.
 """
 from __future__ import annotations

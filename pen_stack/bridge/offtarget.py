@@ -1,4 +1,4 @@
-"""Genome-wide bridge-recombinase off-target engine (Phase 1.5, Step 1.5.2) — HEADLINE.
+"""Genome-wide bridge-recombinase off-target engine (Phase 1.5, Step 1.5.2) - HEADLINE.
 
 Given a bridge-RNA design's target core (bipartite ~14 nt with a central CT dinucleotide), scan hg38 for
 pseudosites tolerating up to ~2 mismatches and score each by a position-weight model (some positions
@@ -6,10 +6,10 @@ tolerate substitutions, the central core does not). This is the clinical gatekee
 where else in the genome the recombinase might write.
 
 Efficiency: the central core (CT) must match for recombination, so we **seed on the core dinucleotide**
-and verify the surrounding 14-mer — bounding the scan without loading the genome into RAM (per-chromosome
+and verify the surrounding 14-mer - bounding the scan without loading the genome into RAM (per-chromosome
 via pysam). Scoring beats a naive Hamming ranking *because mismatch position matters*.
 
-Also exposes ``predict_offtargets(writer_family, site, ...)`` — the summary entry the Phase-3 Planner
+Also exposes ``predict_offtargets(writer_family, site, ...)`` - the summary entry the Phase-3 Planner
 cargo step calls (so its off-target annotation is no longer "pending Phase 1.5").
 """
 from __future__ import annotations
@@ -52,7 +52,7 @@ def risk_score(mm: list[tuple[int, str]], weights: dict[int, float]) -> float:
 
 
 def hamming_risk(mm: list[tuple[int, str]], core_len: int) -> float:
-    """Naive baseline: position-blind — risk decreases uniformly with mismatch count."""
+    """Naive baseline: position-blind - risk decreases uniformly with mismatch count."""
     return float((core_len - len(mm)) / core_len)
 
 
@@ -101,7 +101,7 @@ def scan_offtargets(fasta: str | Path, target_core: str, chroms: list[str],
 def predict_offtargets(writer_family: str, site: tuple | None = None, target_core: str | None = None,
                        fasta: str | Path | None = None, chroms: list[str] | None = None,
                        top: int = 20) -> dict:
-    """Off-target summary for a writer at a site — the entry the Phase-3 cargo step calls.
+    """Off-target summary for a writer at a site - the entry the Phase-3 cargo step calls.
 
     Only bridge/seek families are RNA-guided pseudosite-scannable. If a genome + target core are
     available it returns a real genome-wide scan summary; otherwise it reports the engine is ready and

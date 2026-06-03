@@ -1,8 +1,8 @@
-"""DMS-grounded variant proposal (Phase 2, Step 2.4) — replaces the failed de-novo chimera generation.
+"""DMS-grounded variant proposal (Phase 2, Step 2.4) - replaces the failed de-novo chimera generation.
 
 Instead of speculative chimeras (PEN-ASSEMBLE produced 0 TRUE_WRITERs and was HPC-hungry/unvalidatable),
 propose *single/double point mutations* with a predicted activity effect, retrospectively validatable
-against a published enhanced variant. **No chimeras are ever produced** — only point substitutions.
+against a published enhanced variant. **No chimeras are ever produced** - only point substitutions.
 
 The activity predictor is a pluggable ``VariantEffectModel``. The DMS-trained model is a Phase-1.5
 deliverable (deep mutational scanning of bridge recombinases); until it lands, a transparent,
@@ -41,7 +41,7 @@ class VariantEffectModel(Protocol):
 class BaselinePhysicoChemical:
     """A transparent, NON-DMS placeholder predictor (Phase-1.5 supplies the real DMS model).
 
-    Scores a substitution by *conservativeness* (small hydropathy change ranks higher) — a deliberately
+    Scores a substitution by *conservativeness* (small hydropathy change ranks higher) - a deliberately
     weak, documented heuristic so the proposal/validation framework is exercisable before Phase 1.5.
     It makes no activity claim and must never be presented as the DMS predictor.
     """
@@ -54,7 +54,7 @@ class BaselinePhysicoChemical:
 
 def propose_variants(seq: str, model: VariantEffectModel, top: int = 20,
                      positions: list[int] | None = None) -> pd.DataFrame:
-    """Rank single point mutations by predicted activity gain. No chimeras — substitutions only."""
+    """Rank single point mutations by predicted activity gain. No chimeras - substitutions only."""
     idxs = positions if positions is not None else range(len(seq))
     cand = [(i, seq[i], aa) for i in idxs for aa in _AA if aa != seq[i]]
     pred = model.predict(seq, cand)

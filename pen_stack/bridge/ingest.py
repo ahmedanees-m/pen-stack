@@ -1,7 +1,7 @@
 """Acquire / load the bridge-recombinase training data (Phase 1.5, Step 1.5.1).
 
 Three tables supervise the engine: the measured **off-target profile** (per-position mismatch tolerance),
-the **DMS** (variant→activity), and the **72-system human-cell activity screen**. The Perry 2025
+the **DMS** (variant->activity), and the **72-system human-cell activity screen**. The Perry 2025
 supplementary (Science adz0276) is paywalled and not bulk-downloadable from the build environment; the
 loaders below read the real tables when supplied, and otherwise fall back to the literature-grounded
 position-weight profile (`configs/bridge_offtarget_profile.yaml`) so the engine runs end-to-end.
@@ -21,7 +21,7 @@ import yaml
 _ROOT = Path(__file__).resolve().parents[2]
 _CFG = _ROOT / "configs" / "bridge_offtarget_profile.yaml"
 
-# Perry 2025 supplementary (Science adz0276) — copyrighted; kept LOCAL, never committed/redistributed.
+# Perry 2025 supplementary (Science adz0276) - copyrighted; kept LOCAL, never committed/redistributed.
 # Default location: Final_Part_v3.0/Perry_et_al/ (override with PEN_PERRY_DIR).
 _PERRY_FILES = {
     "orthologs": "science.adz0276_table_s1.xlsx",          # S1: 72 bridge recombinase orthologs
@@ -58,7 +58,7 @@ def protective_weights() -> dict[int, float]:
 
 
 def load_insertion_sites() -> pd.DataFrame:
-    """Perry 2025 Table S2 — measured genome-wide insertion sites (on- + off-target). Empty if absent.
+    """Perry 2025 Table S2 - measured genome-wide insertion sites (on- + off-target). Empty if absent.
 
     Columns include Intended_Site_Name, Plasmid_Encoded_Sequence (the intended 14-nt target),
     Insertion_Site, Insertion_Site_Sequence (measured 14-nt), UMI_Count, %_of_Insertions, On-Target.
@@ -123,7 +123,7 @@ def load_offtarget_profile(use_measured: bool = True) -> pd.DataFrame:
 
 
 def load_dms() -> pd.DataFrame:
-    """Perry 2025 Table S3 — deep mutational scan (Position, Mutation, Z_Score_wrt_WT). Empty if absent."""
+    """Perry 2025 Table S3 - deep mutational scan (Position, Mutation, Z_Score_wrt_WT). Empty if absent."""
     p = _perry("dms")
     if p is None:
         return pd.DataFrame(columns=["Position", "Mutation", "Z_Score_wrt_WT"])
@@ -132,7 +132,7 @@ def load_dms() -> pd.DataFrame:
 
 
 def load_screen() -> pd.DataFrame:
-    """Perry 2025 Table S1 — 72 bridge recombinase orthologs (Name, sequences, Target, Donor). Empty if absent."""
+    """Perry 2025 Table S1 - 72 bridge recombinase orthologs (Name, sequences, Target, Donor). Empty if absent."""
     p = _perry("orthologs")
     if p is None:
         return pd.DataFrame(columns=["Name", "Recombinase_Sequence", "bRNA_Sequence", "Donor", "Target"])

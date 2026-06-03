@@ -1,6 +1,6 @@
-"""Phase 2, Step 2.1 — Writer Atlas expansion invariants.
+"""Phase 2, Step 2.1 - Writer Atlas expansion invariants.
 
-Runs against the committed ``atlas.parquet`` deliverable (offline — no network in CI). Asserts the
+Runs against the committed ``atlas.parquet`` deliverable (offline - no network in CI). Asserts the
 pre-registered success criteria: all target families present, thousands of IS110 orthologs, every row
 carries a confidence tag + >=1 source DOI, and targeting metadata is inherited (never NaN).
 """
@@ -43,7 +43,7 @@ def test_every_row_has_confidence_and_source(atlas):
 
 
 def test_targeting_metadata_inherited(atlas):
-    # inherited from the WT-KB by family — never NaN (single source of truth)
+    # inherited from the WT-KB by family - never NaN (single source of truth)
     for col in ("reachability_tier", "targeting_modality", "mechanism_bucket"):
         assert atlas[col].notna().all(), f"{col} must be inherited for every atlas row"
 

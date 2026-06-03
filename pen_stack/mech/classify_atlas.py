@@ -2,7 +2,7 @@
 
 Run the audited Pfam-whitelist classifier over the expanded Writer Atlas. For every system, derive a
 ``mech_pred`` bucket + ``mech_conf`` *independently* from its Pfam domain architecture (homology), then
-compare against the inherited/audited ``mechanism_bucket`` — keeping homology and mechanism distinct, as
+compare against the inherited/audited ``mechanism_bucket`` - keeping homology and mechanism distinct, as
 the program requires. Low-confidence / conflicting / disagreeing calls are written to a review queue and
 flagged, never hidden.
 

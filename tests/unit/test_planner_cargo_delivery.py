@@ -1,4 +1,4 @@
-"""Phase 3, Steps 3.2-3.3 — cargo/donor design + delivery recommendation."""
+"""Phase 3, Steps 3.2-3.3 - cargo/donor design + delivery recommendation."""
 from __future__ import annotations
 
 from pen_stack.planner.cargo import design_cargo

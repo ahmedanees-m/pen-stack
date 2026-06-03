@@ -1,4 +1,4 @@
-# PEN-STACK v3.0 — Paper 2 (Writer Atlas + Unified Stack) pre-registered success criteria.
+# PEN-STACK v3.0 - Paper 2 (Writer Atlas + Unified Stack) pre-registered success criteria.
 # SHA-locked; the hash is printed into the manuscript. Paper 2 is a Database/Webserver/software paper:
 # the criteria are coverage + correctness + grounding, not a single learned metric.
 paper: 2
@@ -10,7 +10,7 @@ writer_atlas:
   success:
     target_families_represented_min: 6          # achieved 8
     every_row_has_confidence_and_source: true    # confidence tag + >=1 DOI on every row
-    is110_is1111_orthologs_min: 1000             # "thousands" — achieved 31,885
+    is110_is1111_orthologs_min: 1000             # "thousands" - achieved 31,885
 
 mechanism_at_scale:
   classifier: "audited 18-family Pfam whitelist v1.2.1 (composite co-occurrence rules)"

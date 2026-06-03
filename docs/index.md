@@ -8,10 +8,10 @@ Three layers, one engine:
 
 | Component | What it answers |
 |---|---|
-| **Writable Genome** (`pen_stack.wgenome`) | Where can I safely + durably insert DNA? (3M loci × cell type, learned blind) |
+| **Writable Genome** (`pen_stack.wgenome`) | Where can I safely + durably insert DNA? (3M loci x cell type, learned blind) |
 | **Writer Atlas** (`pen_stack.atlas` / `mech` / `score`) | What can write, and how well? (33,370 systems across 8 families, measured axes) |
 | **Cross-link** (`pen_stack.atlas.crosslink`) | Which writers reach a locus / which loci a writer reaches |
-| **Write Planner** (`pen_stack.planner`, Phase 3) | Find the optimal site × writer × cargo × delivery for a goal |
+| **Write Planner** (`pen_stack.planner`, Phase 3) | Find the optimal site x writer x cargo x delivery for a goal |
 
 ## Install
 
@@ -31,7 +31,7 @@ pen-stack crosslink --family bridge_IS110   # loci a writer family reaches
 pen-stack monitor --back-test        # PEN-MONITOR living-database scan
 ```
 
-REST API: `uvicorn pen_stack.server.api:app` → `GET /atlas/coverage`, `/crosslink/writers`, `/writable`, `/ask`.
+REST API: `uvicorn pen_stack.server.api:app` -> `GET /atlas/coverage`, `/crosslink/writers`, `/writable`, `/ask`.
 
 Platform UI: `streamlit run pen_stack/ui/app.py`.
 

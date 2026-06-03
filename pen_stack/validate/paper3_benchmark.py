@@ -1,10 +1,10 @@
-"""Two-stratum, goal-conditioned recovery@k benchmark (Phase 3, Step 3.5) — PAPER-DEFINING, gating.
+"""Two-stratum, goal-conditioned recovery@k benchmark (Phase 3, Step 3.5) - PAPER-DEFINING, gating.
 
-Show the Write Planner recovers documented targeted-writes — *especially the non-obvious ones a naive
-baseline cannot* — from the goal (gene + edit_intent) alone, with the precise site held out. The panel is
+Show the Write Planner recovers documented targeted-writes - *especially the non-obvious ones a naive
+baseline cannot* - from the goal (gene + edit_intent) alone, with the precise site held out. The panel is
 adversarial to the baseline by construction:
 
-  * Control stratum (safe-harbour writes): a safety ranker should recover these — the Planner must not be
+  * Control stratum (safe-harbour writes): a safety ranker should recover these - the Planner must not be
     worse.
   * Discriminating stratum (therapeutic-into-functional-locus writes): an intent-blind safety ranker keeps
     proposing safe harbours and *misses* the intended (often intragenic) target; the Planner, conditioned
@@ -53,7 +53,7 @@ def _gene_candidate(gene: str, writable_df: pd.DataFrame) -> dict | None:
     body = writable_df[(writable_df["chrom"] == r["chrom"]) & (writable_df["bin"].between(lo, hi))]
     if body.empty:
         return None
-    # represent the locus by its BEST writable bin — the site a planner would actually target within it
+    # represent the locus by its BEST writable bin - the site a planner would actually target within it
     best = body.loc[body["writability"].idxmax()]
     return {"gene": gene, "chrom": r["chrom"], "bin": int(best["bin"]),
             "safety": float(best["safety"]), "p_durable": float(best["p_durable"]),
