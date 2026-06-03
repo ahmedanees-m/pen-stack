@@ -1,22 +1,29 @@
 <div align="center">
 
-# 🧬 PEN-STACK
+# PEN-STACK
 
 ### The Writable Genome — open infrastructure for genome *writing*
 
 *Editing tools tell you **how** to change a base. PEN-STACK tells you **where** in the genome you can safely
-and durably write new DNA — and **which enzyme** can write it there.*
+and durably write new DNA, **which enzyme** can write it there, and **how** to design the write end-to-end.*
 
 [![CI](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-37e6e0.svg)](LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-3.0.0a5-3dffa2.svg)](CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-68%20passing-3dffa2.svg)](tests/)
-[![Code style: ruff](https://img.shields.io/badge/lint-ruff-FFC857.svg)](https://github.com/astral-sh/ruff)
-[![Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
-[![Pre-registered](https://img.shields.io/badge/validation-pre--registered-ff5d6c.svg)](prereg/)
-[![Writable Genome](https://img.shields.io/badge/atlas-3M%20loci%20%C3%97%203%20cell%20types-9b59ff.svg)](#-the-writable-genome-paper-1--flagship)
-[![Writer Atlas](https://img.shields.io/badge/writer%20atlas-33%2C370%20systems%20%C3%97%208%20families-37e6e0.svg)](#-the-writer-atlas--unified-stack-paper-2)
+[![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
+[![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
+[![Version](https://img.shields.io/badge/version-3.0.0a5-blue.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-68%20passing-success.svg)](tests/)
+[![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
+[![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
+[![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
+
+**Built on five prior, separately published repositories:**
+
+[![genome-atlas](https://img.shields.io/badge/built_on-genome--atlas-1f6feb.svg)](https://github.com/ahmedanees-m/genome-atlas)
+[![mech-class](https://img.shields.io/badge/built_on-mech--class-1f6feb.svg)](https://github.com/ahmedanees-m/mech-class)
+[![pen-score](https://img.shields.io/badge/built_on-pen--score-1f6feb.svg)](https://github.com/ahmedanees-m/pen-score)
+[![pen-assemble](https://img.shields.io/badge/built_on-pen--assemble-1f6feb.svg)](https://github.com/ahmedanees-m/pen-assemble)
+[![pen-compare](https://img.shields.io/badge/built_on-pen--compare-1f6feb.svg)](https://github.com/ahmedanees-m/pen-compare)
 
 </div>
 
@@ -24,335 +31,250 @@ and durably write new DNA — and **which enzyme** can write it there.*
 
 ## What is PEN-STACK?
 
-PEN-STACK is a single, installable, **pre-registered** computational stack that builds the reference layer the
-genome-**writing** era lacks. Genome *editing* changes a base in place; genome *writing* installs **new**
-information — inserting genes, flipping or excising kilobases, placing landing pads. Two questions gate every
-writing project, and no resource answered them together:
+PEN-STACK is a single, installable, pre-registered computational stack that builds the reference and design
+layer the genome-**writing** era lacks. It consolidates five earlier research projects into one citable
+package, then adds the two reference maps and the design engine the field was missing.
 
-1. **Where can you write?** — a locus must accept an insert without disrupting an essential gene or activating
-   an oncogene (**safety**), and the cargo must *stay expressed* (**durability**).
-2. **What can write there, and how?** — which enzyme can physically reach the locus, with what cargo, and
-   how deliverably (**reachability** + the **Writer Atlas**).
+Genome **editing** changes a base or short stretch in place. Genome **writing** installs *new* information —
+inserting genes, flipping or excising kilobases, placing programmable landing pads. Writing is the harder,
+less-tooled, and more clinically transformative modality, and it is gated by questions that today have no
+canonical answer.
 
-PEN-STACK answers both and joins them with an inverse-design **Write Planner**.
+## The problem, and the gaps PEN-STACK closes
+
+Two questions gate every genome-writing project, and before PEN-STACK no resource answered them together:
+
+| Gap | The problem today | What PEN-STACK provides |
+|---|---|---|
+| **Where can you write?** | Each lab re-derives an ad-hoc "safe harbour" shortlist from inconsistent criteria; published lists range from ~2,000 sites to 25, none predict expression durability from a learned model, none are writer-aware, most cover one cell type. | **The Writable Genome** — a learned, cell-type-aware, writer-aware atlas scoring every locus for *safety* (genotoxicity risk) × *durability* (will the cassette stay expressed) × *reachability* (which enzyme can engage it). |
+| **What can write there, and how well?** | Enzyme capabilities are scattered across papers; no catalogue places all genome-writing families on common, measured axes with their targeting requirements. | **The Writer Atlas** — 33,370 enzyme systems across 8 families on common measured axes, joined to the Writable Genome by a bidirectional cross-link. |
+| **How do I design the actual write?** | Destination, enzyme, cargo and delivery are interdependent and goal-dependent; no tool optimises them jointly. | **The Write Planner** — inverse design that, given a goal and an `edit_intent`, returns ranked, traceable site × writer × cargo × delivery plans. |
+| **Will my bridge-recombinase design go off-target?** | Bridge recombinases are the most programmable writers, but had no genome-wide off-target predictor (a "CRISPOR" equivalent). | **The bridge off-target engine** (`pen-bridge`) — genome-wide off-target prediction validated on measured data. |
+
+Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
+a pre-registered, honest baseline before release.
+
+## Architecture
 
 ```
-writability(locus) = safety  ×  durability  ×  reachability
-                      │           │             │
-        genotoxicity  │  will a   │  which writer enzyme
-        risk (learned)│ cassette  │  can engage this site
-                      │  stay on? │  (tiered, by family) ──► Writer Atlas (33,370 systems)
-                      │ (learned) │
+                           +-------------------------------------------+
+                           |            WRITE PLANNER (engine)         |
+                           |   inverse design: destination x writer    |
+                           |   x cargo/guide x delivery -> ranked plan  |
+                           +----------------^-------------^-------------+
+                                            |             |
+                  +-------------------------+--+      +---+------------------------+
+                  |    WRITABLE GENOME (B)     |      |      WRITER ATLAS (A)      |
+                  |    flagship reference      |<---->|   companion reference      |
+                  |                            | reach|                            |
+                  |  - Safety layer (learned)  | ability  - Family targeting KB    |
+                  |  - Durability layer (learned)|      |  - Measured scoring axes   |
+                  |  - Reachability layer  -----+------+  - Mechanism classifier    |
+                  |  -> writability profile    |      |  - DMS variant model        |
+                  +-------------------------^--+      +---+------------------------+
+                                            |             |
+         +----------------------------------+-------------+-------------------------+
+         |                       DATA FOUNDATION (bulk-downloadable)                |
+         |  hg38 . ENCODE/Roadmap chromatin . Hi-C/LADs . TRIP position effects .   |
+         |  RID/VISDB/MLV integration sites . clinical genotoxic CIS . COSMIC .     |
+         |  DepMap . gnomAD . GTEx . UniProt . Pfam/InterPro . bridge-recombinase   |
+         |  off-target + DMS (Perry 2025)                                           |
+         +-------------------------------------------------------------------------+
+
+   Platform services (on top of the validated core): PEN-MONITOR (Europe PMC living database),
+   grounded RAG/Q&A, a tool-using agent + MCP server, and a Streamlit web app.
 ```
-
-> **Headline results.**
-> **Paper 1 (Writable Genome):** a genome-wide atlas (3,031,030 loci × **K562 / HepG2 / HSPC**) recovers
-> validated safe harbours as highly writable and clinical genotoxic loci as non-writable — *blind*.
-> **Paper 2 (Writer Atlas):** **33,370 genome-writing enzyme systems across 8 families** on common measured
-> axes, joined to the Writable Genome by a bidirectional **writer↔locus cross-link**.
-> **Paper 3 (Write Planner):** on a frozen, goal-conditioned recovery@k benchmark the Planner recovers
-> therapeutic-into-functional-locus writes at **recovery@10 = 1.00 vs 0.00** for an intent-blind baseline
-> (McNemar p = 0.0156; bootstrap gap CI **[1.0, 1.0]** excludes zero), tying on safe-harbour controls — and
-> a tool-using **agent** turns a goal into a cited, auditable plan that provably never fabricates a number.
-> **Paper 4 (Bridge off-target engine):** a genome-wide off-target predictor for RNA-guided bridge
-> recombinases. Validated on the **measured Perry 2025 data** (6,856 real off-targets): the per-position
-> profile confirms the central core (positions 7–9) is the specificity determinant, and the position-weight
-> model beats a naïve Hamming ranking **AUROC 0.77 vs 0.62 on real off-targets** (1.00 vs 0.59 idealised).
-> Shipped as `pen-bridge`, wrapping the Arc BridgeRNADesigner.
-
----
 
 ## How it works
 
-PEN-STACK is organised as **two reference layers + one engine + a services layer**, all built on
-bulk-downloadable public data and validated against an honest baseline before release.
+PEN-STACK is organised as **two reference layers + one engine + a services layer**.
 
 | Component | Module | Role | Status |
 |---|---|---|---|
-| 🟣 **Writable Genome** (flagship) | `pen_stack.wgenome` | learned per-locus safety × durability × reachability | ✅ **Paper 1** |
-| 🔵 **Writer Atlas** (companion) | `pen_stack.atlas`, `.mech`, `.score` | cross-family enzyme catalogue + Writer-Targeting KB | ✅ **Paper 2** |
-| 🔗 **Cross-link** | `pen_stack.atlas.crosslink` | bidirectional writer ↔ locus queries | ✅ Paper 2 |
-| ⚙️ **Write Planner** (engine) | `pen_stack.planner` | inverse design: destination × writer × cargo × delivery, `edit_intent`-conditioned | ✅ **Paper 3** |
-| 🤖 **Agentic platform** | `pen_stack.agent` | goal → cited, auditable plan; MCP server; one-command deploy | ✅ Paper 3 |
-| 🌉 **Bridge off-target engine** | `pen_stack.bridge` | "CRISPOR for bridge recombinases" — genome-wide off-target + fold QC | ✅ **Paper 4** |
-| 🛰️ **Platform services** | `monitor`, `rag`, `ui`, `server` | living-DB, grounded RAG, Streamlit UI, REST API | ✅ |
+| **Writable Genome** (flagship) | `pen_stack.wgenome` | learned per-locus safety x durability x reachability | Paper 1 |
+| **Writer Atlas** (companion) | `pen_stack.atlas`, `.mech`, `.score` | cross-family enzyme catalogue + Writer-Targeting KB | Paper 2 |
+| **Cross-link** | `pen_stack.atlas.crosslink` | bidirectional writer to locus queries | Paper 2 |
+| **Write Planner** (engine) | `pen_stack.planner` | inverse design, `edit_intent`-conditioned | Paper 3 |
+| **Agentic platform** | `pen_stack.agent` | goal to cited, auditable plan; MCP server; one-command deploy | Paper 3 |
+| **Bridge off-target engine** | `pen_stack.bridge` | "CRISPOR for bridge recombinases" | Paper 4 |
+| **Platform services** | `monitor`, `rag`, `ui`, `server` | living database, grounded RAG, web app, REST API | — |
 
-### The three learned layers (the flagship — Paper 1)
+### Headline results (all blind / pre-registered)
 
-| Layer | Question | Supervision (public data) | Validation |
-|---|---|---|---|
-| **Safety** | will inserting here cause genotoxicity? | COSMIC Cancer Gene Census · DepMap essential genes · LaFave 2014 **3.7M MLV** integrations (K562/HepG2) · VISDB · chromatin | learned model *discriminates safe harbours* (AAVS1) where a naïve distance rule over-flags |
-| **Durability** | will the cassette stay expressed? | **TRIP** position-effect data (Akhtar 2013, GSE49806/49807) → conditional `chromatin → expression` | Spearman ρ = **0.42**, silenced/stable AUROC **0.64**, beats the H3K9me3 baseline; transfers mouse → human |
-| **Reachability** | which writer can engage it? | Writer-Targeting Knowledge Base (8 families, tiered) | Tier-1 sites recovered; Tier-2/3 flagged "requires validation" |
+- **Paper 1 (Writable Genome):** a genome-wide atlas of 3,031,030 loci x 3 cell types (K562, HepG2, CD34+
+  HSPC) recovers validated safe harbours as highly writable and clinical genotoxic loci as non-writable,
+  blind. Durability transfers mouse to human (Spearman rho = 0.42).
+- **Paper 2 (Writer Atlas):** 33,370 enzyme systems across 8 families on common measured axes; mechanism
+  classifier agrees with the audited labels on the curated core (1.00); cross-link validated on AAVS1.
+- **Paper 3 (Write Planner):** on a frozen, goal-conditioned recovery@k benchmark the Planner recovers
+  therapeutic-into-functional-locus writes at recovery@10 = 1.00 vs 0.00 for an intent-blind baseline
+  (McNemar p = 0.0156; bootstrap gap CI [1.0, 1.0] excludes zero); a tool-using agent never fabricates a
+  number (every value traces to a validated tool call).
+- **Paper 4 (Bridge off-target engine):** validated on the measured Perry 2025 data (6,856 real
+  off-targets) — the per-position profile confirms the central core (positions 7–9) is the specificity
+  determinant, and the position-weight model beats a naive Hamming ranking AUROC 0.77 vs 0.62 on real
+  off-targets; the deep mutational scan recovers the top activity-enhancing variants.
 
-### The Writer Atlas + cross-link (Paper 2)
+## How PEN-STACK connects to the prior repositories
 
-| Capability | Module | Result |
-|---|---|---|
-| **Writer Atlas** — every family on measured axes | `atlas/expand.py` → `atlas.parquet` | **33,370 systems × 8 families** (31,885 IS110 orthologs); every row confidence-tagged + ≥1 DOI |
-| **Mechanism at scale** — homology→mechanism | `mech/whitelist.py`, `classify_atlas.py` | audited 18-family Pfam whitelist v1.2.1; **core agreement 1.00** |
-| **Therapeutic readiness** | `score/therapeutic.py` | deliverability / cargo / human-cell axes, components retained |
-| **Cross-link** — writer ↔ Writable Genome | `atlas/crosslink.py` | AAVS1 (*PPP1R12C*) scores **0.90 writability** and is bridge-reachable |
-| **Variant proposal** (DMS-grounded) | `atlas/variant_propose.py` | point mutations only (no chimeras); DMS model delivered in Phase 1.5 (Perry S3) |
-| **PEN-MONITOR** — living database | `monitor/` | Europe PMC scan; back-test **surfaces ISPpu10**; never auto-edits the atlas |
-| **Grounded RAG / Q&A** | `rag/`, `agent/guardrails.py` | numbers from tool calls, claims cited, clinical directives refused |
-
-The durability model is *conditional on chromatin*, never on coordinates — so it transfers across cell types
-(supply a cell type's epigenome and it scores that cell type). On the **CD34+ HSPC** partial panel (no ATAC),
-it degrades gracefully and still validates — a built-in robustness result.
-
-### The Write Planner + agent (Paper 3, capstone)
-
-| Capability | Module | Result |
-|---|---|---|
-| **`edit_intent`-conditioned optimiser** | `planner/optimize.py` | the same in-TRAC site ranks **#1** (knock-in) vs **#101** (safe-harbour) — intent is load-bearing |
-| **End-to-end planner** | `planner/pipeline.py` (`plan_write`) | ranked, fully traceable plans (site + writer + cargo + delivery + provenance) |
-| **recovery@k benchmark** (gating) | `validate/paper3_benchmark.py` | discriminating stratum **1.00 vs 0.00**, McNemar p=0.0156, gap CI [1.0,1.0]; control tie 0.67 |
-| **Forward hypotheses** | `validate/forward_hypotheses.py` | date-stamped novel F8/SERPINA1/CISH/HBA1 proposals + cited reviews |
-| **Tool-using agent** | `agent/orchestrator.py` | goal → cited plan; **no-fabrication + plan-equivalence + refusals** all verified |
-| **MCP server + one-command deploy** | `agent/mcp_server.py`, `docker-compose.yml` | tools for any external agent; self-hostable stack |
-
-The benchmark panel is **frozen and SHA-locked before tuning** (`prereg/paper3.yaml`); every documented write
-is cited to a Europe-PMC-verified primary source. The agent obtains every number from a validated tool call
-(never the LLM) and refuses clinical directives.
-
-### The bridge off-target engine (Paper 4, beachhead — `pen-bridge`)
-
-| Capability | Module | Result |
-|---|---|---|
-| **Genome-wide off-target scan** | `bridge/offtarget.py` | CT-core-seeded hg38 pseudosite scan + position-weight risk (per-chromosome, memory-bounded) |
-| **Measured-data validation** | `validate/paper4_real_validation.py` | Perry 2025 (6,856 real off-targets): central core (7–9) confirmed; **model AUROC 0.77 vs Hamming 0.62** on real off-targets |
-| **Deep mutational scan** | `bridge/ingest.py` (Perry S3) | recovers top enhancers **N322P, H50K, R278M** — completes the Phase-2 §2.4 DMS variant step |
-| **Fold + cross-loop QC** | `bridge/fold_qc.py` | ViennaRNA fold (verified MFE) + TBL/DBL cross-loop check |
-| **Shipped tool** | `bridge/pipeline.py`, `bridge/cli.py` | `pen-bridge design` wraps the Arc BridgeRNADesigner + off-target/QC; `/bridge/design` API |
-
-**Key measured finding:** real off-targets carry a *median of 5 mismatches* (not ≤2) — recombination
-tolerance is **core-driven**, vindicating a position-weight model over a mismatch-count cap. The raw Perry
-2025 tables are copyrighted (kept local, never redistributed); only the derived measured profile
-(`data/curated/bridge_offtarget_profile_measured.parquet`) and validation results are released.
-
----
-
-## 🔗 Connection to the prior PEN-STACK work
-
-PEN-STACK v3.0 **consolidates and re-grounds** five earlier, separately published repositories. Their
-genuinely reusable assets are imported here; the originals are archived read-only for provenance and DOI
-stability.
+PEN-STACK v3.0 consolidates and re-grounds five earlier projects. Their genuinely reusable assets are
+imported here; the originals are archived read-only for provenance and DOI stability. This is what makes
+PEN-STACK "the thing you cite instead of rebuilding the pipeline."
 
 ```
-   genome-atlas ──┐  18-family InterPro-audited Pfam whitelist (v1.2.1)  ──►  WT-KB + mech classifier (pen_stack/atlas, /mech)
-   mech-class  ───┤  multi-source mechanism classifier                   ──►  family / mechanism calls (pen_stack/mech)
-   pen-score   ───┼─► 9 scoring axes (dsb/cargo/deliv/immuno/prog/…)      ──►  re-grounded axes (pen_stack/score)
-   pen-assemble ──┤  IS110 ortholog / design set (1,029 entries)          ──►  part of the 1,058-entity universe
-   pen-compare ───┘  unified_editor_universe.parquet (1,058) + scorecard  ──►  canonical universe + descriptive scorecard
+  genome-atlas  --+  18-family InterPro-audited Pfam whitelist (v1.2.1)  -->  WT-KB + mechanism classifier
+  mech-class  ----+  multi-source mechanism classifier                   -->  family / mechanism calls
+  pen-score  -----+- 9 scoring axes (dsb/cargo/deliv/immuno/prog/...)     -->  re-grounded therapeutic axes
+  pen-assemble  --+  IS110 ortholog / design set                         -->  part of the 1,058-entity universe
+  pen-compare  ---+  unified_editor_universe.parquet (1,058) + scorecard  -->  canonical universe + scorecard
 ```
 
 | Prior repo | Pinned version | What v3.0 reuses | What changed |
 |---|---|---|---|
-| [`genome-atlas`](https://github.com/ahmedanees-m/genome-atlas) | v0.7.2 | the **audited 18-family Pfam backbone** → spine of the WT-KB *and* the at-scale mechanism classifier | GraphSAGE link-prediction framing retired |
-| [`mech-class`](https://github.com/ahmedanees-m/mech-class) | v0.5.4 | the **mechanism classifier** (Pfam + RHEA + CRISPRcasdb + UniProt) | reused as the family/mechanism caller |
-| [`pen-score`](https://github.com/ahmedanees-m/pen-score) | v0.1.3 | the **scoring axes** (`deliv`/`immuno`/`cargo`, …) | `prog`/`cargo` **re-grounded**; hand-set overrides removed |
-| [`pen-assemble`](https://github.com/ahmedanees-m/pen-assemble) | v0.5.2 | the **ortholog sequence set** | de-novo chimera generation retired → DMS-grounded point-variant proposal |
-| [`pen-compare`](https://github.com/ahmedanees-m/pen-compare) | v0.1.0 | the **1,058-entity universe** + scorecard scaffold + tests | circular 5-gate "certification" → **descriptive scorecard** with *blind* concordance |
+| [genome-atlas](https://github.com/ahmedanees-m/genome-atlas) | v0.7.2 | the audited 18-family Pfam backbone — spine of the WT-KB and the at-scale mechanism classifier | GraphSAGE link-prediction framing retired |
+| [mech-class](https://github.com/ahmedanees-m/mech-class) | v0.5.4 | the mechanism classifier (Pfam + RHEA + CRISPRcasdb + UniProt) | reused as the family/mechanism caller |
+| [pen-score](https://github.com/ahmedanees-m/pen-score) | v0.1.3 | the scoring axes (deliv / immuno / cargo, ...) | prog/cargo re-grounded; hand-set overrides removed |
+| [pen-assemble](https://github.com/ahmedanees-m/pen-assemble) | v0.5.2 | the ortholog sequence set | de-novo chimera generation retired -> DMS-grounded point-variant proposal |
+| [pen-compare](https://github.com/ahmedanees-m/pen-compare) | v0.1.0 | the 1,058-entity universe + scorecard scaffold + tests | circular 5-gate "certification" -> descriptive scorecard with blind concordance |
 
 **One canonical assembly path** (`pen_stack/atlas/universe.py::assemble`) feeds the classifier, the scorer,
-and the scorecard identical metadata — the cross-module inconsistency in the prior pipelines cannot recur.
-
----
+and the scorecard identical metadata, so the cross-module inconsistency in the prior pipelines cannot recur.
 
 ## Repository structure
 
 ```
 pen-stack/
-├── pen_stack/                        # the installable package
-│   ├── wgenome/                      # 🟣 Writable Genome (Paper 1) — the flagship
-│   │   ├── features.py               #    unified feature matrix (accessibility + histones + safety + integration)
-│   │   ├── safety.py                 #    calibrated genotoxicity-risk model (chrom-block CV + baseline)
-│   │   ├── durability.py             #    conditional chromatin→expression model (TRIP-trained, transferable)
-│   │   ├── writability.py            #    decomposable safety × durability × reachability integration
-│   │   └── export_tracks.py          #    BigWig / BED atlas export
-│   ├── atlas/                        # 🔵 Writer Atlas + WT-KB + cross-link (Papers 1–2)
-│   │   ├── schema.py                 #    pydantic WriterEntry (enforces ≥1 DOI per row)
-│   │   ├── build_wtkb.py             #    Writer-Targeting Knowledge Base builder (8 families, tiered)
-│   │   ├── expand.py                 #    🆕 ortholog ingestion → atlas.parquet (33,370 systems × 8 families)
-│   │   ├── crosslink.py              #    🆕 writers_for_locus / loci_for_writer / loci_for_gene
-│   │   ├── variant_propose.py        #    🆕 DMS-grounded point-mutation proposal (no chimeras)
-│   │   ├── universe.py               #    THE canonical universe assembly (1,058 entities)
-│   │   ├── scorecard.py              #    descriptive scorecard + blind concordance
-│   │   └── atlas.parquet             #    the Writer Atlas (committed; large data via Zenodo)
-│   ├── mech/                         # 🆕 mechanism classification at scale
-│   │   ├── whitelist.py              #    audited 18-family Pfam whitelist v1.2.1 + composite rules
-│   │   ├── classify_atlas.py         #    homology→mechanism (independent of inherited label) + review queue
-│   │   └── pfam_whitelist.yaml       #    the 18-family table (imported from genome-atlas)
-│   ├── score/                        # therapeutic-readiness scoring
-│   │   ├── recalibrate.py            #    re-grounded axes (no hand-set overrides)
-│   │   └── therapeutic.py            #    🆕 deliverability / cargo / human-cell readiness profile
-│   ├── monitor/                      # 🆕 PEN-MONITOR living-database engine
-│   │   ├── europepmc.py  triage.py  run.py     #    Europe PMC scan → human-reviewed curation queue
-│   ├── rag/                          # 🆕 grounded, cited Q&A
-│   │   ├── qa.py                     #    numbers from tool calls; claims cited; clinical directives refused
-│   │   ├── index.py                  #    cited fact-card retriever over the atlas/WT-KB
-│   │   └── llm.py                    #    optional Ollama/Qwen phrasing layer (presentation only)
-│   ├── planner/                      # ⚙️ Write Planner (Paper 3) — inverse design
-│   │   ├── optimize.py               #    edit_intent-conditioned optimiser (load-bearing target_gene_sign)
-│   │   ├── cargo.py  delivery.py     #    donor design (insulators/polyA/size) + delivery rule table
-│   │   ├── pipeline.py  report.py    #    plan_write() -> ranked, traceable plans + human-readable report
-│   ├── agent/                        # 🤖 agentic platform (Paper 3)
-│   │   ├── tools.py                  #    5 validated tools + Ollama tool-calling schemas
-│   │   ├── orchestrator.py           #    goal -> cited plan (tool-calling loop, auditable trace, refusals)
-│   │   ├── mcp_server.py             #    MCP server (fastmcp) — tools for any external agent
-│   │   └── guardrails.py             #    grounded / cited / defer-to-tools / decision-support contract
-│   ├── validate/                     #    paper3_benchmark.py · forward_hypotheses.py · agent_eval.py
-│   ├── server/api.py                 # 🆕 FastAPI REST (atlas, crosslink, writable, plan, ask)
-│   ├── ui/app.py                     # 🛰️ Streamlit platform UI (10 pages: Writable Genome + Writer Atlas + Ask + …)
-│   ├── data/                         # ingestion (all public sources)
-│   │   ├── genome.py  encode.py      #    hg38 grid · ENCODE REST resolver (no hard-coded accessions)
-│   │   ├── ingest_chromatin.py       #    parallel ENCODE bigWig → 1 kb feature store
-│   │   ├── ingest_safety_annot.py    #    COSMIC + DepMap + GENCODE → per-bin safety distances
-│   │   ├── ingest_integration.py     #    LaFave MLV (hg19→hg38) + VISDB integration density
-│   │   └── ingest_trip.py            #    TRIP durability supervision (GSE49806/49807, mm9)
-│   ├── bridge/                       # 🌉 bridge off-target engine (Paper 4) — "CRISPOR for bridge recombinases"
-│   │   ├── offtarget.py              #    genome-wide hg38 pseudosite scan + position-weight risk (beats Hamming)
-│   │   ├── fold_qc.py                #    ViennaRNA fold + TBL/DBL cross-loop QC
-│   │   ├── ingest.py  activity.py    #    profile loaders + exploratory DMS/activity framework
-│   │   └── pipeline.py  cli.py       #    pen-bridge: wraps the Arc BridgeRNADesigner + off-target/QC
-│   └── cli.py                        #    unified CLI (info / atlas / writable / crosslink / plan / monitor)
-├── scripts/                          # reproducible pipeline drivers
-│   ├── p1_*.py                       #    Paper-1: train safety, build durability/atlas, export, validate
-│   └── p2_build_atlas.py             #    🆕 Paper-2: expand → mechanism → therapeutic readiness
-├── configs/                          # pinned datasets + thresholds + LLM + curation (YAML)
-│   ├── datasets.yaml  score_axes.yaml  wtkb_curated.yaml  universe_crosswalk.yaml  gates_v3.yaml
-│   ├── atlas_families.yaml           # 🆕 UniProt family queries for the atlas
-│   ├── monitor_queries.yaml          # 🆕 Europe PMC query terms for PEN-MONITOR
-│   └── llm.yaml                      #    single LLM switch (Ollama + Qwen2.5-7B, Apache-2.0)
-├── prereg/                           # SHA-locked success criteria
-│   ├── phase0.yaml  paper1.yaml  SHA256_LOCK_phase0.json
-│   └── paper2.yaml  SHA256_LOCK_phase2.json     # 🆕
-├── tests/unit/                       # 46 unit tests (atlas, mech, therapeutic, crosslink, monitor, rag, …)
-├── docs/                             # mkdocs site
-│   ├── index.md  INFRA.md  REPRO.md  wtkb.md  scorecard.md
-│   ├── cards/{safety,durability,atlas}.md       # model & data cards
-│   └── tutorials/                    # 🆕 4 use-case tutorials (where-to-write, which-writer, compare, deliverability)
-├── docker/                           # CUDA image + Phase-1 image (bio libs) + pinned requirements
-├── tools/penctl.py                   # laptop↔VM orchestrator (paramiko SSH/SFTP, Docker-only)
-├── mkdocs.yml                        # 🆕 docs site config
+├── pen_stack/                        the installable package
+│   ├── wgenome/                      Writable Genome (Paper 1)
+│   │   ├── features.py               unified feature matrix (accessibility + histones + safety + integration)
+│   │   ├── safety.py                 calibrated genotoxicity-risk model (chrom-block CV + baseline)
+│   │   ├── durability.py             conditional chromatin->expression model (TRIP-trained, transferable)
+│   │   ├── writability.py            decomposable safety x durability x reachability integration
+│   │   └── export_tracks.py          BigWig / BED atlas export
+│   ├── atlas/                        Writer Atlas + WT-KB + cross-link (Papers 1-2)
+│   │   ├── schema.py                 pydantic WriterEntry (enforces >=1 DOI per row)
+│   │   ├── build_wtkb.py             Writer-Targeting Knowledge Base builder (8 families, tiered)
+│   │   ├── expand.py                 ortholog ingestion -> atlas.parquet (33,370 systems)
+│   │   ├── crosslink.py              writers_for_locus / loci_for_writer / loci_for_gene
+│   │   ├── variant_propose.py        DMS-grounded point-mutation proposal (no chimeras)
+│   │   ├── universe.py               THE canonical universe assembly (1,058 entities)
+│   │   └── scorecard.py              descriptive scorecard + blind concordance
+│   ├── mech/                         mechanism classification at scale (audited 18-family whitelist v1.2.1)
+│   ├── score/                        re-grounded axes + therapeutic-readiness scoring
+│   ├── planner/                      Write Planner (Paper 3): optimize / cargo / delivery / pipeline / report
+│   ├── bridge/                       bridge off-target engine (Paper 4): offtarget / fold_qc / ingest / pipeline / cli
+│   ├── agent/                        agentic platform: tools / orchestrator / mcp_server / guardrails
+│   ├── monitor/                      PEN-MONITOR living database (Europe PMC)
+│   ├── rag/                          grounded, cited Q&A
+│   ├── validate/                     benchmarks: paper3_benchmark / forward_hypotheses / agent_eval / paper4_*
+│   ├── data/                         ingestion (genome, chromatin, integration, TRIP, safety annotations)
+│   ├── server/api.py                 FastAPI REST (atlas, crosslink, writable, plan, bridge, ask)
+│   ├── ui/app.py                     Streamlit web app (11 pages)
+│   └── cli.py                        unified CLI
+├── scripts/                          reproducible pipeline drivers (p1_*, p2_*, p4_*)
+├── configs/                          pinned datasets + thresholds + curation (YAML)
+├── prereg/                           SHA-locked success criteria per paper (paper1..4 + locks)
+├── data/curated/                     small committed tables (universe, gene coords, measured bridge profile)
+├── tests/unit/                       unit + regression + blind-validation suite
+├── docs/                             mkdocs site (cards, tutorials, INFRA, DEPLOY, MCP)
+├── docker/                           CUDA image + UI image + pinned requirements
+├── tools/penctl.py                   laptop<->VM orchestrator (paramiko SSH/SFTP, Docker-only)
+├── docker-compose.yml                one-command self-hostable platform
 └── pyproject.toml  CITATION.cff  CHANGELOG.md  LICENSE
 ```
 
-> **Data policy.** Large artifacts (3 M-row atlases, BigWig tracks, models, ortholog TSV caches) are *not*
-> committed — they are released via **Zenodo** (DOI) and reproducible from public sources by re-running
-> `scripts/p1_*` / `scripts/p2_build_atlas.py`. Only small curated tables (the 1,058-entity universe, WT-KB,
-> and the 0.9 MB Writer Atlas) live in git.
+> **Data policy.** Large artifacts (3 M-row atlases, BigWig tracks, models) and any third-party copyrighted
+> data are *not* committed — they are released via Zenodo (DOI) or fetched from the original source, and are
+> reproducible by re-running the scripts. Only small curated tables and derived products live in git.
 
----
-
-## Data sources (all public, bulk-downloadable)
-
-`hg38` (UCSC) · ENCODE bigWig signal (ATAC/DNase + 5 histone marks; K562, HepG2, CD34+ progenitor, mouse
-ES-Bruce4) · GENCODE v46 · COSMIC Cancer Gene Census v104 · DepMap Public 26Q1 · LaFave 2014 (NHGRI GeIST)
-MLV integrations · VISDB · TRIP / Akhtar 2013 (GEO GSE49806/49807) · **UniProt orthologs** (IS110, CAST,
-serine integrase, Cas12a, TnpB) · Pfam/InterPro · **Europe PMC** (PEN-MONITOR) · Addgene. Every accession +
-DOI is pinned in [`configs/datasets.yaml`](configs/datasets.yaml) and independently verified.
-
----
-
-## Quick start
+## Installation and quick start
 
 ```bash
 git clone https://github.com/ahmedanees-m/pen-stack.git && cd pen-stack
-pip install -e ".[dev]"                          # core + tests
-pip install -e ".[models,bio,server,services,docs]"   # full stack (lightgbm, pyBigWig, fastapi, streamlit, mkdocs, …)
-pytest -q                                        # 46 tests
-pen-stack info                                   # stack status
+pip install -e ".[dev]"                                   # core + tests
+pip install -e ".[models,bio,bridge,server,services]"     # full stack
+pytest -q                                                 # 68 tests
+pen-stack info                                            # stack status
 ```
 
-**Use the Writer Atlas (ships in the package):**
-```bash
-pen-stack atlas --coverage                       # family coverage (33,370 systems × 8 families)
-pen-stack atlas --family bridge_IS110            # systems in a family
-```
+Query the stack:
 
-**Query the Writable Genome + cross-link** (after fetching the Zenodo atlas release):
 ```bash
-export PEN_ATLAS_DIR=/path/to/atlas_release
-pen-stack writable --gene CCR5 --ct k562         # rank writable loci near a gene
-pen-stack crosslink --chrom chr19 --bin 55090    # which writers reach AAVS1
+pen-stack atlas --coverage                                # Writer Atlas coverage (33,370 systems x 8 families)
+pen-stack writable --gene CCR5 --ct k562                  # rank writable loci near a gene
+pen-stack crosslink --chrom chr19 --bin 55090             # which writers reach AAVS1
 pen-stack plan --gene TRAC --intent knock_in_with_disruption --cargo-bp 2000   # inverse-design plans
-pen-stack monitor --back-test                    # PEN-MONITOR living-database scan (surfaces ISPpu10)
-pen-bridge design --target ACGTGTCTACGTGA --donor TTGCATCTAGGCAC   # bridge design + off-target + fold QC
+pen-bridge design --target ACGTGTCTACGTGA --donor TTGCATCTAGGCAC               # bridge design + off-target + QC
+pen-stack monitor --back-test                             # PEN-MONITOR living-database scan
 ```
 
-**Self-host the whole platform (API + UI + Agent + MCP + local LLM), one command:**
+Self-host the whole platform (API + web app + agent + MCP + local LLM), one command:
+
 ```bash
 docker compose up -d
 docker compose exec ollama ollama pull qwen2.5:7b-instruct   # first run only
-# UI :8501 (incl. the Agent page) · API :8000 (/plan, /ask) · MCP :8765 — see docs/DEPLOY.md
+# Web app :8501  .  API :8000 (/plan, /bridge/design, /ask)  .  MCP :8765   (see docs/DEPLOY.md)
 ```
 
-**REST API & web app:**
-```bash
-uvicorn pen_stack.server.api:app --port 8000     # GET /atlas/coverage /crosslink/* /writable /ask
-streamlit run pen_stack/ui/app.py                # the full platform UI
-```
+## The web platform
 
-**Reproduce from scratch** (heavy steps in Docker on a GPU VM, orchestrated by `penctl`):
-```bash
-python scripts/p2_build_atlas.py                 # Writer Atlas: expand → mechanism → readiness
-python tools/penctl.py build                     # build the image on the VM (Paper 1 heavy steps)
-penctl run python scripts/p1_build_atlas.py --ct k562
-```
+`pen_stack/ui/app.py` is a single Streamlit app over the whole stack (11 pages):
 
----
+- **Writable Genome** — Overview, Forward query (gene to writability/safety/durability), Site finder
+  (inverse), Atlas browser, Validation dashboard, Cross-cell-type transfer.
+- **Writer Atlas** — family coverage and measured-axis comparison.
+- **Write Planner** — goal + `edit_intent` to ranked, traceable plans.
+- **Bridge design** — design a bridge RNA, fold/cross-loop QC, genome-wide off-target scan.
+- **Ask** — grounded, cited Q&A (numbers from validated tools).
+- **Agent** — a goal to a cited, auditable end-to-end plan.
 
-## The Streamlit platform UI
+## Data sources (all public)
 
-`pen_stack/ui/app.py` is the single web app over the whole stack:
-
-- **Writable Genome** — Overview · Forward query (gene → writability/safety/durability gauges + verdict) ·
-  Site finder (inverse) · Atlas browser · Validation dashboard · Cross-cell-type transfer.
-- **Writer Atlas** — family coverage + measured-axis comparison across writer families.
-- **Ask (RAG)** — grounded, cited Q&A; shows the tool provenance + citations + decision-support disclaimer.
-- **Bridge design** (Phase 1.5) · **Write Planner** (Phase 3) — wired, pages staged.
-
----
+hg38 (UCSC); ENCODE / Roadmap chromatin (ATAC/DNase + histone marks; K562, HepG2, CD34+ progenitor, mouse
+ES-Bruce4); GENCODE v46; COSMIC Cancer Gene Census v104; DepMap Public 26Q1; LaFave 2014 (NHGRI GeIST) MLV
+integrations; VISDB; TRIP / Akhtar 2013 (GEO GSE49806/49807); UniProt orthologs; Pfam/InterPro; Europe PMC;
+Addgene; Perry 2025 bridge-recombinase off-target + DMS data (Science adz0276; copyrighted — kept local,
+only derived products released). Every accession and DOI is pinned in `configs/datasets.yaml` and
+independently verified.
 
 ## Validation philosophy
 
-- **Pre-register before training.** Success criteria, baselines and held-out sets are SHA-locked in `prereg/`
-  (`paper1.yaml`, `paper2.yaml`) before any model sees test data.
-- **Always report an honest baseline** (oncogene-distance for safety; H3K9me3/LAD for durability).
-- **Blind external concordance** — recover validated safe harbours, clinical genotoxic loci, known writers.
-- **Report failure honestly** — cross-cell-type degradation is a quantified result, not a footnote.
-- **Grounded services** — every quantitative answer is produced by a validated tool call (never an LLM
-  guess); PEN-MONITOR never auto-edits the atlas; clinical directives are refused.
+- **Pre-register before training.** Success criteria, baselines and held-out sets are SHA-locked in
+  `prereg/` (paper1..4) before any model sees test data.
+- **Always report an honest baseline** (oncogene-distance for safety; H3K9me3/LAD for durability;
+  intent-blind ranking for the Planner; Hamming for the bridge engine).
+- **Blind external concordance** — recover validated safe harbours, clinical genotoxic loci, documented
+  writes, and measured off-targets the model never trained on.
+- **Report failure honestly** — cross-cell-type degradation, small benchmark N, and the limits of
+  sequence-only off-target magnitude prediction are quantified results, not footnotes.
+- **Grounded services** — every quantitative answer comes from a validated tool call (never a language
+  model); the living database never auto-edits the atlas; clinical directives are refused.
 
----
-
-## Papers & phases
+## Papers and phases
 
 | # | Title | Phase | Status |
 |---|---|---|---|
-| **1** (flagship) | *The Writable Genome: a predictive, writer-aware atlas of safe & durable insertion sites* | 1 | ✅ atlas + validation complete |
-| **2** (platform) | *PEN-STACK: unified open infrastructure for non-destructive genome writing* | 2 | ✅ Writer Atlas + cross-link + services complete |
-| **3** (capstone) | *The Write Planner: end-to-end inverse design of genomic writes* | 3 | ✅ Planner + recovery@k benchmark + agent complete |
-| **4** (beachhead) | *Genome-wide off-target prediction for RNA-guided bridge recombinases* | 1.5 | ✅ off-target engine + fold QC + `pen-bridge` complete |
+| 1 (flagship) | The Writable Genome: a predictive, writer-aware atlas of safe & durable insertion sites | 1 | complete |
+| 2 (platform) | PEN-STACK: unified open infrastructure for non-destructive genome writing | 2 | complete |
+| 3 (capstone) | The Write Planner: end-to-end inverse design of genomic writes | 3 | complete |
+| 4 (beachhead) | Genome-wide off-target prediction for RNA-guided bridge recombinases | 1.5 | complete |
 
-Per-phase build records: [`Final_Part_v3.0/phase_*/`](https://github.com/ahmedanees-m/pen-stack) (execution
-summaries + build logs). Data releases: **Zenodo** (Paper 1 atlas; Paper 2 Writer Atlas).
-
----
+Per-phase build records, execution summaries, and Zenodo deposit packages are kept alongside the program
+plan. Data releases are deposited on Zenodo (one per paper).
 
 ## Citation
 
 ```bibtex
 @software{penstack2026,
   author  = {Mahaboob Ali, Anees Ahmed},
-  title   = {PEN-STACK: open infrastructure for genome writing (The Writable Genome + Writer Atlas)},
+  title   = {PEN-STACK: open infrastructure for genome writing (The Writable Genome)},
   year    = {2026},
   version = {3.0.0a5},
   url     = {https://github.com/ahmedanees-m/pen-stack}
 }
 ```
 
-**Author:** Anees Ahmed Mahaboob Ali · VIT University, Vellore · MIT licensed.
-*Decision-support, not a clinical directive — every score is traceable to public data + a pre-registered model.*
+**Author:** Anees Ahmed Mahaboob Ali, VIT University, Vellore. MIT licensed.
+
+*Decision-support, not a clinical directive — every score is traceable to public data and a pre-registered
+model.*
