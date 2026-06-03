@@ -396,33 +396,80 @@ elif page == "Writer Atlas":
 
 elif page == "Bridge design":
     st.markdown("### Bridge design + off-target — *the first instrument of PEN-STACK*")
-    st.markdown('<div class="verdict v-cau">Phase 1.5 deliverable — the bridge-recombinase off-target '
-                'engine (a "CRISPOR for bridge recombinases") ships here.</div>', unsafe_allow_html=True)
-    st.markdown("This page will wrap the authoritative bridge-RNA designer and add genome-wide "
-                "off-target prediction (mismatch-position model calibrated on the ISCro4 profile), "
-                "bRNA fold QC, and the exploratory activity model. The WT-KB Tier-1 bridge core spec is "
-                "already in the Writer Atlas; the per-site hg38 scan is built in Phase 1.5.")
+    st.caption("Design a bridge RNA (wraps the Arc BridgeRNADesigner) and assess fold + cross-loop QC and "
+               "genome-wide off-target risk (position-weight model; measured profile from Perry 2025).")
+    c1, c2 = st.columns(2)
+    target = c1.text_input("Target core (14 nt)", "ACGTGTCTACGTGA")
+    donor = c2.text_input("Donor core (14 nt)", "TTGCATCTAGGCAC")
+    scaffold = st.selectbox("Scaffold", ["ISCro4_enhanced", "ISCro4_WT", "IS621"])
+    scan_chrom = st.selectbox("Off-target scan", ["none (QC only)", "chr22", "chr21", "chrX"])
+    if st.button("Design + assess", type="primary"):
+        from pen_stack.bridge.fold_qc import qc_verdict
+        from pen_stack.bridge.ingest import derive_measured_profile
+        from pen_stack.bridge.pipeline import design_brna
+        brna = design_brna(target, donor, scaffold)
+        st.markdown(f'<div class="card"><b>Bridge RNA</b> ({scaffold}) — target {brna["target"]} · '
+                    f'donor {brna["donor"]}' +
+                    (f' · scaffold {len(brna["bridge_sequence"])} nt' if brna.get("available")
+                     else f' · <i>{brna["note"]}</i>') + '</div>', unsafe_allow_html=True)
+        qc = qc_verdict(brna["target"], brna["donor"], brna.get("bridge_sequence"))
+        vclass = "v-yes" if qc["pass"] else "v-cau"
+        st.markdown(f'<div class="verdict {vclass}">QC {"PASS" if qc["pass"] else "REVIEW"} — '
+                    f'cross-loop {qc["cross_loop"]}' +
+                    (f' · fold MFE {qc["fold"]["mfe"]}' if qc.get("fold", {}).get("available") else "") +
+                    '</div>', unsafe_allow_html=True)
+        mp = derive_measured_profile()
+        if not mp.empty:
+            st.caption("Measured off-target position profile (Perry 2025, 6,856 real off-targets) — "
+                       "central core (7–9) is the specificity determinant:")
+            st.bar_chart(mp.set_index("position")["protective_weight"])
+        if scan_chrom != "none (QC only)":
+            from pen_stack.bridge.pipeline import _hg38
+            fa = _hg38()
+            if fa is None:
+                st.warning("hg38 fasta not found on this host (set PEN_HG38); QC shown above.")
+            else:
+                from pen_stack.bridge.offtarget import scan_offtargets
+                with st.spinner(f"scanning {scan_chrom} for off-target pseudosites…"):
+                    df = scan_offtargets(fa, brna["target"], [scan_chrom])
+                st.caption(f"{len(df)} off-target pseudosites on {scan_chrom} "
+                           f"({int((df.risk>0.5).sum()) if len(df) else 0} high-risk):")
+                if len(df):
+                    st.dataframe(df.head(15)[["chrom", "pos", "site", "n_mm", "risk"]].round(3),
+                                 use_container_width=True)
+        st.caption("Decision-support only; predicted off-targets require experimental validation.")
 
 elif page == "Write Planner":
     st.markdown("### Write Planner — *inverse design (Phase 3 capstone)*")
-    st.markdown('<div class="verdict v-cau">Phase 3 deliverable — goal + edit_intent → ranked '
-                'site × writer × cargo × delivery plans.</div>', unsafe_allow_html=True)
+    st.caption("goal + edit_intent → ranked, traceable site × writer × cargo × delivery plans. "
+               "edit_intent is load-bearing (an in-gene site ranks high for knock-in, low for safe-harbour).")
     gene = st.text_input("Target gene", "TRAC")
-    intent = st.selectbox("Edit intent", ["safe_harbour_insertion", "knock_in_with_disruption",
+    intent = st.selectbox("Edit intent", ["knock_in_with_disruption", "safe_harbour_insertion",
                                           "high_durability_insertion", "regulatory_excision", "repeat_excision"])
-    st.number_input("Cargo size (bp)", 100, 40000, 3200)
-    if st.button("Preview (uses the cross-link today)"):
+    cargo_bp = int(st.number_input("Cargo size (bp)", 100, 40000, 2000))
+    if st.button("Plan", type="primary"):
+        from pen_stack.planner.optimize import EditIntent
+        from pen_stack.planner.pipeline import plan_write
         try:
-            from pen_stack.atlas.crosslink import loci_for_gene
-            g = loci_for_gene(gene, ct)
-            if g.empty:
-                st.warning("Gene not found in the writability atlas.")
-            else:
-                st.caption(f"intent = {intent} · cross-link writable bins for {gene} (full optimiser in Phase 3)")
-                st.dataframe(g[["chrom", "bin", "safety", "p_durable", "writability"]].head(10).round(3),
-                             use_container_width=True)
+            with st.spinner("optimising destination × writer × cargo × delivery…"):
+                plans = plan_write(gene, EditIntent(intent), cargo_bp, ct, k=5)
         except FileNotFoundError as e:
             st.error(str(e))
+            plans = []
+        if not plans:
+            st.warning("No plan found (gene not in the atlas, or no reachable site).")
+        for i, p in enumerate(plans, 1):
+            s = p["site"]
+            st.markdown(f'<div class="card"><b>Plan {i}</b> — {s["chrom"]}:{s["pos"]:,} '
+                        f'(on_target={p["on_target"]}) · writer <b>{p["writer"]}</b> '
+                        f'[{p["reachability_tier"]}]<br>safety {p["safety"]} · durability {p["durability"]} '
+                        f'· writer-activity {p["writer_activity"]} · score {p["score"]}<br>'
+                        f'cargo {p["cargo"]["payload_bp"]}bp→{p["cargo"]["assembled_bp"]}bp '
+                        f'(size_ok={p["cargo"]["size_ok"]}) · delivery <b>{p["delivery"]["delivery"]}</b> · '
+                        f'off-target {p["cargo"].get("offtargets",{}).get("status","n/a")}</div>',
+                        unsafe_allow_html=True)
+        if plans:
+            st.caption(plans[0]["disclaimer"])
 
 elif page == "Ask (RAG)":
     st.markdown("### Ask — *grounded, cited Q&A over the platform*")
