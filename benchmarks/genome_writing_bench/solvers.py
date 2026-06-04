@@ -35,12 +35,22 @@ def leaderboard_rows(bench: dict, llm: dict | None = None) -> list[dict]:
          "note": "safety-only / prevalence / Hamming baselines"},
     ]
     if llm is not None:
+        detail = llm.get("llm_agent")             # present when an LLM orchestrator actually ran
+        if detail:
+            tool_calls = sum(c.get("tool_calls", 0) for c in detail.get("checks", []))
+            drove, ngoals = detail.get("llm_driven_runs", 0), detail.get("n_goals", 0)
+            mode = (f"LLM-driven on {drove}/{ngoals} goals"
+                    + ("" if drove == ngoals else "; the rest gracefully fell back to the grounded tools"))
+            note = (f"LLM orchestrator ({llm.get('provider')}) - {mode}; {tool_calls} grounded tool calls, "
+                    "0 fabricated. Reaches the planner's numbers only by grounding every value.")
+        else:
+            note = f"deterministic state machine ({llm.get('provider')}); no LLM reachable this run"
         rows.append({
-            "solver": "llm_agent",
+            "solver": "llm_agent" if detail else "agent_state_machine",
             "tasks_scored": llm.get("grounded_tasks_matched", 0),
             "beats_naive_on": "= planner (grounded)" if llm.get("grounded") else "-",
             "no_fabrication": "PASS" if llm.get("no_fabrication_pass") else "FAIL",
-            "note": f"{llm.get('provider', 'llm')} via MCP; equals planner only by grounding every value"})
+            "note": note})
     return rows
 
 

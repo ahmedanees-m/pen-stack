@@ -7,7 +7,7 @@ Deterministic planner beats the naive baseline on **3/3** grounded tasks with a 
 |---|---|---|---|---|
 | deterministic_planner | 6 | 3/3 | n/a (deterministic) | validated planning tools - the reference |
 | naive_baseline | 3 | - | n/a (deterministic) | safety-only / prevalence / Hamming baselines |
-| llm_agent | 2 | = planner (grounded) | PASS | deterministic via MCP; equals planner only by grounding every value |
+| llm_agent | 2 | = planner (grounded) | PASS | LLM orchestrator (nvidia) - LLM-driven on 2/2 goals; 14 grounded tool calls, 0 fabricated. Reaches the planner's numbers only by grounding every value. |
 
 ## Per-task results
 | Task | Family | Available | Planner | Naive baseline | Gate |

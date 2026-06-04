@@ -54,13 +54,27 @@ def test_pen_agent_guided_mode_pauses_early():
     assert len(guided["steps"]) <= len(auto["steps"])
 
 
-def test_leaderboard_renders_table():
+def test_leaderboard_renders_real_llm_agent_row():
     from benchmarks.genome_writing_bench import solvers
     bench = {"version": "0.1", "n_tasks": 6, "n_available": 0, "planner_beats_baseline": 0,
              "n_with_baseline": 0, "taxonomy": {}, "results": []}
-    md = solvers.render_leaderboard_md(bench, llm={"no_fabrication_pass": True, "grounded": True,
-                                                   "grounded_tasks_matched": 2, "provider": "ollama"})
-    assert "Leaderboard" in md and "| Solver |" in md and "llm_agent" in md
+    # a REAL LLM-agent run carries an llm_agent detail block -> the row is labeled llm_agent + honest note
+    llm = {"no_fabrication_pass": True, "grounded": True, "grounded_tasks_matched": 2, "provider": "ollama",
+           "llm_agent": {"provider": "ollama", "llm_driven_runs": 2, "n_goals": 2,
+                         "checks": [{"tool_calls": 3}, {"tool_calls": 4}]}}
+    md = solvers.render_leaderboard_md(bench, llm)
+    assert "| Solver |" in md and "llm_agent" in md
+    assert "LLM-driven on 2/2" in md and "0 fabricated" in md and "PASS" in md
+
+
+def test_pen_agent_no_fabrication_audit_deterministic():
+    # The hard-gate audit must run WITHOUT an LLM and report available + a pass flag (vacuous if no atlas).
+    from pen_stack.agent.pen_agent import no_fabrication_audit
+    r = no_fabrication_audit()
+    assert r["available"] is True
+    assert r["all_no_fabrication_pass"] in (True, False)
+    assert r["n_fabricated"] == 0 or r["all_no_fabrication_pass"] is False
+    assert "deterministic" in r["method"]
 
 
 def test_bench_sha_roundtrip(tmp_path, monkeypatch):

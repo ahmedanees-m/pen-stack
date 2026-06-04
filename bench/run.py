@@ -58,8 +58,8 @@ def verify_shasums() -> dict:
     return {"verified": not bad, "n_files": len(want), "mismatched": bad}
 
 
-def run_agent_solver() -> dict:
-    """PEN-Agent no-fabrication gate: run the grounded state machine on a few goals; never fabricates."""
+def _deterministic_agent() -> dict:
+    """The grounded state machine (no LLM) - the structural no-fabrication gate; runs everywhere."""
     from pen_stack.agent.pen_agent import plan_write_session
     goals = [("TRAC", "knock_in_with_disruption"), ("HBB", "high_durability_insertion"),
              ("AAVS1", "safe_harbour_insertion")]
@@ -67,19 +67,60 @@ def run_agent_solver() -> dict:
     for gene, intent in goals:
         try:
             r = plan_write_session(gene, intent)
-        except Exception as e:  # noqa: BLE001 - missing atlas -> agent still must not fabricate
+        except Exception as e:  # noqa: BLE001
             runs.append({"gene": gene, "error": f"{type(e).__name__}: {e}"})
             continue
         all_clean = all_clean and r["no_fabrication"]
         matched += int(r["completed"])
         runs.append({"gene": gene, "no_fabrication": r["no_fabrication"], "completed": r["completed"],
                      "degraded": len(r["degraded_modes"]), "refused": len(r["refusals"])})
-    try:
-        provider = __import__("pen_stack.rag.llm", fromlist=["active_provider"]).active_provider()
-    except Exception:  # noqa: BLE001
-        provider = None
-    return {"no_fabrication_pass": all_clean, "grounded": matched > 0,
-            "grounded_tasks_matched": matched, "provider": provider or "deterministic", "runs": runs}
+    return {"no_fabrication_pass": all_clean, "grounded_tasks_matched": matched, "runs": runs}
+
+
+def _llm_orchestrator() -> dict | None:
+    """The REAL external LLM-agent baseline: the LLM (orchestrator.run_agent) actually drives the validated
+    tools, and we audit that every number in its trace equals a direct tool call (no fabrication). Runs only
+    when an LLM provider is reachable; this is the leaderboard's >=1 external-LLM-agent baseline (E1)."""
+    from pen_stack.rag.llm import active_provider
+    provider = active_provider()
+    if provider is None:
+        return None
+    from pen_stack.agent.orchestrator import run_agent
+    from pen_stack.validate.agent_eval import no_fabrication
+    goals = [("knock a CAR into TRAC, disrupting the TCR", "TRAC"),
+             ("insert a durable cassette at a safe harbour", "AAVS1")]
+    checks, clean, grounded, llm_drove = [], True, 0, 0
+    for goal, gene in goals:
+        try:
+            res = run_agent(goal)
+            nf = no_fabrication(res)
+        except Exception as e:  # noqa: BLE001 - LLM hiccup must never crash the bench
+            checks.append({"goal": gene, "error": f"{type(e).__name__}: {e}"})
+            continue
+        clean = clean and nf["passed"]
+        grounded += int(bool(res.get("trace")))
+        llm_drove += int(bool(res.get("llm")))          # True only when the LLM actually drove (not fallback)
+        checks.append({"goal": gene, "no_fabrication": nf["passed"], "tool_calls": len(res.get("trace", [])),
+                       "llm_driven": res.get("llm", False), "refused": res.get("refused", False)})
+    return {"provider": provider, "no_fabrication_pass": clean, "grounded_runs": grounded,
+            "llm_driven_runs": llm_drove, "n_goals": len(goals), "checks": checks}
+
+
+def run_agent_solver() -> dict:
+    """Agent solver = (a) deterministic state-machine gate + (b) the real LLM orchestrator when reachable."""
+    det = _deterministic_agent()
+    llm = _llm_orchestrator()
+    out = {"deterministic_no_fabrication_pass": det["no_fabrication_pass"],
+           "grounded_tasks_matched": det["grounded_tasks_matched"],
+           "deterministic_runs": det["runs"]}
+    if llm is not None:                         # real external LLM-agent baseline
+        out.update({"provider": llm["provider"], "no_fabrication_pass": llm["no_fabrication_pass"],
+                    "grounded": llm["grounded_runs"] > 0, "llm_agent": llm})
+    else:                                       # no LLM reachable -> report the deterministic gate only
+        out.update({"provider": "deterministic (no LLM reachable)",
+                    "no_fabrication_pass": det["no_fabrication_pass"],
+                    "grounded": det["grounded_tasks_matched"] > 0})
+    return out
 
 
 def main(argv: list[str] | None = None) -> int:
