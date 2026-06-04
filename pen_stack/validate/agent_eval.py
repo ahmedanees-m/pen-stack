@@ -89,7 +89,16 @@ def plan_equivalence(gene: str, intent: str) -> dict:
 
 
 def run(out: str | Path = _OUT) -> dict:
-    report = {"no_fabrication": [], "plan_equivalence": [], "refusals": []}
+    # Fast LLM-availability short-circuit: probe once with a SHORT timeout so this never blocks on the
+    # per-call 180 s LLM timeout x many calls when no model server is reachable (e.g. Ollama down).
+    from pen_stack.rag.llm import active_provider
+    provider = active_provider()                 # config health_timeout (>= Nemotron first-token latency)
+    if provider is None:
+        return {"available": False, "reason": "no LLM provider reachable; the no-fabrication HARD "
+                "GATE runs deterministically via pen_agent.no_fabrication_audit - this LLM eval is optional.",
+                "all_no_fabrication_pass": None}
+    report = {"available": True, "provider": provider,
+              "no_fabrication": [], "plan_equivalence": [], "refusals": []}
     for g in _GOALS:
         res = run_agent(g["goal"])
         report["no_fabrication"].append({"goal": g["name"], **no_fabrication(res)})

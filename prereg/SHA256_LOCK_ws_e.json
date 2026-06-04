@@ -1,0 +1,9 @@
+{
+  "cycle": "v3.1",
+  "workstream": "WS-E",
+  "prepared": "2026-06-04",
+  "sha256": {
+    "prereg/ws_e.yaml": "d6c550a97bd3b2f621f40904343d88b38e459096a0db15a35b123e6a68e57315",
+    "benchmarks/genome_writing_bench/tasks.yaml": "2dbdd5d7cb87d4ac6b70612b6eaa22c061b3f51ec461bbdab8b34f29f9e99e43"
+  }
+}

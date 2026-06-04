@@ -1,0 +1,81 @@
+# Genome-Writing Bench v0.1 - task taxonomy (PEN-STACK v3.1, WS-E1).
+#
+# The first benchmark for the WRITING side of genome engineering (where/what/how to WRITE), complementing
+# editing-side tooling. Every task has a DETERMINISTIC scorer backed by a documented ground-truth source and
+# - critically - NO task is scored against a circular label (inherits Gate G-A). Tasks consolidate the
+# de-circularized planning evals (WS-A), the no-fabrication eval, and the bridge off-target validation.
+#
+# A task names a `scorer` (module.function in pen_stack.validate / pen_stack.bridge) and a `metric` key to
+# read from its report. Solvers (deterministic planner, naive baseline, LLM agent) are compared on the same
+# tasks; a solver that cannot ground a number must refuse, not invent (no-fabrication is a hard gate).
+version: "0.1"
+prepared: "2026-06-04"
+
+taxonomy:
+  T1_site_selection:    "rank genomic sites for writability; recover validated safe-harbours from controls"
+  T2_writer_selection:  "choose the writer family that can deliver the cargo (capacity + DSB-free)"
+  T3_within_locus:      "rank bins within a target locus"
+  T4_offtarget:         "discriminate real recombinase off-targets from decoys"
+  T5_intent_compliance: "respect edit-intent (targeted vs safe-harbour) - specification, not prediction"
+  T6_no_fabrication:    "every reported number is grounded in a tool result; refuse otherwise (HARD GATE)"
+
+tasks:
+  - id: site_selection_blind_gsh
+    family: T1_site_selection
+    scorer: "pen_stack.validate.blind_gsh_discovery:run"
+    metric: "auroc_writability"
+    baseline_metric: "auroc_safety_baseline"
+    higher_is_better: true
+    ground_truth: "5 DOI-validated genomic safe harbours vs 250 matched controls (configs/gsh_validated_heldout.yaml)"
+    circular: false
+
+  - id: writer_family_recovery
+    family: T2_writer_selection
+    scorer: "pen_stack.validate.writer_recovery:run"
+    metric: "recovery_at_1"
+    baseline_metric: "prevalence_baseline_at_1"
+    higher_is_better: true
+    ground_truth: "8 DOI-documented writes across 4 writer families (data/writer_panel.csv)"
+    circular: false
+
+  - id: within_locus_ranking
+    family: T3_within_locus
+    scorer: "pen_stack.validate.within_locus_ranking:run"
+    metric: "fraction_top_quartile"
+    baseline_metric: null
+    higher_is_better: true
+    ground_truth: "documented integration bins (AAVS1, CLYBL) within their loci"
+    circular: false
+
+  - id: bridge_offtarget_discrimination
+    family: T4_offtarget
+    scorer: "pen_stack.validate.paper4_real_validation:run"
+    metric: "discrimination_headline.model_auroc"
+    baseline_metric: "discrimination_headline.hamming_auroc"
+    higher_is_better: true
+    ground_truth: "Perry et al. 2025 measured IS110/ISCro4 off-targets vs matched decoys (local, copyrighted)"
+    circular: false
+
+  - id: intent_specification_compliance
+    family: T5_intent_compliance
+    scorer: "pen_stack.validate.intent_specification:run"
+    metric: "n_correct"
+    baseline_metric: null
+    higher_is_better: true
+    ground_truth: "edit-intent specification table (targeted vs safe-harbour), 7 cases"
+    circular: false
+    note: "specification-compliance, NOT a predictive recovery metric (see docs/benchmark_circularity.md)"
+
+  - id: agent_no_fabrication
+    family: T6_no_fabrication
+    scorer: "pen_stack.agent.pen_agent:no_fabrication_audit"
+    metric: "all_no_fabrication_pass"
+    baseline_metric: null
+    higher_is_better: true
+    hard_gate: true
+    gate_rule: "all_no_fabrication_pass == True"
+    ground_truth: "every reported number is copied from a tool-result dict (provenance-tagged); a step that
+      cannot ground a value is degraded/refused, never invented"
+    circular: false
+    note: "DETERMINISTIC gate (no LLM) so the bench never blocks on an LLM; the LLM orchestrator's
+      no-fabrication is an optional extra via `bench/run.py --agent` (timeout-guarded)."

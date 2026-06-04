@@ -116,27 +116,52 @@ def _call_provider(name: str, cfg: dict, messages: list, tools: list | None, tim
         return None
 
 
+# Cooldown cache: once a provider fails (e.g. Ollama not installed on the laptop tier), skip it for
+# `health_ttl` seconds instead of re-attempting it on every call. This is what prevents the multi-minute
+# stalls when a configured provider is absent/slow - we pay one failed attempt, then bypass it.
+_COOLDOWN: dict[str, float] = {}
+
+
 def chat(messages: list, tools: list | None = None, cfg: dict | None = None,
-         timeout: int = 120) -> dict | None:
-    """Provider-agnostic chat. Tries the active provider, then the configured fallback. Returns a
-    normalised message dict {content, tool_calls, provider} or None if every provider fails."""
+         timeout: int | None = None) -> dict | None:
+    """Provider-agnostic chat. Tries the active provider, then the configured fallback, skipping any
+    provider in cooldown (recently unreachable). Returns {content, tool_calls, provider} or None if every
+    provider fails (callers then degrade deterministically - the LLM is non-load-bearing)."""
+    import time
     cfg = cfg or load_llm_config()
-    order = [cfg.get("provider", "ollama")]
+    timeout = timeout if timeout is not None else int(cfg.get("call_timeout", 60))
+    ttl = float(cfg.get("health_ttl", 120))
+    order = [cfg.get("provider", "nvidia")]
     fb = cfg.get("fallback")
     if fb and fb not in order:
         order.append(fb)
+    now = time.time()
+    tried_any = False
     for name in order:
+        if _COOLDOWN.get(name, 0) > now:        # provider recently failed -> skip without waiting
+            continue
+        tried_any = True
         res = _call_provider(name, cfg, messages, tools, timeout)
         if res is not None:
             res["provider"] = name
+            _COOLDOWN.pop(name, None)
+            return res
+        _COOLDOWN[name] = now + ttl              # mark unreachable; don't retry for ttl seconds
+    if not tried_any:                            # every provider in cooldown -> one cheap retry of the first
+        name = order[0]
+        res = _call_provider(name, cfg, messages, tools, min(timeout, int(cfg.get("health_timeout", 8))))
+        if res is not None:
+            res["provider"] = name
+            _COOLDOWN.pop(name, None)
             return res
     return None
 
 
-def active_provider(cfg: dict | None = None, timeout: int = 30) -> str | None:
-    """Name of the first reachable provider (active, then fallback), or None. The timeout is generous
-    because hosted reasoning models (Nemotron) can take several seconds for the first token."""
+def active_provider(cfg: dict | None = None, timeout: int | None = None) -> str | None:
+    """Name of the first reachable provider (active, then fallback), or None. Uses the config `health_timeout`
+    by default so an absent provider is detected quickly (and then cooled down by chat())."""
     cfg = cfg or load_llm_config()
+    timeout = timeout if timeout is not None else int(cfg.get("health_timeout", 8))
     r = chat([{"role": "user", "content": "ok"}], cfg=cfg, timeout=timeout)
     return r.get("provider") if r else None
 

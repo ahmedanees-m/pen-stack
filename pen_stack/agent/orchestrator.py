@@ -42,12 +42,14 @@ def run_agent(goal: str, max_steps: int = 12, cfg: dict | None = None) -> dict:
     if refusal:
         return {"refused": True, "plan": refusal, "trace": [], "disclaimer": DISCLAIMER}
 
+    from pen_stack.rag.llm import load_llm_config
+    step_timeout = int((cfg or load_llm_config()).get("agent_call_timeout", 60))
     msgs = [{"role": "system", "content": _SYSTEM}, {"role": "user", "content": goal}]
     trace: list[dict] = []
     seen: set = set()
 
     for _ in range(max_steps):
-        resp = llm_chat(msgs, tools=SCHEMAS, cfg=cfg, timeout=180)
+        resp = llm_chat(msgs, tools=SCHEMAS, cfg=cfg, timeout=step_timeout)
         if resp is None:
             return _fallback(goal, trace)
         provider, style = resp.get("provider"), resp.get("style", "openai")
