@@ -42,3 +42,16 @@ def test_stratified_report_is_well_formed():
         assert 0.0 <= s["planner_recovery"] <= 1.0
         assert 0.0 <= s["baseline_recovery"] <= 1.0
         assert {"mcnemar_pvalue", "gap_ci95", "ci_excludes_zero"} <= set(s)
+
+
+def test_recovery_at_k_is_deterministic():
+    # Regression: tied scores (saturated safety) used to resolve via an unstable quicksort, so identical
+    # inputs gave different planner/baseline recovery vectors. The ranking now uses a stable sort with
+    # explicit tie-breakers - two calls must produce identical hit vectors so out/benchmark_report.json
+    # reproduces.
+    from pen_stack.validate.paper3_benchmark import recovery_at_k
+    panel = pd.read_csv(_PANEL)
+    a = recovery_at_k(panel, k=10).sort_values("name").reset_index(drop=True)
+    b = recovery_at_k(panel, k=10).sort_values("name").reset_index(drop=True)
+    pd.testing.assert_frame_equal(a[["name", "planner_hit", "baseline_hit"]],
+                                  b[["name", "planner_hit", "baseline_hit"]])

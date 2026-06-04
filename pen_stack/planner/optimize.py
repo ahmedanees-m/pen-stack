@@ -104,7 +104,11 @@ def score_candidates(cands: pd.DataFrame, intent: EditIntent | str, cargo_bp: in
     # cargo that cannot be delivered by any reachable writer is penalised
     out.loc[~out["cargo_ok"], "score"] -= 0.5
     out["intent"] = intent.value
-    return out.sort_values("score", ascending=False).reset_index(drop=True)
+    # Deterministic ranking: a stable sort with explicit tie-breakers, so tied scores (common when safety
+    # saturates) always resolve identically across runs - the default quicksort is NOT stable.
+    keys = ["score"] + [c for c in ("chrom", "bin", "gene") if c in out.columns]
+    asc = [False] + [True] * (len(keys) - 1)
+    return out.sort_values(keys, ascending=asc, kind="stable").reset_index(drop=True)
 
 
 def gene_coords_path() -> Path:

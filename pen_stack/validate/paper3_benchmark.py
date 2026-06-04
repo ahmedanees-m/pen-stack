@@ -108,8 +108,10 @@ def recovery_at_k(panel: pd.DataFrame, k: int = 10, cargo_bp: int = 2000) -> pd.
         pool["on_target"] = (pool["gene"] == t["gene"]) & (not genome_wide)
         scored = score_candidates(pool, t["intent"], cargo_bp)
         planner_topk = list(scored.head(k)["gene"])
-        # BASELINE: intent-blind, rank the same pool by safety only
-        baseline_topk = list(pool.sort_values("safety", ascending=False).head(k)["gene"])
+        # BASELINE: intent-blind, rank the same pool by safety only. Stable sort + tie-breakers so the
+        # saturated-safety ties resolve identically every run (default quicksort is not stable).
+        baseline_topk = list(pool.sort_values(["safety", "chrom", "bin"], ascending=[False, True, True],
+                                              kind="stable").head(k)["gene"])
         rows.append({"name": t["name"], "gene": t["gene"], "stratum": t["stratum"],
                      "intent": t["intent"],
                      "planner_hit": int(t["gene"] in planner_topk),
