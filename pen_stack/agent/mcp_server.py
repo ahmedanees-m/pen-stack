@@ -24,6 +24,7 @@ mcp.tool()(tools.reachable_writers)
 mcp.tool()(tools.writer_axes)
 mcp.tool()(tools.plan_write)
 mcp.tool()(tools.ask_literature)
+mcp.tool()(tools.multiplex_translocation_risk)            # WS-G1: multiplex translocation-risk screen
 
 
 @mcp.tool()

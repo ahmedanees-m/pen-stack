@@ -68,12 +68,22 @@ def ask_literature(q: str) -> dict:
     return {"answer": a["answer"], "citations": a["citations"], "tool": "rag.qa"}
 
 
+def multiplex_translocation_risk(edits: list[dict]) -> dict:
+    """Translocation-risk SCREEN for a multi-edit (2-5) plan: pairwise DSB-join risk across edits.
+
+    Each edit: {name, family, chrom, pos, optional offtargets:[{chrom,pos,risk}]}. DSB-free recombinase
+    writers contribute zero risk. A screen, not a calibrated predictor (WS-G1)."""
+    from pen_stack.planner.multiplex import translocation_risk
+    return {**translocation_risk(edits), "tool": "planner.multiplex"}
+
+
 REGISTRY = {
     "writability": writability,
     "reachable_writers": reachable_writers,
     "writer_axes": writer_axes,
     "plan_write": plan_write,
     "ask_literature": ask_literature,
+    "multiplex_translocation_risk": multiplex_translocation_risk,
 }
 
 # Ollama/OpenAI tool-calling schemas
@@ -102,6 +112,14 @@ SCHEMAS = [
     {"type": "function", "function": {
         "name": "ask_literature", "description": "Grounded, cited literature answer.",
         "parameters": {"type": "object", "properties": {"q": {"type": "string"}}, "required": ["q"]}}},
+    {"type": "function", "function": {
+        "name": "multiplex_translocation_risk",
+        "description": "Translocation-risk screen for a multi-edit plan (pairwise DSB-join risk).",
+        "parameters": {"type": "object", "properties": {
+            "edits": {"type": "array", "items": {"type": "object", "properties": {
+                "name": {"type": "string"}, "family": {"type": "string"},
+                "chrom": {"type": "string"}, "pos": {"type": "integer"}}}}},
+            "required": ["edits"]}}},
 ]
 
 

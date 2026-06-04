@@ -17,7 +17,8 @@ _WDF = Path(__file__).resolve().parents[2].parent / "phase_1" / "out" / "atlas_k
 
 
 def test_tool_registry_and_dispatch_unknown():
-    assert set(REGISTRY) == {"writability", "reachable_writers", "writer_axes", "plan_write", "ask_literature"}
+    assert set(REGISTRY) == {"writability", "reachable_writers", "writer_axes", "plan_write",
+                             "ask_literature", "multiplex_translocation_risk"}
     with pytest.raises(KeyError):
         dispatch("not_a_tool", {})
 
