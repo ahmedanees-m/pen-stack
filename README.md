@@ -107,10 +107,14 @@ PEN-STACK is organised as **two reference layers + one engine + a services layer
   blind. Durability transfers mouse to human (Spearman rho = 0.42).
 - **Paper 2 (Writer Atlas):** 33,370 enzyme systems across 8 families on common measured axes; mechanism
   classifier agrees with the audited labels on the curated core (1.00); cross-link validated on AAVS1.
-- **Paper 3 (Write Planner):** on a frozen, goal-conditioned recovery@k benchmark the Planner recovers
-  therapeutic-into-functional-locus writes at recovery@10 = 1.00 vs 0.00 for an intent-blind baseline
-  (McNemar p = 0.0156; bootstrap gap CI [1.0, 1.0] excludes zero); a tool-using agent never fabricates a
-  number (every value traces to a validated tool call).
+- **Paper 3 / v3.1 (Write Planner + de-circularized benchmark):** the honest headline is **blind
+  safe-harbour site discovery** - run genome-wide (so no on-target identity term fires), the planner's
+  writability separates held-out, DOI-validated safe harbours from matched-context controls at **AUROC
+  0.92** (safety-only baseline 0.50). Writer-family recovery@1 = 1.0 vs prevalence 0.25 across 4 families.
+  The earlier "recovery@10 = 1.00, McNemar p" result for *targeted* intents was definitional, not
+  predictive (an on-target identity term dominates the score), so it is now reported only as a
+  specification-compliance correctness table - see `docs/benchmark_circularity.md`. A tool-using agent
+  never fabricates a number (every value traces to a validated tool call).
 - **Paper 4 (Bridge off-target engine):** to our knowledge the first measured-data-validated tool that
   **nominates and ranks candidate off-target *locations*** for bridge recombinases. On the measured Perry
   2025 data (6,856 real off-targets) the per-position profile confirms the central core (positions 7-9) is

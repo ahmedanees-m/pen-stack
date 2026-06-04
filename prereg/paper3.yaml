@@ -1,7 +1,13 @@
 # PEN-STACK v3.0 - Paper 3 (The Write Planner) pre-registered success criteria.
-# SHA-locked. The two-stratum, goal-conditioned recovery@k benchmark (Step 3.5) is the paper-defining,
-# gating artifact; the panel (data/benchmark_panel.csv) is FROZEN here before any tuning so non-obvious
-# entries cannot be reverse-fit.
+#
+# CIRCULARITY CORRECTION (v3.1, WS-A, 2026-06-04): the "discriminating-stratum recovery@10 = 1.00 vs 0.00"
+# below (with McNemar p and bootstrap CI) is DEFINITIONAL, not predictive - an on-target identity term
+# dominates the score, so the planner ranks the goal's own gene first by construction (see
+# docs/benchmark_circularity.md). It is SUPERSEDED and must not be cited as predictive. The honest headline
+# is now the BLIND safe-harbour discovery (prereg/ws_a.yaml; AUROC 0.92 vs matched controls). The targeted
+# result is retained only as a specification-compliance correctness table (validate/intent_specification).
+#
+# SHA-locked. The panel (data/benchmark_panel.csv) is FROZEN.
 paper: 3
 title: "The Write Planner: end-to-end inverse design of genomic writes"
 prepared: "2026-06-02"

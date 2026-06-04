@@ -1,8 +1,17 @@
-"""Two-stratum, goal-conditioned recovery@k benchmark (Phase 3, Step 3.5) - PAPER-DEFINING, gating.
+"""Two-stratum recovery@k benchmark (Phase 3, Step 3.5).
 
-Show the Write Planner recovers documented targeted-writes - *especially the non-obvious ones a naive
-baseline cannot* - from the goal (gene + edit_intent) alone, with the precise site held out. The panel is
-adversarial to the baseline by construction:
+CIRCULARITY NOTICE (v3.1, WS-A). The *discriminating* (targeted-intent) stratum result reported here -
+"recovery@10 = 1.00 vs 0.00", with a McNemar p and a bootstrap CI - is **definitional, not predictive**:
+an on-target identity term (`on_target = gene == target_gene`, magnitude 1.0) dominates a [0,1] base, so
+the planner ranks the goal's own gene first by construction. See `docs/benchmark_circularity.md`. It must
+NOT be cited as predictive evidence. The de-circularized replacements are
+`pen_stack/validate/{intent_specification,blind_gsh_discovery,writer_recovery,within_locus_ranking}.py`,
+with the **blind GSH discovery (AUROC vs matched controls)** as the honest headline. The *control* stratum
+below (genome-wide safe-harbour search) is non-circular and remains valid.
+
+(Original docstring follows.) Show the Write Planner recovers documented targeted-writes - *especially the
+non-obvious ones a naive baseline cannot* - from the goal (gene + edit_intent) alone, with the precise site
+held out. The panel is adversarial to the baseline by construction:
 
   * Control stratum (safe-harbour writes): a safety ranker should recover these - the Planner must not be
     worse.

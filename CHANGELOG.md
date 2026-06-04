@@ -3,6 +3,33 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [3.1.0a0] - 2026-06-04 - v3.1 WS-A: de-circularize the planning benchmark (gate)
+
+The v3.1 cycle (publishable contributions + an adopted benchmark) opens with its gate: de-circularizing the
+Phase-3 planning benchmark before anything builds on it.
+
+### Changed (honesty)
+- **The Phase-3 "discriminating-stratum recovery@10 = 1.00 vs 0.00 (McNemar p, CI)" is now labeled
+  definitional, not predictive,** everywhere (README, manuscript abstract, `prereg/paper3.yaml`,
+  `validate/paper3_benchmark.py` docstring). An on-target identity term dominates the score, so the planner
+  ranks the goal's own gene first by construction. Documented in `docs/benchmark_circularity.md` (WS-A1).
+- The intent result is reframed as a **specification-compliance correctness table** (`validate/intent_specification.py`,
+  7/7), with no recovery/p-value/CI language (WS-A2).
+
+### Added (the honest, non-circular replacements)
+- **Blind safe-harbour site discovery (the new headline)**: `validate/blind_gsh_discovery.py` +
+  `configs/gsh_validated_heldout.yaml` (5 DOI-validated held-out GSH, gene-anchored to hg38) +
+  frozen/SHA-locked `data/gsh_matched_controls.parquet`. Run genome-wide (no on-target term), the planner's
+  writability separates validated GSH from matched-context controls at **AUROC 0.92** (safety-only 0.50)
+  (WS-A3).
+- **Diversified writer-family recovery**: `validate/writer_recovery.py` + `data/writer_panel.csv` (8 writes,
+  4 families, DOIs). recovery@1 = **1.0** vs prevalence 0.25 (smallest-capacity DSB-free writer that fits
+  the cargo) (WS-A4).
+- **Within-locus ranking** (descriptive): `validate/within_locus_ranking.py` - AAVS1 documented bin at the
+  93rd within-locus percentile (top quartile); CLYBL at the 34th (honest negative) (WS-A5).
+- **Consolidated report** `scripts/p3_benchmark_report.py` -> `out/ws_a_report.md`; `prereg/ws_a.yaml` +
+  SHA lock. Gate G-A is met: blind AUROC reported, no circular claims remain (WS-A6).
+
 ## [Unreleased] - 2026-06-03 - honest reframing, repository polish, coverage, hybrid LLM
 
 ### Added

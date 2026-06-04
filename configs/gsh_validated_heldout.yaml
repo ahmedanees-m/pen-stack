@@ -1,0 +1,39 @@
+# PEN-STACK v3.1 (WS-A3) - held-out, literature-validated genomic safe harbours (GSH).
+# Used ONLY for the blind safe-harbour site-discovery test, never for tuning. Each locus is anchored to an
+# hg38 gene/region so coordinates are resolved from GENCODE (data/curated/gene_coords.parquet) rather than
+# transcribed by hand. The planner searches genome-wide (genome_wide=True, on_target never fires) and we
+# test whether these bins rank above matched-context random controls. DOIs verified via Europe PMC.
+#
+# Limits (documented): "validated GSH" is a noisy literature label; N is modest; gene-body anchoring is a
+# coarse stand-in for the precise documented sub-region; intergenic published sets (Pellenz/Aznauryan) are
+# cited as the validated-GSH basis but only the gene-resolvable loci are scored here.
+
+gsh:
+  - name: AAVS1
+    anchor_gene: PPP1R12C          # AAVS1 = PPP1R12C intron 1
+    doi: "10.1101/gr.106773.110"   # DeKelver 2010
+  - name: CLYBL
+    anchor_gene: CLYBL             # CLYBL intron 2
+    doi: "10.1371/journal.pone.0116032"  # Cerbini 2015
+  - name: CCR5
+    anchor_gene: CCR5
+    doi: "10.1038/nbt1353"         # Lombardo 2007
+  - name: hRosa26
+    anchor_gene: THUMPD3           # human ROSA26 locus region, chr3 ~9.4 Mb
+    doi: "10.1038/nbt1362"         # Irion 2007 (human ROSA26)
+  - name: H11
+    anchor_gene: EIF4ENIF1         # H11/HIPP11 safe harbour, between DRG1 and EIF4ENIF1
+    doi: "10.1371/journal.pone.0113481"  # H11 safe harbour characterisation
+
+# Additional validated-GSH literature basis (cited; intergenic coordinates not transcribed here, so not
+# scored - listed for provenance and future precise-coordinate inclusion):
+literature_basis:
+  - { set: "Rogi1/Rogi2", doi: "10.1016/j.crmeth.2021.100154", note: "Aznauryan 2022, chr1 & chr3" }
+  - { set: "Pellenz universal GSH (SHS231 etc.)", doi: "10.1089/hum.2018.169", note: "Pellenz/Sadelain 2019" }
+
+# matched-control construction (frozen + SHA-locked in data/gsh_matched_controls.parquet)
+controls:
+  per_positive: 50               # random control bins per GSH positive
+  match_features: [dist_tss, dist_oncogene, accessibility]   # quantile-bucket matching
+  n_quantile_bins: 5
+  seed: 20260604
