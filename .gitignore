@@ -47,3 +47,4 @@ manuscripts/
 configs/nvidia_api_key.txt
 configs/*_api_key.txt
 .env
+configs/alphagenome_api_key.txt

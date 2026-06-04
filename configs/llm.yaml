@@ -8,8 +8,12 @@
 # Switching is a one-line change to `provider`. Secrets are read from an env var or a gitignored file;
 # keys are NEVER committed.
 
-provider: nvidia          # active provider: nvidia | ollama | openai
-fallback: ollama          # used automatically when the active provider is unreachable/unauthorised
+provider: ollama          # active provider: ollama | nvidia | openai
+fallback: nvidia          # used automatically when the active provider is unreachable
+# Default is the fast, private, local model (Ollama/Qwen) - reliable for interactive use and demos.
+# The hosted NVIDIA Nemotron is kept configured below as the fallback AND as the explicit strong-model
+# baseline for the Genome-Writing Bench (WS-E selects it directly). Nemotron has better tool-use but
+# higher/variable latency (~0.5-6 s/call, ~30 s cold from the VM), so it is not the interactive default.
 temperature: 0.1
 embedding: ollama/nomic-embed-text   # local, free embeddings for the RAG (Apache-2.0)
 
