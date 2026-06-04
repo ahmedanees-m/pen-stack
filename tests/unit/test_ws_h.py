@@ -41,3 +41,22 @@ def test_docker_compose_has_bench_service():
 def test_all_workstream_prereg_locks_present():
     for ws in "abcdefgh":
         assert (_ROOT / f"prereg/ws_{ws}.yaml").exists(), ws
+
+
+def test_pypi_packaging_ready():
+    # build + publish plumbing for the PyPI release
+    r = (_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "pypi/v/pen-stack" in r                                # PyPI badge present
+    assert (_ROOT / ".github/workflows/publish.yml").exists()     # automated publish workflow
+    assert (_ROOT / "MANIFEST.in").exists() and (_ROOT / "docs/RELEASING.md").exists()
+    pp = (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "Development Status :: 4 - Beta" in pp and "Issues =" in pp
+
+
+def test_resource_resolver_finds_and_errors_clearly():
+    from pen_stack._resources import project_root, resource
+    assert (project_root() / "pen_stack").exists()                # repo root in a source checkout
+    assert resource("configs/cargo_polish.yaml").exists()         # finds a real resource
+    import pytest
+    with pytest.raises(FileNotFoundError, match="PEN_STACK_HOME"):
+        resource("configs/does_not_exist_xyz.yaml")              # clear, actionable error

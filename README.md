@@ -7,7 +7,9 @@
 *Editing tools tell you **how** to change a base. PEN-STACK tells you **where** in the genome you can safely
 and durably write new DNA, **which enzyme** can write it there, and **how** to design the write end-to-end.*
 
+[![PyPI](https://img.shields.io/pypi/v/pen-stack.svg)](https://pypi.org/project/pen-stack/)
 [![CI](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml)
+[![Publish](https://github.com/ahmedanees-m/pen-stack/actions/workflows/publish.yml/badge.svg)](https://github.com/ahmedanees-m/pen-stack/actions/workflows/publish.yml)
 [![coverage](https://raw.githubusercontent.com/ahmedanees-m/pen-stack/main/.github/badges/coverage.svg)](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
@@ -253,6 +255,18 @@ pen-stack/
 > reproducible by re-running the scripts. Only small curated tables and derived products live in git.
 
 ## Installation and quick start
+
+**From PyPI** (the library, CLI, agent, and pure-logic tools):
+
+```bash
+pip install pen-stack            # core
+pip install "pen-stack[models,bio,bridge,server,services]"   # full stack
+```
+
+The wheel ships the importable package and the command-line tools. The **full data pipeline** (the 3 M-row
+atlases, BigWig tracks, and curated configs) is distributed via the cloned repo + Zenodo, per the data
+policy below; point an installed copy at a checkout with `export PEN_STACK_HOME=/path/to/pen-stack` to use
+the config-driven features. Most users who want the whole pipeline clone the repo:
 
 ```bash
 git clone https://github.com/ahmedanees-m/pen-stack.git && cd pen-stack

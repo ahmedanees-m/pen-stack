@@ -18,16 +18,14 @@ from __future__ import annotations
 
 import re
 from functools import lru_cache
-from pathlib import Path
 
 import yaml
-
-_CFG = Path(__file__).resolve().parents[2] / "configs" / "cargo_polish.yaml"
 
 
 @lru_cache(maxsize=1)
 def _cfg() -> dict:
-    return yaml.safe_load(_CFG.read_text(encoding="utf-8"))
+    from pen_stack._resources import resource
+    return yaml.safe_load(resource("configs/cargo_polish.yaml").read_text(encoding="utf-8"))
 
 
 def _clean(seq: str) -> str:

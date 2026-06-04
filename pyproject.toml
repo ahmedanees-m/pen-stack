@@ -15,10 +15,15 @@ keywords = [
   "writable-genome", "writer-atlas", "write-planner", "bioinformatics",
 ]
 classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "License :: OSI Approved :: MIT License",
   "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
   "Topic :: Scientific/Engineering :: Bio-Informatics",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
   "numpy>=1.26",
@@ -51,6 +56,10 @@ pen-bridge = "pen_stack.bridge.cli:main"
 [project.urls]
 Homepage = "https://github.com/ahmedanees-m/pen-stack"
 Repository = "https://github.com/ahmedanees-m/pen-stack"
+Documentation = "https://github.com/ahmedanees-m/pen-stack/tree/main/docs"
+Changelog = "https://github.com/ahmedanees-m/pen-stack/blob/main/CHANGELOG.md"
+Issues = "https://github.com/ahmedanees-m/pen-stack/issues"
+Benchmark = "https://github.com/ahmedanees-m/pen-stack/tree/main/benchmarks/genome_writing_bench"
 
 [tool.setuptools.packages.find]
 include = ["pen_stack*"]

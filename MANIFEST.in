@@ -1,0 +1,16 @@
+# Source-distribution completeness: ship the small committed config/data/spec files and the benchmark so a
+# source build is reproducible. Large artifacts (atlases, BigWig, models) are NOT shipped - they are on
+# Zenodo (DOI) per the data policy; clone the repo + fetch Zenodo for the full pipeline.
+include README.md LICENSE CHANGELOG.md CITATION.cff pyproject.toml
+recursive-include configs *.yaml *.yml *.txt.example
+recursive-include prereg *.yaml *.json
+recursive-include data/curated *
+recursive-include benchmarks *.yaml *.md SHA256SUMS
+recursive-include bench *.py
+recursive-include docs *.md
+graft scripts
+global-exclude *.pyc __pycache__ *.so
+# never ship secrets or large caches
+exclude configs/nvidia_api_key.txt configs/alphagenome_api_key.txt
+prune data/alphagenome_cache
+prune models
