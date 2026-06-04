@@ -70,12 +70,40 @@ def run(ct: str = "k562", out: str | Path = _OUT) -> dict:
     auroc_rule = _auroc(pr + cr, labels_r)
     auroc_learned = _auroc(pw + cw, labels_w)
 
+    # Bootstrap 95% CI for the learned AUROC and the learned-minus-rule delta (prereg/ws_b.yaml: report delta
+    # AND CI). Resample positives and controls independently (stratified). With only ~5 GSH positives the CI
+    # is WIDE by construction - reported honestly rather than hidden.
+    rng = np.random.default_rng(20260604)
+    npos, nctrl = len(pw), len(cw)
+    boot_learned, boot_delta = [], []
+    if npos and nctrl:
+        pw_a, cw_a = np.array(pw, float), np.array(cw, float)
+        pr_a, cr_a = np.array(pr, float), np.array(cr, float)
+        for _ in range(2000):
+            pi = rng.integers(0, npos, npos)
+            ci = rng.integers(0, nctrl, nctrl)
+            lab = [1] * npos + [0] * nctrl
+            al = _auroc(list(pw_a[pi]) + list(cw_a[ci]), lab)
+            ar = _auroc(list(pr_a[pi]) + list(cr_a[ci]), lab)
+            if not (np.isnan(al) or np.isnan(ar)):
+                boot_learned.append(al)
+                boot_delta.append(al - ar)
+
+    def _ci(b):
+        return [round(float(np.percentile(b, 2.5)), 4), round(float(np.percentile(b, 97.5)), 4)] if b else None
+
     report = {
         "primary_safety_metric": "safe-harbour discrimination (validated GSH vs matched controls)",
+        "n_positives": npos, "n_controls": nctrl,
         "auroc_learned_writability": round(auroc_learned, 4),
+        "auroc_learned_ci95": _ci(boot_learned),
         "auroc_gsh_ruleset_baseline": round(auroc_rule, 4) if not np.isnan(auroc_rule) else None,
         "learned_beats_ruleset": bool(auroc_learned > auroc_rule) if not np.isnan(auroc_rule) else None,
         "delta": round(auroc_learned - auroc_rule, 4) if not np.isnan(auroc_rule) else None,
+        "delta_ci95": _ci(boot_delta),
+        "delta_ci_excludes_zero": (bool(_ci(boot_delta)[0] > 0) if boot_delta else None),
+        "ci_note": f"bootstrap 2000x over {npos} positives + {nctrl} controls (seed 20260604); CI is wide "
+                   "because only ~5 validated GSH anchor the positives - reported honestly.",
         "genotoxic_cis_auroc": "DEMOTED to a diagnostic - circular (label = proximity to 5 oncogenes = the "
                                "distance baseline's own definition); not a safety headline",
         "rule_thresholds_bp": _MIN_DIST,

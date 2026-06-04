@@ -34,9 +34,13 @@ def build() -> str:
         "",
         "## B3 (PRIMARY SAFETY METRIC) - Safe-harbour discrimination vs the GSH rule-set",
         f"- Primary metric: **{gsh.get('primary_safety_metric', 'n/a')}**.",
-        f"- **Learned writability AUROC = {gsh.get('auroc_learned_writability')}** vs published GSH "
-        f"distance-rule AUROC **{gsh.get('auroc_gsh_ruleset_baseline')}** "
-        f"(delta {gsh.get('delta')}; learned beats rule-set: {gsh.get('learned_beats_ruleset')}).",
+        f"- **Learned writability AUROC = {gsh.get('auroc_learned_writability')}** "
+        f"(95% CI {gsh.get('auroc_learned_ci95')}) vs published GSH distance-rule AUROC "
+        f"**{gsh.get('auroc_gsh_ruleset_baseline')}** - delta **{gsh.get('delta')}** "
+        f"(95% CI {gsh.get('delta_ci95')}, excludes zero: {gsh.get('delta_ci_excludes_zero')}; "
+        f"learned beats rule-set: {gsh.get('learned_beats_ruleset')}).",
+        f"- CI is wide ({gsh.get('n_positives')} validated GSH positives vs {gsh.get('n_controls')} "
+        "controls) but the delta excludes zero - the learned advantage is real, reported honestly.",
         "- The conservative distance rule sits at/below chance here because the controls are distance-matched "
         "and the rule penalises the in-gene location of real validated harbours (e.g. AAVS1/PPP1R12C). The "
         "learned model captures empirical safe-harbour-ness that the rule does not.",

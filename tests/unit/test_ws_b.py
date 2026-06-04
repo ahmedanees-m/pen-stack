@@ -59,3 +59,7 @@ def test_b3_learned_beats_gsh_ruleset():
     assert r["learned_beats_ruleset"] is True            # PRIMARY safety metric
     assert r["auroc_learned_writability"] >= 0.70
     assert "DEMOTED" in r["genotoxic_cis_auroc"]         # circular metric must stay demoted
+    # prereg requires delta AND CI; the bootstrap delta CI must exclude zero (learned > rule is real)
+    assert r["delta_ci95"] is not None and len(r["delta_ci95"]) == 2
+    assert r["delta_ci_excludes_zero"] is True
+    assert r["auroc_learned_ci95"][0] <= r["auroc_learned_writability"] <= r["auroc_learned_ci95"][1]
