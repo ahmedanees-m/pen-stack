@@ -1,0 +1,47 @@
+# PEN-STACK v3.1 - WS-C (AlphaGenome: sequence features + 3D structural risk) pre-registered acceptance.
+# Locked criteria; results reported verbatim including negatives. AlphaGenome is the HOSTED API (no local
+# GPU); the measured-ENCODE atlas stays the backbone (hybrid decision, docs/alphagenome_feasibility.md).
+cycle: "v3.1"
+workstream: "WS-C"
+prepared: "2026-06-04"
+
+C0_feasibility:
+  deliverable: "docs/alphagenome_feasibility.md"
+  decision: "hybrid - measured-track atlas is the backbone; AlphaGenome invoked on-demand per locus
+    (endogenous-expression baseline, predicted-vs-measured validation, 3D contact deltas, uncovered cell
+    types). No local JAX/GPU; hosted gRPC API + on-disk cache."
+
+C1_provider_interface:
+  deliverable: "pen_stack/wgenome/providers.py (AlphaGenomeProvider + MeasuredTrackProvider); cache in
+    data/alphagenome_cache keyed by (assembly, interval, output, ontology, center_bp, model_version)."
+  acceptance: "a cache hit reproduces identical outputs offline (offline=True makes no network call); the
+    provider model_version is recorded in artifacts."
+
+C2_seq_vs_measured:
+  deliverable: "pen_stack/wgenome/chromatin_seq.py; pen_stack/validate/seq_vs_measured.py ->
+    out/seq_vs_measured_{k562,hepg2}.json"
+  design: "seeded sample of assayed bins; per-track Spearman + Pearson (predicted vs measured) for the marks
+    AlphaGenome covers; score-level degradation by quantile-mapping predicted tracks onto the measured
+    marginal and recomputing writability/safety/p_durable with the trained models."
+  acceptance: "REPORT the per-track correlations and the score-level Spearman (no fixed threshold); the tool
+    flags low confidence where agreement is poor. Coverage bound: K562 has no predicted H3K9me3; cross-cell
+    -type writability is bounded by AlphaGenome training coverage (stated in M1)."
+  note: "expected and reported honestly: accessibility/broad marks transfer best; the COMPOSITE writability
+    score degrades when rebuilt from predicted tracks, which is why the measured atlas stays the backbone."
+
+C3_structural_risk_3d:
+  deliverable: "pen_stack/wgenome/structure3d.py -> out/structure3d_sanity.json"
+  design: "simulate cassette insertion via AlphaGenome predict_variant (insertion = alternate allele; anchor
+    base from UCSC REST; coordinate shift handled server-side); contact-map delta -> insulation change at
+    the site + aberrant contact gain toward an oncogene promoter; strong-enhancer vs length-matched neutral
+    insert isolates the regulatory effect from the coordinate-shift artifact."
+  acceptance: "QUALITATIVE sanity check only (no ground-truth dataset exists): on known enhancer-hijacking
+    loci (TAL1, LMO2, GFI1B, MYC) a strong-enhancer insert raises aberrant contacts above a matched neutral
+    insert at more loci than not. Report per-locus values whatever they are."
+  gate_G_C: "structural risk ships as a FLAG WITH CONFIDENCE, never a hard pass/fail. Contacts are
+    cell-type-specific (default GM12878, EFO:0002784 - K562 has no AlphaGenome Hi-C track); not a calibrated
+    probability; insertion changes coordinates beyond the training distribution."
+
+locked_files:
+  - prereg/ws_c.yaml
+  - docs/alphagenome_feasibility.md

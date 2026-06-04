@@ -34,6 +34,18 @@ _KEY_ENV = "ALPHAGENOME_API_KEY"
 # 1 Mb is AlphaGenome's max; expression/structural features use it for full regulatory context.
 SEQ_LEN_1MB = 1_048_576
 
+# Model version recorded in track-cache keys + artifacts (C1 reproducibility). Bump when the served model
+# changes so stale predictions are not silently reused.
+MODEL_VERSION = "alphagenome-2025-06"
+
+# The seven measured-atlas tracks and their AlphaGenome sources. The five histone marks come from the single
+# CHIP_HISTONE output selected by its `histone_mark` metadata column.
+_HISTONES = ["H3K27ac", "H3K4me1", "H3K4me3", "H3K9me3", "H3K27me3"]
+TRACK_NAMES = ["atac", "dnase", *_HISTONES]
+
+# K562 / HepG2 cell-type ontologies (verified against AlphaGenome human output_metadata).
+CT_ONTOLOGY = {"k562": "EFO:0002067", "hepg2": "EFO:0001187"}
+
 
 def _resolve_key() -> str | None:
     """API key from env first, then a gitignored file. Returns None if neither is present."""
@@ -128,6 +140,51 @@ class AlphaGenomeProvider:
         self._store(key, rec)
         return rec
 
+    def tracks(self, chrom: str, bin: int, ct: str, bin_size: int = 1000, center_bp: int = 1000,
+               offline: bool = False) -> dict:
+        """Predicted values of the seven measured-atlas tracks at a 1 kb bin (central-window mean, cached).
+
+        `ct` is "k562" or "hepg2"; the bin centre is `bin*bin_size + bin_size/2`, predicted in 1 Mb context.
+        Returns {atac, dnase, H3K27ac, H3K4me1, H3K4me3, H3K9me3, H3K27me3, model_version, ...}.
+        """
+        ontology = CT_ONTOLOGY.get(ct.lower(), ct)
+        key = _cache_key("tracks", self.assembly, MODEL_VERSION, chrom, bin, ontology, bin_size, center_bp)
+        hit = self._load(key)
+        if hit is not None:
+            return hit
+        if offline:
+            return {"available": False, "reason": "offline: not in cache", "key": key}
+        if not self.available():
+            return {"available": False, "reason": "alphagenome package or key absent", "key": key}
+        import numpy as np
+        from alphagenome.data import genome
+        from alphagenome.models import dna_client
+        pos = bin * bin_size + bin_size // 2
+        interval = genome.Interval(chromosome=chrom, start=pos, end=pos).resize(SEQ_LEN_1MB)
+        out = self._client().predict_interval(
+            interval=interval,
+            requested_outputs=[dna_client.OutputType.ATAC, dna_client.OutputType.DNASE,
+                               dna_client.OutputType.CHIP_HISTONE],
+            ontology_terms=[ontology])
+
+        def central(values) -> np.ndarray:
+            arr = np.asarray(values)
+            mid = arr.shape[0] // 2
+            half = max(1, center_bp // 2)
+            return arr[max(0, mid - half):mid + half]
+
+        rec = {"available": True, "chrom": chrom, "bin": int(bin), "ct": ct, "ontology": ontology,
+               "model_version": MODEL_VERSION, "center_bp": center_bp, "key": key,
+               "atac": float(central(out.atac.values).mean()),
+               "dnase": float(central(out.dnase.values).mean())}
+        ch = out.chip_histone
+        md, vals = ch.metadata.reset_index(drop=True), central(ch.values)
+        for mark in _HISTONES:
+            cols = md.index[md["histone_mark"] == mark].to_numpy()
+            rec[mark] = float(vals[:, cols].mean()) if len(cols) else float("nan")
+        self._store(key, rec)
+        return rec
+
     def contact_map_summary(self, chrom: str, start: int, end: int, ontology: str) -> dict:
         """3D structural-risk summary (WS-C2): variance + mean of the predicted contact map (cached)."""
         key = _cache_key("contact", self.assembly, chrom, start, end, ontology)
@@ -150,11 +207,38 @@ class AlphaGenomeProvider:
         return rec
 
 
+class MeasuredTrackProvider:
+    """The existing measured-ENCODE backbone: reads `phase_1/features/chromatin_{ct}.parquet` per bin.
+
+    Same `tracks()` signature as AlphaGenomeProvider so C2 can compare predicted vs measured on identical
+    bins, and so downstream code can swap providers without branching.
+    """
+
+    _P1 = _ROOT.parent / "phase_1" / "features"
+
+    def __init__(self, ct: str):
+        import pandas as pd
+        self.ct = ct.lower()
+        self._df = pd.read_parquet(self._P1 / f"chromatin_{self.ct}.parquet").set_index(["chrom", "bin"])
+
+    def available(self) -> bool:
+        return True
+
+    def tracks(self, chrom: str, bin: int, ct: str | None = None, **_: object) -> dict:
+        try:
+            row = self._df.loc[(chrom, int(bin))]
+        except KeyError:
+            return {"available": False, "reason": "bin not in measured grid"}
+        return {"available": True, "chrom": chrom, "bin": int(bin), "ct": self.ct,
+                **{t: float(row[t]) for t in TRACK_NAMES if t in row}}
+
+
 def smoke() -> dict:
     """Lightweight readiness probe used by tests/CLI - reports availability without a live call."""
     p = AlphaGenomeProvider()
     return {"package_available": package_available(), "key_present": _resolve_key() is not None,
-            "available": p.available(), "cache_dir": str(_CACHE)}
+            "available": p.available(), "model_version": MODEL_VERSION, "track_names": TRACK_NAMES,
+            "cache_dir": str(_CACHE)}
 
 
 if __name__ == "__main__":  # pragma: no cover

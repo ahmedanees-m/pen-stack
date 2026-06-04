@@ -84,6 +84,7 @@ omit = [
     "pen_stack/validate/agent_eval.py",        # needs the Phase-1 atlas
     "pen_stack/validate/paper4_real_validation.py",  # needs the Perry 2025 tables
     "pen_stack/validate/durability_baselines.py",    # needs the Phase-1 TRIP data + AlphaGenome (WS-B)
+    "pen_stack/validate/seq_vs_measured.py",         # needs Phase-1 measured tracks + AlphaGenome (WS-C2)
     "pen_stack/bridge/ortholog_screen.py",     # needs the Perry 2025 Table S1
     "pen_stack/bridge/pipeline.py",            # needs hg38 + the wrapped designer (integration)
     "pen_stack/bridge/cli.py",                 # thin CLI wrapper
