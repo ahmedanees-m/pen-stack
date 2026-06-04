@@ -1,0 +1,9 @@
+{
+  "cycle": "v3.1",
+  "workstream": "WS-D",
+  "prepared": "2026-06-04",
+  "sha256": {
+    "prereg/ws_d.yaml": "312c8cf8c80683b25e50343301ff068e1c99f3783e5b38f3c641a350f1fa9bbd",
+    "configs/cargo_polish.yaml": "c949af83d2c2667c6119303c1a0ec06e9960251ae07451d1efcf3259b1be7f2e"
+  }
+}

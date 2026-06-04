@@ -1,0 +1,29 @@
+# PEN-STACK v3.1 - WS-D (Cargo Polish) pre-registered acceptance.
+# The locus model scores WHERE to write; Cargo Polish scores WHAT is written. A heuristic sequence-trigger
+# scan, NOT a supervised silencing predictor.
+cycle: "v3.1"
+workstream: "WS-D"
+prepared: "2026-06-04"
+
+D1_cargo_sequence_risk_scan:
+  deliverables:
+    - "pen_stack/planner/cargo_polish.py (scan_cargo -> cargo_durability_risk + per-flag suggestions)"
+    - "configs/cargo_polish.yaml (documented thresholds + one concrete remedy per category)"
+    - "integration into pen_stack/planner/cargo.py (design_cargo payload_seq -> cargo_polish block)"
+    - "pen_stack/validate/cargo_directionality.py -> out/cargo_directionality.json"
+  scans:
+    - "CpG-island density (Gardiner-Garden & Frommer: obs/exp CpG > 0.6 and GC > 0.5 over >= 200 bp)"
+    - "GC extremes (< 0.30 or > 0.65)"
+    - "cryptic splice consensus (donor GT/acceptor AG with polypyrimidine tract)"
+    - "strong mRNA secondary structure (ViennaRNA MFE per nt; optional, degrades gracefully)"
+    - "known silencer motifs (dense CpG cluster, GAGA/PRE-like, polyT terminator, ZNF/KRAB-like)"
+  acceptance:
+    directionality: "a high-CpG bacterial-style cassette scores ABOVE a CpG-depleted / insulator-flanked
+      cassette on the curated set (out/cargo_directionality.json::directionality_ok)."
+    actionability: "EVERY raised flag carries a concrete suggestion (all_flags_have_suggestions)."
+  scope: "catches known sequence triggers of silencing/instability, not all silencing causes; a flag, not a
+    calibrated silencing probability."
+
+locked_files:
+  - prereg/ws_d.yaml
+  - configs/cargo_polish.yaml

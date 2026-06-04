@@ -24,8 +24,13 @@ def _bridge_offtarget(writer_family: str, site: tuple) -> dict:
     return predict_offtargets(writer_family, site)
 
 
-def design_cargo(payload_bp: int, writer_row: dict, site: tuple, ct: str) -> dict:
-    """Assemble a donor construct spec. writer_row needs: family, cargo_capacity_bp, deliv_class."""
+def design_cargo(payload_bp: int, writer_row: dict, site: tuple, ct: str,
+                 payload_seq: str | None = None) -> dict:
+    """Assemble a donor construct spec. writer_row needs: family, cargo_capacity_bp, deliv_class.
+
+    If `payload_seq` is given, attach the WS-D Cargo Polish sequence-risk scan (cargo_durability_risk +
+    actionable suggestions) - the locus model scores the site, Cargo Polish scores the insert.
+    """
     fam = writer_row.get("family")
     cap = writer_row.get("cargo_capacity_bp")
     elements = dict(_ELEMENTS)
@@ -45,4 +50,7 @@ def design_cargo(payload_bp: int, writer_row: dict, site: tuple, ct: str) -> dic
     }
     if fam in {"bridge_IS110", "seek_IS1111"}:
         out["offtargets"] = _bridge_offtarget(fam, site)
+    if payload_seq:
+        from pen_stack.planner.cargo_polish import scan_cargo
+        out["cargo_polish"] = scan_cargo(payload_seq)
     return out

@@ -1,0 +1,45 @@
+# PEN-STACK v3.1 WS-D - Cargo Polish heuristic thresholds + actionable suggestions.
+# A heuristic sequence-risk scan for the CARGO (the insert), complementary to the locus model. NOT a
+# supervised silencing predictor: it flags known sequence triggers of transgene silencing/instability, each
+# with a concrete remedy. Thresholds are documented constants from the silencing literature, not learned.
+
+cpg_island:                      # Gardiner-Garden & Frommer (1987): obs/exp CpG > 0.6 and GC > 0.5 over >=200 bp
+  window_bp: 200
+  obs_exp_min: 0.6
+  gc_min: 0.50
+  # high CpG-island density drives de novo methylation / silencing of integrated transgenes
+  risk_per_island: 0.25
+
+gc_extremes:                     # extreme GC impairs expression/stability
+  gc_low: 0.30
+  gc_high: 0.65
+  risk: 0.15
+
+cryptic_splice:                  # canonical donor (GT)/acceptor (AG) consensus inside the cassette body
+  donor_motif: "GT[AG]AG"        # MAG|GTRAGT exon/intron boundary core (simplified consensus)
+  acceptor_motif: "[CT]{6,}[ACGT]CAG"   # polypyrimidine tract + AG acceptor
+  risk_per_site_capped: 0.20     # capped contribution regardless of count
+
+secondary_structure:             # ViennaRNA MFE of the transcribed insert; very stable structure impedes elongation
+  mfe_per_nt_warn: -0.45         # kcal/mol per nt; more negative => stronger structure
+  risk: 0.15
+
+silencer_motifs:                 # known repressor/silencer sequence elements
+  motifs:
+    - {name: "bacterial_CpG_high", pattern: "(CG.{0,2}){6,}", note: "dense CpG (bacterial-origin) cluster"}
+    - {name: "PRE_GAGA", pattern: "(GAGAG){2,}", note: "GAGA/Polycomb-response-like element"}
+    - {name: "polyT_terminator", pattern: "T{8,}", note: "RNA Pol III terminator / pause"}
+    - {name: "ZNF_KRAB_like", pattern: "(TGGGGA){2,}", note: "ZNF/KRAB silencer-associated repeat"}
+  risk_per_motif_capped: 0.20
+
+suggestions:                     # one concrete remedy per flagged category
+  cpg_island: "deplete CpG (synonymous CpG removal / CpG-free backbone) or flank with a UCOE / cHS4 insulator"
+  gc_extremes: "codon re-optimise toward host GC (~0.45-0.55); avoid homopolymer/GC runs"
+  cryptic_splice: "mutate the cryptic GT/AG splice consensus synonymously; verify with a splice predictor"
+  secondary_structure: "redesign the 5' UTR / codon-optimise to relax strong mRNA secondary structure"
+  silencer_motifs: "remove/disrupt the silencer motif; add an insulator; swap promoter/polyA to mammalian-optimised parts"
+
+# overall risk = min(1.0, sum of category risks); band thresholds for the flag
+bands:
+  low: 0.25
+  moderate: 0.5
