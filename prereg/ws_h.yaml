@@ -1,0 +1,32 @@
+# PEN-STACK v3.1 - WS-H (release, benchmark adoption, dissemination) pre-registered acceptance.
+cycle: "v3.1"
+workstream: "WS-H"
+prepared: "2026-06-04"
+
+H1_release_and_pluggability:
+  deliverables:
+    - "updated README.md (v3.1: badges, what-is-new, Genome-Writing Bench section, components, citation)"
+    - "docs/quickstart.md (run a bench task in under five minutes)"
+    - "version bumped to 3.1.0 (pyproject, pen_stack.__init__, CITATION.cff); CHANGELOG.md release entry"
+    - "one-command install + bench/run.py; docker compose `bench` service; MCP server documented"
+  acceptance:
+    - "README + badges reflect v3.1 (version 3.1.0, current test count, benchmark badge)"
+    - "a quickstart runs a bench task on a clean checkout in under five minutes"
+    - "the package version is 3.1.0 everywhere it is declared"
+
+H2_preprints_positioning:
+  deliverables:
+    - "docs/positioning.md (M2 framed as the writing-side benchmark complementing editing-side tooling)"
+    - "manuscripts/ drafts (M1/M2/M3)"
+  acceptance: "positioning states the editing-vs-writing complementarity and the bench's design commitments
+    (deterministic scorers, no circular labels, no-fabrication hard gate, honest scope)."
+
+H3_dissemination:
+  deliverables:
+    - "benchmarks/genome_writing_bench/SUBMISSIONS.md (leaderboard submission guide)"
+    - "docs/dissemination.md (dissemination log + adoption metrics + release checklist)"
+  acceptance: "an external party can reproduce a bench run and submit a solver row; the no-fabrication gate
+    is mandatory for agent submissions."
+
+locked_files:
+  - prereg/ws_h.yaml

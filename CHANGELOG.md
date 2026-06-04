@@ -3,6 +3,40 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [3.1.0] - 2026-06-04 - v3.1 release: publishable contributions + an adopted benchmark
+
+The v3.1 cycle completes (workstreams A-H). It hardens the honesty of the planning benchmark, surrounds the
+models with strong baselines, adds a predicted-structure safety axis, and ships the first benchmark and
+grounded agent for the genome-writing side. Every workstream is pre-registered (`prereg/ws_*.yaml`,
+SHA-locked) and reports its honest negatives.
+
+### Added
+- **WS-B - strong baselines + safety primary-metric switch.** Endogenous-expression baseline (TRIP-trained
+  Spearman 0.51 vs AlphaGenome ES-Bruce4 proxy 0.43), multi-mark ablation (all-marks >= best single), and a
+  published GSH rule-set: safe-harbour discrimination (learned 0.92, 95% CI [0.82, 0.98] vs distance-rule
+  0.38, delta CI excludes zero) is now the primary safety metric; the circular `genotoxic_cis` AUROC is a
+  labeled diagnostic. (`pen_stack.wgenome.gsh_baseline`, `pen_stack.validate.durability_baselines`.)
+- **WS-C - AlphaGenome integration.** Hosted-API provider with an offline cache; predicted-vs-measured track
+  validation (HepG2 ATAC Pearson 0.85) with an honest score-level low-confidence flag; a 3D structural-risk
+  axis from contact-map deltas (`pen_stack.wgenome.{providers,chromatin_seq,structure3d}`,
+  `pen_stack.validate.seq_vs_measured`).
+- **WS-D - Cargo Polish.** Cargo-sequence silencing-risk scan (`pen_stack.planner.cargo_polish`).
+- **WS-E - Genome-Writing Bench v0.1 + PEN-Agent.** The first writing-side benchmark (`benchmarks/`,
+  `bench/run.py`) with deterministic scorers, a leaderboard, and a real LLM-agent baseline; a grounded
+  write-planning state machine with a no-fabrication hard gate (`pen_stack.agent.pen_agent`).
+- **WS-F - local recalibration / private-data adaptation.** Gated recalibration / fine-tuning on private
+  data, in-container; the adapted model activates only if it beats the released model AND a no-skill
+  baseline; the released model is provably unchanged (`pen_stack.adapt`).
+- **WS-G - multiplex + guide QC.** A pairwise translocation-risk screen (`pen_stack.planner.multiplex`,
+  surfaced in PEN-Agent) and a bridge-RNA guide ranker (`pen_stack.bridge.guide_qc`).
+- **WS-H - release + dissemination.** README/badges updated for v3.1, `docs/quickstart.md`,
+  `docs/positioning.md`, the leaderboard submission guide, the dissemination log, and version 3.1.0.
+
+### Changed (honesty)
+- The planning benchmark's `recovery_at_k` ranking is now deterministic (stable sort + tie-breakers).
+- The LLM stack defaults to the local Ollama model on the compute tier with an automatic hosted-Nemotron
+  fallback, a cooldown cache, and bounded timeouts (no more multi-minute stalls when a provider is absent).
+
 ## [3.1.0a0] - 2026-06-04 - v3.1 WS-A: de-circularize the planning benchmark (gate)
 
 The v3.1 cycle (publishable contributions + an adopted benchmark) opens with its gate: de-circularizing the
