@@ -5,7 +5,7 @@
   "sha256": {
     "prereg/ws_a.yaml": "f2b935607dd65b2bb43722811a19e3ca4ad916089ce1c307cad0682ab8e95d46",
     "configs/gsh_validated_heldout.yaml": "56089fcb0830d73e30e64400656487d239772fe7154ba8e7448e0db876229083",
-    "data/writer_panel.csv": "c9bad050e3eac0c422582a6c821cf77fb1be73b1749c2fbd7664286d42a7eaa4",
+    "data/writer_panel.csv": "cc69a06b02d1a4902c8cf994487ab7ed17d674e28389fb10f25bb6614bc752dc",
     "data/gsh_matched_controls.parquet": "6ccde9f791ac755186a1e4d713e6512f788286689750f33a36de2446565a5314"
   }
 }

@@ -75,7 +75,12 @@ def run(out: str | Path = _OUT) -> dict:
         "per_family": per_family,
         "selection_rule": "smallest-capacity DSB-free family that fits the cargo; ties by human-cell activity",
         "cases": panel[["name", "family", "cargo_bp", "predicted_family", "hit", "doi"]].to_dict("records"),
-        "scope": "small N; documented writes are survivorship-biased; cargo size is the dominant signal.",
+        "scope": "N scaled to 14 documented DSB-free writes across 4 families (v3.1.1; classic bridge/CAST/"
+                 "PASTE/serine + IS621 bridge, evoCAST/type-V-K CAST in human cells, twinPE+Bxb1, phiC31). "
+                 "recovery@1 is now < 1.0 by design: cargo size is the dominant but NOT the sole signal - the "
+                 "misses (twinPE+Bxb1 and phiC31 used a larger-capacity family than the cargo strictly needs) "
+                 "are honest cases where the documented choice was not the minimal-capacity one. Documented "
+                 "writes remain survivorship-biased; N is still modest.",
     }
     Path(out).parent.mkdir(parents=True, exist_ok=True)
     Path(out).write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")

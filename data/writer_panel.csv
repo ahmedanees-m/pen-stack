@@ -1,9 +1,15 @@
 name,family,cargo_bp,dsb_free_required,note,doi
 ISCro4_AAVS1,bridge_IS110,2000,True,programmable small cassette into a safe locus,10.1126/science.adz0276
 ISCro4_rearrange,bridge_IS110,5000,True,large rearrangement at the bridge cargo limit,10.1126/science.adz1884
+IS621_bridge,bridge_IS110,3000,True,programmable bridge recombination (IS621) small cassette (Durrant 2024),10.1038/s41586-024-07552-4
 ShCAST_insert,CAST_VK,8000,True,RNA-guided Tn7-like site-specific insertion,10.1126/science.aax9181
 INTEGRATE_insert,CAST_VK,10000,True,type I-F CRISPR-transposon RNA-guided insertion,10.1038/s41586-019-1323-z
+evoCAST_human,CAST_VK,9000,True,lab-evolved CAST programmable insertion in human cells (Science 2025),10.1126/science.adt5199
+typeVK_CAST_human,CAST_VK,7000,True,type V-K CAST therapeutic cargo into the human genome,10.1038/s41467-025-57416-2
+PASTE_13kb,PE_integrase,13000,True,PASTE drag-and-drop mid-range cargo,10.1038/s41587-022-01527-4
 PASTE_20kb,PE_integrase,20000,True,prime-editing-installed att large insertion,10.1038/s41587-022-01527-4
 PASTE_36kb,PE_integrase,36000,True,drag-and-drop insertion near the PASTE limit,10.1038/s41587-022-01527-4
+twinPE_Bxb1,PE_integrase,5500,True,twin prime editing + Bxb1 gene-sized (>5 kb) integration,10.1038/s41587-021-01133-w
+PhiC31_pseudosite,serine_integrase,6000,True,phiC31 integrase site-specific integration at human pseudo-attP,10.1128/MCB.21.12.3926-3934.2001
 Bxb1_landingpad,serine_integrase,45000,True,large serine-integrase landing-pad insertion,10.1186/1472-6750-13-87
 Bxb1_large,serine_integrase,50000,True,landing-pad cargo beyond PASTE capacity,10.1186/1472-6750-13-87

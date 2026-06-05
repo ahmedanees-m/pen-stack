@@ -13,12 +13,14 @@ _WDF = Path(__file__).resolve().parents[2].parent / "phase_1" / "out" / "atlas_k
 
 
 def test_writer_recovery_beats_prevalence():
-    # uses only committed data (writer_panel.csv + atlas.parquet)
+    # uses only committed data (writer_panel.csv + atlas.parquet); panel scaled to 14 documented writes
     from pen_stack.validate.writer_recovery import run
     r = run()
-    assert r["n_families"] >= 3 and r["n_entries"] >= 8
+    assert r["n_families"] >= 4 and r["n_entries"] >= 14      # scaled gold set
     assert r["beats_prevalence"] is True
     assert r["recovery_at_1"] > r["prevalence_baseline_at_1"]
+    # recovery@1 is now < 1.0 by design (honest non-minimal-capacity choices like twinPE / phiC31)
+    assert r["recovery_at_1"] < 1.0
 
 
 @pytest.mark.skipif(not _WDF.exists(), reason="Phase-1 writability atlas not present")

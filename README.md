@@ -144,8 +144,8 @@ PEN-STACK is organised as **two reference layers + one engine + a services layer
   universal-GSH, classic harbours + Lin et al. 2024) this is a **weak signal, honestly bounded**: all-loci
   **AUROC 0.68 (95% CI 0.53-0.82)**, validated-only **0.70 (95% CI 0.48-0.91, underpowered at N=8)** vs a
   safety-only baseline 0.51. The earlier 0.92-on-5 was an over-estimate from tiny N; the AUROC is always
-  cited with its CI and N. Writer-family recovery@1 = 1.0 vs prevalence 0.25 across 4 families (also small
-  N - see Limitations). The earlier "recovery@10 = 1.00, McNemar p" for *targeted* intents was definitional,
+  cited with its CI and N. Writer-family recovery@1 = **0.86** vs prevalence 0.29 across 4 families (14 documented writes, including
+  honest misses where labs chose a non-minimal-capacity writer - see Limitations). The earlier "recovery@10 = 1.00, McNemar p" for *targeted* intents was definitional,
   not predictive (an on-target identity term dominates), so it is reported only as a specification-compliance
   table - see `docs/benchmark_circularity.md`. A tool-using agent never fabricates a number.
 - **Paper 4 (Bridge off-target engine):** to our knowledge the first measured-data-validated tool that
@@ -176,7 +176,7 @@ docker compose run --rm bench python bench/run.py --agent   # same, on the clean
 | **LLM agent** (PEN-Agent) | = planner (grounded) | **PASS** | a real LLM drives the tools; reaches the planner only by grounding every value, 0 fabricated |
 
 Per-task (planner vs naive): site selection **0.70** vs 0.51 (validated GSH, N=8; all-16-loci 0.68, CI
-0.53-0.82), writer recovery **1.0** vs 0.25 (N=8 writes), off-target **0.77** vs 0.62, intent 7/7,
+0.53-0.82), writer recovery **0.86** vs 0.29 (N=14 writes), off-target **0.77** vs 0.62, intent 7/7,
 no-fabrication **PASS** (a hard gate). The gold sets were scaled in v3.1.1 and every metric is reported with
 its N and CI - see Limitations. **PEN-Agent** (`pen_stack.agent`) is a
 grounded write-planning state machine - goal to site to writer to cargo (with Cargo Polish) to off-target
@@ -346,7 +346,7 @@ independently verified.
   sequence-only off-target magnitude prediction are quantified results, not footnotes.
 - **Every estimate carries its N and CI; statistical power is a stated limitation.** The validated gold
   sets are small: blind GSH discovery rests on 8 functionally-validated harbours (16 loci including
-  computational candidates), writer recovery on 8 documented writes, within-locus on a handful of loci, the
+  computational candidates), writer recovery on 14 documented writes, within-locus on a handful of loci, the
   3D structural sanity on 4 hijacking loci, and the LLM-agent bench on a few goals. Headline AUROCs are
   bootstrap-CI'd and the CIs are wide - e.g. blind GSH discovery is **0.68 (95% CI 0.53-0.82)**, not a
   precise 0.92. Scaling these gold sets (the literature has dozens of candidate harbours and many documented
