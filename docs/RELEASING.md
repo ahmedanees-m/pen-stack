@@ -1,21 +1,23 @@
 # Releasing PEN-STACK to PyPI
 
-Publishing is automated by `.github/workflows/publish.yml` using **PyPI Trusted Publishing** (OIDC) - no API
-token is stored in the repo. A version tag (`v*`) builds the sdist + wheel, runs `twine check`, and publishes.
+Publishing is automated by `.github/workflows/publish.yml`. A version tag (`v*`) builds the sdist + wheel,
+runs `twine check`, and publishes. `skip-existing: true` means a version already on PyPI is skipped (not a
+failure), so re-runs and already-published versions never fail the workflow.
 
-## One-time setup (PyPI side)
+## Authentication (configured: API token)
 
-1. Log in to <https://pypi.org> and go to **Your projects -> Publishing -> Add a pending publisher**
-   (this works before the first release, so the project name is claimed on first publish).
-2. Fill in:
-   - **PyPI project name:** `pen-stack`
-   - **Owner:** `ahmedanees-m`  -  **Repository:** `pen-stack`
-   - **Workflow name:** `publish.yml`
-   - **Environment:** `pypi`
-3. (Optional) repeat for TestPyPI with environment `testpypi`.
-4. In the GitHub repo, create the environments `pypi` (and `testpypi`) under **Settings -> Environments**.
+The workflow authenticates with an API token stored as the encrypted repo secret **`PYPI_API_TOKEN`**
+(Settings -> Secrets and variables -> Actions). This is already set. To rotate it: create a new token at
+<https://pypi.org/manage/account/token/> (project-scoped to `pen-stack` once the project exists) and update
+the secret. For TestPyPI, add `TEST_PYPI_API_TOKEN`.
 
-No secrets are needed: OIDC proves the workflow's identity to PyPI.
+### Alternative: tokenless Trusted Publishing (OIDC)
+
+To avoid storing a token, switch to Trusted Publishing: on PyPI add a publisher under
+**Your projects -> pen-stack -> Publishing** (owner `ahmedanees-m`, repo `pen-stack`, workflow `publish.yml`,
+environment `pypi`), create the GitHub `pypi` environment, and in `publish.yml` replace the
+`password: ${{ secrets.PYPI_API_TOKEN }}` line with `permissions: { id-token: write }` on the job. No secret
+is then needed.
 
 ## Cut a release
 
