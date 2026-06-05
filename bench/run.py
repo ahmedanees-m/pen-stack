@@ -62,7 +62,9 @@ def _deterministic_agent() -> dict:
     """The grounded state machine (no LLM) - the structural no-fabrication gate; runs everywhere."""
     from pen_stack.agent.pen_agent import plan_write_session
     goals = [("TRAC", "knock_in_with_disruption"), ("HBB", "high_durability_insertion"),
-             ("AAVS1", "safe_harbour_insertion")]
+             ("AAVS1", "safe_harbour_insertion"), ("CCR5", "safe_harbour_insertion"),
+             ("HBG1", "regulatory_excision"), ("PDCD1", "knock_in_with_disruption"),
+             ("FXN", "repeat_excision"), ("CLYBL", "high_durability_insertion")]
     runs, all_clean, matched = [], True, 0
     for gene, intent in goals:
         try:
@@ -88,7 +90,9 @@ def _llm_orchestrator() -> dict | None:
     from pen_stack.agent.orchestrator import run_agent
     from pen_stack.validate.agent_eval import no_fabrication
     goals = [("knock a CAR into TRAC, disrupting the TCR", "TRAC"),
-             ("insert a durable cassette at a safe harbour", "AAVS1")]
+             ("insert a durable cassette at a safe harbour", "AAVS1"),
+             ("write a gene into CCR5 for HIV resistance", "CCR5"),
+             ("place a durable transgene at the CLYBL safe harbour", "CLYBL")]
     checks, clean, grounded, llm_drove = [], True, 0, 0
     for goal, gene in goals:
         try:

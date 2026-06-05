@@ -347,7 +347,7 @@ independently verified.
 - **Every estimate carries its N and CI; statistical power is a stated limitation.** The validated gold
   sets are small: blind GSH discovery rests on 8 functionally-validated harbours (16 loci including
   computational candidates), writer recovery on 14 documented writes, within-locus on a handful of loci, the
-  3D structural sanity on 4 hijacking loci, and the LLM-agent bench on a few goals. Headline AUROCs are
+  3D structural sanity on 11 hijacking loci, and the LLM-agent bench on a few goals. Headline AUROCs are
   bootstrap-CI'd and the CIs are wide - e.g. blind GSH discovery is **0.68 (95% CI 0.53-0.82)**, not a
   precise 0.92. Scaling these gold sets (the literature has dozens of candidate harbours and many documented
   large-cargo integrase/CAST/PASTE writes) is the top priority for turning this from a proof of concept into

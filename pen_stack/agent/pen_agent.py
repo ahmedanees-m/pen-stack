@@ -141,7 +141,12 @@ def plan_write_session(gene: str, intent: str, cargo_bp: int = 2000, ct: str = "
 
 _AUDIT_GOALS = [("TRAC", "knock_in_with_disruption"),
                 ("HBB", "high_durability_insertion"),
-                ("AAVS1", "safe_harbour_insertion")]
+                ("AAVS1", "safe_harbour_insertion"),
+                ("CCR5", "safe_harbour_insertion"),
+                ("HBG1", "regulatory_excision"),
+                ("PDCD1", "knock_in_with_disruption"),
+                ("FXN", "repeat_excision"),
+                ("CLYBL", "high_durability_insertion")]
 
 
 def no_fabrication_audit(goals: list[tuple[str, str]] | None = None) -> dict:

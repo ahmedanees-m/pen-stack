@@ -36,7 +36,8 @@ C3_structural_risk_3d:
     the site + aberrant contact gain toward an oncogene promoter; strong-enhancer vs length-matched neutral
     insert isolates the regulatory effect from the coordinate-shift artifact."
   acceptance: "QUALITATIVE sanity check only (no ground-truth dataset exists): on known enhancer-hijacking
-    loci (TAL1, LMO2, GFI1B, MYC) a strong-enhancer insert raises aberrant contacts above a matched neutral
+    loci (11 oncogenes: TAL1/LMO1/LMO2/TLX3/BCL11B/MYB T-ALL, MECOM-GATA2 AML, MYCN neuroblastoma, GFI1B,
+    MYC) a strong-enhancer insert raises aberrant contacts above a matched neutral
     insert at more loci than not. Report per-locus values whatever they are."
   gate_G_C: "structural risk ships as a FLAG WITH CONFIDENCE, never a hard pass/fail. Contacts are
     cell-type-specific (default GM12878, EFO:0002784 - K562 has no AlphaGenome Hi-C track); not a calibrated

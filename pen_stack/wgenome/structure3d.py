@@ -14,8 +14,9 @@ strong-enhancer insert AND a length-matched neutral insert; the strong-minus-neu
 signal. Output is a `structural_risk` score + flag with a confidence field.
 
 GATE G-C: this ships as a FLAG WITH CONFIDENCE, never a hard pass/fail. No ground-truth dataset of
-insertion-induced hijacking exists, so this is NOT validated as a predictor - only sanity-checked on known
-enhancer-hijacking loci (TAL1, LMO2, GFI1B, MYC) where a strong-enhancer insert should raise aberrant
+insertion-induced hijacking exists, so this is NOT validated as a predictor - only sanity-checked on 11 known
+enhancer-hijacking oncogenes (TAL1/LMO1/LMO2/TLX3/BCL11B/MYB in T-ALL, MECOM-GATA2 in AML, MYCN in
+neuroblastoma, GFI1B, MYC) where a strong-enhancer insert should raise aberrant
 contacts above a matched neutral insert. Contacts are cell-type-specific (default GM12878, EFO:0002784 -
 K562 has no AlphaGenome Hi-C track); insertion changes coordinates in ways the model was not trained on.
 """
@@ -131,13 +132,27 @@ def structural_risk(chrom: str, site_pos: int, oncogene_pos: int, ontology: str 
     return out
 
 
-# Known enhancer-hijacking loci (hg38) for the qualitative sanity check. Insertion site placed ~120 kb from
-# the oncogene promoter (within a 1 Mb window / typical TAD reach).
+# Known enhancer-hijacking oncogenes (hg38) for the qualitative sanity check. Insertion site placed ~120 kb
+# from the oncogene promoter (within a 1 Mb window / typical TAD reach). Scaled in v3.1.1 from 4 to 11 loci;
+# oncogene_pos for the added loci is the GENCODE TSS (data/curated/gene_coords.parquet) - no hand-transcribed
+# coordinates. These are canonical enhancer-hijacking oncogenes from the leukaemia/neuroblastoma literature
+# (e.g. TAL1/LMO1/LMO2/TLX3/BCL11B/MYB in T-ALL, MECOM-GATA2 in AML, MYCN in neuroblastoma).
+def _hj(chrom: str, pos: int) -> dict:
+    return {"chrom": chrom, "oncogene_pos": pos, "site_pos": pos - 120_000}
+
+
 HIJACK_LOCI = {
-    "TAL1":  {"chrom": "chr1",  "oncogene_pos": 47_209_257, "site_pos": 47_209_257 - 120_000},
-    "LMO2":  {"chrom": "chr11", "oncogene_pos": 33_859_520, "site_pos": 33_859_520 - 120_000},
-    "GFI1B": {"chrom": "chr9",  "oncogene_pos": 132_990_996, "site_pos": 132_990_996 - 120_000},
-    "MYC":   {"chrom": "chr8",  "oncogene_pos": 127_735_434, "site_pos": 127_735_434 - 120_000},
+    "TAL1":   _hj("chr1",  47_209_257),
+    "LMO2":   _hj("chr11", 33_859_520),
+    "GFI1B":  _hj("chr9",  132_990_996),
+    "MYC":    _hj("chr8",  127_735_434),
+    "MYCN":   _hj("chr2",  15_940_550),    # neuroblastoma
+    "MECOM":  _hj("chr3",  169_083_499),   # AML 3q26 (GATA2 distal enhancer hijacking)
+    "GATA2":  _hj("chr3",  128_479_427),   # AML inv(3)/t(3;3)
+    "LMO1":   _hj("chr11", 8_224_309),     # T-ALL
+    "BCL11B": _hj("chr14", 99_169_287),    # T-ALL (t(5;14))
+    "MYB":    _hj("chr6",  135_181_308),   # T-ALL
+    "TLX3":   _hj("chr5",  171_309_248),   # T-ALL (HOX11L2, t(5;14) BCL11B enhancer)
 }
 
 
