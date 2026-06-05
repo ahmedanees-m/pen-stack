@@ -144,11 +144,14 @@ def track_fig(sub, center=None):
 
 # ----------------------------------------------------------------------------- sidebar
 st.sidebar.markdown("##  PEN-STACK")
-st.sidebar.caption("The Writable Genome | v3.0")
+st.sidebar.caption("The Writable Genome | v3.1")
 page = st.sidebar.radio("Navigate", ["Overview", "Forward query", "Site finder (inverse)",
                                      "Atlas browser", "Validation", "Cross-cell-type",
-                                     "Writer Atlas", "Bridge design", "Write Planner", "Ask (RAG)",
-                                     "Agent"])
+                                     "Writer Atlas", "Write Planner", "Bridge design", "Guide QC",
+                                     "Cargo Polish", "Multiplex risk", "PEN-Agent",
+                                     "Genome-Writing Bench", "Ask (RAG)", "Agent"])
+st.sidebar.caption("v3.1 adds: Cargo Polish, Multiplex risk, Guide QC, the grounded PEN-Agent, and the "
+                   "Genome-Writing Bench.")
 _available_cts = sorted(p.stem.replace("atlas_", "") for p in DATA.glob("atlas_*.parquet")
                         if p.stem.replace("atlas_", "") in CT_LABEL) or ["k562"]
 ct = st.sidebar.selectbox("Cell type", _available_cts, format_func=lambda c: CT_LABEL.get(c, c.upper()))
@@ -513,6 +516,141 @@ elif page == "Agent":
                         st.json(step["result"])
         st.caption(res.get("disclaimer", ""))
 
+elif page == "Cargo Polish":
+    st.markdown("### Cargo Polish - *score the insert, not just the site (v3.1)*")
+    st.caption("The locus model scores WHERE to write; Cargo Polish scores WHAT is written. It scans a "
+               "cassette for silencing/instability triggers - CpG islands, GC extremes, cryptic splice "
+               "sites, strong mRNA structure (ViennaRNA), silencer motifs - and gives a concrete fix per "
+               "flag. A heuristic flag, not a supervised silencing predictor.")
+    seq = st.text_area("Cargo / insert sequence (DNA)", "GCGCGGCGGCGCGCGGCGG" * 8, height=120)
+    if st.button("Scan cargo", type="primary"):
+        from pen_stack.planner.cargo_polish import scan_cargo
+        r = scan_cargo(seq)
+        cls = {"low": "v-go", "moderate": "v-cau", "high": "v-no"}[r["band"]]
+        st.markdown(f'<div class="verdict {cls}">cargo_durability_risk {r["cargo_durability_risk"]} '
+                    f'({r["band"]}) | {r["n_flags"]} flag(s) | GC {r["gc"]} | {r["length_bp"]} nt</div>',
+                    unsafe_allow_html=True)
+        for f in r["flags"]:
+            st.markdown(f'<div class="card"><span class="badge">{f["category"]}</span> {f["detail"]}<br>'
+                        f'<span class="kpi-l">suggestion</span> {f["suggestion"]}</div>',
+                        unsafe_allow_html=True)
+        if not r["flags"]:
+            st.success("No silencing/instability triggers flagged in this cassette.")
+        st.caption(r["scope"])
+
+elif page == "Multiplex risk":
+    st.markdown("### Multiplex translocation-risk - *pairwise DSB-join screen (v3.1)*")
+    st.caption("For a 2-5 edit plan, two simultaneous double-strand breaks can mis-join into a "
+               "translocation. DSB-free recombinase writers (bridge / seek / PE) carry ~zero risk by "
+               "construction. A screen, not a calibrated predictor.")
+    n = st.slider("Number of simultaneous edits", 2, 5, 3)
+    fams = ["cas9", "cas12a", "bridge_IS110", "seek_IS1111", "PE_integrase"]
+    edits = []
+    for i in range(n):
+        c = st.columns([2, 2, 2, 2])
+        edits.append({
+            "name": c[0].text_input("name", f"edit{i + 1}", key=f"mx_n{i}"),
+            "family": c[1].selectbox("writer family", fams, index=0, key=f"mx_f{i}"),
+            "chrom": c[2].text_input("chrom", f"chr{i + 2}", key=f"mx_c{i}"),
+            "pos": int(c[3].number_input("pos", 1, 250_000_000, 1000 * (i + 1), key=f"mx_p{i}"))})
+    if st.button("Assess translocation risk", type="primary"):
+        from pen_stack.planner.multiplex import translocation_risk
+        r = translocation_risk(edits)
+        cls = {"low": "v-go", "moderate": "v-cau", "high": "v-no"}[r["band"]]
+        st.markdown(f'<div class="verdict {cls}">translocation_risk {r["translocation_risk"]} ({r["band"]})'
+                    f' | {r["n_cut_sites"]} cut sites | {r["n_pairs"]} pairs | {r["n_dsb_free_edits"]}/'
+                    f'{r["n_edits"]} DSB-free</div>', unsafe_allow_html=True)
+        if r["all_dsb_free"]:
+            st.success("All edits use DSB-free writers - no double-strand breaks, so ~zero translocation "
+                       "risk by construction. This is the safety advantage of programmable recombinases.")
+        if r["top_pairs"]:
+            st.markdown("##### Top contributing DSB pairs")
+            st.dataframe(pd.DataFrame(r["top_pairs"]), use_container_width=True, height=240)
+        st.caption(r["scope"])
+
+elif page == "Guide QC":
+    st.markdown("### Bridge-RNA guide QC - *rank variants, down-rank known-bad (v3.1)*")
+    st.caption("Reuses the validated fold-QC (cross-loop self / TBL-DBL complementarity, ViennaRNA MFE) and "
+               "off-target counts to score a design. When a default trips a flag, rank caller-supplied "
+               "variants. Ranking, not validated novel design.")
+    c1, c2 = st.columns(2)
+    tg = c1.text_input("Target guide", "ACAAGCTGGAAGAACTGAAG")
+    dg = c2.text_input("Donor guide", "GACATCTACAAGGACATCGA")
+    ot = int(st.number_input("Predicted off-target count (0 if unknown)", 0, 50, 0))
+    if st.button("QC this guide", type="primary"):
+        from pen_stack.bridge.guide_qc import qc_flags, qc_score
+        f = qc_flags(tg, dg, offtarget_count=ot or None)
+        s = qc_score(tg, dg, offtarget_count=ot or None)
+        cls = "v-go" if f["pass"] else "v-no"
+        st.markdown(f'<div class="verdict {cls}">QC {"PASS" if f["pass"] else "REVIEW"} | qc_score {s} | '
+                    f'flags: {", ".join(f["flags"]) or "none"}</div>', unsafe_allow_html=True)
+        st.json(f["cross_loop"])
+    st.markdown("##### Curated retrospective set (known-bad guides must rank below the clean one)")
+    from pen_stack.validate.guide_qc_demo import run as _gqc
+    demo = _gqc()
+    st.dataframe(pd.DataFrame(demo["ranking"]), use_container_width=True, height=200)
+    st.caption(f"best is the good guide: {demo['best_is_good']} | every bad guide flagged: "
+               f"{demo['every_bad_flagged']} | {demo['scope']}")
+
+elif page == "PEN-Agent":
+    st.markdown("### PEN-Agent - *grounded write-planning state machine (v3.1)*")
+    st.caption("goal -> site -> writer -> cargo (+Cargo Polish) -> off-target -> 3D structural risk -> "
+               "report. Every number is copied from a validated tool with provenance; a step that cannot "
+               "ground a value is degraded or refused, never invented. Runs without an LLM.")
+    gene = st.text_input("Target gene", "TRAC")
+    intent = st.selectbox("Edit intent", ["knock_in_with_disruption", "safe_harbour_insertion",
+                                          "high_durability_insertion", "regulatory_excision",
+                                          "repeat_excision"])
+    cargo_bp = int(st.number_input("Cargo size (bp)", 100, 40000, 2000, key="pa_cargo"))
+    payload = st.text_area("Payload sequence (optional - adds Cargo Polish)", "", height=80)
+    if st.button("Run PEN-Agent", type="primary"):
+        from pen_stack.agent.pen_agent import plan_write_session
+        with st.spinner("sequencing validated tools..."):
+            r = plan_write_session(gene, intent, cargo_bp, ct, payload_seq=payload or None)
+        cls = "v-go" if r["no_fabrication"] and r["completed"] else (
+            "v-cau" if r["no_fabrication"] else "v-no")
+        st.markdown(f'<div class="verdict {cls}">no_fabrication {r["no_fabrication"]} | completed '
+                    f'{r["completed"]} | {len(r["degraded_modes"])} degraded | {len(r["refusals"])} '
+                    f'refused</div>', unsafe_allow_html=True)
+        _icon = {"ok": "[ok]", "degraded": "[degraded]", "refused": "[refused]"}
+        for step in r["steps"]:
+            with st.expander(f"{_icon.get(step['status'], '')} {step['name']}  "
+                             f"(tool: {step.get('tool') or '-'})"):
+                if step.get("provenance"):
+                    st.caption(f"provenance: {step['provenance']}")
+                if step.get("reason"):
+                    st.warning(step["reason"])
+                if step.get("result"):
+                    st.json(step["result"])
+        st.caption(r["disclaimer"])
+
+elif page == "Genome-Writing Bench":
+    st.markdown("### Genome-Writing Bench v0.1 - *the writing-side benchmark (v3.1)*")
+    st.caption("Six tasks with deterministic scorers and documented ground truth; no task is scored against "
+               "a circular label. The planner is compared to a naive baseline and to a grounded LLM agent "
+               "that cannot fabricate.")
+    from pen_stack._resources import project_root
+    lb = project_root() / "benchmarks" / "genome_writing_bench" / "LEADERBOARD.md"
+    res = project_root() / "out" / "bench_results.json"
+    if res.exists():
+        d = json.loads(res.read_text(encoding="utf-8"))
+        b = d.get("bench", {})
+        st.markdown(f'<div class="card">tasks available <b>{b.get("n_available")}/{b.get("n_tasks")}</b> | '
+                    f'planner beats naive on <b>{b.get("planner_beats_baseline")}/'
+                    f'{b.get("n_with_baseline")}</b> grounded tasks</div>', unsafe_allow_html=True)
+        rows = [{"task": r["id"], "family": r["family"], "available": r["available"],
+                 "planner": r["planner_score"], "naive": r["baseline_score"],
+                 "gate": r.get("gate_pass")} for r in b.get("results", [])]
+        st.dataframe(pd.DataFrame(rows), use_container_width=True, height=260)
+    if lb.exists():
+        with st.expander("Full leaderboard (LEADERBOARD.md)"):
+            st.markdown(lb.read_text(encoding="utf-8"))
+    else:
+        st.info("Run `python bench/run.py --agent` to generate the leaderboard.")
+    st.caption("Reproduce: `python bench/run.py --agent` (or `docker compose run --rm bench`). "
+               "Submissions: benchmarks/genome_writing_bench/SUBMISSIONS.md.")
+
 st.markdown("---")
-st.caption("PEN-STACK v3.0 | The Writable Genome + Writer Atlas + Write Planner + agent | decision-support, "
-           "not a clinical directive | every score traceable to public data + a pre-registered model.")
+st.caption("PEN-STACK v3.1 | Writable Genome + Writer Atlas + Write Planner + Genome-Writing Bench + "
+           "PEN-Agent | decision-support, not a clinical directive | every score traceable to public data "
+           "+ a pre-registered model.")

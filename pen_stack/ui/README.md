@@ -9,6 +9,14 @@ A scientific Streamlit front-end over the genome-wide writability atlas.
 - **Atlas browser** - genome-wide writability/safety/durability tracks by region.
 - **Validation** - safe-harbour vs genotoxic-CIS concordance + durability metrics (the figure panels).
 - **Cross-cell-type** - K562 <-> HepG2 transfer, reported honestly.
+- **Writer Atlas** / **Write Planner** / **Bridge design** - enzyme catalogue, inverse design, bridge RNA + off-target.
+
+### v3.1 additions
+- **Guide QC** - rank bridge-RNA guide variants by fold-QC + off-target; the curated retrospective set down-ranks known-bad guides.
+- **Cargo Polish** - scan a cassette for silencing/instability triggers (CpG islands, GC, cryptic splice, MFE, silencers) with a fix per flag.
+- **Multiplex risk** - pairwise translocation-risk screen for a 2-5 edit plan (DSB-free recombinase plans carry ~zero risk).
+- **PEN-Agent** - the grounded write-planning state machine (site -> writer -> cargo+polish -> off-target -> 3D risk -> report), with per-step provenance and zero fabrication.
+- **Genome-Writing Bench** - the v0.1 leaderboard (planner vs naive vs a grounded LLM agent).
 
 ## Run
 ```bash
