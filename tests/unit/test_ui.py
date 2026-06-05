@@ -24,10 +24,15 @@ def _app():
     return AppTest.from_file(str(_APP), default_timeout=90).run()
 
 
+def _errors(at) -> list:
+    # AppTest.exception is an ElementList (empty == no error), never None - so check its length.
+    return [e.value for e in at.exception]
+
+
 def test_app_loads_without_exception():
     at = _app()
-    assert at.exception is None
-    labels = at.sidebar.radio[0].options
+    assert _errors(at) == []
+    labels = list(at.sidebar.radio[0].options)
     for pg in _V31_PAGES:
         assert pg in labels, pg
 
@@ -36,4 +41,4 @@ def test_app_loads_without_exception():
 def test_v31_page_renders(page):
     at = _app()
     at.sidebar.radio[0].set_value(page).run()
-    assert at.exception is None, f"{page}: {at.exception}"
+    assert _errors(at) == [], f"{page}: {_errors(at)}"
