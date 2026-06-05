@@ -1,35 +1,42 @@
-# PEN-STACK v3.1 (WS-A3) - held-out, literature-validated genomic safe harbours (GSH).
-# Used ONLY for the blind safe-harbour site-discovery test, never for tuning. Each locus is anchored to an
-# hg38 gene/region so coordinates are resolved from GENCODE (data/curated/gene_coords.parquet) rather than
-# transcribed by hand. The planner searches genome-wide (genome_wide=True, on_target never fires) and we
-# test whether these bins rank above matched-context random controls. DOIs verified via Europe PMC.
-#
-# Limits (documented): "validated GSH" is a noisy literature label; N is modest; gene-body anchoring is a
-# coarse stand-in for the precise documented sub-region; intergenic published sets (Pellenz/Aznauryan) are
-# cited as the validated-GSH basis but only the gene-resolvable loci are scored here.
+# PEN-STACK v3.1 (WS-A3) - held-out, literature-validated/candidate genomic safe harbours (GSH).
+# Used ONLY for the blind safe-harbour site-discovery test, never for tuning. Scaled in v3.1.1 from 5 to 16
+# INDEPENDENT loci to give the AUROC a meaningful N (the headline AUROC must be cited with its bootstrap CI
+# and this N, never alone). Two tiers:
+#   * tier: validated   - functionally validated safe harbours (stable expression / used in therapy or in the
+#                         source paper's in-vitro validation). PRIMARY metric is computed on this tier.
+#   * tier: candidate   - computationally-defined universal-GSH loci (near housekeeping genes), not all
+#                         functionally validated; scored as the broader set, reported separately.
+# Anchors are either a GENCODE gene (resolved from data/curated/gene_coords.parquet) or a precise hg38
+# coordinate span (start/end) from the source paper - coordinate anchors are more precise than gene-body
+# anchoring. We score ONE representative bin per locus (the best-writability bin in the anchor span) to keep
+# positives independent; the eLife set lists 25 sub-sites across these 11 regions, collapsed here to 11
+# independent loci to avoid pseudo-replication. DOIs verified via Europe PMC.
 
 gsh:
-  - name: AAVS1
-    anchor_gene: PPP1R12C          # AAVS1 = PPP1R12C intron 1
-    doi: "10.1101/gr.106773.110"   # DeKelver 2010
-  - name: CLYBL
-    anchor_gene: CLYBL             # CLYBL intron 2
-    doi: "10.1371/journal.pone.0116032"  # Cerbini 2015
-  - name: CCR5
-    anchor_gene: CCR5
-    doi: "10.1038/nbt1353"         # Lombardo 2007
-  - name: hRosa26
-    anchor_gene: THUMPD3           # human ROSA26 locus region, chr3 ~9.4 Mb
-    doi: "10.1038/nbt1362"         # Irion 2007 (human ROSA26)
-  - name: H11
-    anchor_gene: EIF4ENIF1         # H11/HIPP11 safe harbour, between DRG1 and EIF4ENIF1
-    doi: "10.1371/journal.pone.0113481"  # H11 safe harbour characterisation
+  # --- tier 1: functionally validated (classic safe harbours) ---
+  - {name: AAVS1,    tier: validated, anchor_gene: PPP1R12C, doi: "10.1101/gr.106773.110"}   # DeKelver 2010
+  - {name: CLYBL,    tier: validated, anchor_gene: CLYBL,    doi: "10.1371/journal.pone.0116032"}  # Cerbini 2015
+  - {name: CCR5,     tier: validated, anchor_gene: CCR5,     doi: "10.1038/nbt1353"}          # Lombardo 2007
+  - {name: hRosa26,  tier: validated, anchor_gene: THUMPD3,  doi: "10.1038/nbt1362"}          # Irion 2007
+  - {name: H11,      tier: validated, anchor_gene: EIF4ENIF1, doi: "10.1371/journal.pone.0113481"}  # H11/HIPP11
+  # --- tier 1 (cont.): functionally validated in Lin et al. 2024 (eLife 79592), precise hg38 spans ---
+  - {name: Pansio-1, tier: validated, anchor_coord: {chrom: chr1,  start: 113339961, end: 113340514}, anchor_gene_note: HIPK1, doi: "10.7554/eLife.79592"}
+  - {name: Olonne-18, tier: validated, anchor_coord: {chrom: chr18, start: 56534775,  end: 56536439},  anchor_gene_note: TXNL1, doi: "10.7554/eLife.79592"}
+  - {name: Keppel-19, tier: validated, anchor_coord: {chrom: chr19, start: 5400761,   end: 5402139},   anchor_gene_note: SAFB,  doi: "10.7554/eLife.79592"}
+  # --- tier 2: computationally-defined universal-GSH candidate loci (Lin et al. 2024, eLife 79592) ---
+  - {name: GSH-UGGT1,   tier: candidate, anchor_coord: {chrom: chr2, start: 128912721, end: 128914814}, anchor_gene_note: UGGT1,   doi: "10.7554/eLife.79592"}
+  - {name: GSH-PIKFYVE, tier: candidate, anchor_coord: {chrom: chr2, start: 208992998, end: 208997459}, anchor_gene_note: PIKFYVE, doi: "10.7554/eLife.79592"}
+  - {name: GSH-MED28,   tier: candidate, anchor_coord: {chrom: chr4, start: 17373361,  end: 17374159},  anchor_gene_note: MED28,   doi: "10.7554/eLife.79592"}
+  - {name: GSH-FNIP1,   tier: candidate, anchor_coord: {chrom: chr5, start: 131058585, end: 131058947}, anchor_gene_note: FNIP1,   doi: "10.7554/eLife.79592"}
+  - {name: GSH-FBXO38,  tier: candidate, anchor_coord: {chrom: chr5, start: 148753741, end: 148757219}, anchor_gene_note: FBXO38,  doi: "10.7554/eLife.79592"}
+  - {name: GSH-DTNBP1,  tier: candidate, anchor_coord: {chrom: chr6, start: 15727241,  end: 15727490},  anchor_gene_note: DTNBP1,  doi: "10.7554/eLife.79592"}
+  - {name: GSH-FOXK1,   tier: candidate, anchor_coord: {chrom: chr7, start: 4321017,   end: 4323839},   anchor_gene_note: FOXK1,   doi: "10.7554/eLife.79592"}
+  - {name: GSH-R3HCC1,  tier: candidate, anchor_coord: {chrom: chr8, start: 23986981,  end: 23988319},  anchor_gene_note: R3HCC1,  doi: "10.7554/eLife.79592"}
 
-# Additional validated-GSH literature basis (cited; intergenic coordinates not transcribed here, so not
-# scored - listed for provenance and future precise-coordinate inclusion):
+# Further validated-GSH literature basis (cited; not all coordinates transcribed -> not scored here):
 literature_basis:
-  - { set: "Rogi1/Rogi2", doi: "10.1016/j.crmeth.2021.100154", note: "Aznauryan 2022, chr1 & chr3" }
-  - { set: "Pellenz universal GSH (SHS231 etc.)", doi: "10.1089/hum.2018.169", note: "Pellenz/Sadelain 2019" }
+  - {set: "Rogi1/Rogi2", doi: "10.1016/j.crmeth.2021.100154", note: "Aznauryan 2022 - validated; coords only in figure/Table S1, not transcribed"}
+  - {set: "Pellenz universal GSH (35 sites)", doi: "10.1089/hum.2018.169", note: "Pellenz/Sadelain 2019 - candidate set"}
 
 # matched-control construction (frozen + SHA-locked in data/gsh_matched_controls.parquet)
 controls:

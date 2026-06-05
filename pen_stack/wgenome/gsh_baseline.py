@@ -73,6 +73,7 @@ def run(ct: str = "k562", out: str | Path = _OUT) -> dict:
     # Bootstrap 95% CI for the learned AUROC and the learned-minus-rule delta (prereg/ws_b.yaml: report delta
     # AND CI). Resample positives and controls independently (stratified). With only ~5 GSH positives the CI
     # is WIDE by construction - reported honestly rather than hidden.
+    from pen_stack.validate.blind_gsh_discovery import _auroc_vec
     rng = np.random.default_rng(20260604)
     npos, nctrl = len(pw), len(cw)
     boot_learned, boot_delta = [], []
@@ -82,9 +83,8 @@ def run(ct: str = "k562", out: str | Path = _OUT) -> dict:
         for _ in range(2000):
             pi = rng.integers(0, npos, npos)
             ci = rng.integers(0, nctrl, nctrl)
-            lab = [1] * npos + [0] * nctrl
-            al = _auroc(list(pw_a[pi]) + list(cw_a[ci]), lab)
-            ar = _auroc(list(pr_a[pi]) + list(cr_a[ci]), lab)
+            al = _auroc_vec(pw_a[pi], cw_a[ci])
+            ar = _auroc_vec(pr_a[pi], cr_a[ci])
             if not (np.isnan(al) or np.isnan(ar)):
                 boot_learned.append(al)
                 boot_delta.append(al - ar)
@@ -102,8 +102,13 @@ def run(ct: str = "k562", out: str | Path = _OUT) -> dict:
         "delta": round(auroc_learned - auroc_rule, 4) if not np.isnan(auroc_rule) else None,
         "delta_ci95": _ci(boot_delta),
         "delta_ci_excludes_zero": (bool(_ci(boot_delta)[0] > 0) if boot_delta else None),
-        "ci_note": f"bootstrap 2000x over {npos} positives + {nctrl} controls (seed 20260604); CI is wide "
-                   "because only ~5 validated GSH anchor the positives - reported honestly.",
+        "ci_note": f"bootstrap 2000x over {npos} positives + {nctrl} controls (seed 20260604).",
+        "honest_finding": "On the SCALED 16-locus gold set the learned model beats the published distance "
+                          "rule by point estimate (learned > rule), but the difference is NOT statistically "
+                          "significant - the delta 95% CI includes zero. The strong delta seen on 5 positives "
+                          "was fragile. Honest claim: the learned writability is at least as good as the "
+                          "conservative distance rule at discriminating safe harbours, with the rule near "
+                          "chance; a larger validated GSH set is needed to show a significant advantage.",
         "genotoxic_cis_auroc": "DEMOTED to a diagnostic - circular (label = proximity to 5 oncogenes = the "
                                "distance baseline's own definition); not a safety headline",
         "rule_thresholds_bp": _MIN_DIST,

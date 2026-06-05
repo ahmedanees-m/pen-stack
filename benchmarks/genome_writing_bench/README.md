@@ -13,7 +13,7 @@ one reproducible, SHA-locked suite with a baseline leaderboard.
    source (DOI or a measured dataset). No human/LLM judging.
 2. **No circular labels (Gate G-A).** The Phase-3 targeted-intent recovery@k was *definitional* (an
    on-target identity term ranks the goal's own gene first by construction). It is **excluded**. The site
-   task uses the de-circularized **blind safe-harbour discovery** (validated GSH vs matched controls).
+   task uses the de-circularized **blind safe-harbour discovery** (16 GSH loci vs matched controls; AUROC reported with its CI and N).
    See `docs/benchmark_circularity.md`.
 3. **No fabrication is a hard gate.** An agent solver may reach the planner's numbers *only* by grounding
    every value in a tool result. Any invented number fails task `T6` and is disqualified.
@@ -25,7 +25,7 @@ one reproducible, SHA-locked suite with a baseline leaderboard.
 
 | Family | Task | Scorer | Ground truth |
 |---|---|---|---|
-| T1 site selection | `site_selection_blind_gsh` | blind GSH discovery AUROC | 5 DOI-validated GSH vs 250 matched controls |
+| T1 site selection | `site_selection_blind_gsh` | blind GSH discovery AUROC (+ bootstrap CI) | 16 GSH loci (8 validated) vs matched controls |
 | T2 writer selection | `writer_family_recovery` | writer recovery@1 vs prevalence | 8 DOI writes, 4 families |
 | T3 within-locus | `within_locus_ranking` | fraction in top quartile | documented integration bins |
 | T4 off-target | `bridge_offtarget_discrimination` | model vs Hamming AUROC | Perry et al. 2025 measured off-targets |

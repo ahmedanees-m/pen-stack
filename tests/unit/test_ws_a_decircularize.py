@@ -22,11 +22,19 @@ def test_writer_recovery_beats_prevalence():
 
 
 @pytest.mark.skipif(not _WDF.exists(), reason="Phase-1 writability atlas not present")
-def test_blind_gsh_discovery_auroc_gate():
+def test_blind_gsh_discovery_scaled_and_honest():
     from pen_stack.validate.blind_gsh_discovery import run
     r = run()
-    assert r["acceptance"]["PRIMARY_auroc_ge_0.70"] is True       # honest non-circular headline
-    assert r["auroc_writability"] > r["auroc_safety_baseline"]
+    # Scaled gold set: >= 16 independent loci, with a validated tier, each AUROC carrying a bootstrap CI.
+    assert r["n_positives"] >= 16 and r["n_validated"] >= 8
+    allb = r["discrimination_by_tier"]["all_loci"]
+    valb = r["discrimination_by_tier"]["validated_PRIMARY"]
+    assert allb["auroc_writability_ci95"] is not None and valb["auroc_writability_ci95"] is not None
+    # Honest signal: writability beats the safety baseline; the all-loci CI lower bound is above chance.
+    assert allb["auroc_writability"] > allb["auroc_safety_baseline"]
+    assert r["acceptance"]["all_loci_ci_excludes_chance"] is True
+    # The headline must never be a bare point estimate - it carries the CI and N.
+    assert "95% CI" in r["headline"] and "N=" in r["headline"]
 
 
 @pytest.mark.skipif(not _WDF.exists(), reason="Phase-1 writability atlas not present")

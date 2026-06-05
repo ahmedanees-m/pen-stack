@@ -33,11 +33,15 @@ def build() -> str:
         "specification-compliance property (see `docs/benchmark_circularity.md`).",
         "",
         "## A3 (HEADLINE) - Blind safe-harbour site discovery",
-        f"- Held-out validated GSH: **{a3['n_positives']}** loci vs **{a3['n_controls']}** matched controls "
+        f"- Held-out GSH: **{a3['n_positives']}** loci ({a3['n_validated']} validated + "
+        f"{a3['n_candidate']} candidate) vs **{a3['n_controls']}** matched controls "
         f"(controls SHA `{a3['controls_sha256'][:12]}`, frozen before scoring).",
-        f"- **AUROC (planner writability) = {a3['auroc_writability']}** vs safety-only baseline "
-        f"{a3['auroc_safety_baseline']}. Primary acceptance (AUROC >= 0.70): "
-        f"**{'PASS' if a3['acceptance']['PRIMARY_auroc_ge_0.70'] else 'FAIL'}**.",
+        f"- **{a3['headline']}**",
+        f"- Acceptance: all-loci CI excludes chance = "
+        f"{a3['acceptance']['all_loci_ci_excludes_chance']}; writability beats safety baseline = "
+        f"{a3['acceptance']['writability_beats_safety_AUROC']}; validated tier underpowered = "
+        f"{a3['acceptance']['validated_tier_underpowered']}.",
+        f"- Honest finding: {a3['honest_finding']}",
         f"- Scope: {a3['scope']}",
         "",
         "## A4 - Diversified writer-family recovery",

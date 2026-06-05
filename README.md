@@ -67,8 +67,8 @@ honest negatives, not just its wins.
 
 | Workstream | What it adds | Honest headline result |
 |---|---|---|
-| **A - De-circularized benchmark** (gate) | retires the circular targeted-intent recovery@k; the headline is now blind safe-harbour discovery | blind GSH discovery **AUROC 0.92** vs safety-only 0.50 |
-| **B - Strong baselines + safety metric switch** | endogenous-expression baseline, multi-mark ablation, published GSH rule-set; safe-harbour discrimination is now the primary safety metric | learned writability **0.92 (95% CI 0.82-0.98)** vs GSH distance-rule 0.38 (delta CI excludes zero); the circular `genotoxic_cis` AUROC demoted to a labeled diagnostic |
+| **A - De-circularized benchmark** (gate) | retires the circular targeted-intent recovery@k; the headline is now blind safe-harbour discovery, on a gold set scaled from 5 to 16 loci | blind GSH discovery on 16 loci: **AUROC 0.68 (95% CI 0.53-0.82)**; validated-only (N=8) **0.70 (CI 0.48-0.91, underpowered)** vs safety-only 0.51 - a weak, honestly-bounded signal (the earlier 0.92-on-5 was fragile) |
+| **B - Strong baselines + safety metric switch** | endogenous-expression baseline, multi-mark ablation, published GSH rule-set; safe-harbour discrimination is the primary safety metric | learned writability **0.68 (95% CI 0.53-0.82)** beats the GSH distance-rule (0.51) by point estimate but not significantly on the scaled set (delta 0.16, CI includes zero); the circular `genotoxic_cis` AUROC demoted to a labeled diagnostic |
 | **C - AlphaGenome integration** | predicted sequence tracks + a predicted **3D structural-risk** axis (Hi-C contact-map deltas) via the hosted AlphaGenome API | per-track transfers well (HepG2 ATAC 0.91), but the *composite* score degrades from predicted tracks, so the measured atlas stays the backbone (flagged) |
 | **D - Cargo Polish** | scores the *insert* for silencing/instability triggers (CpG islands, GC, cryptic splice, MFE, silencers) | directional: high-CpG bacterial cassette 0.75 vs CpG-depleted 0.0, every flag carries a fix |
 | **E - Genome-Writing Bench v0.1 + PEN-Agent** | the first benchmark for the writing side, plus a grounded agent that cannot fabricate | planner beats the naive baseline 3/3; a real LLM agent reaches the planner's numbers only by grounding (0 fabricated) |
@@ -139,12 +139,15 @@ PEN-STACK is organised as **two reference layers + one engine + a services layer
   classifier agrees with the audited labels on the curated core (1.00); cross-link validated on AAVS1.
 - **Paper 3 / v3.1 (Write Planner + de-circularized benchmark):** the honest headline is **blind
   safe-harbour site discovery** - run genome-wide (so no on-target identity term fires), the planner's
-  writability separates held-out, DOI-validated safe harbours from matched-context controls at **AUROC
-  0.92** (safety-only baseline 0.50). Writer-family recovery@1 = 1.0 vs prevalence 0.25 across 4 families.
-  The earlier "recovery@10 = 1.00, McNemar p" result for *targeted* intents was definitional, not
-  predictive (an on-target identity term dominates the score), so it is now reported only as a
-  specification-compliance correctness table - see `docs/benchmark_circularity.md`. A tool-using agent
-  never fabricates a number (every value traces to a validated tool call).
+  writability is tested for whether it ranks held-out safe harbours above matched-context controls. On a
+  gold set **scaled from 5 to 16 independent loci** (8 functionally validated + 8 computationally-defined
+  universal-GSH, classic harbours + Lin et al. 2024) this is a **weak signal, honestly bounded**: all-loci
+  **AUROC 0.68 (95% CI 0.53-0.82)**, validated-only **0.70 (95% CI 0.48-0.91, underpowered at N=8)** vs a
+  safety-only baseline 0.51. The earlier 0.92-on-5 was an over-estimate from tiny N; the AUROC is always
+  cited with its CI and N. Writer-family recovery@1 = 1.0 vs prevalence 0.25 across 4 families (also small
+  N - see Limitations). The earlier "recovery@10 = 1.00, McNemar p" for *targeted* intents was definitional,
+  not predictive (an on-target identity term dominates), so it is reported only as a specification-compliance
+  table - see `docs/benchmark_circularity.md`. A tool-using agent never fabricates a number.
 - **Paper 4 (Bridge off-target engine):** to our knowledge the first measured-data-validated tool that
   **nominates and ranks candidate off-target *locations*** for bridge recombinases. On the measured Perry
   2025 data (6,856 real off-targets) the per-position profile confirms the central core (positions 7-9) is
@@ -172,8 +175,10 @@ docker compose run --rm bench python bench/run.py --agent   # same, on the clean
 | naive baseline | - | n/a | safety-only / prevalence / Hamming |
 | **LLM agent** (PEN-Agent) | = planner (grounded) | **PASS** | a real LLM drives the tools; reaches the planner only by grounding every value, 0 fabricated |
 
-Per-task (planner vs naive): site selection **0.92** vs 0.50, writer recovery **1.0** vs 0.25, off-target
-**0.77** vs 0.62, intent 7/7, no-fabrication **PASS** (a hard gate). **PEN-Agent** (`pen_stack.agent`) is a
+Per-task (planner vs naive): site selection **0.70** vs 0.51 (validated GSH, N=8; all-16-loci 0.68, CI
+0.53-0.82), writer recovery **1.0** vs 0.25 (N=8 writes), off-target **0.77** vs 0.62, intent 7/7,
+no-fabrication **PASS** (a hard gate). The gold sets were scaled in v3.1.1 and every metric is reported with
+its N and CI - see Limitations. **PEN-Agent** (`pen_stack.agent`) is a
 grounded write-planning state machine - goal to site to writer to cargo (with Cargo Polish) to off-target
 to 3D structural risk to report - that copies every number from a validated tool with provenance and refuses
 or degrades rather than invent. See [`benchmarks/genome_writing_bench/`](benchmarks/genome_writing_bench/),
@@ -339,6 +344,14 @@ independently verified.
   writes, and measured off-targets the model never trained on.
 - **Report failure honestly** - cross-cell-type degradation, small benchmark N, and the limits of
   sequence-only off-target magnitude prediction are quantified results, not footnotes.
+- **Every estimate carries its N and CI; statistical power is a stated limitation.** The validated gold
+  sets are small: blind GSH discovery rests on 8 functionally-validated harbours (16 loci including
+  computational candidates), writer recovery on 8 documented writes, within-locus on a handful of loci, the
+  3D structural sanity on 4 hijacking loci, and the LLM-agent bench on a few goals. Headline AUROCs are
+  bootstrap-CI'd and the CIs are wide - e.g. blind GSH discovery is **0.68 (95% CI 0.53-0.82)**, not a
+  precise 0.92. Scaling these gold sets (the literature has dozens of candidate harbours and many documented
+  large-cargo integrase/CAST/PASTE writes) is the top priority for turning this from a proof of concept into
+  an adopted resource; v3.1.1 began that scaling (5 -> 16 GSH loci).
 - **Grounded services** - every quantitative answer comes from a validated tool call (never a language
   model); the living database never auto-edits the atlas; clinical directives are refused.
 

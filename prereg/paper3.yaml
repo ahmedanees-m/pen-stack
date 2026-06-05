@@ -4,7 +4,8 @@
 # below (with McNemar p and bootstrap CI) is DEFINITIONAL, not predictive - an on-target identity term
 # dominates the score, so the planner ranks the goal's own gene first by construction (see
 # docs/benchmark_circularity.md). It is SUPERSEDED and must not be cited as predictive. The honest headline
-# is now the BLIND safe-harbour discovery (prereg/ws_a.yaml; AUROC 0.92 vs matched controls). The targeted
+# is now the BLIND safe-harbour discovery (prereg/ws_a.yaml; all-loci AUROC 0.68, 95% CI 0.53-0.82 on 16 GSH
+# loci - a weak, honestly-bounded signal, always cited with its CI and N). The targeted-intent recovery@10
 # result is retained only as a specification-compliance correctness table (validate/intent_specification).
 #
 # SHA-locked. The panel (data/benchmark_panel.csv) is FROZEN.

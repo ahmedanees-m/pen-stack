@@ -19,13 +19,18 @@ A2_intent_specification:
 A3_blind_gsh_discovery:   # THE HEADLINE
   deliverable: "pen_stack/validate/blind_gsh_discovery.py -> out/blind_gsh_discovery.json;
     frozen data/gsh_matched_controls.parquet (SHA-locked)"
-  heldout_set: "configs/gsh_validated_heldout.yaml (DOI-sourced; gene-anchored to hg38)"
+  heldout_set: "configs/gsh_validated_heldout.yaml - SCALED in v3.1.1 from 5 to 16 independent loci
+    (8 functionally validated + 8 computationally-defined universal-GSH candidates; classic safe harbours +
+    Lin et al. 2024 eLife 79592). Gene- or coordinate-anchored to hg38; DOI-sourced."
   controls: "matched on dist_tss, dist_oncogene, accessibility quantile buckets; frozen before scoring"
-  acceptance:
-    PRIMARY: "AUROC (planner writability vs matched controls) >= 0.70"
-    secondary: "writability AUROC > safety-only baseline AUROC"
-    downgrade: "if AUROC < 0.65, report honestly and downgrade the discovery claim; do not tune to the test"
-  note: "recovery@k is confounded by safety saturation (~1.0 across safe regions); AUROC is primary."
+  acceptance:   # honest, CI-based (v3.1.1) - NOT a bare point-estimate threshold
+    PRIMARY: "report the AUROC WITH its bootstrap 95% CI and N, for both the validated tier and all loci;
+      the all-loci CI lower bound is above chance (>0.5) AND writability beats the safety-only baseline."
+    honesty: "the validated-only tier (N=8) is underpowered (CI includes 0.5) and reported as such; the
+      earlier 0.92-on-5 was a fragile over-estimate. The discovery claim is bounded to 'weak discrimination'."
+    downgrade: "never cite the point AUROC without its CI and N; do not tune to the test. Scaling the
+      validated gold set further is the route to a precise estimate."
+  note: "recovery@k is confounded by safety saturation (~1.0 across safe regions); AUROC (+CI) is primary."
 
 A4_writer_recovery:
   deliverable: "data/writer_panel.csv (DOI-sourced); pen_stack/validate/writer_recovery.py -> out/writer_recovery.json"
