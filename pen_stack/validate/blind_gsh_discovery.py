@@ -174,8 +174,14 @@ def run(ct: str = "k562", k: int = 10, rebuild_controls: bool = False, out: str 
                 "writability_beats_safety": bool(aw > a_s)}
 
     validated = positives[positives["tier"] == "validated"]
-    all_block = _tier_block(positives)
+    curated = positives[positives["tier"] != "pellenz_candidate"]   # validated + eLife candidate (16)
+    all_block = _tier_block(curated)                                 # "all curated loci" = the acceptance basis
+    all_incl_pellenz = _tier_block(positives)                        # everything incl. the weak Pellenz tier
     val_block = _tier_block(validated)
+    # per-tier blocks (validated headline; eLife candidate; Pellenz reported SEPARATELY so the mostly-weak
+    # 35-site set does not contaminate the headline or the acceptance).
+    tier_blocks = {t: _tier_block(positives[positives["tier"] == t])
+                   for t in positives["tier"].unique()}
     # PRIMARY headline = validated tier (the strict claim); the all-loci block is the broader, larger-N set.
     auroc_w = val_block["auroc_writability"]
     auroc_ci = val_block["auroc_writability_ci95"]
@@ -196,19 +202,27 @@ def run(ct: str = "k562", k: int = 10, rebuild_controls: bool = False, out: str 
     report = {
         "what_this_is": "BLIND safe-harbour site discovery vs matched controls (non-circular; planner searches)",
         "ct": ct, "n_positives": len(positives), "n_controls": len(controls),
-        "n_validated": int(len(validated)), "n_candidate": int((positives["tier"] == "candidate").sum()),
+        "n_validated": int(len(validated)),
+        "n_candidate": int((positives["tier"] == "candidate").sum()),
+        "n_pellenz_candidate": int((positives["tier"] == "pellenz_candidate").sum()),
+        "tier_counts": {t: int((positives["tier"] == t).sum()) for t in positives["tier"].unique()},
         "controls_sha256": sha,
         "headline": f"validated tier: AUROC {round(auroc_w, 2)} (95% CI {auroc_ci}, N={len(validated)} "
-                    f"functionally-validated GSH) vs safety-only {round(auroc_s, 2)}; all {len(positives)} "
-                    f"loci: AUROC {all_block['auroc_writability']} (95% CI "
-                    f"{all_block['auroc_writability_ci95']})",
-        "discrimination_by_tier": {"validated_PRIMARY": val_block, "all_loci": all_block},
+                    f"functionally-validated GSH) vs safety-only {round(auroc_s, 2)}; all {len(curated)} "
+                    f"curated loci: AUROC {all_block['auroc_writability']} (95% CI "
+                    f"{all_block['auroc_writability_ci95']}); +35 Pellenz exploratory loci reported separately",
+        "discrimination_by_tier": {"validated_PRIMARY": val_block, "all_curated_loci": all_block,
+                                   "all_incl_pellenz": all_incl_pellenz,
+                                   **{f"tier_{t}": b for t, b in tier_blocks.items()}},
         "auroc_writability": round(auroc_w, 4),          # = validated tier (primary)
         "auroc_writability_ci95": auroc_ci,
         "auroc_ci_note": "bootstrap 2000x (seed 20260604), positives + controls resampled independently. "
-                         "ALWAYS cite the AUROC with this CI and N - never the point estimate alone. N was "
-                         "scaled in v3.1.1 from 5 to 16 independent loci (8 validated + 8 candidate) drawing "
-                         "on the classic safe harbours + Lin et al. 2024 (eLife 79592) universal GSH.",
+                         "ALWAYS cite the AUROC with this CI and N - never the point estimate alone. Gold set "
+                         "scaled in v3.1.1: 8 validated (classic + Lin 2024 eLife 79592) + 8 eLife candidate + "
+                         "35 Pellenz/Sadelain 2019 candidates (10.1089/hum.2018.169, lifted hg19->hg38). The "
+                         "Pellenz tier is mostly weak computational candidates (criteria_met of 8; only 3 "
+                         "validated) and is reported SEPARATELY (discrimination_by_tier) so it does not "
+                         "contaminate the validated headline.",
         "auroc_safety_baseline": round(auroc_s, 4),
         "recovery_at_k": {"k": k, "writability": rec_w, "safety_baseline": rec_s, "n": len(positives),
                           "note": "recovery@k is confounded here: the safety axis is saturated (~1.0 across "

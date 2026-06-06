@@ -27,9 +27,9 @@ def test_writer_recovery_beats_prevalence():
 def test_blind_gsh_discovery_scaled_and_honest():
     from pen_stack.validate.blind_gsh_discovery import run
     r = run()
-    # Scaled gold set: >= 16 independent loci, with a validated tier, each AUROC carrying a bootstrap CI.
+    # Scaled gold set: >= 16 curated loci (+ a Pellenz exploratory tier), each AUROC carrying a bootstrap CI.
     assert r["n_positives"] >= 16 and r["n_validated"] >= 8
-    allb = r["discrimination_by_tier"]["all_loci"]
+    allb = r["discrimination_by_tier"]["all_curated_loci"]
     valb = r["discrimination_by_tier"]["validated_PRIMARY"]
     assert allb["auroc_writability_ci95"] is not None and valb["auroc_writability_ci95"] is not None
     # Honest signal: writability beats the safety baseline; the all-loci CI lower bound is above chance.

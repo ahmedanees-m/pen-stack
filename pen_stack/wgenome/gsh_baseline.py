@@ -59,7 +59,11 @@ def run(ct: str = "k562", out: str | Path = _OUT) -> dict:
     df["gsh_rule"] = gsh_rule_score(df)
 
     positives = gsh_positives(df, cfg)
+    # Use the CURATED gold set (validated + eLife candidate); exclude the exploratory Pellenz tier (mostly
+    # weak computational candidates that score near chance) so it does not contaminate the safety comparison.
+    positives = positives[positives["tier"] != "pellenz_candidate"]
     controls = pd.read_parquet(_ROOT / "data" / "gsh_matched_controls.parquet")
+    controls = controls[controls["positive"].isin(set(positives["name"]))]
     idx = df.set_index(["chrom", "bin"])
     def vals(frame, col):
         return [idx.loc[(r.chrom, r.bin), col] for r in frame.itertuples() if (r.chrom, r.bin) in idx.index]

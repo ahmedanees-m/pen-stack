@@ -67,7 +67,7 @@ honest negatives, not just its wins.
 
 | Workstream | What it adds | Honest headline result |
 |---|---|---|
-| **A - De-circularized benchmark** (gate) | retires the circular targeted-intent recovery@k; the headline is now blind safe-harbour discovery, on a gold set scaled from 5 to 16 loci | blind GSH discovery on 16 loci: **AUROC 0.68 (95% CI 0.53-0.82)**; validated-only (N=8) **0.70 (CI 0.48-0.91, underpowered)** vs safety-only 0.51 - a weak, honestly-bounded signal (the earlier 0.92-on-5 was fragile) |
+| **A - De-circularized benchmark** (gate) | retires the circular targeted-intent recovery@k; the headline is now blind safe-harbour discovery, on a gold set scaled from 5 to 16 loci | blind GSH discovery on 16 curated loci: **AUROC 0.68 (95% CI 0.53-0.82)**; validated-only (N=8) **0.70 (CI 0.48-0.91, underpowered)** vs safety-only 0.51 - a weak, honestly-bounded signal (the 0.92-on-5 was fragile). The full Pellenz-2019 35-site set is also included as a separate exploratory tier and scores near chance (0.54) - the model does not over-rank weak computational candidates |
 | **B - Strong baselines + safety metric switch** | endogenous-expression baseline, multi-mark ablation, published GSH rule-set; safe-harbour discrimination is the primary safety metric | learned writability **0.68 (95% CI 0.53-0.82)** beats the GSH distance-rule (0.51) by point estimate but not significantly on the scaled set (delta 0.16, CI includes zero); the circular `genotoxic_cis` AUROC demoted to a labeled diagnostic |
 | **C - AlphaGenome integration** | predicted sequence tracks + a predicted **3D structural-risk** axis (Hi-C contact-map deltas) via the hosted AlphaGenome API | per-track transfers well (HepG2 ATAC 0.91), but the *composite* score degrades from predicted tracks, so the measured atlas stays the backbone (flagged) |
 | **D - Cargo Polish** | scores the *insert* for silencing/instability triggers (CpG islands, GC, cryptic splice, MFE, silencers) | directional: high-CpG bacterial cassette 0.75 vs CpG-depleted 0.0, every flag carries a fix |
@@ -345,8 +345,8 @@ independently verified.
 - **Report failure honestly** - cross-cell-type degradation, small benchmark N, and the limits of
   sequence-only off-target magnitude prediction are quantified results, not footnotes.
 - **Every estimate carries its N and CI; statistical power is a stated limitation.** The validated gold
-  sets are small: blind GSH discovery rests on 8 functionally-validated harbours (16 loci including
-  computational candidates), writer recovery on 14 documented writes, within-locus on 5 loci, the
+  sets are small: blind GSH discovery rests on 8 functionally-validated harbours (16 curated loci; +35 Pellenz-2019
+  exploratory candidates reported separately, near chance), writer recovery on 14 documented writes, within-locus on 5 loci, the
   3D structural sanity on 11 hijacking loci, and the LLM-agent bench on a few goals. Headline AUROCs are
   bootstrap-CI'd and the CIs are wide - e.g. blind GSH discovery is **0.68 (95% CI 0.53-0.82)**, not a
   precise 0.92. Scaling these gold sets (the literature has dozens of candidate harbours and many documented

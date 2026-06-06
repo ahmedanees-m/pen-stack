@@ -1,11 +1,13 @@
 # PEN-STACK v3.1 (WS-A3) - held-out, literature-validated/candidate genomic safe harbours (GSH).
-# Used ONLY for the blind safe-harbour site-discovery test, never for tuning. Scaled in v3.1.1 from 5 to 16
-# INDEPENDENT loci to give the AUROC a meaningful N (the headline AUROC must be cited with its bootstrap CI
-# and this N, never alone). Two tiers:
-#   * tier: validated   - functionally validated safe harbours (stable expression / used in therapy or in the
-#                         source paper's in-vitro validation). PRIMARY metric is computed on this tier.
-#   * tier: candidate   - computationally-defined universal-GSH loci (near housekeeping genes), not all
-#                         functionally validated; scored as the broader set, reported separately.
+# Used ONLY for the blind safe-harbour site-discovery test, never for tuning. Scaled in v3.1.1 to 51 loci
+# (the headline AUROC must always be cited with its bootstrap CI and N, never alone). THREE tiers:
+#   * tier: validated         - functionally validated safe harbours (8). PRIMARY metric is this tier.
+#   * tier: candidate         - computationally-defined universal-GSH near housekeeping genes (8, Lin 2024);
+#                               with validated = the 16 CURATED loci (the secondary 'all curated' metric).
+#   * tier: pellenz_candidate - the full Pellenz/Sadelain 2019 35-site set (mostly weak computational
+#                               candidates; lifted hg19->hg38). Reported SEPARATELY - it scores near chance
+#                               (the model does not over-rank weak candidates) and must NOT contaminate the
+#                               headline or acceptance.
 # Anchors are either a GENCODE gene (resolved from data/curated/gene_coords.parquet) or a precise hg38
 # coordinate span (start/end) from the source paper - coordinate anchors are more precise than gene-body
 # anchoring. We score ONE representative bin per locus (the best-writability bin in the anchor span) to keep
@@ -32,6 +34,45 @@ gsh:
   - {name: GSH-DTNBP1,  tier: candidate, anchor_coord: {chrom: chr6, start: 15727241,  end: 15727490},  anchor_gene_note: DTNBP1,  doi: "10.7554/eLife.79592"}
   - {name: GSH-FOXK1,   tier: candidate, anchor_coord: {chrom: chr7, start: 4321017,   end: 4323839},   anchor_gene_note: FOXK1,   doi: "10.7554/eLife.79592"}
   - {name: GSH-R3HCC1,  tier: candidate, anchor_coord: {chrom: chr8, start: 23986981,  end: 23988319},  anchor_gene_note: R3HCC1,  doi: "10.7554/eLife.79592"}
+
+  # --- tier 3: Pellenz/Sadelain 2019 (10.1089/hum.2018.169) candidate GSH, 35 sites lifted hg19->hg38
+  #     (pyliftover). Mostly computational candidates (criteria_met of 8; only SHS229/231/253 validated);
+  #     reported as a SEPARATE exploratory tier so weak candidates do not contaminate the headline.
+  - {name: SHS323, tier: pellenz_candidate, anchor_coord: {chrom: chr1, start: 152388364, end: 152388364}, criteria_met: "-", doi: "10.1089/hum.2018.169"}
+  - {name: SHS325, tier: pellenz_candidate, anchor_coord: {chrom: chr8, start: 67807937, end: 67807937}, criteria_met: "7", doi: "10.1089/hum.2018.169"}
+  - {name: SHS289, tier: pellenz_candidate, anchor_coord: {chrom: chr1, start: 175973226, end: 175973226}, criteria_met: "2", doi: "10.1089/hum.2018.169"}
+  - {name: SHS227, tier: pellenz_candidate, anchor_coord: {chrom: chr1, start: 231863650, end: 231863650}, criteria_met: "5", doi: "10.1089/hum.2018.169"}
+  - {name: SHS229, tier: pellenz_candidate, anchor_coord: {chrom: chr2, start: 45481215, end: 45481215}, criteria_met: "validated", doi: "10.1089/hum.2018.169"}
+  - {name: SHS253, tier: pellenz_candidate, anchor_coord: {chrom: chr2, start: 48603046, end: 48603046}, criteria_met: "validated", doi: "10.1089/hum.2018.169"}
+  - {name: SHS255, tier: pellenz_candidate, anchor_coord: {chrom: chr5, start: 19069198, end: 19069198}, criteria_met: "5", doi: "10.1089/hum.2018.169"}
+  - {name: SHS257, tier: pellenz_candidate, anchor_coord: {chrom: chr7, start: 139124848, end: 139124848}, criteria_met: "4", doi: "10.1089/hum.2018.169"}
+  - {name: SHS259, tier: pellenz_candidate, anchor_coord: {chrom: chr14, start: 91633214, end: 91633214}, criteria_met: "5", doi: "10.1089/hum.2018.169"}
+  - {name: SHS261, tier: pellenz_candidate, anchor_coord: {chrom: chr17, start: 50496216, end: 50496216}, criteria_met: "4", doi: "10.1089/hum.2018.169"}
+  - {name: SHS263, tier: pellenz_candidate, anchor_coord: {chrom: chrX, start: 12572693, end: 12572693}, criteria_met: "5", doi: "10.1089/hum.2018.169"}
+  - {name: SHS317, tier: pellenz_candidate, anchor_coord: {chrom: chr2, start: 77036804, end: 77036804}, criteria_met: "6", doi: "10.1089/hum.2018.169"}
+  - {name: SHS303, tier: pellenz_candidate, anchor_coord: {chrom: chr2, start: 149644161, end: 149644161}, criteria_met: "7", doi: "10.1089/hum.2018.169"}
+  - {name: SHS331, tier: pellenz_candidate, anchor_coord: {chrom: chr3, start: 31629379, end: 31629379}, criteria_met: "5", doi: "10.1089/hum.2018.169"}
+  - {name: SHS283, tier: pellenz_candidate, anchor_coord: {chrom: chr4, start: 37767616, end: 37767616}, criteria_met: "6", doi: "10.1089/hum.2018.169"}
+  - {name: SHS231, tier: pellenz_candidate, anchor_coord: {chrom: chr4, start: 58110447, end: 58110447}, criteria_met: "validated", doi: "10.1089/hum.2018.169"}
+  - {name: SHS315, tier: pellenz_candidate, anchor_coord: {chrom: chr5, start: 7577615, end: 7577615}, criteria_met: "5", doi: "10.1089/hum.2018.169"}
+  - {name: SHS327, tier: pellenz_candidate, anchor_coord: {chrom: chr5, start: 93823516, end: 93823516}, criteria_met: "3", doi: "10.1089/hum.2018.169"}
+  - {name: SHS305, tier: pellenz_candidate, anchor_coord: {chrom: chr5, start: 160495022, end: 160495022}, criteria_met: "3", doi: "10.1089/hum.2018.169"}
+  - {name: SHS307, tier: pellenz_candidate, anchor_coord: {chrom: chr16, start: 19312455, end: 19312455}, criteria_met: "5", doi: "10.1089/hum.2018.169"}
+  - {name: SHS309, tier: pellenz_candidate, anchor_coord: {chrom: chr20, start: 5074599, end: 5074599}, criteria_met: "4", doi: "10.1089/hum.2018.169"}
+  - {name: SHS285, tier: pellenz_candidate, anchor_coord: {chrom: chr6, start: 88864601, end: 88864601}, criteria_met: "5", doi: "10.1089/hum.2018.169"}
+  - {name: SHS233, tier: pellenz_candidate, anchor_coord: {chrom: chr6, start: 114392741, end: 114392741}, criteria_met: "7", doi: "10.1089/hum.2018.169"}
+  - {name: SHS311, tier: pellenz_candidate, anchor_coord: {chrom: chr6, start: 134064808, end: 134064808}, criteria_met: "6", doi: "10.1089/hum.2018.169"}
+  - {name: SHS299, tier: pellenz_candidate, anchor_coord: {chrom: chr6, start: 138651324, end: 138651324}, criteria_met: "4", doi: "10.1089/hum.2018.169"}
+  - {name: SHS301, tier: pellenz_candidate, anchor_coord: {chrom: chr7, start: 113687630, end: 113687630}, criteria_met: "6", doi: "10.1089/hum.2018.169"}
+  - {name: SHS293, tier: pellenz_candidate, anchor_coord: {chrom: chr8, start: 40870408, end: 40870408}, criteria_met: "6", doi: "10.1089/hum.2018.169"}
+  - {name: SHS319, tier: pellenz_candidate, anchor_coord: {chrom: chr11, start: 32659000, end: 32659000}, criteria_met: "5", doi: "10.1089/hum.2018.169"}
+  - {name: SHS333, tier: pellenz_candidate, anchor_coord: {chrom: chr12, start: 27390804, end: 27390804}, criteria_met: "4", doi: "10.1089/hum.2018.169"}
+  - {name: SHS295, tier: pellenz_candidate, anchor_coord: {chrom: chr12, start: 66122606, end: 66122606}, criteria_met: "4", doi: "10.1089/hum.2018.169"}
+  - {name: SHS329, tier: pellenz_candidate, anchor_coord: {chrom: chr12, start: 125668035, end: 125668035}, criteria_met: "5", doi: "10.1089/hum.2018.169"}
+  - {name: SHS297, tier: pellenz_candidate, anchor_coord: {chrom: chr17, start: 14906968, end: 14906968}, criteria_met: "4", doi: "10.1089/hum.2018.169"}
+  - {name: SHS291, tier: pellenz_candidate, anchor_coord: {chrom: chr22, start: 35374128, end: 35374128}, criteria_met: "4", doi: "10.1089/hum.2018.169"}
+  - {name: SHS313, tier: pellenz_candidate, anchor_coord: {chrom: chrX, start: 16041609, end: 16041609}, criteria_met: "6", doi: "10.1089/hum.2018.169"}
+  - {name: SHS321, tier: pellenz_candidate, anchor_coord: {chrom: chrX, start: 80418829, end: 80418829}, criteria_met: "3", doi: "10.1089/hum.2018.169"}
 
 # Further validated-GSH literature basis (cited; not all coordinates transcribed -> not scored here):
 literature_basis:

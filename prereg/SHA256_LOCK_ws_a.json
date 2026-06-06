@@ -3,9 +3,9 @@
   "workstream": "WS-A",
   "prepared": "2026-06-04",
   "sha256": {
-    "prereg/ws_a.yaml": "f2b935607dd65b2bb43722811a19e3ca4ad916089ce1c307cad0682ab8e95d46",
-    "configs/gsh_validated_heldout.yaml": "56089fcb0830d73e30e64400656487d239772fe7154ba8e7448e0db876229083",
-    "data/writer_panel.csv": "cc69a06b02d1a4902c8cf994487ab7ed17d674e28389fb10f25bb6614bc752dc",
-    "data/gsh_matched_controls.parquet": "6ccde9f791ac755186a1e4d713e6512f788286689750f33a36de2446565a5314"
+    "prereg/ws_a.yaml": "b88d4bf4f8a4bcc438728bca72310f8f21bdff956746c13376610b3f1cd98d3d",
+    "configs/gsh_validated_heldout.yaml": "51a1f8acfd49c243f545588f62c48720b1438758ae17b09e097aa7a5c2156cf0",
+    "data/writer_panel.csv": "758817c1e46c7db10f7f942316663367c5f297cac0cf2f59947a90638a256718",
+    "data/gsh_matched_controls.parquet": "865b18ff23d140c3df6f3b5f25398581ebdfe3534e1cecf6f512afb540ab5ede"
   }
 }

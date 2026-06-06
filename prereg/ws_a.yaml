@@ -19,9 +19,9 @@ A2_intent_specification:
 A3_blind_gsh_discovery:   # THE HEADLINE
   deliverable: "pen_stack/validate/blind_gsh_discovery.py -> out/blind_gsh_discovery.json;
     frozen data/gsh_matched_controls.parquet (SHA-locked)"
-  heldout_set: "configs/gsh_validated_heldout.yaml - SCALED in v3.1.1 from 5 to 16 independent loci
-    (8 functionally validated + 8 computationally-defined universal-GSH candidates; classic safe harbours +
-    Lin et al. 2024 eLife 79592). Gene- or coordinate-anchored to hg38; DOI-sourced."
+  heldout_set: "configs/gsh_validated_heldout.yaml - SCALED in v3.1.1 to 51 loci across 3 tiers: 8
+    functionally validated + 8 eLife candidate (= 16 CURATED, the acceptance basis) + 35 Pellenz/Sadelain
+    2019 candidates (lifted hg19->hg38, reported SEPARATELY; near chance). Gene/coordinate-anchored to hg38."
   controls: "matched on dist_tss, dist_oncogene, accessibility quantile buckets; frozen before scoring"
   acceptance:   # honest, CI-based (v3.1.1) - NOT a bare point-estimate threshold
     PRIMARY: "report the AUROC WITH its bootstrap 95% CI and N, for both the validated tier and all loci;
