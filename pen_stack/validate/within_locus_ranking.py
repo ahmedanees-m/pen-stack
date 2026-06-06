@@ -5,11 +5,15 @@ other bins in that locus? We rank every 1 kb bin in the gene body by writability
 bin's within-locus percentile. Descriptive (few qualifying loci); not a hypothesis test.
 
 Documented safe sub-region coordinates (hg38, widely cited):
-  - AAVS1  = PPP1R12C intron 1, chr19:55,115,768 (DeKelver 2010, 10.1101/gr.106773.110)
-  - CLYBL  = CLYBL intron 2, chr13:99,816,475 (Cerbini 2015, 10.1371/journal.pone.0116032)
+  - AAVS1     = PPP1R12C intron 1, chr19:55,115,768 (DeKelver 2010, 10.1101/gr.106773.110)
+  - CLYBL     = CLYBL intron 2, chr13:99,816,475 (Cerbini 2015, 10.1371/journal.pone.0116032)
+  - Pansio-1  = HIPK1, chr1:113,340,237  (Lin 2024 eLife 79592, in-vitro validated)
+  - Olonne-18 = TXNL1, chr18:56,535,607  (Lin 2024 eLife 79592, in-vitro validated)
+  - Keppel-19 = SAFB,  chr19:5,401,450   (Lin 2024 eLife 79592, in-vitro validated)
 
 Acceptance (prereg/ws_a.yaml): the documented bin lands in the top quartile (>= 75th percentile of
-writability within the locus) for a pre-registered fraction of loci; reported per locus.
+writability within the locus) for a pre-registered fraction of loci; reported per locus. Scaled in v3.1.1
+from 2 to 5 loci using the in-vitro-validated eLife universal-GSH sub-regions.
 """
 from __future__ import annotations
 
@@ -28,6 +32,12 @@ _LOCI = [
      "doi": "10.1101/gr.106773.110"},
     {"name": "CLYBL", "gene": "CLYBL", "chrom": "chr13", "doc_bp": 99816475,
      "doi": "10.1371/journal.pone.0116032"},
+    {"name": "Pansio-1", "gene": "HIPK1", "chrom": "chr1", "doc_bp": 113340237,
+     "doi": "10.7554/eLife.79592"},
+    {"name": "Olonne-18", "gene": "TXNL1", "chrom": "chr18", "doc_bp": 56535607,
+     "doi": "10.7554/eLife.79592"},
+    {"name": "Keppel-19", "gene": "SAFB", "chrom": "chr19", "doc_bp": 5401450,
+     "doi": "10.7554/eLife.79592"},
 ]
 
 
