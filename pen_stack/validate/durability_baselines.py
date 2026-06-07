@@ -124,16 +124,49 @@ def endogenous_expression_baseline(n_sample: int = 150, seed: int = 20260604,
 
     sp_trip = _spearman(sample["trip_oof"], sample["expression"])
     sp_proxy = _spearman(sample["endo_proxy"], sample["expression"])
+
+    # PAIRED bootstrap CI (same loci feed both correlations) - resample rows with replacement, recompute both
+    # Spearmans and their difference on each draw. This is what tells a reviewer whether sp_trip vs sp_proxy is
+    # distinguishable from noise on the TRIP data: if the delta 95% CI includes zero, it is NOT.
+    trip_oof = sample["trip_oof"].to_numpy(float)
+    endo = sample["endo_proxy"].to_numpy(float)
+    meas = sample["expression"].to_numpy(float)
+    n = len(sample)
+    rng = np.random.default_rng(seed)
+    boot_trip, boot_proxy, boot_delta = [], [], []
+    for _ in range(2000):
+        bi = rng.integers(0, n, n)
+        a, b, m = pd.Series(trip_oof[bi]), pd.Series(endo[bi]), pd.Series(meas[bi])
+        st, sp = a.corr(m, method="spearman"), b.corr(m, method="spearman")
+        if not (np.isnan(st) or np.isnan(sp)):
+            boot_trip.append(st); boot_proxy.append(sp); boot_delta.append(st - sp)
+
+    def _ci(vals):
+        return ([round(float(np.percentile(vals, 2.5)), 4), round(float(np.percentile(vals, 97.5)), 4)]
+                if vals else None)
+
+    delta_ci = _ci(boot_delta)
+    delta_ci_excludes_zero = bool(delta_ci[0] > 0) if delta_ci else None
     return {"available": True, "n_sample": int(len(sample)), "ontology": ontology,
             "cell_line": "ES-Bruce4 (matches TRIP supervision cell line)",
             "trip_trained_spearman": round(sp_trip, 4),
+            "trip_trained_spearman_ci95": _ci(boot_trip),
             "endogenous_proxy_spearman": round(sp_proxy, 4),
+            "endogenous_proxy_spearman_ci95": _ci(boot_proxy),
             "delta": round(sp_trip - sp_proxy, 4), "margin": margin,
+            "delta_ci95": delta_ci, "delta_ci_excludes_zero": delta_ci_excludes_zero,
+            "ci_note": f"paired bootstrap 2000x over {int(len(sample))} TRIP loci (seed {seed}); both "
+                       "Spearmans recomputed per resample, delta = trip - proxy.",
             "trip_beats_proxy_by_margin": bool((sp_trip - sp_proxy) >= margin),
             "interpretation": "writing-specific (TRIP-trained) signal beyond endogenous expression"
                               if (sp_trip - sp_proxy) >= margin else
                               "endogenous expression explains most of the durability signal at this sample; "
-                              "reframe durability novelty toward integration-site genotoxicity (prereg downgrade)"}
+                              "reframe durability novelty toward integration-site genotoxicity (prereg downgrade)",
+            "honest_finding": ("the TRIP-trained vs endogenous-proxy difference is NOT distinguishable from "
+                               "noise at this pilot N - the paired delta 95% CI includes zero"
+                               if delta_ci and not delta_ci_excludes_zero else
+                               "the TRIP-trained model beats the endogenous proxy and the paired delta 95% CI "
+                               "excludes zero")}
 
 
 def run(out: str | Path = _OUT, b1_offline: bool = True) -> dict:

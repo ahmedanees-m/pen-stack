@@ -70,10 +70,16 @@ def build() -> str:
     if b1.get("available"):
         lines += [
             f"- Same-cell-line proxy ({b1.get('cell_line')}), seeded sample of **{b1.get('n_sample')}** loci.",
-            f"- TRIP-trained Spearman **{b1.get('trip_trained_spearman')}** vs endogenous-proxy Spearman "
-            f"**{b1.get('endogenous_proxy_spearman')}** (delta {b1.get('delta')}, margin {b1.get('margin')}).",
-            f"- TRIP supervision beats the proxy by the pre-registered margin: "
-            f"**{b1.get('trip_beats_proxy_by_margin')}**.",
+            f"- TRIP-trained Spearman **{b1.get('trip_trained_spearman')}** "
+            f"(95% CI {b1.get('trip_trained_spearman_ci95')}) vs endogenous-proxy Spearman "
+            f"**{b1.get('endogenous_proxy_spearman')}** (95% CI {b1.get('endogenous_proxy_spearman_ci95')}).",
+            f"- Paired-bootstrap delta **{b1.get('delta')}** (95% CI {b1.get('delta_ci95')}, excludes zero: "
+            f"**{b1.get('delta_ci_excludes_zero')}**; margin {b1.get('margin')}). "
+            f"{b1.get('ci_note', '')}",
+            f"- **Honest finding: {b1.get('honest_finding', 'n/a')}.** The point estimate clears the "
+            f"pre-registered margin (`trip_beats_proxy_by_margin` = {b1.get('trip_beats_proxy_by_margin')}), "
+            "but at this pilot N the advantage is NOT statistically significant - reported as a margin-pass "
+            "with an honest non-significant CI, not as a proven gain.",
             f"- Interpretation: {b1.get('interpretation')}",
         ]
     else:

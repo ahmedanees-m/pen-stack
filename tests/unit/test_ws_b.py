@@ -41,6 +41,13 @@ def test_b1_offline_contract():
     if r["available"]:                                   # cache populated locally
         assert r["trip_beats_proxy_by_margin"] in (True, False)
         assert r["cell_line"].startswith("ES-Bruce4")
+        # B1 must carry a paired-bootstrap CI on the delta (like B3) so the margin-pass is reported with its
+        # significance, not as a bare point estimate.
+        assert r["delta_ci95"] is not None and len(r["delta_ci95"]) == 2
+        assert r["delta_ci95"][0] <= r["delta"] <= r["delta_ci95"][1]
+        assert "delta_ci_excludes_zero" in r and "honest_finding" in r
+        assert r["trip_trained_spearman_ci95"] is not None
+        assert r["endogenous_proxy_spearman_ci95"] is not None
 
 
 @pytest.mark.skipif(not _TRIP.exists(), reason="TRIP-with-chromatin not present")
