@@ -244,7 +244,10 @@ pen-stack/
 │   ├── adapt/                        local recalibration / private-data adaptation behind a gate (v3.1, WS-F)
 │   ├── monitor/                      PEN-MONITOR living database (Europe PMC)
 │   ├── rag/                          grounded, cited Q&A (hybrid LLM: Ollama primary, Nemotron fallback)
-│   ├── validate/                     benchmarks: blind_gsh_discovery / durability_baselines / seq_vs_measured / agent_eval / adapt_demo
+│   ├── validate/                     benchmarks: blind_gsh_discovery / durability_baselines (B1+B2 with CIs) /
+│   │                                   seq_vs_measured / writer_recovery / within_locus_ranking / agent_eval /
+│   │                                   ungrounded_baseline (T7) / guide_qc_demo / adapt_demo
+│   ├── wgenome/structure3d.py        3D structural-risk axis (AlphaGenome contact-map deltas, 11 hijack loci)
 │   ├── data/                         ingestion (genome, chromatin, integration, TRIP, safety annotations)
 │   ├── server/api.py                 FastAPI REST (atlas, crosslink, writable, plan, bridge, ask)
 │   ├── ui/app.py                     Streamlit web app (11 pages)
@@ -252,9 +255,11 @@ pen-stack/
 ├── benchmarks/genome_writing_bench/  Genome-Writing Bench v0.1 (tasks / harness / solvers / LEADERBOARD / SHAs)
 ├── bench/run.py                      one-command bench entrypoint (--agent, --verify)
 ├── scripts/                          reproducible pipeline drivers (p1_*, p2_*, p4_*, ws_*_report)
-├── configs/                          pinned datasets + thresholds + curation (YAML)
-├── prereg/                           SHA-locked success criteria (paper1..4 + ws_a..ws_g + locks)
+├── configs/                          pinned datasets + thresholds + curation (YAML; gsh_validated_heldout = 51-locus gold set)
+├── prereg/                           SHA-locked success criteria (paper1..4 + ws_a..ws_h + locks)
 ├── data/curated/                     small committed tables (universe, gene coords, measured bridge profile)
+├── data/llm_bench_cache/             28 cached ungrounded-LLM transcripts (T7, offline/CI replay)
+├── data/alphagenome_cache/           cached AlphaGenome predictions (tracks + contact maps; offline reproducibility)
 ├── tests/unit/                       unit + regression + blind-validation suite
 ├── docs/                             mkdocs site (cards, tutorials, INFRA, DEPLOY, MCP)
 ├── docker/                           CUDA image + UI image + pinned requirements
