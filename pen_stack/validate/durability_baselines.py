@@ -139,7 +139,9 @@ def endogenous_expression_baseline(n_sample: int = 150, seed: int = 20260604,
         a, b, m = pd.Series(trip_oof[bi]), pd.Series(endo[bi]), pd.Series(meas[bi])
         st, sp = a.corr(m, method="spearman"), b.corr(m, method="spearman")
         if not (np.isnan(st) or np.isnan(sp)):
-            boot_trip.append(st); boot_proxy.append(sp); boot_delta.append(st - sp)
+            boot_trip.append(st)
+            boot_proxy.append(sp)
+            boot_delta.append(st - sp)
 
     def _ci(vals):
         return ([round(float(np.percentile(vals, 2.5)), 4), round(float(np.percentile(vals, 97.5)), 4)]

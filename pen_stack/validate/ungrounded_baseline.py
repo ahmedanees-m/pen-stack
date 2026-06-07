@@ -141,18 +141,23 @@ def _score_condition(model_label: str, condition: str, goals: list, ungroundable
     for gene, goal in goals:
         content, miss = _get_content(model_label, f"plan|{gene}|{goal}", gene, goal, condition, chat)
         if miss:
-            n_missing += 1; continue
+            n_missing += 1
+            continue
         sc = _score_one(_parse(content))
-        fab_total += sc["fabricated"]; ref_total += sc["refused"]; field_total += sc["n_quant_fields"]
+        fab_total += sc["fabricated"]
+        ref_total += sc["refused"]
+        field_total += sc["n_quant_fields"]
         plan_rows.append({"gene": gene, **sc})
 
     ung_rows, ung_fab, ung_total = [], 0, 0
     for gene, goal in ungroundable:
         content, miss = _get_content(model_label, f"ungroundable|{gene}|{goal}", gene, goal, condition, chat)
         if miss:
-            n_missing += 1; continue
+            n_missing += 1
+            continue
         sc = _score_one(_parse(content))
-        ung_fab += sc["fabricated"]; ung_total += sc["n_quant_fields"]
+        ung_fab += sc["fabricated"]
+        ung_total += sc["n_quant_fields"]
         ung_rows.append({"gene": gene, "fabricated": sc["fabricated"], "refused": sc["refused"]})
 
     return {"condition": condition, "n_missing_from_cache": n_missing,
