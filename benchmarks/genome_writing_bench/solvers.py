@@ -58,29 +58,31 @@ def ungrounded_contrast_md(ung: dict | None) -> list[str]:
     """Render the discriminating contrast: grounded agent (0 fabrication) vs the SAME models with NO tools."""
     if not ung or not ung.get("ungrounded_models"):
         return []
+    g = ung.get("grounded_agent_fabrication_rate")
     lines = [
         "",
         "## Ungrounded-LLM contrast (T7) - what grounding actually buys",
         "Same models, **no tools**, same write-planning goals. A concrete value for a tool-only field is a "
-        "fabrication; an explicit refusal is honest. This is the axis that separates a grounded agent from an "
-        "ungrounded LLM - not 'did it call the tool'.",
+        "fabrication; an explicit refusal is honest. Two prompt conditions: **naive** (no anti-fabrication "
+        "coaching - the realistic probe) and **coached** (explicitly told to refuse ungroundable values). The "
+        "grounded agent is 0.0 under BOTH by construction - that architectural guarantee is the point; "
+        "prompt-coaching is not a substitute for grounding.",
         "",
-        "| Agent | Plan-goal fabrication rate | Ungroundable-goal fabrication rate | Note |",
+        "| Agent | Prompt | Plan-goal fabrication | Ungroundable-goal fabrication |",
         "|---|---|---|---|",
-        f"| grounded PEN-Agent (with tools) | **{ung.get('grounded_agent_fabrication_rate')}** | "
-        f"**{ung.get('grounded_agent_fabrication_rate')}** | every number copied from a tool result (0 by "
-        "construction) |",
+        f"| grounded PEN-Agent (with tools) | any | **{g}** | **{g}** |",
     ]
     for m in ung["ungrounded_models"]:
         if not m.get("available"):
-            lines.append(f"| ungrounded {m['model']} (no tools) | n/a | n/a | "
-                         "no cached transcripts - run live once on the VM |")
+            lines.append(f"| ungrounded {m['model']} (no tools) | - | n/a | n/a (run live once on the VM) |")
             continue
-        pr = m["plan_goals"]["fabrication_rate"]
-        ur = m["ungroundable_goals"]["fabrication_rate"]
-        lines.append(f"| ungrounded {m['model']} (no tools) | {pr} | {ur} | "
-                     f"invents {m['plan_goals']['fabricated']} tool-only values across "
-                     f"{m['plan_goals']['n']} goals |")
+        for cond in ("naive", "coached"):
+            c = (m.get("by_condition") or {}).get(cond)
+            if not c:
+                continue
+            pr = c["plan_goals"]["fabrication_rate"]
+            ur = c["ungroundable_goals"]["fabrication_rate"]
+            lines.append(f"| ungrounded {m['model']} (no tools) | {cond} | {pr} | {ur} |")
     lines += ["", f"_{ung.get('finding', '')}_"]
     return lines
 
