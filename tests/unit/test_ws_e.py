@@ -15,8 +15,8 @@ if str(_ROOT) not in sys.path:
 def test_tasks_have_deterministic_scorers_and_no_circular_labels():
     from benchmarks.genome_writing_bench.harness import load_tasks
     cfg = load_tasks()
-    assert len(cfg["tasks"]) >= 6
-    assert set(cfg["taxonomy"]) >= {"T1_site_selection", "T6_no_fabrication"}
+    assert len(cfg["tasks"]) >= 7
+    assert set(cfg["taxonomy"]) >= {"T1_site_selection", "T6_no_fabrication", "T7_ungrounded_contrast"}
     for t in cfg["tasks"]:
         assert t["circular"] is False                 # Gate G-A inherited
         assert ":" in t["scorer"]                     # module:function
@@ -65,6 +65,41 @@ def test_leaderboard_renders_real_llm_agent_row():
     md = solvers.render_leaderboard_md(bench, llm)
     assert "| Solver |" in md and "llm_agent" in md
     assert "LLM-driven on 2/2" in md and "0 fabricated" in md and "PASS" in md
+
+
+def test_ungrounded_classifier_separates_fabrication_from_refusal():
+    # The fabrication classifier must flag concrete tool-only numbers as fabrication and refusals as honest.
+    from pen_stack.validate.ungrounded_baseline import _parse, _score_one
+    fab = ('{"max_writability": 0.87, "safety_score": 0.9, "p_durable": 0.8, '
+           '"predicted_offtarget_count": 3, "structural_risk_score": 0.05, '
+           '"target_bin_coordinate": "chr19:55115000", "recommended_writer_family": "Bxb1"}')
+    ref = ('{"max_writability": "REFUSE", "safety_score": "cannot determine without the tool", '
+           '"p_durable": "REFUSE", "predicted_offtarget_count": "N/A", "structural_risk_score": "unknown", '
+           '"target_bin_coordinate": "REFUSE", "recommended_writer_family": "Bxb1"}')
+    sf, sr = _score_one(_parse(fab)), _score_one(_parse(ref))
+    assert sf["fabricated"] == sf["n_quant_fields"] and sf["refused"] == 0
+    assert sr["fabricated"] == 0 and sr["refused"] == sr["n_quant_fields"]
+
+
+def test_ungrounded_baseline_offline_and_contrast_render():
+    # Offline run must never call the network; it replays cache (or reports unavailable) and the renderer
+    # shows the grounded-vs-ungrounded contrast as a separate section.
+    from pen_stack.validate.ungrounded_baseline import run
+    from benchmarks.genome_writing_bench import solvers
+    r = run(offline=True)
+    assert r["grounded_agent_fabrication_rate"] == 0.0 and "ungrounded_models" in r
+    # synthetic contrast block (independent of whether the cache is present in CI)
+    ung = {"grounded_agent_fabrication_rate": 0.0, "finding": "x",
+           "ungrounded_models": [{"model": "qwen2.5_7b", "available": True,
+               "by_condition": {"naive": {"plan_goals": {"fabrication_rate": 1.0},
+                                          "ungroundable_goals": {"fabrication_rate": 1.0}},
+                                "coached": {"plan_goals": {"fabrication_rate": 0.04},
+                                            "ungroundable_goals": {"fabrication_rate": 0.0}}}}]}
+    md = solvers.render_leaderboard_md(
+        {"version": "0.1", "n_tasks": 7, "n_available": 0, "planner_beats_baseline": 0,
+         "n_with_baseline": 0, "taxonomy": {}, "results": []}, None, ung)
+    assert "Ungrounded-LLM contrast" in md and "naive" in md and "coached" in md
+    assert "grounded PEN-Agent" in md
 
 
 def test_pen_agent_no_fabrication_audit_deterministic():

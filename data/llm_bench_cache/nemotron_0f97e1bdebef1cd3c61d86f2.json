@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|AAVS1|insert a durable cassette at a safe harbour",
+  "content": "{\n  \"max_writability\": 0.92,\n  \"safety_score\": 0.95,\n  \"p_durable\": 0.90,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.1,\n  \"target_bin_coordinate\": \"chr19:55,108,?\",\n  \"recommended_writer_family\": \"CRISPR-Cas9 HDR\"\n}"
+}

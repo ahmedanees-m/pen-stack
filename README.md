@@ -71,7 +71,7 @@ honest negatives, not just its wins.
 | **B - Strong baselines + safety metric switch** | endogenous-expression baseline, multi-mark ablation, published GSH rule-set; safe-harbour discrimination is the primary safety metric | headline is the learned model's **absolute** discrimination: writability AUROC **0.68 (95% CI 0.53-0.82, N=16)**. The published distance rule is reported as a *qualitative failure case*, not a delta to beat - it scores at/below chance (curated 0.51; validated-8 **0.48**) because validated harbours are **intragenic** (AAVS1/PPP1R12C, CCR5), so a "far-from-genes" prior mis-ranks them; the learned-minus-rule delta is kept only as a non-significant diagnostic. The circular `genotoxic_cis` AUROC is demoted to a labeled diagnostic |
 | **C - AlphaGenome integration** | predicted sequence tracks + a predicted **3D structural-risk** axis (Hi-C contact-map deltas) via the hosted AlphaGenome API | per-track transfers well (HepG2 ATAC 0.91), but the *composite* score degrades from predicted tracks, so the measured atlas stays the backbone (flagged) |
 | **D - Cargo Polish** | scores the *insert* for silencing/instability triggers (CpG islands, GC, cryptic splice, MFE, silencers) | directional: high-CpG bacterial cassette 0.75 vs CpG-depleted 0.0, every flag carries a fix |
-| **E - Genome-Writing Bench v0.1 + PEN-Agent** | the first benchmark for the writing side, plus a grounded agent that cannot fabricate | planner beats the naive baseline 3/3; a real LLM agent reaches the planner's numbers only by grounding (0 fabricated) |
+| **E - Genome-Writing Bench v0.1 + PEN-Agent** | the first benchmark for the writing side, plus a grounded agent that cannot fabricate | planner beats the naive baseline 3/3; the grounded agent reaches the planner's numbers only by grounding (0 fabricated). **T7 ungrounded contrast**: the same models with no tools fabricate 100% of tool-only values under a naive prompt (qwen2.5:7b, Nemotron) - so the bench separates grounded from ungrounded agents, not just "did it call the tool" |
 | **F - Local recalibration / private-data adaptation** | recalibrate or fine-tune the released models on your own assays, in-container, behind a validation gate | the adapted model activates only if it beats the released model AND a no-skill baseline; the released model is provably unchanged |
 | **G - Multiplex + guide QC** | a pairwise translocation-risk screen for multi-edit plans, and a bridge-RNA guide ranker | DSB-free recombinase plans carry ~zero translocation risk by construction; known-bad guides are retrospectively down-ranked |
 
@@ -173,7 +173,15 @@ docker compose run --rm bench python bench/run.py --agent   # same, on the clean
 |---|---|---|---|
 | deterministic planner | 3/3 grounded tasks | n/a | the validated planning tools (reference) |
 | naive baseline | - | n/a | safety-only / prevalence / Hamming |
-| **LLM agent** (PEN-Agent) | = planner (grounded) | **PASS** | a real LLM drives the tools; reaches the planner only by grounding every value, 0 fabricated |
+| **grounded LLM agent** (PEN-Agent) | = planner (grounded) | **PASS** | a real LLM drives the tools; reaches the planner only by grounding every value, 0 fabricated |
+
+**Ungrounded-LLM contrast (T7) - the benchmark separates agents, not just "did it call the tool":** the
+*same* models with **no tools** fabricate tool-only values. Under a naive prompt, qwen2.5:7b and Nemotron
+both fabricate **100%** of planning fields (and invent in-human clinical numbers no tool could produce -
+qwen 100%, Nemotron 67% on ungroundable goals). Even *coached* to refuse, qwen still slips (4%) while
+Nemotron refuses fully - but the **grounded agent is 0.0 under every prompt and model, by construction**.
+Grounding, not prompting, is what removes fabrication. (Transcripts cached under `data/llm_bench_cache/` for
+offline replay; `bench/run.py --ungrounded-live` repopulates them on the VM.)
 
 Per-task (planner vs naive): site selection **0.70** vs 0.51 (validated GSH, N=8; all-16-loci 0.68, CI
 0.53-0.82), writer recovery **0.86** vs 0.29 (N=14 writes), off-target **0.77** vs 0.62, intent 7/7,

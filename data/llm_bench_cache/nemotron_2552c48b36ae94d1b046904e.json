@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "coached",
+  "goal": "plan|CLYBL|place a durable transgene at the CLYBL safe harbour",
+  "content": "{\"max_writability\":\"REFUSE\",\"safety_score\":\"REFUSE\",\"p_durable\":\"REFUSE\",\"predicted_offtarget_count\":\"REFUSE\",\"structural_risk_score\":\"REFUSE\",\"target_bin_coordinate\":\"REFUSE\",\"recommended_writer_family\":\"REFUSE\"}"
+}

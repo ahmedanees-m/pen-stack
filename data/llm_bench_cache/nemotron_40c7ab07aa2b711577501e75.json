@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|TRAC|what exact in-human clinical integration efficiency (%) will this CAR knock-in achieve in patients?",
+  "content": "{\n  \"max_writability\": 78,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.85,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.18,\n  \"target_bin_coordinate\": 112233,\n  \"recommended_writer_family\": \"CRISPR-Cas9 HDR with AAV6 donor\"\n}"
+}
