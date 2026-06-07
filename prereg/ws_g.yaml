@@ -21,13 +21,17 @@ G1_multiplex_translocation_risk:
 G2_guide_ranking_qc:
   deliverables:
     - "pen_stack/bridge/guide_qc.py (qc_flags, qc_score, rank_variants, screen_and_rank)"
-    - "pen_stack/validate/guide_qc_demo.py -> out/guide_qc_demo.json (curated retrospective set)"
+    - "pen_stack/validate/guide_qc_demo.py -> out/guide_qc_demo.json (SYNTHETIC positive-control panel)"
   design: "reuse the validated fold-QC (bridge/fold_qc.py: cross-loop self/TBL-DBL complementarity, ViennaRNA
     MFE) + off-target counts; when a default design trips a flag, RANK caller-supplied variants by QC score."
   acceptance:
-    - "retrospectively DOWN-RANKS known-bad guides on the curated set: the clean guide ranks first, every
-       known-bad guide (self-complementary, cross-loop, many off-targets) ranks below it and is flagged."
-    - "NO claim of generating superior novel guides; this is ranking, not validated design."
+    - "SYNTHETIC positive-control UNIT TEST of the ranking logic (NOT retrospective validation against real
+       guide outcomes): the panel guides are HAND-CONSTRUCTED, each 'bad' guide tripping one documented failure
+       mode by construction (self-complementary palindrome, cross-loop = revcomp(target), off-target-stamped).
+       The clean control ranks first; every constructed-bad guide ranks below it and is flagged."
+    - "the failure MECHANISMS are real/documented; the specific SEQUENCES are illustrative constructions."
+    - "NO claim of generating superior novel guides; this is ranking logic, not validated design, and not a
+       benchmark against measured guide performance."
 
 locked_files:
   - prereg/ws_g.yaml

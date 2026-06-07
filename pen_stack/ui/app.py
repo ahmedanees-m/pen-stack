@@ -569,7 +569,7 @@ elif page == "Multiplex risk":
         st.caption(r["scope"])
 
 elif page == "Guide QC":
-    st.markdown("### Bridge-RNA guide QC - *rank variants, down-rank known-bad (v3.1)*")
+    st.markdown("### Bridge-RNA guide QC - *rank variants by documented failure modes (v3.1)*")
     st.caption("Reuses the validated fold-QC (cross-loop self / TBL-DBL complementarity, ViennaRNA MFE) and "
                "off-target counts to score a design. When a default trips a flag, rank caller-supplied "
                "variants. Ranking, not validated novel design.")
@@ -585,7 +585,8 @@ elif page == "Guide QC":
         st.markdown(f'<div class="verdict {cls}">QC {"PASS" if f["pass"] else "REVIEW"} | qc_score {s} | '
                     f'flags: {", ".join(f["flags"]) or "none"}</div>', unsafe_allow_html=True)
         st.json(f["cross_loop"])
-    st.markdown("##### Curated retrospective set (known-bad guides must rank below the clean one)")
+    st.markdown("##### Synthetic positive-control panel *(hand-constructed guides, not real outcomes)* - "
+                "each constructed failure mode must rank below the clean control")
     from pen_stack.validate.guide_qc_demo import run as _gqc
     demo = _gqc()
     st.dataframe(pd.DataFrame(demo["ranking"]), use_container_width=True, height=200)

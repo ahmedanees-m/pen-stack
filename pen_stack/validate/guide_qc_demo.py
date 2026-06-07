@@ -1,8 +1,14 @@
-"""WS-G2 acceptance - retrospective guide-QC down-ranking on a curated set (deterministic, CI-safe).
+"""WS-G2 acceptance - SYNTHETIC failure-mode unit test for the guide-QC ranking logic (deterministic, CI-safe).
 
-The bar is RETROSPECTIVE: known-bad bridge-RNA guides (self-complementary loops, cross-loop complementarity,
-many off-targets) must rank BELOW a clean guide. No claim of generating superior novel guides - this is a
-ranking/QC layer over the validated fold-QC + off-target primitives.
+IMPORTANT (honesty): the guides in this panel are HAND-CONSTRUCTED, not real bridge-RNA guides with measured
+outcomes. Each "bad" guide is synthesised to exercise ONE documented failure MECHANISM by construction:
+  * self_complementary - a deliberate palindrome (GC-repeat)
+  * cross_loop         - donor set to revcomp(target) so the two loops are complementary
+  * many_offtargets    - an otherwise-clean guide stamped with offtarget_count = 6
+So this is a POSITIVE-CONTROL UNIT TEST: it checks that the QC scorer penalises each known failure mode and
+ranks the constructed-bad guides below a clean control. It is NOT retrospective validation against real guide
+outcomes, and makes NO claim of generating superior novel guides. The failure mechanisms (self-complementarity,
+TBL-DBL cross-loop, off-targets) are real and documented; the specific sequences here are illustrative.
 """
 from __future__ import annotations
 
@@ -23,15 +29,17 @@ def _revcomp(s: str) -> str:
     return "".join(_PAIR[b] for b in reversed(s))
 
 
-# curated variants: one clean guide + three known-bad failure modes.
+# SYNTHETIC panel (all sequences hand-constructed): one clean control + three guides each built to trip ONE
+# failure mode. These are illustrative constructions, NOT real guides with measured outcomes.
 PANEL = [
-    {"name": "clean", "target_guide": _GOOD_T, "donor_guide": _GOOD_D, "klass": "good"},
+    {"name": "clean", "target_guide": _GOOD_T, "donor_guide": _GOOD_D, "klass": "good",
+     "synthetic": True},
     {"name": "self_complementary", "target_guide": "GCGCGCGCGCGCGCGCGCGC",
-     "donor_guide": _GOOD_D, "klass": "bad"},                                  # palindromic loop
+     "donor_guide": _GOOD_D, "klass": "bad", "synthetic": True},               # constructed palindromic loop
     {"name": "cross_loop", "target_guide": _GOOD_T, "donor_guide": _revcomp(_GOOD_T),
-     "klass": "bad"},                                                          # donor = revcomp(target)
+     "klass": "bad", "synthetic": True},                                       # donor = revcomp(target) by code
     {"name": "many_offtargets", "target_guide": _GOOD_T, "donor_guide": _GOOD_D,
-     "offtarget_count": 6, "klass": "bad"},                                    # otherwise clean but off-target
+     "offtarget_count": 6, "klass": "bad", "synthetic": True},                 # clean guide, off-target stamped
 ]
 
 
@@ -42,12 +50,15 @@ def run(out: str | Path = _OUT) -> dict:
     good_scores = [r["qc_score"] for r in ranked if by_class[r["name"]] == "good"]
     bad_scores = [r["qc_score"] for r in ranked if by_class[r["name"]] == "bad"]
     report = {
+        "data_type": "SYNTHETIC (hand-constructed guides; not real measured guide outcomes)",
         "ranking": [{"name": r["name"], "qc_score": r["qc_score"], "flags": r["flags"],
-                     "klass": by_class[r["name"]]} for r in ranked],
+                     "klass": by_class[r["name"]], "synthetic": True} for r in ranked],
         "best_is_good": by_class[order[0]] == "good",
         "all_bad_below_good": bool(min(good_scores) > max(bad_scores)),
         "every_bad_flagged": all(r["flags"] for r in ranked if by_class[r["name"]] == "bad"),
-        "scope": "retrospective down-ranking of known-bad guides; ranking, not validated novel design.",
+        "scope": "SYNTHETIC positive-control unit test of the ranking logic: constructed guides, each tripping "
+                 "one documented failure mode, must rank below a clean control and be flagged. NOT retrospective "
+                 "validation against real guide outcomes; no claim of generating superior novel guides.",
     }
     Path(out).parent.mkdir(parents=True, exist_ok=True)
     Path(out).write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")

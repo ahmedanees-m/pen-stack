@@ -4,8 +4,11 @@ Wraps a bridge-RNA design: when a default guide design trips a QC flag - self-co
 (TBL-DBL) recombination, poor scaffold fold (MFE), or off-target - this enumerates candidate variants and
 RANKS them by the existing fold-QC (`bridge/fold_qc.py`) plus off-target risk (`bridge/offtarget.py`).
 
-This is a RANKING layer, not validated design: it retrospectively down-ranks known-bad guides; it makes NO
-claim of generating superior novel guides. It reuses the validated QC primitives so the score is grounded.
+This is a RANKING layer, not validated design: it scores guides by documented failure mechanisms
+(self-complementarity, cross-loop, off-target) and ranks worse guides lower. It makes NO claim of generating
+superior novel guides, and its acceptance test (guide_qc_demo) uses SYNTHETIC constructed guides as a
+positive control, not real measured guide outcomes. It reuses the validated QC primitives so the score is
+grounded.
 """
 from __future__ import annotations
 

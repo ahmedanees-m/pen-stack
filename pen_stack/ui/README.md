@@ -12,7 +12,7 @@ A scientific Streamlit front-end over the genome-wide writability atlas.
 - **Writer Atlas** / **Write Planner** / **Bridge design** - enzyme catalogue, inverse design, bridge RNA + off-target.
 
 ### v3.1 additions
-- **Guide QC** - rank bridge-RNA guide variants by fold-QC + off-target; the curated retrospective set down-ranks known-bad guides.
+- **Guide QC** - rank bridge-RNA guide variants by fold-QC + off-target; a synthetic positive-control panel (hand-constructed guides, not real outcomes) checks that each constructed failure mode ranks below a clean control.
 - **Cargo Polish** - scan a cassette for silencing/instability triggers (CpG islands, GC, cryptic splice, MFE, silencers) with a fix per flag.
 - **Multiplex risk** - pairwise translocation-risk screen for a 2-5 edit plan (DSB-free recombinase plans carry ~zero risk).
 - **PEN-Agent** - the grounded write-planning state machine (site -> writer -> cargo+polish -> off-target -> 3D risk -> report), with per-step provenance and zero fabrication.

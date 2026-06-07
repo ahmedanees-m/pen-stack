@@ -49,10 +49,15 @@ def test_multiplex_surfaced_in_agent_tools():
     assert r["tool"] == "planner.multiplex" and "translocation_risk" in r
 
 
-def test_guide_qc_downranks_known_bad():
+def test_guide_qc_ranks_synthetic_failure_modes_below_clean_control():
+    # SYNTHETIC positive-control unit test: the panel guides are hand-constructed (not real measured
+    # outcomes); each "bad" guide trips one failure mode by construction and must rank below the clean control.
     r = guide_demo()
-    assert r["best_is_good"] is True                 # the clean guide ranks first
-    assert r["all_bad_below_good"] is True           # every known-bad guide ranks below it
+    assert "SYNTHETIC" in r["data_type"]             # labelled honestly as synthetic, not retrospective
+    assert "SYNTHETIC" in r["scope"] and "NOT retrospective" in r["scope"]
+    assert all(row["synthetic"] for row in r["ranking"])
+    assert r["best_is_good"] is True                 # the clean control ranks first
+    assert r["all_bad_below_good"] is True           # every constructed-bad guide ranks below it
     assert r["every_bad_flagged"] is True            # and is flagged
 
 
