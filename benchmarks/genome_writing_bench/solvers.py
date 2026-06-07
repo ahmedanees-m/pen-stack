@@ -54,7 +54,38 @@ def leaderboard_rows(bench: dict, llm: dict | None = None) -> list[dict]:
     return rows
 
 
-def render_leaderboard_md(bench: dict, llm: dict | None = None) -> str:
+def ungrounded_contrast_md(ung: dict | None) -> list[str]:
+    """Render the discriminating contrast: grounded agent (0 fabrication) vs the SAME models with NO tools."""
+    if not ung or not ung.get("ungrounded_models"):
+        return []
+    lines = [
+        "",
+        "## Ungrounded-LLM contrast (T7) - what grounding actually buys",
+        "Same models, **no tools**, same write-planning goals. A concrete value for a tool-only field is a "
+        "fabrication; an explicit refusal is honest. This is the axis that separates a grounded agent from an "
+        "ungrounded LLM - not 'did it call the tool'.",
+        "",
+        "| Agent | Plan-goal fabrication rate | Ungroundable-goal fabrication rate | Note |",
+        "|---|---|---|---|",
+        f"| grounded PEN-Agent (with tools) | **{ung.get('grounded_agent_fabrication_rate')}** | "
+        f"**{ung.get('grounded_agent_fabrication_rate')}** | every number copied from a tool result (0 by "
+        "construction) |",
+    ]
+    for m in ung["ungrounded_models"]:
+        if not m.get("available"):
+            lines.append(f"| ungrounded {m['model']} (no tools) | n/a | n/a | "
+                         "no cached transcripts - run live once on the VM |")
+            continue
+        pr = m["plan_goals"]["fabrication_rate"]
+        ur = m["ungroundable_goals"]["fabrication_rate"]
+        lines.append(f"| ungrounded {m['model']} (no tools) | {pr} | {ur} | "
+                     f"invents {m['plan_goals']['fabricated']} tool-only values across "
+                     f"{m['plan_goals']['n']} goals |")
+    lines += ["", f"_{ung.get('finding', '')}_"]
+    return lines
+
+
+def render_leaderboard_md(bench: dict, llm: dict | None = None, ung: dict | None = None) -> str:
     rows = leaderboard_rows(bench, llm)
     lines = [
         "# Genome-Writing Bench v0.1 - Leaderboard",
@@ -80,6 +111,7 @@ def render_leaderboard_md(bench: dict, llm: dict | None = None) -> str:
         gate = "PASS" if r.get("gate_pass") else ("FAIL" if r.get("hard_gate") and r["available"] else "-")
         lines.append(f"| {r['id']} | {r['family']} | {r['available']} | "
                      f"{r['planner_score']} | {r['baseline_score']} | {gate} |")
+    lines += ungrounded_contrast_md(ung)
     lines += [
         "",
         "Scope: tasks are bounded by available documented writes (small, survivorship-biased). The bench "

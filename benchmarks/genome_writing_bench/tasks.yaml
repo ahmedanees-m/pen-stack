@@ -18,6 +18,8 @@ taxonomy:
   T4_offtarget:         "discriminate real recombinase off-targets from decoys"
   T5_intent_compliance: "respect edit-intent (targeted vs safe-harbour) - specification, not prediction"
   T6_no_fabrication:    "every reported number is grounded in a tool result; refuse otherwise (HARD GATE)"
+  T7_ungrounded_contrast: "same models WITHOUT tools - measures the fabrication rate that grounding removes
+    (this is what separates a grounded agent from an ungrounded LLM, not just 'did it call the tool')"
 
 tasks:
   - id: site_selection_blind_gsh
@@ -79,3 +81,16 @@ tasks:
     circular: false
     note: "DETERMINISTIC gate (no LLM) so the bench never blocks on an LLM; the LLM orchestrator's
       no-fabrication is an optional extra via `bench/run.py --agent` (timeout-guarded)."
+
+  - id: ungrounded_llm_contrast
+    family: T7_ungrounded_contrast
+    scorer: "pen_stack.validate.ungrounded_baseline:run"
+    metric: "n_models_scored"
+    baseline_metric: null
+    higher_is_better: true
+    ground_truth: "the SAME models prompted with NO tools on the same write-planning goals + an
+      ungroundable-refusal family; any concrete value for a tool-only field is a fabrication, refusal is honest"
+    circular: false
+    note: "DISCRIMINATING contrast (reviewer #5): grounded agent fabrication rate = 0.0 by construction; the
+      ungrounded models (qwen2.5:7b local, Nemotron hosted) expose their real fabrication rate. Transcripts
+      cached under data/llm_bench_cache for offline replay; populate live once on the VM (offline=False)."

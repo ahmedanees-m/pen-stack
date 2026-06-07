@@ -130,6 +130,8 @@ def run_agent_solver() -> dict:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Genome-Writing Bench v0.1")
     ap.add_argument("--agent", action="store_true", help="also run the PEN-Agent no-fabrication solver")
+    ap.add_argument("--ungrounded-live", action="store_true",
+                    help="call the live LLMs (offline=False) to (re)populate the ungrounded-baseline cache")
     ap.add_argument("--verify", action="store_true", help="verify frozen SHA256SUMS and exit")
     args = ap.parse_args(argv)
 
@@ -140,9 +142,13 @@ def main(argv: list[str] | None = None) -> int:
 
     bench = harness.run_bench()
     llm = run_agent_solver() if args.agent else None
+    # Ungrounded-LLM contrast (T7): replay from cache by default; --ungrounded-live calls the models once.
+    from pen_stack.validate.ungrounded_baseline import run as ungrounded_run
+    ung = ungrounded_run(offline=not args.ungrounded_live)
     _RESULTS.parent.mkdir(parents=True, exist_ok=True)
-    _RESULTS.write_text(json.dumps({"bench": bench, "agent": llm}, indent=2, default=str), encoding="utf-8")
-    _LEADERBOARD.write_text(solvers.render_leaderboard_md(bench, llm), encoding="utf-8", newline="\n")
+    _RESULTS.write_text(json.dumps({"bench": bench, "agent": llm, "ungrounded": ung}, indent=2, default=str),
+                        encoding="utf-8")
+    _LEADERBOARD.write_text(solvers.render_leaderboard_md(bench, llm, ung), encoding="utf-8", newline="\n")
     write_shasums()
     print(f"tasks available: {bench['n_available']}/{bench['n_tasks']}; "
           f"planner beats naive on {bench['planner_beats_baseline']}/{bench['n_with_baseline']}; "
