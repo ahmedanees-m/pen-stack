@@ -32,18 +32,25 @@ def build() -> str:
         "safe-harbour rule-set that the learned safety model must beat on the only non-circular safety "
         "metric - discrimination of validated safe harbours (B3).",
         "",
-        "## B3 (PRIMARY SAFETY METRIC) - Safe-harbour discrimination vs the GSH rule-set",
+        "## B3 (PRIMARY SAFETY METRIC) - Safe-harbour discrimination",
         f"- Primary metric: **{gsh.get('primary_safety_metric', 'n/a')}**.",
-        f"- **Learned writability AUROC = {gsh.get('auroc_learned_writability')}** "
-        f"(95% CI {gsh.get('auroc_learned_ci95')}) vs published GSH distance-rule AUROC "
-        f"**{gsh.get('auroc_gsh_ruleset_baseline')}** - delta **{gsh.get('delta')}** "
-        f"(95% CI {gsh.get('delta_ci95')}, excludes zero: {gsh.get('delta_ci_excludes_zero')}; "
-        f"learned beats rule-set: {gsh.get('learned_beats_ruleset')}).",
-        f"- CI is wide ({gsh.get('n_positives')} validated GSH positives vs {gsh.get('n_controls')} "
-        "controls) but the delta excludes zero - the learned advantage is real, reported honestly.",
-        "- The conservative distance rule sits at/below chance here because the controls are distance-matched "
-        "and the rule penalises the in-gene location of real validated harbours (e.g. AAVS1/PPP1R12C). The "
-        "learned model captures empirical safe-harbour-ness that the rule does not.",
+        f"- **HEADLINE (absolute discrimination, not a delta): learned writability AUROC = "
+        f"{gsh.get('auroc_learned_writability')}** (95% CI {gsh.get('auroc_learned_ci95')}, "
+        f"N={gsh.get('n_positives')} curated positives vs {gsh.get('n_controls')} matched controls).",
+        "- **Why the published distance rule is NOT the headline baseline:** it scores at/below chance "
+        f"(curated AUROC {gsh.get('auroc_gsh_ruleset_baseline')}; validated-8 AUROC "
+        f"**{gsh.get('auroc_gsh_ruleset_validated_tier')}**, below 0.5) because the functionally validated "
+        "harbours are themselves *intragenic* (AAVS1 in PPP1R12C, CCR5, ROSA26-type loci), so a "
+        "'far-from-genes' prior actively mis-ranks them. We therefore report the rule's failure as a "
+        "**qualitative point**, not as a delta the learned model 'beats' - beating a worse-than-random "
+        "baseline would be a low bar and is not claimed.",
+        f"- For completeness the learned-minus-rule delta is reported as a **diagnostic only**: "
+        f"{gsh.get('delta_DIAGNOSTIC_not_headline')} (95% CI {gsh.get('delta_ci95')}, excludes zero: "
+        f"{gsh.get('delta_ci_excludes_zero')}) - it is **not** statistically significant at this N and is "
+        "not used as a headline.",
+        f"- Honest scope: the absolute CI is wide ({gsh.get('n_positives')} curated positives); a larger "
+        "validated GSH set is the route to a precise estimate. The earlier 0.92-on-5 / delta-0.54 figures were "
+        "fragile small-sample over-estimates and have been retired.",
         "- `genotoxic_cis` AUROC is **demoted to a diagnostic**: its label is proximity to five oncogenes, "
         "i.e. the distance baseline's own definition (circular); it is not a safety headline.",
         "",
