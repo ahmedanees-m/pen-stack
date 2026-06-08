@@ -93,6 +93,22 @@ def test_energetics_fit_score_and_serialize():
     assert m2["core_len"] == m["core_len"] and len(m2["pen"]) == len(m["pen"])
 
 
+def test_energetics_decoy_constructions():
+    # the reviewer-driven core_preserved decoy must keep the core matched and flip only a non-core position
+    import random
+
+    from pen_stack.validate.offtarget_energetics_eval import _CORE0, _make_decoy
+    intended = "ACGTACGACGTACG"
+    seq = intended                                   # a perfectly core-preserved positive
+    rng = random.Random(0)
+    cd = _make_decoy(seq, intended, "core_disrupted", rng)
+    assert cd[_CORE0] != intended[_CORE0]            # core_disrupted flips the core
+    cp = _make_decoy(seq, intended, "core_preserved", rng)
+    assert cp[_CORE0] == intended[_CORE0]            # core_preserved keeps the core matched
+    diffs = [i for i in range(len(seq)) if cp[i] != intended[i]]
+    assert diffs and _CORE0 not in diffs             # differs only at non-core position(s)
+
+
 def test_site_risk_uses_energetics_when_table_present():
     # the committed penalty table ships with the repo -> the energetics ranker (0.88) is the default
     from pen_stack.bridge.offtarget import site_risk

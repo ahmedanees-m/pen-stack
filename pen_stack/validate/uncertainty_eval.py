@@ -174,12 +174,65 @@ def _ood_with_method(in_ct: str, ood_ct: str, method: str, seed: int = 42, n_cap
     return {**cal, "n_per_group": int(n), "method": method, "in_ct": in_ct, "ood_ct": ood_ct}
 
 
+def ood_cross_species(seed: int = 42) -> dict:
+    """UQ2 REAL-SHIFT positive case (reviewer-driven) - a genuinely different context, not a lineage-adjacent
+    cell type. In-distribution = mouse mESC TRIP loci (the 5 shared histone marks); OOD = human K562 bins on
+    the SAME 5 marks. Cross-species is a real distribution shift, so this is the positive case the weak
+    cross-cell-type tests (K562->HSPC 0.72, K562->HepG2 0.65) lack - it shows the detector DOES fire when the
+    features genuinely move, complementing the honest finding that human cell types barely move."""
+    f_human = _FEAT / "chromatin_k562.parquet"
+    if not _TRIP.exists() or not f_human.exists():
+        return {"available": False, "note": "TRIP (mESC) or human K562 chromatin store absent"}
+    mouse = pd.read_parquet(_TRIP).dropna(subset=_MARKS)
+    human = pd.read_parquet(f_human).dropna(subset=_MARKS)
+    rng = np.random.default_rng(seed)
+    n = min(4000, len(mouse) // 2, len(human))
+    mi = rng.permutation(len(mouse))
+    det = OODDetector(method="mahalanobis").fit(mouse.iloc[mi[:n]][_MARKS].to_numpy())
+    cal = det.calibrate_threshold(mouse.iloc[mi[n:2 * n]][_MARKS].to_numpy(),
+                                  human.iloc[rng.permutation(len(human))[:n]][_MARKS].to_numpy())
+    return {"available": True, "construction": "mouse mESC (in-dist) vs human K562 (OOD), 5 shared histone marks",
+            "method": "mahalanobis", "n_per_group": int(n), **cal,
+            "note": "cross-SPECIES real shift - the positive case; contrast the weak cross-CELL-TYPE tests "
+                    "(human cell types barely move in chromatin-mark space)"}
+
+
+def ood_feature_regime(seed: int = 42) -> dict:
+    """UQ2 REAL-SHIFT positive case #2 (reviewer-driven) - a genuinely different *chromatin-state* context
+    WITHIN one cell type, where the features actually move. In-distribution = euchromatic K562 bins (low
+    H3K9me3 + accessible); OOD = strongly heterochromatic K562 bins (top-decile H3K9me3 + low accessibility) -
+    a real, biologically-distinct regime (heterochromatin vs euchromatin). This complements the finding that
+    biological *context* shifts (cell type, species) do NOT move chromatin-mark distributions: a chromatin
+    *state* shift does, and the detector should fire on it."""
+    f = _FEAT / "chromatin_k562.parquet"
+    if not f.exists():
+        return {"available": False, "note": "K562 chromatin store absent"}
+    from pen_stack.wgenome.features import add_accessibility
+    d = add_accessibility(pd.read_parquet(f)).dropna(subset=_OOD_SCHEMA)
+    h9 = d["H3K9me3"]
+    acc = d["accessibility"]
+    eu = d[(h9 <= h9.quantile(0.5)) & (acc >= acc.quantile(0.5))]            # euchromatin (in-dist)
+    het = d[(h9 >= h9.quantile(0.9)) & (acc <= acc.quantile(0.3))]          # strong heterochromatin (OOD)
+    if len(eu) < 200 or len(het) < 200:
+        return {"available": False, "note": "too few euchromatin/heterochromatin bins"}
+    rng = np.random.default_rng(seed)
+    n = min(4000, len(eu) // 2, len(het))
+    ei = rng.permutation(len(eu))
+    det = OODDetector(method="mahalanobis").fit(eu.iloc[ei[:n]][_OOD_SCHEMA].to_numpy())
+    cal = det.calibrate_threshold(eu.iloc[ei[n:2 * n]][_OOD_SCHEMA].to_numpy(),
+                                  het.iloc[rng.permutation(len(het))[:n]][_OOD_SCHEMA].to_numpy())
+    return {"available": True, "construction": "K562 euchromatin (in-dist) vs K562 strong heterochromatin (OOD)",
+            "method": "mahalanobis", "n_per_group": int(n), **cal,
+            "note": "real WITHIN-cell-type chromatin-STATE shift (features move), unlike cross-context shifts"}
+
+
 def run(out_dir: str | Path = _OUT, alpha: float = ALPHA) -> dict:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     report = {"alpha": alpha, "nominal_coverage": 1 - alpha,
               "UQ1_durability_conformal": durability_conformal(alpha=alpha),
               "UQ2_ood": ood_eval(),
+              "UQ2_ood_real_shift_cross_species": ood_cross_species(),
               "UQ3_risk_coverage": risk_coverage()}
     (out_dir / "ws_uq_coverage.json").write_text(json.dumps(report, indent=2, default=str),
                                                  encoding="utf-8")

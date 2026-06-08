@@ -41,12 +41,19 @@ energetics model learns a per-(position, substitution) penalty from the measured
 log-additive binding-energy proxy.
 
 **Gate (MC3): ship only if it beats the 0.77 held-out baseline.** Leakage-safe — penalties fit on a TRAIN
-split, AUROC evaluated on a HELD-OUT split (positives = real off-targets core-preserved; negatives =
-core-disrupted decoys). **Result: held-out AUROC 0.88 vs 0.77** (robust 0.883–0.887 across 5 seeds) → it ships
-as the default ranker (`bridge/offtarget.py::site_risk`) via a committed derived penalty table
-(`data/curated/bridge_offtarget_energetics.json`), falling back to the position-weight model when absent.
+split, AUROC on a HELD-OUT split. On the **core_disrupted** construction (decoy flips the core; the *same*
+construction the published 0.77 uses) energetics scores **0.88 vs 0.77** (robust across 5 seeds) → it ships
+as the default ranker (`bridge/offtarget.py::site_risk`) via a committed penalty table, falling back to
+position-weight when absent.
 
-*Honest note:* both rankers separate the core-position decoy well (both weight the core); the energetics gain
-is the substitution identity at the **non-core** positions, which better ranks the residual mismatches in real
-off-targets. This is the **only** place v3.2 adds mechanism to a model rather than wrapping it — and it earned
-its place empirically (`validate/offtarget_energetics_eval.py`).
+*What the gain actually is (precise claim, after a reviewer-driven re-run).* The 0.88-vs-0.77 gap is **mostly
+the core-penalisation artifact**: in `core_disrupted`, positive and decoy differ only at the conserved core,
+and because training positives are core-preserved the energetics core penalty grows ~unboundedly with N (the
+position-weight model is capped). When the core is **held matched** and decoys differ only at a **non-core**
+position (`core_preserved`, n≈3,056), both models collapse to ~0.65–0.69 and the gap shrinks to **Δ≈0.04**
+(energetics 0.687 vs position-weight 0.646, stable across seeds). So substitution identity at non-core
+positions carries a **real but modest** signal (~0.04), not the headline ~0.115. **Caveat (equally true of the
+original 0.77):** both AUROCs use a favourable negative set — decoys derived from real off-targets, since
+Perry S2 observes only recombined sites. Reported precisely under `by_negative_construction` in
+`validate/offtarget_energetics_eval.py`. This is the only place v3.2 adds mechanism to a model rather than
+wrapping it; it earns its place on the comparable construction, with the non-core gain stated honestly.

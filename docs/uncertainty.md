@@ -21,11 +21,15 @@ is an honest output, reported with N, never hidden.
   "the 90% interval covers the truth ≥ 90% of the time." It is **marginal, not conditional**; per-query
   honesty comes from the OOD widening below.
 
-**Result (held-out TRIP, chromosome-grouped split):** the durability expression interval covers **0.895** vs a
-0.90 nominal (within the pre-registered ±3-pt tolerance). The silenced prediction set covers **0.996** — the
-guarantee holds but *over-covers*, because the silenced head is weak (OOF AUROC 0.64), so APS must emit large
-sets (mean size 1.93 of 2) to certify 90%. The probabilities are well-calibrated (ECE 0.037). This is the
-"wide intervals from a data-capped signal are honest" principle in action.
+**Result (held-out TRIP, chromosome-grouped split) — useful on the expression axis, near-vacuous on the
+silenced axis.** The durability **expression** interval covers **0.895** vs a 0.90 nominal (within the
+pre-registered ±3-pt tolerance) — this axis is where calibrated UQ is genuinely useful. The **silenced**
+prediction set covers **0.996** but with **mean size 1.93 of 2** — i.e. it almost always returns the *full*
+label set {silenced, not}. Stated plainly: **at this N the silenced-axis prediction set is
+informative-in-name-only** — the conformal *guarantee* holds, but because the head is weak (OOF AUROC 0.64),
+APS must emit the full set to certify 90% coverage, so the set carries almost no information. The probabilities
+are still well-calibrated (ECE 0.037). This is the "wide intervals from a data-capped signal are honest"
+principle: report the (near-vacuous) set honestly rather than a tight set the head cannot support.
 
 ## Out-of-distribution detection ([`pen_stack/wgenome/ood.py`](../pen_stack/wgenome/ood.py))
 
@@ -34,11 +38,23 @@ far a query sits from the training feature distribution (Mahalanobis / k-NN / is
 **widens the conformal interval / lowers the confidence** (a monotone widening factor). The threshold is
 calibrated on a held-out in-distribution-vs-OOD construction; the separation AUROC is reported.
 
-**Honest finding:** OOD across human cell types is **weak** — K562→HSPC AUROC 0.72, and even K562→HepG2 (a
-different germ layer) only 0.65–0.73 — because histone-mark distributions are substantially **conserved across
-cell types**. So "a different cell type" is only weakly out-of-distribution in this feature space. The detector
-*does* separate strong feature-space shifts (unit-tested at AUROC ≥ 0.75). OOD is reported as a **heuristic
-"far from what I've seen" signal, not a guarantee, and not strong across cell types** — exactly as it should be.
+**What the detector fires on (real data, multiple constructions):**
+
+| Construction | AUROC | Fires? |
+|---|---|---|
+| chromatin **state** shift — K562 euchromatin → heterochromatin | **0.98** | strongly (the real positive case) |
+| cross-cell-type — K562 → HSPC | 0.72 | weakly |
+| cross-germ-layer — K562 → HepG2 | 0.65 | weakly |
+| cross-**species** — mouse mESC → human K562 (5 shared marks) | **0.56** | barely |
+
+**Honest finding (sharpened by the cross-species test).** The detector fires *strongly* when the chromatin
+features genuinely move — a euchromatin→heterochromatin state shift separates at **AUROC 0.98** on real K562.
+But biological **context** shifts barely move the marginal mark distribution: different cell type (0.65–0.72)
+and even **different species** (0.56) are nearly indistinguishable. Histone-mark distributions are remarkably
+**conserved across cell types and species** (and per-track normalization compresses them further). So the
+extrapolation flag is reliable for **feature-space novelty** (chromatin state, extreme or missing tracks) but
+**weak for distinguishing biological context** — itself a useful, honest finding about the limits of
+chromatin-mark space for OOD. Reported as a heuristic "far from what I've seen" signal, not a guarantee.
 
 ## Selective prediction ([`pen_stack/validate/selective_prediction.py`](../pen_stack/validate/selective_prediction.py))
 

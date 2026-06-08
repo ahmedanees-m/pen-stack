@@ -24,8 +24,11 @@ honest negatives. The Genome-Writing Bench bumps to **v0.2**.
 - **WS-MC - mechanistic filters.** A hard target-site/PAM/att-site reachability reject
   (`pen_stack.planner.target_site`, `configs/target_sites.yaml`; controls 9/9); vehicle-specific
   delivery-sequence penalties (`pen_stack.planner.delivery_constraints`); and an off-target **energetics**
-  model (`pen_stack.bridge.offtarget_energetics`) that beats the 0.77 baseline at held-out AUROC 0.88 (robust
-  over 5 seeds) and ships as the default ranker.
+  model (`pen_stack.bridge.offtarget_energetics`) that beats the 0.77 baseline at held-out AUROC 0.88 on the
+  comparable (core-disrupted) construction and ships as the default ranker. A reviewer-driven re-run
+  (`by_negative_construction`) shows that gap is mostly the core-penalisation artifact; with the core held
+  matched the non-core substitution-identity gain is real but modest (Δ≈0.04, 0.687 vs 0.646). Both AUROCs
+  carry a favourable-negative-set caveat (decoys derived from real off-targets; no non-recombining background).
 - **WS-BA - bench v0.2 + uncertainty-aware agent.** Four trust tasks (T8 calibration, T9 selective prediction,
   T10 OOD honesty, T11 out-of-scope refusal) contrasting the uncertainty-aware agent with an over-confident
   baseline (4/4); PEN-Agent emits confidence + epistemic status + abstains; UI surfaces them. Bench re-SHA-locked.

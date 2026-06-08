@@ -34,6 +34,48 @@ def _auroc(scores, labels) -> float:
     return sum((p > n) + 0.5 * (p == n) for p in pos for n in neg) / (len(pos) * len(neg))
 
 
+def _make_decoy(seq: str, intended: str, mode: str, rng: random.Random) -> str | None:
+    """Build a negative from a (core-preserved) positive.
+
+    * ``core_disrupted`` - flip the core position (the original construction, comparable to the published
+      0.77): positive and decoy differ at exactly the conserved core. This can be won by sharp core
+      penalisation alone, so it does NOT isolate the non-core substitution-identity claim.
+    * ``core_preserved`` - flip a currently-MATCHED NON-core position to a different base, keeping the core
+      matched. The decoy therefore differs from the positive only at a non-core position - so out-ranking it
+      requires non-core position/identity information, isolating the actually-novel claim. Returns None when
+      the positive has no matched non-core position to flip.
+    """
+    if mode == "core_disrupted":
+        alt = rng.choice([b for b in "ACGT" if b != seq[_CORE0]])
+        return seq[:_CORE0] + alt + seq[_CORE0 + 1:]
+    # core_preserved: pick a non-core position that currently matches the intended target, then mismatch it
+    matched_noncore = [j for j in range(len(seq)) if j != _CORE0 and seq[j] == intended[j]]
+    if not matched_noncore:
+        return None
+    j = rng.choice(matched_noncore)
+    alt = rng.choice([b for b in "ACGT" if b != intended[j]])
+    return seq[:j] + alt + seq[j + 1:]
+
+
+def _eval_mode(test, model, w, mode: str, seed: int) -> dict:
+    rng = random.Random(seed + 1)
+    e_scores, p_scores, labels, n_decoys = [], [], [], 0
+    for seq, intended in test:
+        decoy = _make_decoy(seq, intended, mode, rng)
+        if decoy is None:
+            continue
+        for s, y in ((seq, 1), (decoy, 0)):
+            e_scores.append(energetic_risk(s, intended, model))
+            p_scores.append(risk_score(mismatches(s, intended), w))
+            labels.append(y)
+        n_decoys += 1
+    e_auroc, p_auroc = round(_auroc(e_scores, labels), 4), round(_auroc(p_scores, labels), 4)
+    return {"mode": mode, "n_pairs": n_decoys, "energetics_auroc": e_auroc,
+            "position_weight_auroc": p_auroc,
+            "energetics_beats_position_weight": bool(e_auroc > p_auroc),
+            "delta": round(e_auroc - p_auroc, 4)}
+
+
 def run(out: str | Path = _OUT, seed: int = 20260608, train_frac: float = 0.5) -> dict:
     s2 = load_insertion_sites()
     if s2.empty:
@@ -59,25 +101,17 @@ def run(out: str | Path = _OUT, seed: int = 20260608, train_frac: float = 0.5) -
     model = fit_penalties(train)            # penalties from TRAIN positives only
     w = position_weights()                  # the measured position-weight model (the 0.77 baseline)
 
-    rng2 = random.Random(seed + 1)
-    e_scores, p_scores, labels = [], [], []
-    for seq, intended in test:
-        mm = mismatches(seq, intended)
-        e_scores.append(energetic_risk(seq, intended, model))
-        p_scores.append(risk_score(mm, w))
-        labels.append(1)
-        alt = rng2.choice([b for b in "ACGT" if b != seq[_CORE0]])
-        decoy = seq[:_CORE0] + alt + seq[_CORE0 + 1:]
-        mmd = mismatches(decoy, intended)
-        e_scores.append(energetic_risk(decoy, intended, model))
-        p_scores.append(risk_score(mmd, w))
-        labels.append(0)
+    # The shipping gate uses core_disrupted (comparable to the published 0.77). The core_preserved mode is the
+    # reviewer-driven diagnostic that isolates whether NON-core substitution identity is the source of the gain.
+    cd = _eval_mode(test, model, w, "core_disrupted", seed)
+    cp = _eval_mode(test, model, w, "core_preserved", seed)
 
-    e_auroc = round(_auroc(e_scores, labels), 4)
-    p_auroc = round(_auroc(p_scores, labels), 4)
-    beats_baseline = bool(e_auroc > p_auroc)
-    beats_gate = bool(e_auroc > GATE_AUROC)
+    e_auroc, p_auroc = cd["energetics_auroc"], cd["position_weight_auroc"]
+    beats_baseline, beats_gate = bool(e_auroc > p_auroc), bool(e_auroc > GATE_AUROC)
     ships = bool(beats_baseline and beats_gate)
+    # the substitution-identity CLAIM holds only if energetics still beats position-weight when the core is
+    # held matched (core_preserved); otherwise the core_disrupted gain is mostly the core-penalisation artifact.
+    identity_claim_holds = bool(cp["energetics_beats_position_weight"] and cp["delta"] > 0.01)
     report = {
         "available": True, "n_train": len(train), "n_test_pairs": len(test),
         "energetics_heldout_auroc": e_auroc,
@@ -86,11 +120,19 @@ def run(out: str | Path = _OUT, seed: int = 20260608, train_frac: float = 0.5) -
         "energetics_beats_position_weight": beats_baseline,
         "energetics_beats_gate_0_77": beats_gate,
         "ships": ships,
-        "decision": ("SHIP — energetics beats both the position-weight model and the 0.77 gate on held-out"
-                     if ships else
-                     "DO NOT SHIP — energetics does not beat the 0.77 gate / position-weight on held-out; "
-                     "position-weight model stays the default (honest negative, no mechanism added that does "
-                     "not earn its place)"),
+        "by_negative_construction": {"core_disrupted": cd, "core_preserved": cp},
+        "substitution_identity_claim_holds": identity_claim_holds,
+        "favorable_negative_set_caveat": "BOTH AUROCs (energetics 0.88 AND the published position-weight 0.77) "
+            "are computed against a FAVOURABLE negative set - decoys constructed from real off-targets, not an "
+            "independent non-recombining background (Perry S2 observes only recombined sites). The core_preserved "
+            "diagnostic below isolates whether the energetics gain is real non-core signal vs the core artifact.",
+        "interpretation": ("substitution-identity gain is REAL: energetics still beats position-weight when the "
+                           "core is held matched (core_preserved)" if identity_claim_holds else
+                           "the core_disrupted gain is mostly the CORE-PENALISATION ARTIFACT: with the core held "
+                           "matched, energetics does not meaningfully beat position-weight - report accordingly"),
+        "decision": ("SHIP — energetics beats both position-weight and the 0.77 gate on the core_disrupted set "
+                     "(comparable to the published metric)" if ships else
+                     "DO NOT SHIP — does not beat the 0.77 gate; position-weight stays default"),
         "data_source": "Perry et al. 2025 Science 391:eadz0276 Table S2 (raw local/copyrighted; derived only)",
     }
     Path(out).parent.mkdir(parents=True, exist_ok=True)
