@@ -93,6 +93,30 @@ def _bin_of(offset_bp: int) -> int:
     return int(round(CONTACT_BINS / 2 + offset_bp / (SEQ_LEN_1MB / CONTACT_BINS)))
 
 
+# WS-UQ / UQ4 - honest confidence/abstention for the qualitative 3D flag. No calibrated probability is
+# claimed (Gate G-C). The only computable confidence signal is the MAGNITUDE of the strong-minus-neutral
+# separation: when it is within +/-ABSTAIN_EPS the strong and neutral inserts are indistinguishable, so the
+# flag ABSTAINS rather than emit a direction it cannot justify. Larger separations are a low-confidence
+# qualitative flag, never a calibrated risk.
+ABSTAIN_EPS = 0.01
+
+
+def uq4_confidence(aberrant: float) -> dict:
+    """Structured confidence/abstention for the 3D structural-risk flag (UQ4). Heuristic, not calibrated."""
+    mag = abs(float(aberrant))
+    if mag <= ABSTAIN_EPS:
+        level, abstain = "abstain", True
+    elif mag <= 0.05:
+        level, abstain = "low", False
+    else:
+        level, abstain = "qualitative_flag", False
+    return {"calibrated": False, "level": level, "abstain": abstain,
+            "epistemic_status": "not-computable" if abstain else "grounded-extrapolating",
+            "basis": f"strong-minus-neutral separation magnitude {mag:.4f} vs abstain_eps {ABSTAIN_EPS}",
+            "scope": "qualitative flag with confidence (Gate G-C); no calibrated probability, no coverage "
+                     "guarantee - no ground-truth enhancer-hijacking dataset exists to calibrate against"}
+
+
 def structural_risk(chrom: str, site_pos: int, oncogene_pos: int, ontology: str = HIC_ONTOLOGY,
                     provider: AlphaGenomeProvider | None = None, offline: bool = False) -> dict:
     """Strong-enhancer vs neutral insertion at `site_pos`; aberrant contact gain toward `oncogene_pos`."""
@@ -102,7 +126,12 @@ def structural_risk(chrom: str, site_pos: int, oncogene_pos: int, ontology: str 
     key = hashlib.sha256(key_src.encode()).hexdigest()[:24]
     cf = _CACHE / f"{key}.json"
     if cf.exists():
-        return json.loads(cf.read_text(encoding="utf-8"))
+        cached = json.loads(cf.read_text(encoding="utf-8"))
+        if cached.get("available") and not isinstance(cached.get("confidence"), dict):
+            # upgrade legacy string-confidence cache entries to the UQ4 structured form (no recompute)
+            cached["confidence"] = uq4_confidence(
+                cached.get("aberrant_contact_gain_strong_minus_neutral", 0.0))
+        return cached
     if offline or not provider.available():
         return {"available": False, "reason": "offline or AlphaGenome key absent", "key": key}
 
@@ -125,7 +154,7 @@ def structural_risk(chrom: str, site_pos: int, oncogene_pos: int, ontology: str 
            "per_insert": res, "aberrant_contact_gain_strong_minus_neutral": round(aberrant, 5),
            "structural_risk": round(float(max(0.0, aberrant)), 5),
            "flag": bool(aberrant > 0),
-           "confidence": "heuristic; not a calibrated probability (Gate G-C); sanity-check only",
+           "confidence": uq4_confidence(aberrant),
            "key": key}
     _CACHE.mkdir(parents=True, exist_ok=True)
     cf.write_text(json.dumps(out, default=str), encoding="utf-8")

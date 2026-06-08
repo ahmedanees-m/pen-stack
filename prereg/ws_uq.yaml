@@ -1,0 +1,62 @@
+# PEN-STACK v3.2 - WS-UQ (calibrated uncertainty + extrapolation detection) pre-registered acceptance.
+# Locked BEFORE the real-data run. The protocol, splits, OOD construction, and acceptance bars are fixed
+# here; results are reported verbatim in out/ws_uq_coverage.json + phase_3.2/ws_uq/WS_UQ_RESULTS.md,
+# including negatives. WS-UQ WRAPS the existing Phase-1 heads - nothing is retrained.
+cycle: "v3.2"
+workstream: "WS-UQ"
+prepared: "2026-06-08"
+
+protocol:
+  nominal_coverage: 0.90          # alpha = 0.10
+  split: "CHROMOSOME-grouped calibration/test split (50/50 of chromosomes, seed 42). Conformal calibration
+    uses the durability head's chromosome-grouped out-of-fold predictions (durability_baselines._cv_oof),
+    so adjacent 1 kb bins never leak between calibration and test - coverage respects the existing spatial
+    grouping that all Phase-1 models use."
+  reuse: "adapt/report.py (_ece/_auroc) for ECE + reliability; the v3.1 chromosome-grouped GroupKFold."
+
+UQ1_split_conformal:
+  deliverable: "pen_stack/wgenome/uncertainty.py (ConformalRegressor/ConformalClassifier/ConformalWrapper);
+    pen_stack/validate/uncertainty_eval.py::durability_conformal -> out/ws_uq_coverage.json"
+  method: "normalized-residual split-conformal for the durability EXPRESSION regression head (prediction
+    intervals); APS / Mondrian class-conditional conformal for the durability SILENCED classification head
+    (calibrated prediction sets). Finite-sample quantile rank ceil((n+1)(1-alpha))/n."
+  acceptance: "empirical coverage on the held-out TEST chromosomes within +/-3 pts of 0.90 (i.e. 0.87-0.93),
+    for the expression interval AND the silenced prediction set; reliability diagram + ECE reported."
+  fallback: "if marginal coverage fails under the grouped split, switch to group/Mondrian conformal
+    (per-group quantile, already implemented) and REPORT THE GAP. Never silently relax the 0.90 target."
+  scope: "coverage is MARGINAL (population-level), not conditional; small calibration N yields WIDE
+    intervals - reported with N as an honest output, not a defect."
+
+UQ2_ood:
+  deliverable: "pen_stack/wgenome/ood.py (OODDetector); uncertainty_eval.py::ood_eval -> out/ws_uq_coverage.json"
+  construction: "in-distribution = K562 chromatin-feature bins (accessibility + 5 histone marks; held-out
+    subsample); OOD = CD34+ HSPC chromatin-feature bins (a different cell type - a real distribution shift)
+    on the SAME 6-feature schema. Mahalanobis distance in feature space; threshold = Youden-J on the ROC."
+  acceptance: "OOD separation AUROC >= 0.75 on the held-out in-dist-vs-OOD construction; the interval-widening
+    factor is MONOTONE non-decreasing in the OOD score."
+  scope: "OOD is relative to training data, NOT ground truth - it flags 'far from what I have seen,' not
+    'wrong.' Reported as a heuristic confidence signal, not a guarantee."
+
+UQ3_selective_prediction:
+  deliverable: "pen_stack/validate/selective_prediction.py (risk_coverage_curve, propagate_plan_confidence);
+    uncertainty_eval.py::risk_coverage; planner plan-level confidence -> out/ws_uq_coverage.json"
+  method: "risk-coverage curve on the silenced head over grouped-held-out TRIP: confidence = |p-0.5|*2;
+    abstain on the least-confident; record accuracy of the retained fraction. Plan-level confidence by
+    Monte-Carlo over the per-axis conformal intervals (axes assumed independent - stated)."
+  acceptance: "accuracy STRICTLY IMPROVES (monotone non-decreasing, +tolerance) as low-confidence predictions
+    are abstained - the proof the uncertainty is useful. A flat curve is reported as an honest negative."
+
+UQ4_offtarget_3d_confidence:
+  deliverable: "pen_stack/bridge/offtarget.py (confidence band on the off-target ranker);
+    pen_stack/wgenome/structure3d.py (explicit confidence/abstention on the 3D flag)"
+  acceptance: "HONEST - these may support only abstention / low-confidence labeling, not calibrated intervals;
+    report what is achievable, no overclaim. No coverage guarantee is claimed for the qualitative 3D flag."
+
+gate_G_UQ: "WS-EP and WS-BA (bench v0.2) may not ship until (a) UQ1 conformal coverage holds within tolerance
+  (or is honestly reported with group/Mondrian conformal), AND (b) the UQ3 risk-coverage curve is produced.
+  The risk-coverage gate: high-confidence predictions must out-accuracy low-confidence ones, or the
+  uncertainty is reported as not-yet-useful (a negative result, not hidden)."
+
+locked_files:
+  - prereg/ws_uq.yaml
+  - prereg/ws_b.yaml              # WS-UQ reuses the WS-B durability OOF machinery + chromosome-grouped CV

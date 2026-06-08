@@ -19,6 +19,7 @@ from enum import Enum
 from functools import lru_cache
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import yaml
 
@@ -109,6 +110,74 @@ def score_candidates(cands: pd.DataFrame, intent: EditIntent | str, cargo_bp: in
     keys = ["score"] + [c for c in ("chrom", "bin", "gene") if c in out.columns]
     asc = [False] + [True] * (len(keys) - 1)
     return out.sort_values(keys, ascending=asc, kind="stable").reset_index(drop=True)
+
+
+# ---------------------------------------------------------------- WS-UQ / UQ3 plan-level confidence
+
+# Default per-axis conformal half-widths used when an explicit WS-UQ calibration is not supplied. These are
+# documented placeholders, not magic numbers: ``durability`` is the widest because the durability signal is
+# the weakest (v3.1.1: silenced-AUROC ~0.65); ``safety`` and ``activity`` are tighter. A caller that has run
+# the conformal calibration (validate/uncertainty_eval) passes the measured half-widths instead.
+DEFAULT_AXIS_HALF_WIDTHS = {"safety": 0.10, "durability": 0.15, "activity": 0.10}
+
+
+def _axis_intervals(row, half_widths: dict, ood_factor: float = 1.0) -> dict:
+    """Per-axis {point, lo, hi} for a candidate, intervals widened by the OOD factor (UQ2 hook)."""
+    cols = {"safety": "safety", "durability": "p_durable", "activity": "writer_activity"}
+    out = {}
+    for axis, col in cols.items():
+        p = float(row[col]) if col in row and pd.notna(row[col]) else 0.5
+        h = float(half_widths.get(axis, 0.1)) * float(ood_factor)
+        out[axis] = {"point": p, "lo": max(0.0, p - h), "hi": min(1.0, p + h)}
+    return out
+
+
+def attach_uncertainty(scored: pd.DataFrame, intent: EditIntent | str,
+                       half_widths: dict | None = None, ood_factor=None,
+                       threshold: float = 0.5, abstain_below: float = 0.5) -> pd.DataFrame:
+    """UQ3 - propagate per-axis conformal intervals into a plan-level confidence + epistemic status.
+
+    Additive: takes the output of :func:`score_candidates`/:func:`plan` and appends ``confidence``,
+    ``score_lo``/``score_hi`` (90% plan-score band), ``abstain`` and ``epistemic_status`` per plan, using
+    :func:`selective_prediction.propagate_plan_confidence` over the intent's axis weights. ``ood_factor`` may
+    be a scalar or a per-row sequence (from :class:`wgenome.ood.OODDetector.widen_factor`) so out-of-
+    distribution sites get wider bands and lower confidence - the grounded-confident vs grounded-
+    extrapolating distinction. Does not change the existing ranking columns.
+    """
+    from pen_stack.validate.selective_prediction import propagate_plan_confidence
+    intent = EditIntent(intent) if not isinstance(intent, EditIntent) else intent
+    w = load_intent_weights()["intents"][intent.value]
+    weights = {"safety": w["safety"], "durability": w["durability"], "activity": w["activity"]}
+    half_widths = half_widths or DEFAULT_AXIS_HALF_WIDTHS
+    out = scored.copy().reset_index(drop=True)
+    if ood_factor is None:
+        ood_factor = [1.0] * len(out)
+    elif np.isscalar(ood_factor):
+        ood_factor = [float(ood_factor)] * len(out)
+
+    conf, lo, hi, status, abst = [], [], [], [], []
+    for i, row in out.iterrows():
+        of = float(ood_factor[i])
+        axes = _axis_intervals(row, half_widths, of)
+        prop = propagate_plan_confidence(axes, weights, threshold=threshold)
+        c = prop["confidence"]
+        conf.append(round(c, 4))
+        lo.append(round(prop["lo"], 4))
+        hi.append(round(prop["hi"], 4))
+        is_abstain = bool(c < abstain_below)
+        abst.append(is_abstain)
+        if of >= 1.5:
+            status.append("grounded-extrapolating")
+        elif is_abstain:
+            status.append("not-computable")
+        else:
+            status.append("grounded-confident")
+    out["confidence"] = conf
+    out["score_lo"] = lo
+    out["score_hi"] = hi
+    out["abstain"] = abst
+    out["epistemic_status"] = status
+    return out
 
 
 def gene_coords_path() -> Path:

@@ -96,6 +96,36 @@ def scan_offtargets(fasta: str | Path, target_core: str, chroms: list[str],
     return df.sort_values("risk", ascending=False).reset_index(drop=True) if not df.empty else df
 
 
+# ---------------------------------------------------------------- WS-UQ / UQ4 confidence band
+
+# Held-out ranking AUROC of the position-weight off-target ranker on the measured Perry-2025 profile
+# (Genome-Writing Bench T4 leaderboard). This is the ONLY validated number for the ranker, so it is the
+# basis of the confidence band - the ranker is calibrated as a RANKER (AUROC ~0.77), not as a per-site
+# recombination probability. UQ4 is honest: we report rank confidence + abstain when not scannable, we do
+# NOT emit a calibrated per-pseudosite probability the data cannot support.
+RANKER_HELDOUT_AUROC = 0.77
+
+
+def offtarget_confidence(applicable: bool, scanned: bool, measured_weights: bool,
+                         n_candidates: int = 0) -> dict:
+    """Honest confidence band for the off-target ranker (UQ4). Abstains when no genome-wide scan is run."""
+    if not applicable:
+        return {"level": "abstain", "abstain": True, "calibrated": False,
+                "epistemic_status": "not-computable",
+                "basis": "writer family is not RNA-guided pseudosite-scannable"}
+    if not scanned:
+        return {"level": "abstain", "abstain": True, "calibrated": False,
+                "epistemic_status": "not-computable",
+                "basis": "engine ready but no genome-wide scan run (need target_core + hg38 fasta)"}
+    return {"level": "ranker_calibrated", "abstain": False, "calibrated": True,
+            "ranker_heldout_auroc": RANKER_HELDOUT_AUROC,
+            "epistemic_status": "grounded-confident" if measured_weights else "grounded-extrapolating",
+            "basis": ("position weights from the MEASURED Perry-2025 profile" if measured_weights
+                      else "literature-config position weights (measured profile absent)"),
+            "scope": f"calibrated as a RANKER (held-out AUROC ~{RANKER_HELDOUT_AUROC}) over {n_candidates} "
+                     "pseudosites, NOT as a per-site recombination probability"}
+
+
 # ---------------------------------------------------------------- Phase-3 Planner hook + design API
 
 def predict_offtargets(writer_family: str, site: tuple | None = None, target_core: str | None = None,
@@ -109,16 +139,21 @@ def predict_offtargets(writer_family: str, site: tuple | None = None, target_cor
     """
     if writer_family not in {"bridge_IS110", "seek_IS1111"}:
         return {"family": writer_family, "applicable": False,
-                "note": "off-target pseudosite scan applies to RNA-guided bridge/seek recombinases only"}
+                "note": "off-target pseudosite scan applies to RNA-guided bridge/seek recombinases only",
+                "confidence": offtarget_confidence(applicable=False, scanned=False, measured_weights=False)}
     if not (target_core and fasta):
         return {"family": writer_family, "applicable": True, "status": "engine_ready", "site": site,
-                "note": "provide target_core + hg38 fasta (pen-bridge design) for a genome-wide scan"}
+                "note": "provide target_core + hg38 fasta (pen-bridge design) for a genome-wide scan",
+                "confidence": offtarget_confidence(applicable=True, scanned=False, measured_weights=False)}
     df = scan_offtargets(fasta, target_core, chroms or [], )
     n_exact = int((df["n_mm"] == 0).sum()) if not df.empty else 0
+    measured = not load_measured_profile().empty
     return {"family": writer_family, "applicable": True, "status": "scanned",
             "target_core": target_core, "n_candidates": int(len(df)),
             "n_exact_matches": n_exact,
-            "top": df.head(top).to_dict("records") if not df.empty else []}
+            "top": df.head(top).to_dict("records") if not df.empty else [],
+            "confidence": offtarget_confidence(applicable=True, scanned=True, measured_weights=measured,
+                                               n_candidates=int(len(df)))}
 
 
 if __name__ == "__main__":  # pragma: no cover
