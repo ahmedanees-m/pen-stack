@@ -1,8 +1,15 @@
 """WS-BA unit tests (Phase 3.2) - bench v0.2 trust tasks + uncertainty-aware agent. Pure-logic, CI-safe."""
 from __future__ import annotations
 
-from benchmarks.genome_writing_bench import harness, solvers
-from pen_stack.validate import bench_trust_tasks as B
+import sys
+from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parents[2]      # repo root (holds benchmarks/, bench/) - not an installed pkg
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+from benchmarks.genome_writing_bench import harness, solvers  # noqa: E402
+from pen_stack.validate import bench_trust_tasks as B  # noqa: E402
 
 
 def test_bench_is_v0_2_with_trust_tasks():

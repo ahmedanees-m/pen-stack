@@ -246,6 +246,9 @@ pen-stack/
 │   │   ├── safety.py                 calibrated genotoxicity-risk model (chrom-block CV + baseline)
 │   │   ├── durability.py             conditional chromatin->expression model (TRIP-trained, transferable)
 │   │   ├── writability.py            decomposable safety x durability x reachability integration
+│   │   ├── uncertainty.py            v3.2 conformal intervals/sets over the heads (no retraining)
+│   │   ├── ood.py                    v3.2 out-of-distribution / extrapolation detector
+│   │   ├── structure3d.py            3D structural-risk axis (AlphaGenome contact-map deltas, 11 hijack loci)
 │   │   └── export_tracks.py          BigWig / BED atlas export
 │   ├── atlas/                        Writer Atlas + WT-KB + cross-link (Papers 1-2)
 │   │   ├── schema.py                 pydantic WriterEntry (enforces >=1 DOI per row)
@@ -258,29 +261,36 @@ pen-stack/
 │   ├── mech/                         mechanism classification at scale (audited 18-family whitelist v1.2.1)
 │   ├── score/                        re-grounded axes + therapeutic-readiness scoring
 │   ├── planner/                      Write Planner (Paper 3): optimize / cargo / cargo_polish / multiplex / pipeline
+│   │                                   + v3.2 target_site (hard PAM/att/core reject) / delivery_constraints
 │   ├── bridge/                       bridge off-target engine (Paper 4): offtarget / fold_qc / guide_qc / pipeline / cli
+│   │                                   + v3.2 offtarget_energetics (position x substitution; held-out 0.88, ships)
 │   ├── agent/                        agentic platform: tools / orchestrator / pen_agent / mcp_server / guardrails
+│   │                                   + v3.2 epistemic (3-tier status) / scope (known-unknowns matcher)
 │   ├── adapt/                        local recalibration / private-data adaptation behind a gate (v3.1, WS-F)
+│   ├── env/                          v3.2 optional Gymnasium interface (genome_writing_env; [env] extra)
 │   ├── monitor/                      PEN-MONITOR living database (Europe PMC)
 │   ├── rag/                          grounded, cited Q&A (hybrid LLM: Ollama primary, Nemotron fallback)
-│   ├── validate/                     benchmarks: blind_gsh_discovery / durability_baselines (B1+B2 with CIs) /
-│   │                                   seq_vs_measured / writer_recovery / within_locus_ranking / agent_eval /
-│   │                                   ungrounded_baseline (T7) / guide_qc_demo / adapt_demo
-│   ├── wgenome/structure3d.py        3D structural-risk axis (AlphaGenome contact-map deltas, 11 hijack loci)
+│   ├── validate/                     benchmarks: blind_gsh_discovery / durability_baselines / writer_recovery /
+│   │                                   within_locus_ranking / agent_eval / ungrounded_baseline (T7) / adapt_demo /
+│   │                                   v3.2 selective_prediction / uncertainty_eval / bench_trust_tasks (T8-T11) /
+│   │                                   out_of_scope_refusal / target_site_controls / offtarget_energetics_eval
 │   ├── data/                         ingestion (genome, chromatin, integration, TRIP, safety annotations)
 │   ├── server/api.py                 FastAPI REST (atlas, crosslink, writable, plan, bridge, ask)
-│   ├── ui/app.py                     Streamlit web app (11 pages)
+│   ├── ui/app.py                     Streamlit web app (16 pages; v3.2 PEN-Agent shows confidence + epistemic status)
 │   └── cli.py                        unified CLI
-├── benchmarks/genome_writing_bench/  Genome-Writing Bench v0.1 (tasks / harness / solvers / LEADERBOARD / SHAs)
+├── benchmarks/genome_writing_bench/  Genome-Writing Bench v0.2 (T1-T11; tasks / harness / solvers / LEADERBOARD / SHAs)
 ├── bench/run.py                      one-command bench entrypoint (--agent, --verify)
 ├── scripts/                          reproducible pipeline drivers (p1_*, p2_*, p4_*, ws_*_report)
-├── configs/                          pinned datasets + thresholds + curation (YAML; gsh_validated_heldout = 51-locus gold set)
-├── prereg/                           SHA-locked success criteria (paper1..4 + ws_a..ws_h + locks)
-├── data/curated/                     small committed tables (universe, gene coords, measured bridge profile)
+├── configs/                          pinned datasets + thresholds + curation (YAML); v3.2: known_unknowns /
+│                                       target_sites / delivery_constraints
+├── prereg/                           SHA-locked success criteria (paper1..4 + ws_a..ws_h + v3.2 ws_{uq,ep,mc,ba} + locks)
+├── data/curated/                     small committed tables (universe, gene coords, measured bridge profile,
+│                                       v3.2 bridge_offtarget_energetics.json)
 ├── data/llm_bench_cache/             28 cached ungrounded-LLM transcripts (T7, offline/CI replay)
 ├── data/alphagenome_cache/           cached AlphaGenome predictions (tracks + contact maps; offline reproducibility)
 ├── tests/unit/                       unit + regression + blind-validation suite
-├── docs/                             mkdocs site (cards, tutorials, INFRA, DEPLOY, MCP)
+├── docs/                             mkdocs site (cards, tutorials, INFRA, DEPLOY, MCP);
+│                                       v3.2: uncertainty.md / scope.md / mechanistic_constraints.md / BACKLOG.md
 ├── docker/                           CUDA image + UI image + pinned requirements
 ├── tools/penctl.py                   laptop<->VM orchestrator (paramiko SSH/SFTP, Docker-only)
 ├── docker-compose.yml                one-command self-hostable platform
