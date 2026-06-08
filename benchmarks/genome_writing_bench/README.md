@@ -1,11 +1,18 @@
-# Genome-Writing Bench v0.1
+# Genome-Writing Bench v0.2
 
 The first benchmark for the **writing** side of genome engineering — *where* to write (site selection),
 *what* writer to use, *how* to design the cargo, and *what off-target / structural risk* a write carries —
 complementing the many editing-side (Cas9/base/prime) tools and benchmarks.
 
-It is built into PEN-STACK (v3.1, WS-E) and consolidates three already-validated evaluation families into
-one reproducible, SHA-locked suite with a baseline leaderboard.
+It is built into PEN-STACK (v3.1 WS-E; **v0.2 adds the trust tasks in v3.2 WS-BA**) and consolidates the
+validated planning, grounding, and now **calibration / scope-awareness** evaluation families into one
+reproducible, SHA-locked suite with a baseline leaderboard.
+
+**v0.2 (v3.2):** four TRUST tasks contrasting the uncertainty-aware agent with an over-confident baseline —
+**T8** calibration (conformal coverage vs nominal), **T9** selective prediction (does abstaining improve
+accuracy?), **T10** OOD honesty (flag extrapolation vs over-answer), **T11** out-of-scope refusal (defer
+known-unknowns vs fabricate). This extends the story from "grounding separates agents" to "calibration +
+scope-awareness separates *trustworthy* agents."
 
 ## Design principles
 
@@ -31,6 +38,11 @@ one reproducible, SHA-locked suite with a baseline leaderboard.
 | T4 off-target | `bridge_offtarget_discrimination` | model vs Hamming AUROC | Perry et al. 2025 measured off-targets |
 | T5 intent | `intent_specification_compliance` | specification-correct cases | edit-intent table |
 | T6 no-fabrication | `agent_no_fabrication` | **hard gate**: 0 fabricated numbers | agent trace = direct tool calls |
+| T7 ungrounded contrast | `ungrounded_llm_contrast` | fabrication rate of the same models with no tools | cached LLM transcripts |
+| **T8 calibration** | `calibration_coverage` | conformal coverage vs nominal (vs uncalibrated) | held-out TRIP (N=11,433) |
+| **T9 selective prediction** | `selective_prediction_usefulness` | accuracy of high-conf decile vs no abstention | held-out TRIP risk-coverage |
+| **T10 OOD honesty** | `ood_honesty` | OOD flag rate (vs over-confident never-flags) | constructed OOD set (deterministic) |
+| **T11 out-of-scope** | `out_of_scope_refusal` | deferral rate (vs ungrounded no-scope) | known-unknowns registry |
 
 ## Solvers
 

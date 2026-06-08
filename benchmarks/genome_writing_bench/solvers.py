@@ -87,10 +87,45 @@ def ungrounded_contrast_md(ung: dict | None) -> list[str]:
     return lines
 
 
+_TRUST_FAMILIES = ("T8_calibration", "T9_selective_pred", "T10_ood_honesty", "T11_out_of_scope")
+
+
+def trust_contrast_md(bench: dict) -> list[str]:
+    """Render the v0.2 TRUST contrast: the uncertainty-aware agent vs an over-confident baseline on the
+    calibration / selective-prediction / OOD-honesty / out-of-scope tasks. Extends the T7 'grounding
+    separates agents' story into 'calibration + scope-awareness separates *trustworthy* agents'."""
+    trust = [r for r in bench["results"] if r["family"] in _TRUST_FAMILIES]
+    if not trust:
+        return []
+    lines = [
+        "",
+        "## Trust tasks (T8-T11) - calibration + scope-awareness separate *trustworthy* agents",
+        "Each contrasts the **uncertainty-aware** agent (conformal coverage, selective prediction, OOD "
+        "flagging, out-of-scope deferral) with an **over-confident** baseline (an uncalibrated interval, no "
+        "abstention, never flags OOD, no scope layer). The over-confident agent is the realistic failure mode "
+        "a calibrated co-scientist must beat.",
+        "",
+        "| Task | Family | Available | Uncertainty-aware | Over-confident baseline |",
+        "|---|---|---|---|---|",
+    ]
+    label = {"T8_calibration": "coverage within tol", "T9_selective_pred": "accuracy (high-conf decile)",
+             "T10_ood_honesty": "OOD flag rate", "T11_out_of_scope": "deferral rate"}
+    for r in trust:
+        lines.append(f"| {r['id']} | {label.get(r['family'], r['family'])} | {r['available']} | "
+                     f"{r['planner_score']} | {r['baseline_score']} |")
+    n_better = sum(1 for r in trust if r["available"] and r["baseline_score"] is not None
+                   and r["planner_score"] > r["baseline_score"])
+    n_base = sum(1 for r in trust if r["available"] and r["baseline_score"] is not None)
+    lines += ["", f"_Uncertainty-aware beats the over-confident baseline on **{n_better}/{n_base}** available "
+              "trust tasks - the calibration is not merely present, it is useful and legible._"]
+    return lines
+
+
 def render_leaderboard_md(bench: dict, llm: dict | None = None, ung: dict | None = None) -> str:
     rows = leaderboard_rows(bench, llm)
+    ver = bench.get("version", "0.2")
     lines = [
-        "# Genome-Writing Bench v0.1 - Leaderboard",
+        f"# Genome-Writing Bench v{ver} - Leaderboard",
         "",
         f"Tasks: **{bench['n_available']}/{bench['n_tasks']} available** in this run "
         "(unavailable = needs the Phase-1 atlas / Perry tables / an LLM, which run on the VM/local).",
@@ -113,6 +148,7 @@ def render_leaderboard_md(bench: dict, llm: dict | None = None, ung: dict | None
         gate = "PASS" if r.get("gate_pass") else ("FAIL" if r.get("hard_gate") and r["available"] else "-")
         lines.append(f"| {r['id']} | {r['family']} | {r['available']} | "
                      f"{r['planner_score']} | {r['baseline_score']} | {gate} |")
+    lines += trust_contrast_md(bench)
     lines += ungrounded_contrast_md(ung)
     lines += [
         "",

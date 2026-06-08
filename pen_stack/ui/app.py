@@ -594,31 +594,49 @@ elif page == "Guide QC":
                f"{demo['every_bad_flagged']} | {demo['scope']}")
 
 elif page == "PEN-Agent":
-    st.markdown("### PEN-Agent - *grounded write-planning state machine (v3.1)*")
+    st.markdown("### PEN-Agent - *grounded, uncertainty-aware write-planning state machine (v3.2)*")
     st.caption("goal -> site -> writer -> cargo (+Cargo Polish) -> off-target -> 3D structural risk -> "
                "report. Every number is copied from a validated tool with provenance; a step that cannot "
-               "ground a value is degraded or refused, never invented. Runs without an LLM.")
+               "ground a value is degraded or refused, never invented. v3.2 adds a calibrated plan "
+               "confidence, a three-tier epistemic status per step, abstention, and out-of-scope deferral.")
     gene = st.text_input("Target gene", "TRAC")
     intent = st.selectbox("Edit intent", ["knock_in_with_disruption", "safe_harbour_insertion",
                                           "high_durability_insertion", "regulatory_excision",
                                           "repeat_excision"])
     cargo_bp = int(st.number_input("Cargo size (bp)", 100, 40000, 2000, key="pa_cargo"))
     payload = st.text_area("Payload sequence (optional - adds Cargo Polish)", "", height=80)
+    question = st.text_input("Optional question (checked against the known-unknowns scope registry)", "")
     if st.button("Run PEN-Agent", type="primary"):
         from pen_stack.agent.pen_agent import plan_write_session
         with st.spinner("sequencing validated tools..."):
-            r = plan_write_session(gene, intent, cargo_bp, ct, payload_seq=payload or None)
+            r = plan_write_session(gene, intent, cargo_bp, ct, payload_seq=payload or None,
+                                   question=question or None)
         cls = "v-go" if r["no_fabrication"] and r["completed"] else (
             "v-cau" if r["no_fabrication"] else "v-no")
         st.markdown(f'<div class="verdict {cls}">no_fabrication {r["no_fabrication"]} | completed '
                     f'{r["completed"]} | {len(r["degraded_modes"])} degraded | {len(r["refusals"])} '
                     f'refused</div>', unsafe_allow_html=True)
+        if r.get("out_of_scope"):
+            st.error(f"OUT OF SCOPE (deferred, zero fabrication): {r['out_of_scope']['deferral']}")
+        # v3.2 trust line: calibrated plan confidence + abstention + epistemic-status rollup
+        es = r.get("epistemic_summary", {}).get("counts", {})
+        conf = r.get("plan_confidence")
+        st.markdown(
+            f'<div class="card">plan confidence <b>{conf if conf is not None else "n/a"}</b> | '
+            f'abstained <b>{r.get("abstained")}</b> | epistemic: '
+            f'grounded-confident <b>{es.get("grounded-confident", 0)}</b>, '
+            f'grounded-extrapolating <b>{es.get("grounded-extrapolating", 0)}</b>, '
+            f'not-computable <b>{es.get("not-computable", 0)}</b></div>', unsafe_allow_html=True)
         _icon = {"ok": "[ok]", "degraded": "[degraded]", "refused": "[refused]"}
         for step in r["steps"]:
+            epi = (step.get("epistemic") or {}).get("epistemic_status", "")
             with st.expander(f"{_icon.get(step['status'], '')} {step['name']}  "
-                             f"(tool: {step.get('tool') or '-'})"):
+                             f"(tool: {step.get('tool') or '-'})  -  {epi}"):
                 if step.get("provenance"):
                     st.caption(f"provenance: {step['provenance']}")
+                if step.get("epistemic"):
+                    st.caption(f"epistemic: {step['epistemic'].get('epistemic_status')} - "
+                               f"{step['epistemic'].get('reason')}")
                 if step.get("reason"):
                     st.warning(step["reason"])
                 if step.get("result"):
@@ -626,10 +644,12 @@ elif page == "PEN-Agent":
         st.caption(r["disclaimer"])
 
 elif page == "Genome-Writing Bench":
-    st.markdown("### Genome-Writing Bench v0.1 - *the writing-side benchmark (v3.1)*")
-    st.caption("Six tasks with deterministic scorers and documented ground truth; no task is scored against "
-               "a circular label. The planner is compared to a naive baseline and to a grounded LLM agent "
-               "that cannot fabricate.")
+    st.markdown("### Genome-Writing Bench v0.2 - *the writing-side benchmark (v3.2)*")
+    st.caption("Tasks with deterministic scorers and documented ground truth; no task is scored against "
+               "a circular label. v0.2 adds the TRUST tasks - calibration (T8), selective prediction (T9), "
+               "OOD honesty (T10), out-of-scope refusal (T11) - contrasting the uncertainty-aware agent with "
+               "an over-confident baseline. The planner is also compared to a naive baseline and a grounded "
+               "LLM agent that cannot fabricate.")
     from pen_stack._resources import project_root
     lb = project_root() / "benchmarks" / "genome_writing_bench" / "LEADERBOARD.md"
     res = project_root() / "out" / "bench_results.json"
