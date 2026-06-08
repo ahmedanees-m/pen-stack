@@ -233,6 +233,7 @@ def run(out_dir: str | Path = _OUT, alpha: float = ALPHA) -> dict:
               "UQ1_durability_conformal": durability_conformal(alpha=alpha),
               "UQ2_ood": ood_eval(),
               "UQ2_ood_real_shift_cross_species": ood_cross_species(),
+              "UQ2_ood_feature_regime": ood_feature_regime(),
               "UQ3_risk_coverage": risk_coverage()}
     (out_dir / "ws_uq_coverage.json").write_text(json.dumps(report, indent=2, default=str),
                                                  encoding="utf-8")
