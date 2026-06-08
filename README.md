@@ -14,12 +14,12 @@ and durably write new DNA, **which enzyme** can write it there, and **how** to d
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-115%20passing-success.svg)](tests/)
+[![Version](https://img.shields.io/badge/version-3.2.0-blue.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-176%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
-[![Genome-Writing Bench v0.1](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.1-6f42c1.svg)](benchmarks/genome_writing_bench/)
+[![Genome-Writing Bench v0.2](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.2-6f42c1.svg)](benchmarks/genome_writing_bench/)
 
 **Built on five prior, separately published repositories:**
 
@@ -57,6 +57,25 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v3.2 — a calibrated, self-aware co-scientist
+
+v3.2 makes the genome-writing funnel **trustworthy**: every value the funnel returns now carries a calibrated
+confidence, an extrapolation flag, and — where the biology is beyond any tool here — an explicit "out of
+scope." The LLM may plan, but ideas pass through computable filters, and the system says *how much to trust
+each number* and *where the edge of its knowledge is*. Every workstream is pre-registered
+(`prereg/ws_{uq,ep,mc,ba}.yaml`, SHA-locked) and reports its honest negatives.
+
+| Workstream | What it adds | Honest headline result |
+|---|---|---|
+| **UQ — calibrated uncertainty + OOD** | conformal prediction intervals / sets over the existing heads (no retraining), an out-of-distribution detector, and selective prediction | durability **expression interval covers 0.895** vs 0.90 nominal on held-out chromosomes (within tolerance); the silenced set over-covers (0.996) because the head is weak — honest; **risk-coverage: accuracy rises 0.739→0.930** as low-confidence predictions are abstained (the uncertainty is *useful*). OOD across human cell types is **weak** (K562→HSPC AUROC 0.72, K562→HepG2 0.65–0.73) — chromatin marks are conserved across cell types; reported as a heuristic signal, not a guarantee |
+| **EP — epistemic scope** | a three-tier status (grounded-confident / grounded-extrapolating / not-computable) on every output, plus a known-unknowns registry + scope matcher | out-of-scope probes deferred **1.0**, in-scope false-defer **0.0** (zero fabrication); the no-fabrication hard gate still holds. The unknown funnel (structure→phenotype, in-vivo immunogenicity, long-term durability, epistasis, polygenic, germline) is made *legible*, not closed |
+| **MC — mechanistic filters** | a hard target-site/PAM/att-site reachability reject, vehicle-specific delivery-sequence penalties, and an off-target **energetics** model | positive+negative target-site controls 9/9 (a physically impossible writer–site pairing is rejected); **off-target energetics (position × substitution identity) beats the 0.77 baseline at held-out AUROC 0.88** (robust over 5 seeds) and ships as the default ranker |
+| **BA — bench v0.2 + uncertainty-aware agent** | four trust tasks (T8 calibration, T9 selective prediction, T10 OOD honesty, T11 out-of-scope) + the agent emits confidence + epistemic status + abstains | the uncertainty-aware agent beats an over-confident baseline **4/4** on the trust tasks; the leaderboard now separates *trustworthy* agents, not just grounded ones |
+
+Optional: a thin **Gymnasium environment interface** (`pen_stack/env/`, `[env]` extra) for agent-developer
+interoperability — interface only, no RL superiority claimed. See `docs/uncertainty.md`, `docs/scope.md`,
+`docs/mechanistic_constraints.md`.
 
 ## What is new in v3.1
 
@@ -157,7 +176,7 @@ PEN-STACK is organised as **two reference layers + one engine + a services layer
   magnitude, rho approximately 0.30). A first-of-its-kind beachhead for a genuinely unoccupied gap, not a
   Nature-tier breakthrough; the Writable Genome (Paper 1) remains the flagship novelty.
 
-## The Genome-Writing Bench (v3.1, M2)
+## The Genome-Writing Bench (v0.2, M2)
 
 The first benchmark for the **writing** side of genome engineering - *where* to write, *what* writer to use,
 *how* to design the cargo, and *what off-target / structural risk* a write carries - complementing the many

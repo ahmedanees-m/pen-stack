@@ -8,18 +8,19 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_3_1_0_release_everywhere():
-    assert pen_stack.__version__ == "3.1.0"
-    assert 'version = "3.1.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 3.1.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+def test_version_consistent_everywhere():
+    # consistency, not a pinned value (the version bumps per cycle): __init__ == pyproject == CITATION
+    v = pen_stack.__version__
+    assert v.startswith("3.")
+    assert f'version = "{v}"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert f"version: {v}" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
 
 
-def test_readme_updated_for_v3_1():
+def test_readme_version_badge_matches():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "version-3.1.0" in r                       # version badge bumped
-    assert "Genome-Writing Bench" in r and "What is new in v3.1" in r
-    assert "3.0.0a5" not in r                          # no stale version string left
-    assert "tests-115" in r                            # test-count badge updated
+    assert f"version-{pen_stack.__version__}" in r     # version badge matches the package version
+    assert "Genome-Writing Bench" in r
+    assert "3.0.0a5" not in r                          # no stale alpha version string left
 
 
 def test_wsh_docs_exist():

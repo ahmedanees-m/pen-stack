@@ -3,6 +3,41 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [3.2.0] - 2026-06-08 - v3.2 release: a calibrated, self-aware co-scientist
+
+The v3.2 cycle makes the genome-writing funnel **trustworthy**: every value carries a calibrated confidence,
+an extrapolation flag, and — where the biology is beyond any tool here — an explicit out-of-scope deferral.
+Workstreams UQ/EP/MC/BA, each pre-registered (`prereg/ws_{uq,ep,mc,ba}.yaml`, SHA-locked) and reporting its
+honest negatives. The Genome-Writing Bench bumps to **v0.2**.
+
+### Added
+- **WS-UQ - calibrated uncertainty + OOD.** Conformal prediction intervals (durability expression) and APS /
+  Mondrian prediction sets (safety, silenced) wrapping the existing heads with no retraining
+  (`pen_stack.wgenome.uncertainty`); an OOD detector that widens intervals out-of-distribution
+  (`pen_stack.wgenome.ood`); selective prediction + plan-level confidence
+  (`pen_stack.validate.selective_prediction`). Held-out coverage 0.895 vs 0.90 nominal; risk-coverage accuracy
+  0.739->0.930 under abstention. OOD across human cell types is weak (0.65-0.73) - reported as a heuristic.
+- **WS-EP - epistemic scoping.** A three-tier status (grounded-confident / grounded-extrapolating /
+  not-computable) on every agent output (`pen_stack.agent.epistemic`); a known-unknowns registry + scope
+  matcher (`configs/known_unknowns.yaml`, `pen_stack.agent.scope`, `docs/scope.md`) that defers out-of-scope
+  questions (deferral 1.0, false-defer 0.0); abstention in the agent. No-fabrication gate intact.
+- **WS-MC - mechanistic filters.** A hard target-site/PAM/att-site reachability reject
+  (`pen_stack.planner.target_site`, `configs/target_sites.yaml`; controls 9/9); vehicle-specific
+  delivery-sequence penalties (`pen_stack.planner.delivery_constraints`); and an off-target **energetics**
+  model (`pen_stack.bridge.offtarget_energetics`) that beats the 0.77 baseline at held-out AUROC 0.88 (robust
+  over 5 seeds) and ships as the default ranker.
+- **WS-BA - bench v0.2 + uncertainty-aware agent.** Four trust tasks (T8 calibration, T9 selective prediction,
+  T10 OOD honesty, T11 out-of-scope refusal) contrasting the uncertainty-aware agent with an over-confident
+  baseline (4/4); PEN-Agent emits confidence + epistemic status + abstains; UI surfaces them. Bench re-SHA-locked.
+- **WS-OPT1 (optional) - Gymnasium interface.** A thin `gymnasium.Env` over the planner (`pen_stack.env`,
+  `[env]` extra) for agent-developer interoperability - interface only, no RL superiority claimed.
+- **Docs:** `docs/uncertainty.md`, `docs/scope.md`, `docs/mechanistic_constraints.md`; M-UQ methods note +
+  M1/M2 manuscript updates. WS-OPT2 (Opentrons) deferred to `docs/BACKLOG.md`.
+
+### Changed
+- Version 3.1.0 -> 3.2.0 (pyproject, `__init__`, CITATION.cff). README "what is new in v3.2"; badges + bench
+  v0.2. The bridge off-target default ranker is now the energetics model when its penalty table is present.
+
 ## [3.1.0] - 2026-06-04 - v3.1 release: publishable contributions + an adopted benchmark
 
 The v3.1 cycle completes (workstreams A-H). It hardens the honesty of the planning benchmark, surrounds the

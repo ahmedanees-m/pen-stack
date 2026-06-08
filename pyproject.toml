@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pen-stack"
-version = "3.1.0"
+version = "3.2.0"
 description = "Open infrastructure for genome writing: the Writable Genome atlas, the Writer Atlas, and the Write Planner."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -94,6 +94,8 @@ omit = [
     "pen_stack/validate/agent_eval.py",        # needs the Phase-1 atlas
     "pen_stack/validate/paper4_real_validation.py",  # needs the Perry 2025 tables
     "pen_stack/validate/durability_baselines.py",    # needs the Phase-1 TRIP data + AlphaGenome (WS-B)
+    "pen_stack/validate/uncertainty_eval.py",        # needs the Phase-1 TRIP data (WS-UQ real coverage run)
+    "pen_stack/validate/offtarget_energetics_eval.py",  # needs the Perry 2025 tables (WS-MC/MC3 gate)
     "pen_stack/validate/seq_vs_measured.py",         # needs Phase-1 measured tracks + AlphaGenome (WS-C2)
     "pen_stack/bridge/ortholog_screen.py",     # needs the Perry 2025 Table S1
     "pen_stack/bridge/pipeline.py",            # needs hg38 + the wrapped designer (integration)
