@@ -180,6 +180,21 @@ def attach_uncertainty(scored: pd.DataFrame, intent: EditIntent | str,
     return out
 
 
+def mechanistic_filter(reachable_tier1: str, site_seq: str, installed_att: bool = False) -> dict:
+    """WS-MC / MC1 — hard sequence-level reachability filter on a concrete site.
+
+    Given the WT-KB Tier-1 writer list (the ``reachable_tier1`` string) and the site's sequence, drop writers
+    whose required targeting element (PAM / core dinucleotide / att) is absent — a physically impossible
+    writer–site pairing is rejected. Returns the surviving family list + the rejections (with reasons). Called
+    by the Planner/agent only when a concrete site sequence is available; the bulk bin ranking is unchanged.
+    """
+    from pen_stack.planner.target_site import filter_reachable
+    fams = [f for f in str(reachable_tier1).split(";") if f]
+    res = filter_reachable(fams, site_seq, installed_att=installed_att)
+    res["reachable_str"] = ";".join(res["reachable"])
+    return res
+
+
 def gene_coords_path() -> Path:
     """Locate gene_coords.parquet: packaged copy first (works in any container), then phase_1."""
     for p in (_ROOT / "data" / "curated" / "gene_coords.parquet",

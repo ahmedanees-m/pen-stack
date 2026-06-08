@@ -1,0 +1,51 @@
+# PEN-STACK v3.2 - WS-MC (mechanistic-constraint extension: computable filters only) pre-registered acceptance.
+# Locked criteria; results reported verbatim including negatives. Principle: every constraint is either a HARD
+# physical reject (computable, e.g. motif absent) or a LABELED soft penalty (validated directionally). Nothing
+# is added for the unknown parts of the funnel.
+cycle: "v3.2"
+workstream: "WS-MC"
+prepared: "2026-06-08"
+
+MC1_target_site_filter:
+  deliverable: "pen_stack/planner/target_site.py + configs/target_sites.yaml; integrated into reachability via
+    pen_stack/planner/optimize.py::mechanistic_filter; controls in pen_stack/validate/target_site_controls.py
+    -> out/target_site_controls.json."
+  method: "per writer family, check the candidate site sequence for the required targeting element - Cas-family
+    PAM (NGG / TTTV), CAST protospacer+PAM (GTN) + fixed +60-66 bp insertion distance, serine-integrase att
+    (attB/attP), bridge/seek central core dinucleotide (CT), PE-installable (PE installs its own att). A HARD
+    filter: no usable element -> the writer is unreachable at that site (reject)."
+  acceptance: "POSITIVE control - a site carrying the required element is AVAILABLE (documented writes carry
+    their element); NEGATIVE control - a motif-absent site correctly REJECTS the writer (no PAM -> no Cas/CAST;
+    no att -> no serine integrase; no core -> no bridge). Both control families pass on the curated set."
+  scope: "motif models are approximate (esp. relaxed-PAM engineered variants); reported as a SCREEN with a
+    confidence, never a guarantee of activity. The hard result is the negative (impossible pairing rejected)."
+
+MC2_delivery_constraints:
+  deliverable: "pen_stack/planner/delivery_constraints.py + configs/delivery_constraints.yaml; integrated into
+    pen_stack/planner/delivery.py::recommend_delivery (when a cargo sequence is supplied)."
+  method: "vehicle-specific sequence constraints as SOFT penalties + flags with concrete fixes: lentiviral
+    internal poly(A) signals (truncate the genomic RNA), AAV ITR-interfering inverted repeats / homopolymer
+    slippage, recombinogenic direct repeats, packaging-hostile GC extremes. RNA-delivered vehicles (mRNA-RNP/
+    LNP) carry no DNA-vector packaging checks on the cargo here."
+  acceptance: "directional sanity - a construct carrying a known problematic element scores higher than a clean
+    one; every flag carries a concrete suggestion. Labeled heuristic, not a titre predictor."
+
+MC3_offtarget_energetics:
+  deliverable: "pen_stack/bridge/offtarget_energetics.py (position x substitution-identity penalties);
+    pen_stack/validate/offtarget_energetics_eval.py -> out/offtarget_energetics_eval.json; default ranker via
+    pen_stack/bridge/offtarget.py::site_risk; derived penalty table data/curated/bridge_offtarget_energetics.json."
+  method: "the position-weight ranker ignores mismatch IDENTITY; a bridge-RNA:target duplex is base-pairing, so
+    a per-(position, substitution) penalty learned from the measured off-target frequencies is a binding-energy
+    proxy. Leakage-safe: penalties fit on a TRAIN split, AUROC evaluated on a HELD-OUT split (positives = real
+    off-targets core-preserved; negatives = core-disrupted decoys, the same construction as the published 0.77)."
+  acceptance_HARD_GATE: "ships ONLY if the energetics held-out AUROC beats BOTH the position-weight model on the
+    same split AND the published gate of 0.77. Otherwise it is NOT shipped (position-weight stays default) and
+    the negative is reported. No mechanism is added that does not earn its place empirically."
+
+gate_G_MC: "MC1 positive+negative controls pass; MC2 directional sanity holds with per-flag fixes; MC3 ships
+  only if it beats 0.77 held-out (else dropped, reported)."
+
+locked_files:
+  - prereg/ws_mc.yaml
+  - configs/target_sites.yaml
+  - configs/delivery_constraints.yaml

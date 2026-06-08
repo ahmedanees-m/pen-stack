@@ -98,12 +98,32 @@ def scan_offtargets(fasta: str | Path, target_core: str, chroms: list[str],
 
 # ---------------------------------------------------------------- WS-UQ / UQ4 confidence band
 
-# Held-out ranking AUROC of the position-weight off-target ranker on the measured Perry-2025 profile
-# (Genome-Writing Bench T4 leaderboard). This is the ONLY validated number for the ranker, so it is the
-# basis of the confidence band - the ranker is calibrated as a RANKER (AUROC ~0.77), not as a per-site
-# recombination probability. UQ4 is honest: we report rank confidence + abstain when not scannable, we do
-# NOT emit a calibrated per-pseudosite probability the data cannot support.
+# Held-out ranking AUROC of the off-target ranker on the measured Perry-2025 profile (Genome-Writing Bench
+# T4). The position-weight ranker scores 0.77; the WS-MC/MC3 energetics ranker (position + substitution
+# identity) scores ~0.88 on the same leakage-safe held-out split and SHIPS (it beat the 0.77 gate), so it is
+# the default ranker when its derived penalty table is present. UQ4 stays honest: we report rank confidence +
+# abstain when not scannable, never a calibrated per-pseudosite probability the data cannot support.
 RANKER_HELDOUT_AUROC = 0.77
+ENERGETICS_HELDOUT_AUROC = 0.88
+
+
+def _energetics_model():
+    """Lazily load the committed MC3 energetics penalty table (None if absent → fall back to position-weight)."""
+    from pen_stack.bridge.offtarget_energetics import load_penalties
+    return load_penalties()
+
+
+def site_risk(window: str, target_core: str) -> dict:
+    """Best available per-pseudosite recombination-risk score: energetics ranker (MC3, ~0.88) when its penalty
+    table is present, else the position-weight ranker (~0.77). Returns the score + which ranker produced it."""
+    model = _energetics_model()
+    if model is not None:
+        from pen_stack.bridge.offtarget_energetics import energetic_risk
+        return {"risk": energetic_risk(window, target_core, model), "ranker": "energetics",
+                "heldout_auroc": ENERGETICS_HELDOUT_AUROC}
+    mm = mismatches(window, target_core)
+    return {"risk": risk_score(mm, position_weights()), "ranker": "position_weight",
+            "heldout_auroc": RANKER_HELDOUT_AUROC}
 
 
 def offtarget_confidence(applicable: bool, scanned: bool, measured_weights: bool,
@@ -117,12 +137,15 @@ def offtarget_confidence(applicable: bool, scanned: bool, measured_weights: bool
         return {"level": "abstain", "abstain": True, "calibrated": False,
                 "epistemic_status": "not-computable",
                 "basis": "engine ready but no genome-wide scan run (need target_core + hg38 fasta)"}
+    has_energetics = _energetics_model() is not None
+    auroc = ENERGETICS_HELDOUT_AUROC if has_energetics else RANKER_HELDOUT_AUROC
+    ranker = "energetics (position + substitution identity)" if has_energetics else "position-weight"
     return {"level": "ranker_calibrated", "abstain": False, "calibrated": True,
-            "ranker_heldout_auroc": RANKER_HELDOUT_AUROC,
+            "ranker": ranker, "ranker_heldout_auroc": auroc,
             "epistemic_status": "grounded-confident" if measured_weights else "grounded-extrapolating",
             "basis": ("position weights from the MEASURED Perry-2025 profile" if measured_weights
                       else "literature-config position weights (measured profile absent)"),
-            "scope": f"calibrated as a RANKER (held-out AUROC ~{RANKER_HELDOUT_AUROC}) over {n_candidates} "
+            "scope": f"calibrated as a RANKER ({ranker}, held-out AUROC ~{auroc}) over {n_candidates} "
                      "pseudosites, NOT as a per-site recombination probability"}
 
 

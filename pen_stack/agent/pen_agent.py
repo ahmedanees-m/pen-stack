@@ -104,10 +104,50 @@ def _structural_risk(plan: dict) -> Step:
     return Step("structural_risk", "wgenome.structure3d", "ok", provenance="wgenome.structure3d", result=r)
 
 
+def _plan_confidence(s_site: Step, ood_factor: float = 1.0) -> dict:
+    """UQ3/EP3 plan-level confidence from the grounded site step's safety + durability, widened by OOD.
+
+    Reuses the WS-UQ Monte-Carlo propagation; abstention (EP3) is confidence below the threshold. Returns a
+    neutral 'no grounded site' verdict when the site step refused (then the session is not-computable anyway).
+    """
+    from pen_stack.agent.epistemic import ABSTAIN_CONFIDENCE
+    from pen_stack.validate.selective_prediction import propagate_plan_confidence
+    if s_site.status != "ok":
+        return {"confidence": None, "abstained": False, "ood_factor": ood_factor}
+    safety = float(s_site.result.get("safety", 0.5))
+    p_dur = float(s_site.result.get("p_durable", 0.5))
+    hw = 0.10 * ood_factor
+    axes = {"safety": {"point": safety, "lo": max(0.0, safety - hw), "hi": min(1.0, safety + hw)},
+            "durability": {"point": p_dur, "lo": max(0.0, p_dur - 1.5 * hw), "hi": min(1.0, p_dur + 1.5 * hw)}}
+    prop = propagate_plan_confidence(axes, {"safety": 0.5, "durability": 0.5}, threshold=0.5)
+    return {"confidence": round(prop["confidence"], 4), "interval": [prop["lo"], prop["hi"]],
+            "abstained": bool(prop["confidence"] < ABSTAIN_CONFIDENCE), "ood_factor": ood_factor}
+
+
 def plan_write_session(gene: str, intent: str, cargo_bp: int = 2000, ct: str = "k562",
-                       payload_seq: str | None = None, mode: str = "automatic") -> dict:
-    """Run the grounded write-planning state machine. Returns steps with provenance + a no-fabrication audit."""
+                       payload_seq: str | None = None, mode: str = "automatic",
+                       question: str | None = None, ood_factor: float = 1.0) -> dict:
+    """Run the grounded write-planning state machine. Returns steps with provenance, a no-fabrication audit,
+    and (WS-EP) a per-step + session-level epistemic status with abstention.
+
+    If ``question`` is supplied and matches a known-unknown (configs/known_unknowns.yaml), the session defers
+    immediately (status not-computable, zero fabrication) instead of planning — the out-of-scope arm of trust.
+    """
+    from pen_stack.agent.epistemic import classify_step, summarize
     from pen_stack.agent.guardrails import DISCLAIMER
+
+    # EP2 — out-of-scope deferral (a known-unknown is never planned, never guessed)
+    if question is not None:
+        from pen_stack.agent.scope import match_scope
+        oos = match_scope(question)
+        if oos:
+            verdict = classify_step("refused", out_of_scope=True)
+            return {"goal": {"gene": gene, "intent": intent, "cargo_bp": cargo_bp, "ct": ct, "mode": mode},
+                    "steps": [], "provenance": {}, "degraded_modes": [], "refusals": [],
+                    "no_fabrication": True, "completed": False, "out_of_scope": oos,
+                    "epistemic_summary": summarize([verdict]), "abstained": True,
+                    "disclaimer": DISCLAIMER}
+
     steps: list[Step] = []
     s_site = _site_selection(gene, ct)
     steps.append(s_site)
@@ -127,14 +167,26 @@ def plan_write_session(gene: str, intent: str, cargo_bp: int = 2000, ct: str = "
     refused = [{"step": s.name, "reason": s.reason} for s in steps if s.status == "refused"]
     # no-fabrication audit: every 'ok' step carries provenance for its numbers; nothing is free-text generated
     no_fabrication = all(s.provenance for s in grounded)
+
+    # EP1 — tag every step with an epistemic verdict driven by grounding + OOD; EP3 — plan-level abstention
+    pc = _plan_confidence(s_site, ood_factor=ood_factor)
+    step_dicts = []
+    for s in steps:
+        d = vars(s)
+        conf = pc["confidence"] if s.name == "site_selection" else None
+        d["epistemic"] = classify_step(s.status, confidence=conf, ood_factor=ood_factor)
+        step_dicts.append(d)
     return {
         "goal": {"gene": gene, "intent": intent, "cargo_bp": cargo_bp, "ct": ct, "mode": mode},
-        "steps": [vars(s) for s in steps],
+        "steps": step_dicts,
         "provenance": {s.name: s.provenance for s in grounded},
         "degraded_modes": degraded,
         "refusals": refused,
         "no_fabrication": no_fabrication,
         "completed": bool(grounded) and not refused,
+        "plan_confidence": pc["confidence"],
+        "abstained": pc["abstained"],
+        "epistemic_summary": summarize([d["epistemic"] for d in step_dicts]),
         "disclaimer": DISCLAIMER,
     }
 

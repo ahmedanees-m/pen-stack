@@ -36,6 +36,24 @@ def out_of_scope(question: str) -> str | None:
     return None
 
 
+def check_question(question: str) -> dict | None:
+    """Combined gate for a free-text question (WS-EP). Returns a structured deferral/refusal or None.
+
+    Two distinct out-of-scope arms, both ending in zero fabrication: (1) clinical-directive REFUSAL
+    (`out_of_scope`), and (2) known-unknown DEFERRAL via the scope matcher (biology beyond any tool here).
+    Clinical refusal takes precedence (a clinical question is refused even if it also names a known-unknown).
+    """
+    clinical = out_of_scope(question)
+    if clinical:
+        return {"kind": "clinical_refusal", "epistemic_status": "not-computable", "message": clinical}
+    from pen_stack.agent.scope import match_scope
+    oos = match_scope(question)
+    if oos:
+        return {"kind": "out_of_scope", "epistemic_status": "not-computable",
+                "message": oos["deferral"], **oos}
+    return None
+
+
 def enforce_grounded(answer: dict) -> dict:
     """Assert the auditable contract on a finished answer: numeric claims must trace to a tool call."""
     answer.setdefault("disclaimer", DISCLAIMER)
