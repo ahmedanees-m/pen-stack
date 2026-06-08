@@ -48,8 +48,6 @@ def test_env_extra_declared():
     pp = (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert "gymnasium" in pp and "env = [" in pp
 
-
-def test_manuscripts_updated():
-    assert (_ROOT / "manuscripts/m_uq/main.md").exists()
-    assert "v3.2 update" in (_ROOT / "manuscripts/paper1/main.md").read_text(encoding="utf-8")
-    assert "v0.2" in (_ROOT / "manuscripts/paper2/main.md").read_text(encoding="utf-8")
+# NOTE: manuscripts/ (incl. the M-UQ note + M1/M2 updates) is intentionally gitignored - drafts live on the
+# Drive and in the phase_3.2/ws_rel deposit, not in the public repo - so the release test does NOT assert
+# their presence (they are absent in a clean CI checkout / a clone, by design).
