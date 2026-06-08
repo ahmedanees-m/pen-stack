@@ -4,6 +4,12 @@ name: Publish to PyPI
 # uses an API token stored as the repo secret PYPI_API_TOKEN (encrypted). `skip-existing: true` means a
 # version already on PyPI is skipped, not treated as a failure - so re-runs and already-published versions
 # do not fail the workflow. (To switch to tokenless Trusted Publishing instead, see docs/RELEASING.md.)
+#
+# NOTE: this token-based, tag-triggered workflow intentionally declares NO `environment:` on its jobs. A
+# GitHub environment (e.g. `pypi`) would create a Deployment object whose branch/tag policy can BLOCK a
+# tag-triggered publish, and adds no provenance beyond the workflow run + the PyPI page. The leftover `pypi`
+# environment from the abandoned Trusted-Publishing setup (and its stale failed deployment) was deleted on
+# 2026-06-08; PyPI is the source of truth. Do NOT re-add `environment:` here without a tag-allowing policy.
 
 on:
   push:
