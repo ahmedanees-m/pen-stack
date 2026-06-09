@@ -1,0 +1,33 @@
+# PEN-STACK v4.0 - WS-O (oracle mesh contract + adapters) pre-registered. Linchpin; gate G-O. Builds on v3.4.0.
+cycle: "v4.0"
+workstream: "WS-O"
+prepared: "2026-06-09"
+
+O0_contract:
+  OracleResult: "{oracle, value, provenance{model,version,source,cache_key}, native_uncertainty, scope_card, in_scope, extrapolating, output_kind in {claim,candidate,baseline}, available, cached, note}"
+  cache_key: "sha256 over (oracle family, pinned model, pinned version, canonicalised inputs)[:24]; entries are JSON under oracle_cache/ (committed for offline CI)"
+  scope_cards: "configs/oracles/scope_cards.yaml - per model: valid_for / not_valid_for / generalizes_to_unseen_loci / output_kind / license"
+  principles:
+    - "a generative output is a CANDIDATE, never a claim: OracleResult.as_claim() RAISES on output_kind=candidate; a guard test asserts it (the pen-assemble lesson encoded in code)"
+    - "one contract for every oracle: provenance (model+version) + native uncertainty always carried, never discarded; every call cache-keyed on inputs+model+version"
+    - "scope is explicit: each result carries its scope-card id + an extrapolating flag; non-generalization to unseen loci is LABELLED, not hidden"
+  acceptance: "a second reader reproduces the contract + cache policy + scope cards from prereg + code."
+
+O1_genome:
+  deliverable: "pen_stack/oracles/genome.py - AlphaGenome (variant effect, OOD-gated), Evo2 (likelihood=claim scalar; generated DNA=candidate), ChromBPNet/Borzoi baseline"
+  acceptance: "AlphaGenome scored OOD -> extrapolating=True/in_scope=False (no silent OOD scoring); Evo2 generated DNA is output_kind=candidate; deterministic cache replay reproduces committed values; backend-absent -> deferred (available=False), never fabricated."
+
+O2_structure:
+  deliverable: "pen_stack/oracles/structure.py - AlphaFold3 / Boltz-2 / Chai-1 / Protenix + consistency()"
+  acceptance: "cross-oracle DISAGREEMENT widens the reported interval (native_uncertainty increases with spread) - asserted; a known complex reproduces from cache."
+
+O3_protein_design:
+  deliverable: "pen_stack/oracles/protein_design.py - RFdiffusion / ProteinMPNN / ESM3"
+  acceptance: "every output is output_kind=candidate and CANNOT enter a claim path without WS-WV scoring (as_claim() raises) - asserted by a guard test."
+
+O4_rna_energetics:
+  deliverable: "pen_stack/oracles/rna.py (ViennaRNA fold - real, hard legality input) + energetics.py (bridge off-target, MC3 gate)"
+  acceptance: "fold legality still hard-rejects (unchanged); energetics ships only if held-out AUROC > 0.77 AND > position-weight model (else reported negative, not shipped)."
+
+gate: "G-O - WS-WV and WS-ATLAS cannot consume an oracle until its adapter passes controls + carries a scope card; generative-is-candidate guard holds; energetics >= 0.77 or dropped; no-fabrication intact."
+locked_files: [prereg/ws_o.yaml]

@@ -1,0 +1,114 @@
+# PEN-STACK v4.0 — oracle scope cards (WS-O0). What each wrapped foundation model is VALID for, and what it
+# is NOT — so the substrate can gate and label outputs (the field's evidence that these models do not
+# generalize to unseen loci is made legible here, not hidden). `output_kind`: claim (a checkable prediction),
+# candidate (a generative proposal that must pass writer-verification), baseline (an honest comparator).
+version: "1.0"
+
+oracles:
+  alphagenome:
+    family: genome
+    version: "2025.1"
+    output_kind: claim
+    valid_for: "regulatory-track + variant-effect prediction at IN-DISTRIBUTION loci (trained tracks/tissues)"
+    not_valid_for: "unseen loci / cell types outside training; does NOT generalize to novel regulatory contexts"
+    generalizes_to_unseen_loci: false
+    license: "non-commercial (Google DeepMind terms)"
+
+  evo2:
+    family: genome
+    version: "40b-2025"
+    output_kind: candidate            # generative DNA + likelihood; sequences are proposals, never claims
+    valid_for: "genomic sequence likelihood / zero-shot variant scoring; generative DNA candidates"
+    not_valid_for: "accessibility/expression QTLs; quantitative regulatory tracks; asserting a sequence WORKS"
+    generalizes_to_unseen_loci: false
+    license: "Apache-2.0 (Arc Institute)"
+
+  chrombpnet_borzoi:
+    family: genome
+    version: "borzoi-2024"
+    output_kind: baseline             # kept as an honest comparator to AlphaGenome
+    valid_for: "accessibility / expression baseline tracks (honest comparator)"
+    not_valid_for: "variant effects beyond trained assays"
+    generalizes_to_unseen_loci: false
+    license: "open"
+
+  alphafold3:
+    family: structure
+    version: "3.0-2024"
+    output_kind: claim
+    valid_for: "protein / protein-NA complex structure at confidence (pLDDT/PAE) within trained fold space"
+    not_valid_for: "absolute binding free energies; novel folds far from the PDB; in-vivo behaviour"
+    generalizes_to_unseen_loci: true   # structure prediction is not locus-bound
+    license: "non-commercial weights (DeepMind terms)"
+
+  boltz-2:
+    family: structure
+    version: "2.0-2025"
+    output_kind: claim
+    valid_for: "structure + binding-affinity prediction (open weights); cross-oracle consistency comparator"
+    not_valid_for: "guaranteed affinities; designs outside trained chemical space"
+    generalizes_to_unseen_loci: true
+    license: "MIT"
+
+  chai-1:
+    family: structure
+    version: "1.0-2024"
+    output_kind: claim
+    valid_for: "structure prediction; cross-oracle self-consistency"
+    not_valid_for: "absolute affinities; far-OOD complexes"
+    generalizes_to_unseen_loci: true
+    license: "Apache-2.0"
+
+  protenix:
+    family: structure
+    version: "0.5-2025"
+    output_kind: claim
+    valid_for: "AF3-style structure prediction (open); cross-oracle self-consistency"
+    not_valid_for: "absolute affinities; far-OOD complexes"
+    generalizes_to_unseen_loci: true
+    license: "Apache-2.0"
+
+  esm3:
+    family: protein_design
+    version: "sm-2024"
+    output_kind: candidate
+    valid_for: "protein representation + generative protein design CANDIDATES; variant likelihoods"
+    not_valid_for: "asserting a designed protein FOLDS or is ACTIVE without verification"
+    generalizes_to_unseen_loci: true
+    license: "non-commercial / community"
+
+  rfdiffusion:
+    family: protein_design
+    version: "aa-2024"
+    output_kind: candidate
+    valid_for: "backbone generation CANDIDATES (RFdiffusion / RFdiffusion-AA)"
+    not_valid_for: "asserting function; a backbone is a proposal, not a working enzyme"
+    generalizes_to_unseen_loci: true
+    license: "open (BSD-style)"
+
+  proteinmpnn:
+    family: protein_design
+    version: "ligandmpnn-2024"
+    output_kind: candidate
+    valid_for: "sequence design for a fixed backbone CANDIDATES (ProteinMPNN / LigandMPNN)"
+    not_valid_for: "asserting activity/specificity; must be scored against measured data"
+    generalizes_to_unseen_loci: true
+    license: "MIT"
+
+  viennarna:
+    family: rna
+    version: "2.6"
+    output_kind: claim
+    valid_for: "RNA secondary-structure MFE fold (a HARD legality input for bridge-RNA QC)"
+    not_valid_for: "tertiary structure; in-cell folding kinetics"
+    generalizes_to_unseen_loci: true
+    license: "open"
+
+  bridge_energetics:
+    family: energetics
+    version: "v3.2-mc3"
+    output_kind: claim
+    valid_for: "bridge IS110/ISCro4 off-target relative-risk ranking (beats the 0.77 position-weight baseline)"
+    not_valid_for: "absolute off-target rates; non-bridge writers; a non-recombining background"
+    generalizes_to_unseen_loci: false
+    license: "open (this work)"
