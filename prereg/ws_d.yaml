@@ -1,29 +1,11 @@
-# PEN-STACK v3.1 - WS-D (Cargo Polish) pre-registered acceptance.
-# The locus model scores WHERE to write; Cargo Polish scores WHAT is written. A heuristic sequence-trigger
-# scan, NOT a supervised silencing predictor.
-cycle: "v3.1"
+# PEN-STACK v3.3 - WS-D (delivery palette) pre-registered acceptance.
+cycle: "v3.3"
 workstream: "WS-D"
-prepared: "2026-06-04"
-
-D1_cargo_sequence_risk_scan:
-  deliverables:
-    - "pen_stack/planner/cargo_polish.py (scan_cargo -> cargo_durability_risk + per-flag suggestions)"
-    - "configs/cargo_polish.yaml (documented thresholds + one concrete remedy per category)"
-    - "integration into pen_stack/planner/cargo.py (design_cargo payload_seq -> cargo_polish block)"
-    - "pen_stack/validate/cargo_directionality.py -> out/cargo_directionality.json"
-  scans:
-    - "CpG-island density (Gardiner-Garden & Frommer: obs/exp CpG > 0.6 and GC > 0.5 over >= 200 bp)"
-    - "GC extremes (< 0.30 or > 0.65)"
-    - "cryptic splice consensus (donor GT/acceptor AG with polypyrimidine tract)"
-    - "strong mRNA secondary structure (ViennaRNA MFE per nt; optional, degrades gracefully)"
-    - "known silencer motifs (dense CpG cluster, GAGA/PRE-like, polyT terminator, ZNF/KRAB-like)"
-  acceptance:
-    directionality: "a high-CpG bacterial-style cassette scores ABOVE a CpG-depleted / insulator-flanked
-      cassette on the curated set (out/cargo_directionality.json::directionality_ok)."
-    actionability: "EVERY raised flag carries a concrete suggestion (all_flags_have_suggestions)."
-  scope: "catches known sequence triggers of silencing/instability, not all silencing causes; a flag, not a
-    calibrated silencing probability."
-
-locked_files:
-  - prereg/ws_d.yaml
-  - configs/cargo_polish.yaml
+prepared: "2026-06-09"
+D1_vehicle_table:
+  deliverable: "configs/delivery_vehicles.yaml (>=6 vehicles) + pen_stack/planner/delivery_vehicles.py loader"
+  acceptance: "each vehicle row has cargo_capacity + integrating + compatible_cargo_form + >=1 DOI; values match cited 2026 sources. Palette: AAV single/dual, lentivirus, helper-dependent adenovirus, HSV amplicon, LNP-mRNA, eVLP, electroporation."
+D2_delivery_rules:
+  deliverable: "configs/rules/delivery.yaml (folds into WS-R); evaluators in pen_stack/rules/evaluators.py"
+  acceptance: "hard rejects (cargo>capacity; writer output-form not in vehicle.compatible_cargo_form; no-integration goal + integrating vehicle); soft penalties (split-AAV, sequence constraints); scope flag (immunogenicity magnitude). Controls: 35kb illegal in AAV but legal in HDAd; RNP-only writer rejected from DNA-only AAV; immunogenicity magnitude declared out-of-scope."
+locked_files: [prereg/ws_d.yaml, configs/delivery_vehicles.yaml, configs/rules/delivery.yaml]
