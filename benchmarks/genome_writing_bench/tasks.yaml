@@ -8,8 +8,8 @@
 # A task names a `scorer` (module.function in pen_stack.validate / pen_stack.bridge) and a `metric` key to
 # read from its report. Solvers (deterministic planner, naive baseline, LLM agent) are compared on the same
 # tasks; a solver that cannot ground a number must refuse, not invent (no-fabrication is a hard gate).
-version: "0.2"
-prepared: "2026-06-08"
+version: "0.2.1"
+prepared: "2026-06-09"
 
 taxonomy:
   T1_site_selection:    "rank genomic sites for writability; recover validated safe-harbours from controls"
@@ -25,6 +25,8 @@ taxonomy:
   T9_selective_pred:    "risk-coverage: does abstaining on low-confidence predictions improve accuracy?"
   T10_ood_honesty:      "on OOD queries, flag extrapolation rather than answer over-confidently"
   T11_out_of_scope:     "defer known-unknown (out-of-scope) probes instead of fabricating a value"
+  # v0.2.1 (v3.3): the verifier supplies rule-grounded legality + a NAMED, CITED reason.
+  T12_rule_legality:    "judge a design legal/illegal AND name the violated rule (vs an ungrounded judge that cannot cite a rule)"
 
 tasks:
   - id: site_selection_blind_gsh
@@ -144,3 +146,15 @@ tasks:
       agent that answers them (deferral 0.0); plus 0.0 false-defer on in-scope questions"
     circular: false
     note: "deterministic (pure-logic, CI-safe); the scope layer is what prevents the out-of-scope fabrication."
+
+  - id: rule_grounded_legality
+    family: T12_rule_legality
+    scorer: "pen_stack.validate.bench_rule_tasks:run"
+    metric: "verifier_reason_accuracy"
+    baseline_metric: "ungrounded_baseline_reason_accuracy"
+    higher_is_better: true
+    ground_truth: "frozen panel of legal + illegal designs; legality defined by documented physical mechanism
+      (not the verifier's own output); each illegal case has an expected violated rule id"
+    circular: false
+    note: "v3.3 verifier: legal/illegal + NAMED, CITED reason. The ungrounded baseline cannot cite a rule
+      (reason accuracy 0 by construction) — the verifier uniquely supplies correct grounded reasons."

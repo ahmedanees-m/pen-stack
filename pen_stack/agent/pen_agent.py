@@ -168,6 +168,21 @@ def plan_write_session(gene: str, intent: str, cargo_bp: int = 2000, ct: str = "
     # no-fabrication audit: every 'ok' step carries provenance for its numbers; nothing is free-text generated
     no_fabrication = all(s.provenance for s in grounded)
 
+    # WS-BA (v3.3) — the agent submits its own plan to the rule-grounded verifier before returning it.
+    # An illegal plan is surfaced with the named rule reason (the agent revises/refuses; it never fabricates).
+    verification = None
+    if plan.get("writer") or plan.get("writer_family") or plan.get("family"):
+        try:
+            from pen_stack.verify import verify
+            fam = plan.get("writer") or plan.get("writer_family") or plan.get("family")
+            v = verify({"write_type": "insertion", "writer_family": fam, "cargo_bp": cargo_bp,
+                        "cell_type": ct, "edit_intent": intent,
+                        "delivery_vehicle": plan.get("delivery") or plan.get("delivery_vehicle")})
+            verification = {"legal": v.legal, "violations": v.violations,
+                            "epistemic_status": v.epistemic_status, "no_fabrication": v.no_fabrication}
+        except Exception as e:  # noqa: BLE001 - verifier unavailable -> no verdict, never fabricate
+            verification = {"legal": None, "reason": f"verifier unavailable: {type(e).__name__}"}
+
     # EP1 — tag every step with an epistemic verdict driven by grounding + OOD; EP3 — plan-level abstention
     pc = _plan_confidence(s_site, ood_factor=ood_factor)
     step_dicts = []
@@ -187,6 +202,7 @@ def plan_write_session(gene: str, intent: str, cargo_bp: int = 2000, ct: str = "
         "plan_confidence": pc["confidence"],
         "abstained": pc["abstained"],
         "epistemic_summary": summarize([d["epistemic"] for d in step_dicts]),
+        "verification": verification,
         "disclaimer": DISCLAIMER,
     }
 
