@@ -14,12 +14,12 @@ and durably write new DNA, **which enzyme** can write it there, and **how** to d
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-3.3.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.4.0-blue.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-179%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
-[![Genome-Writing Bench v0.2](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.2.1-6f42c1.svg)](benchmarks/genome_writing_bench/)
+[![Genome-Writing Bench v0.3](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.3-6f42c1.svg)](benchmarks/genome_writing_bench/)
 
 **Built on five prior, separately published repositories:**
 
@@ -57,6 +57,23 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v3.4 — the Environment (a place to train and grade genome-writing AI)
+
+v3.4 makes PEN-STACK the surface an AI agent can be **trained and graded** in, the counterpart to v3.3's
+verifier (the surface for *checking*): a Gymnasium **environment** whose every action is checked by the
+rule-grounded verifier and whose reward is the legal, calibrated plan score; **Genome-Writing Bench v0.3** with
+multi-write-type and adversarial robustness probes; and a demonstration of whether plan-confidence actually
+predicts documented outcomes. The environment is an **interface + evaluation harness** (near-one-shot
+decision) — no claim that a learned policy beats the deterministic planner.
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **ENV — the environment** | full `gymnasium.Env`: 5-stage MDP (write_type → site → writer → cargo → delivery), **verifier-driven step validity**, reward = legality gate × L4 calibrated plan score, a reserved **abstain** action for justified refusal; `env/policies.py` (random + greedy-planner) | passes `check_env`; greedy(planner) ≥ random **and** greedy-legal on the frozen seed set (sanity, not a learning claim) |
+| **BENCH — Bench v0.3** | `multi_write_type_legality` (route + judge legality across all 6 non-insertion write types) + `adversarial_robustness` (**T13–T16**: out-of-scope-in-disguise, contradictory constraints, prompt-injection, distribution-shift) | multi-write-type accuracy **1.0** vs ungrounded **0.0**; verifier-backed agent passes **4/4** adversarial probes vs an over-confident baseline **0/4**; **no-fabrication holds even under prompt injection** |
+| **CAL — outcome-calibration** | `validate/outcome_calibration.py`: plan-level reliability diagram + ECE + bootstrap-CI selective prediction on the DOI writer panel | **honest result** — useful for *ranking* (high-confidence 0.30 vs low-confidence 0.0 documented-choice recovery, gap CI95 [0.17, 0.43], monotone) but **poorly calibrated in absolute terms** (ECE 0.71): high confidence narrows the feasible field, it does not uniquely identify the documented choice |
+
+See `docs/environment.md`, the v0.3 `benchmarks/genome_writing_bench/LEADERBOARD.md`, and `prereg/ws_{env,bench,cal}.yaml`.
 
 ## What is new in v3.3 — the Verifier (a type checker for genome writes)
 
@@ -288,13 +305,14 @@ pen-stack/
 │   ├── rules/                        v3.3 machine-readable rules engine (schema/evaluators/loader/solver) over configs/rules/*.yaml
 │   ├── verify/                       v3.3 verification service: verify(design) -> Verdict (legal+reasons+confidence+scope)
 │   ├── adapt/                        local recalibration / private-data adaptation behind a gate (v3.1, WS-F)
-│   ├── env/                          v3.2 optional Gymnasium interface (genome_writing_env; [env] extra)
+│   ├── env/                          v3.4 full Gymnasium environment over router+verifier (genome_writing_env + policies; [env] extra)
 │   ├── monitor/                      PEN-MONITOR living database (Europe PMC)
 │   ├── rag/                          grounded, cited Q&A (hybrid LLM: Ollama primary, Nemotron fallback)
 │   ├── validate/                     benchmarks: blind_gsh_discovery / durability_baselines / writer_recovery /
 │   │                                   within_locus_ranking / agent_eval / ungrounded_baseline (T7) / adapt_demo /
 │   │                                   v3.2 selective_prediction / uncertainty_eval / bench_trust_tasks (T8-T11) /
-│   │                                   out_of_scope_refusal / target_site_controls / offtarget_energetics_eval
+│   │                                   out_of_scope_refusal / target_site_controls / offtarget_energetics_eval /
+│   │                                   v3.3 bench_rule_tasks (T12) / v3.4 bench_writetype_tasks + bench_adversarial_tasks (T13-16) + outcome_calibration
 │   ├── data/                         ingestion (genome, chromatin, integration, TRIP, safety annotations)
 │   ├── server/api.py                 FastAPI REST (atlas, crosslink, writable, plan, bridge, ask)
 │   ├── ui/app.py                     Streamlit web app (16 pages; v3.2 PEN-Agent shows confidence + epistemic status)

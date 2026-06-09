@@ -3,6 +3,34 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [3.4.0] - 2026-06-09 - v3.4 release: the Environment (train/eval surface + bench v0.3 + outcome-calibration)
+
+v3.4 turns the thin Gym interface into a full environment an AI agent can be trained and graded in, ships
+Genome-Writing Bench v0.3 (multi-write-type + adversarial robustness), and tests whether plan-confidence
+actually predicts documented outcomes. Workstreams WS-{ENV,BENCH,CAL}, each SHA-locked. The environment is an
+interface + evaluation harness (near-one-shot decision) - no RL-superiority claim.
+
+### Added
+- **WS-ENV - the genome-writing environment.** `pen_stack/env/genome_writing_env.py` upgraded to a full
+  `gymnasium.Env`: a 5-stage MDP (write_type -> site -> writer -> cargo -> delivery) whose step validity comes
+  from the v3.3 verifier and whose reward is the legality gate times the L4 calibrated plan confidence, with a
+  reserved abstain action for a justified refusal. `pen_stack/env/policies.py` (random + greedy-planner).
+  Passes `gymnasium.utils.env_checker.check_env`; greedy(planner) >= random and greedy-legal on the frozen
+  seed set. `docs/environment.md`; `prereg/ws_env.yaml` + lock.
+- **WS-BENCH - Genome-Writing Bench v0.3.** `multi_write_type_legality` routes + judges legality across all 6
+  non-insertion write types (accuracy 1.0, ungrounded 0.0); `adversarial_robustness` probes T13-T16
+  (out-of-scope-in-disguise, contradictory constraints, prompt-injection, distribution-shift) - the
+  verifier-backed agent passes 4/4 vs an over-confident baseline 0/4, no-fabrication holds incl. under
+  injection. Leaderboard v0.3 robustness contrast. `prereg/ws_bench.yaml` + lock.
+- **WS-CAL - plan-confidence calibrated against documented outcomes.** `pen_stack/validate/outcome_calibration.py`:
+  plan-level reliability diagram + ECE + bootstrap-CI selective prediction on the DOI writer panel. Honest
+  result: useful for ranking (high-confidence 0.30 vs low-confidence 0.0 documented-choice recovery, gap
+  CI95 [0.17, 0.43], monotone) but poorly calibrated in absolute terms (ECE 0.71). Feeds M-UQ.
+  `prereg/ws_cal.yaml` + lock.
+
+### Changed
+- Version 3.3.0 -> 3.4.0; bench 0.2.1 -> 0.3; README "What is new in v3.4"; M2/M-UQ manuscript updates.
+
 ## [3.3.0] - 2026-06-09 - v3.3 release: the Verifier (a type checker for genome writes)
 
 v3.3 lifts the laws of genome writing into a versioned, machine-readable rule base and exposes a single
