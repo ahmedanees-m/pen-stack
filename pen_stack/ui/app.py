@@ -148,7 +148,7 @@ st.sidebar.caption("The Writable Genome | v3.1")
 page = st.sidebar.radio("Navigate", ["Overview", "Forward query", "Site finder (inverse)",
                                      "Atlas browser", "Validation", "Cross-cell-type",
                                      "Writer Atlas", "Write Planner", "Bridge design", "Guide QC",
-                                     "Cargo Polish", "Multiplex risk", "PEN-Agent",
+                                     "Cargo Polish", "Multiplex risk", "Verify", "PEN-Agent",
                                      "Genome-Writing Bench", "Ask (RAG)", "Agent"])
 st.sidebar.caption("v3.1 adds: Cargo Polish, Multiplex risk, Guide QC, the grounded PEN-Agent, and the "
                    "Genome-Writing Bench.")
@@ -592,6 +592,42 @@ elif page == "Guide QC":
     st.dataframe(pd.DataFrame(demo["ranking"]), use_container_width=True, height=200)
     st.caption(f"best is the good guide: {demo['best_is_good']} | every bad guide flagged: "
                f"{demo['every_bad_flagged']} | {demo['scope']}")
+
+elif page == "Verify":
+    st.markdown("### Verify - *a type checker for genome writes (v3.3)*")
+    st.caption("Submit a proposed write; get back legal/illegal + the named violated rule + a calibrated "
+               "confidence + scope flags. Legality and confidence are distinct axes. Also callable over "
+               "POST /verify and the MCP tool verify_write.")
+    cwt = st.selectbox("Write type", ["insertion", "excision", "inversion", "replacement",
+                                      "regulatory_rewrite", "landing_pad_install", "multiplex"])
+    cfam = st.selectbox("Writer family", ["bridge_IS110", "seek_IS1111", "CAST_VK", "serine_integrase",
+                                          "PE_integrase", "Cas9", "Cas12a"])
+    from pen_stack.planner.delivery_vehicles import names as _veh_names
+    cveh = st.selectbox("Delivery vehicle", _veh_names())
+    ccargo = int(st.number_input("Cargo size (bp)", 0, 200000, 3000, key="vf_cargo"))
+    cseq = st.text_input("Site sequence window (optional, for reachability)", "")
+    cnoint = st.checkbox("Goal forbids genomic integration", value=False)
+    if st.button("Verify design", type="primary"):
+        from pen_stack.verify import verify
+        v = verify({"write_type": cwt, "writer_family": cfam, "delivery_vehicle": cveh, "cargo_bp": ccargo,
+                    "site_seq": cseq or None, "no_integration": cnoint})
+        if v.deferred:
+            cls = "v-cau"
+        else:
+            cls = "v-go" if v.legal else "v-no"
+        st.markdown(f'<div class="verdict {cls}">{v.summary()}</div>', unsafe_allow_html=True)
+        if v.violations:
+            st.markdown("**Violated rules:**")
+            for vi in v.violations:
+                st.error(f"`{vi['rule_id']}` — {vi['reason']}"
+                         + (f"  _(cite: {', '.join(vi['citation'])})_" if vi.get("citation") else ""))
+        if v.soft_flags:
+            for s in v.soft_flags:
+                st.warning(f"soft: `{s['rule_id']}` — {s['reason']}")
+        if v.scope_flags:
+            st.info("scope: " + "; ".join(s.get("reason", s.get("kind", "")) for s in v.scope_flags))
+        st.caption(f"no_fabrication={v.no_fabrication} | epistemic={v.epistemic_status} | "
+                   f"rules v{v.provenance.get('rules_version')}")
 
 elif page == "PEN-Agent":
     st.markdown("### PEN-Agent - *grounded, uncertainty-aware write-planning state machine (v3.2)*")

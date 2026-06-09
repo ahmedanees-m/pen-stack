@@ -14,12 +14,12 @@ and durably write new DNA, **which enzyme** can write it there, and **how** to d
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-3.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.3.0-blue.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-176%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
-[![Genome-Writing Bench v0.2](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.2-6f42c1.svg)](benchmarks/genome_writing_bench/)
+[![Genome-Writing Bench v0.2](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.2.1-6f42c1.svg)](benchmarks/genome_writing_bench/)
 
 **Built on five prior, separately published repositories:**
 
@@ -57,6 +57,24 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v3.3 — the Verifier (a type checker for genome writes)
+
+v3.3 lifts the *laws of genome writing* out of code into a **versioned, machine-readable rule base** and
+exposes a single **`verify(design) → Verdict`** call: submit a proposed write and get back *legal / illegal +
+the named violated rule + a calibrated confidence + a scope flag* — over Python, REST (`POST /verify`), and an
+MCP tool (`verify_write`) any AI agent can submit to. PEN-STACK becomes the layer that *checks* what the
+foundation models *generate*.
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **R — rule base + solver** | the laws lifted into `configs/rules/*.yaml` (9 rules: reachability, fold, payload, multiplex, delivery), each id/kind/mechanism/param/**citation**/test; a solver returning legality + named reasons | a **parity test** proves the rules reproduce the prior in-code decisions (relocation, not behaviour change); positives legal, negatives rejected by the **correct named rule** |
+| **D — delivery palette** | the AAV-only assumption replaced by an **8-vehicle palette** (AAV single/dual, lentivirus, HDAd ~35 kb, HSV amplicon >100 kb, LNP-mRNA, eVLP, electroporation) with capacity/integration/cargo-form/DOIs | hard rejects (cargo>capacity, RNP-into-DNA-only-vehicle, non-integrating-goal+integrating-vehicle); immunogenicity *magnitude* declared out-of-scope, never predicted |
+| **ROUTE — write-type router** | the fixed insertion chain becomes one sub-graph of a router over insertion / excision / inversion / replacement / regulatory-rewrite / landing-pad / multiplex | each type routes to its rule sub-graph; unsupported/ambiguous types **defer**, never guess |
+| **V — verification service** | `verify(design) → Verdict` over Python/REST/MCP; legality (rules) + confidence (v3.2 L4) + scope, kept as **distinct axes** | every Verdict carries legality + (confidence ∨ abstention) + scope; **no fabrication** (every number tool-sourced) |
+| **BA — bench + agent** | Bench **v0.2.1** adds **T12 rule-grounded legality-with-explanation**; the agent submits its own plan to the verifier | verifier verdict+reason accuracy **1.0**; an ungrounded judge cannot cite a rule (0.0) — the verifier uniquely supplies grounded reasons; no-fabrication intact |
+
+See `docs/verify.md`, `docs/rules.md`, `docs/delivery.md`.
 
 ## What is new in v3.2 — a calibrated, self-aware co-scientist
 
@@ -176,7 +194,7 @@ PEN-STACK is organised as **two reference layers + one engine + a services layer
   magnitude, rho approximately 0.30). A first-of-its-kind beachhead for a genuinely unoccupied gap, not a
   Nature-tier breakthrough; the Writable Genome (Paper 1) remains the flagship novelty.
 
-## The Genome-Writing Bench (v0.2, M2)
+## The Genome-Writing Bench (v0.2.1, M2)
 
 The first benchmark for the **writing** side of genome engineering - *where* to write, *what* writer to use,
 *how* to design the cargo, and *what off-target / structural risk* a write carries - complementing the many
@@ -262,10 +280,13 @@ pen-stack/
 │   ├── score/                        re-grounded axes + therapeutic-readiness scoring
 │   ├── planner/                      Write Planner (Paper 3): optimize / cargo / cargo_polish / multiplex / pipeline
 │   │                                   + v3.2 target_site (hard PAM/att/core reject) / delivery_constraints
+│   │                                   + v3.3 router (write-type dispatch) / delivery_vehicles (8-vehicle palette)
 │   ├── bridge/                       bridge off-target engine (Paper 4): offtarget / fold_qc / guide_qc / pipeline / cli
 │   │                                   + v3.2 offtarget_energetics (position x substitution; held-out 0.88, ships)
 │   ├── agent/                        agentic platform: tools / orchestrator / pen_agent / mcp_server / guardrails
 │   │                                   + v3.2 epistemic (3-tier status) / scope (known-unknowns matcher)
+│   ├── rules/                        v3.3 machine-readable rules engine (schema/evaluators/loader/solver) over configs/rules/*.yaml
+│   ├── verify/                       v3.3 verification service: verify(design) -> Verdict (legal+reasons+confidence+scope)
 │   ├── adapt/                        local recalibration / private-data adaptation behind a gate (v3.1, WS-F)
 │   ├── env/                          v3.2 optional Gymnasium interface (genome_writing_env; [env] extra)
 │   ├── monitor/                      PEN-MONITOR living database (Europe PMC)
@@ -422,7 +443,7 @@ plan. Data releases are deposited on Zenodo (one per paper).
   author  = {Mahaboob Ali, Anees Ahmed},
   title   = {PEN-STACK: open infrastructure for genome writing (The Writable Genome)},
   year    = {2026},
-  version = {3.2.0},
+  version = {3.3.0},
   url     = {https://github.com/ahmedanees-m/pen-stack}
 }
 ```

@@ -3,6 +3,32 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [3.3.0] - 2026-06-09 - v3.3 release: the Verifier (a type checker for genome writes)
+
+v3.3 lifts the laws of genome writing into a versioned, machine-readable rule base and exposes a single
+`verify(design) -> Verdict` call (legal/illegal + named rule + calibrated confidence + scope) over Python,
+REST, and MCP. Workstreams WS-{R,D,ROUTE,V,BA}, each SHA-locked.
+
+### Added
+- **WS-R - rule base + solver.** `pen_stack/rules/{schema,evaluators,loader,solver}.py` + `configs/rules/*.yaml`
+  (9 rules across reachability/fold/payload/multiplex/delivery), each id/kind/mechanism/param/provenance(DOI)/
+  test. Evaluators delegate to the existing validated functions; a parity test proves no decision changed.
+  Legality and confidence are kept as distinct axes.
+- **WS-D - delivery palette.** `configs/delivery_vehicles.yaml` + `planner/delivery_vehicles.py`: 8 vehicles
+  (AAV single/dual, lentivirus, HDAd, HSV amplicon, LNP-mRNA, eVLP, electroporation) with capacity/integration/
+  cargo-form/DOIs; delivery rules (hard rejects + soft penalties + an immunogenicity-magnitude scope flag).
+- **WS-ROUTE - write-type router.** `planner/router.py` + `configs/write_types.yaml`: dispatches insertion/
+  excision/inversion/replacement/regulatory_rewrite/landing_pad_install/multiplex; unsupported types defer.
+- **WS-V - verification service.** `pen_stack/verify/{service,schema}.py`: `verify(design) -> Verdict`; `POST
+  /verify` + MCP `verify_write`; `docs/verify.md`. No fabrication (every number tool-sourced).
+- **WS-BA - bench v0.2.1 + agent.** T12 rule-grounded legality-with-explanation (verifier reason accuracy 1.0
+  vs ungrounded 0.0); the agent submits its plan to the verifier. Bench 12/12 available, planner beats baseline
+  8/8.
+- **Docs:** `docs/verify.md`, `docs/rules.md`, `docs/delivery.md`.
+
+### Changed
+- Version 3.2.0 -> 3.3.0 (pyproject, `__init__`, CITATION.cff). README "what is new in v3.3"; bench badge v0.2.1.
+
 ## [3.2.0] - 2026-06-08 - v3.2 release: a calibrated, self-aware co-scientist
 
 The v3.2 cycle makes the genome-writing funnel **trustworthy**: every value carries a calibrated confidence,
