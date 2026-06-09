@@ -63,7 +63,7 @@ families:
 curated_representatives:
   - representative_system: IS621
     family: bridge_IS110
-    uniprot: A0A0F6B5L8
+    uniprot: A0A2X3M8B0   # IS621 transposase (E. coli); was A0A0F6B5L8 (a glycine-betaine transporter - wrong)
     confidence: measured
     human_cell_activity: "model bridge recombinase; recombination characterised (Durrant 2024)"
     key_dois: ["10.1038/s41586-024-07552-4"]
@@ -75,7 +75,7 @@ curated_representatives:
     key_dois: ["10.64898/2026.03.19.712850"]    # bioRxiv ISPpu10 (Europe PMC PPR1218813; resolved via PEN-MONITOR)
   - representative_system: phiC31
     family: serine_integrase
-    uniprot: Q9T2A6
+    uniprot: Q9T221   # phiC31 integrase (Streptomyces phage phiC31, gene int); was Q9T2A6 (a plant NAD(P)H oxidoreductase - wrong)
     confidence: measured
     human_cell_activity: "large serine integrase; attB x attP; used in human cell landing pads"
     key_dois: ["10.1128/microbiolspec.MDNA3-0046-2014"]

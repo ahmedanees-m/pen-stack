@@ -3,6 +3,28 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [4.0.3] - 2026-06-09 - ID-correctness patch: UniProt + Pfam + ontology audit
+
+### Fixed
+A whole-repo audit of structured IDs (verified against InterPro, UniProt, EBI-OLS, mygene):
+- **`pen_stack/mech/pfam_whitelist.yaml` (v1.2.1 -> v1.2.2):** the 26 Pfam accessions were all correct, but
+  **13 of 22 `example_uniprot` proteins did not actually contain their claimed domain** (membership checked
+  against each protein's UniProt Pfam cross-references) — including a marine-worm **Histone H3** (PF13586), a
+  mouse **mannosyltransferase** (PF05621/TniB), **I-AniI** (a LAGLIDADG enzyme) mislabelled HNH (PF01844), a
+  **glycine-betaine transporter** and a Tn3 transposase mis-filed as rve, and an **obsolete 404** accession
+  (PF08721) — despite the header claiming a spot-check. All corrected to reviewed/curated proteins whose
+  UniProt entry genuinely carries the domain (e.g. ISCro4 `D2TGM5`, Tn5 `Q46731`, Tn7-TnsA `P13988`, Bxb1
+  integrase `Q9B086`, McrA `P24200`); the audit-status header was corrected to stop over-claiming.
+- **`configs/atlas_families.yaml`** (drives family expansion in `expand.py`): IS621 `A0A0F6B5L8` (a
+  betaine transporter) -> **`A0A2X3M8B0`** (IS621 transposase); phiC31 `Q9T2A6` (a plant NAD(P)H
+  oxidoreductase) -> **`Q9T221`** (phiC31 integrase). The Pfam-query signatures and discovery DOIs were
+  already correct.
+
+### Verified clean
+The 4 EFO cell-type IDs map correctly (EFO:0002067=K562, EFO:0001187=HepG2, EFO:0002784=GM12878,
+EFO:0005483=ES-Bruce4); all GSH gene symbols are valid HGNC symbols; all 26 Pfam accessions resolve with the
+correct domain name.
+
 ## [4.0.2] - 2026-06-09 - citation-correctness patch: full-repo DOI audit
 
 ### Fixed
