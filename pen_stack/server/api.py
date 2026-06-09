@@ -149,3 +149,11 @@ def verify_endpoint(design: dict):
     confidence are distinct axes. A `question` key (optional) is checked against the known-unknowns registry."""
     from pen_stack.verify import verify
     return verify(design).model_dump()
+
+
+@app.post("/graph/query")
+def graph_query_endpoint(q: dict):
+    """v4.5 world-model graph (WS-G): multi-hop query. Body: {locus, cargo_form?}. Returns writers that
+    reach the locus AND are deliverable by a cargo-form-compatible vehicle, each with its provenanced path."""
+    from pen_stack.graph import writers_reaching_and_deliverable
+    return writers_reaching_and_deliverable(q.get("locus"), cargo_form=q.get("cargo_form"))

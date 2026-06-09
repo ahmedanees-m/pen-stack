@@ -49,5 +49,14 @@ def verify_write(design: dict) -> dict:
     return verify(design).model_dump()
 
 
+@mcp.tool()
+def graph_query(locus: str, cargo_form: str | None = None) -> dict:
+    """v4.5 world-model graph (WS-G): a multi-hop query. Returns the writer families that REACH `locus` AND
+    are DELIVERABLE by a vehicle carrying `cargo_form` (optional), each answer with its provenanced edge path
+    (the answer IS the path — no fabrication). The graph nodes/edges carry evidence kind + scope + provenance."""
+    from pen_stack.graph import writers_reaching_and_deliverable
+    return writers_reaching_and_deliverable(locus, cargo_form=cargo_form)
+
+
 if __name__ == "__main__":  # pragma: no cover
     mcp.run()

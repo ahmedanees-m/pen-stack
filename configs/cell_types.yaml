@@ -1,0 +1,27 @@
+# PEN-STACK v4.5 — cell-type nodes + COVERAGE CARDS for the world-model graph (WS-CT).
+# Each cell type is a graph node carrying a coverage card: which data tracks are available, and therefore how
+# trustworthy a durability/safety score is for it. Cross-cell-type queries are OOD-labelled (the v3.2 finding:
+# chromatin marks are conserved, so context-OOD is intrinsically weak). Partial-track cell types degrade
+# gracefully and are labelled - never silently extrapolated.
+version: "1.0"
+
+cell_types:
+  # --- Tier-0 exemplars (v3.1/v3.2 Phase-1 cell types with full feature stores) ---
+  K562:
+    tier: exemplar
+    efo: "EFO:0002067"
+    coverage: full            # chromatin + expression + TRIP durability + safety tracks
+    tracks: [atac, h3k27ac, h3k9me3, expression, trip_durability, genotoxicity]
+    note: "CML lymphoblast; deepest Phase-1 feature store; durability/safety fully scored."
+  HepG2:
+    tier: exemplar
+    efo: "EFO:0001187"
+    coverage: full
+    tracks: [atac, h3k27ac, h3k9me3, expression, genotoxicity]
+    note: "hepatoblastoma; second exemplar; partial TRIP, full chromatin/expression."
+  HSPC_CD34:
+    tier: exemplar
+    efo: null
+    coverage: partial         # clinical genotoxicity context; partial histone panel (the v3.1 honesty result)
+    tracks: [atac, expression, genotoxicity]
+    note: "CD34+ HSPC; clinical genotoxic CIS context (LMO2/MECOM); PARTIAL histone panel -> graceful degradation."
