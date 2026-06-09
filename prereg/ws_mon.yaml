@@ -1,0 +1,21 @@
+# PEN-STACK v4.5 - WS-MON (gated living-ingestion loop) pre-registered. Needs WS-G.
+cycle: "v4.5"
+workstream: "WS-MON"
+prepared: "2026-06-09"
+
+principle_1: "THE AGENT PROPOSES; A GATE DISPOSES. No automated process edits the curated world-model. Candidates are quarantined; the ONLY admission path is gate_admit(approved=True) after automated checks pass. Asserted by test (propose() never receives/mutates a Graph; admit requires approval)."
+
+MON1_propose:
+  deliverable: "pen_stack/graph/ingest.py: Candidate + Quarantine; propose_from_monitor() quarantines PEN-MONITOR hits as candidate nodes/edges with provenance (source + doi/europepmc)."
+  acceptance: "proposing N candidates leaves the graph UNCHANGED (n_nodes/n_edges identical); every candidate carries provenance; network-absent -> empty quarantine, never fabricated."
+
+MON2_gate:
+  deliverable: "automated_checks() (provenance-bearing + well-typed) + gate_admit(approved, admitted_by) with a VERSIONED admission record (date + evidence + gate)."
+  acceptance: "a candidate with failing automated checks OR approved=False is REJECTED and the graph is unchanged; only (checks pass AND approved) admits it, appending a dated admission-log entry; NO auto-accept/bulk-merge function exists (asserted)."
+
+MON3_backtest:
+  deliverable: "back_test_candidates(): the known recent bridge system ISPpu10 (Europe PMC PPR1218813, bioRxiv 2026-03-19) as a candidate node+edge."
+  acceptance: "the back-test surfaces ISPpu10 as a quarantined candidate; the gate admits it (graph gains the node+edge with provenance + a versioned record); without approval it stays out."
+
+gate: "no auto-edit of curated truth (Principle 1, asserted); admissions versioned + reversible; provenance on every candidate; no-fabrication."
+locked_files: [prereg/ws_mon.yaml]
