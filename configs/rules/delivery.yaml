@@ -29,6 +29,15 @@ rules:
     provenance: { doi: ["10.1089/hum.2017.084"], note: "v3.2 MC2 delivery_constraints scan" }
     test_ref: "tests/unit/test_ws_r.py::test_delivery_controls"
     scope: "labeled heuristic, directional; not a titre predictor"
+  - id: delivery.aav_packaging_margin
+    kind: soft_penalty
+    category: delivery
+    mechanism: "AAV packaging efficiency / titre drops sharply as the cargo approaches the capsid limit (computable from cargo_bp vs vehicle capacity), even while still under capacity (v4.0 delivery-oracle refinement)"
+    evaluator: delivery_aav_packaging
+    param: { margin_frac: 0.9 }
+    provenance: { doi: ["10.1089/hum.2010.245"], note: "AAV genome-size vs packaging-efficiency relationship" }
+    test_ref: "tests/unit/test_ws_atlas.py::test_aav_packaging_margin"
+    scope: "computable efficiency margin, directional; not a titre predictor"
   - id: delivery.immunogenicity_magnitude
     kind: scope_flag
     category: delivery

@@ -1,0 +1,8 @@
+{
+  "cycle": "v4.0",
+  "workstream": "WS-ATLAS",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_atlas.yaml": "b8024f01cab7581fc8c3aa4917c9402f6418f4fa27f4ebb067cf9e4a2067ce57"
+  }
+}

@@ -151,6 +151,31 @@ def delivery_no_integration(design: Design, rule: Rule) -> RuleResult:
     return _result(rule, "pass", f"{design.delivery_vehicle} is non-integrating, as required")
 
 
+@evaluator("delivery_aav_packaging")
+def delivery_aav_packaging(design: Design, rule: Rule) -> RuleResult:
+    """v4.0 delivery-oracle refinement: AAV packaging EFFICIENCY drops sharply as the cargo approaches the
+    capsid limit (a computable property of cargo_bp vs the vehicle capacity), even when still under capacity.
+    Soft flag when within the margin; not a titre predictor."""
+    if design.cargo_bp is None or not design.delivery_vehicle:
+        return _na(rule, "no cargo_bp + delivery_vehicle")
+    v = str(design.delivery_vehicle).lower()
+    if "aav" not in v:
+        return _result(rule, "pass", "not an AAV vehicle; packaging-margin check n/a")
+    from pen_stack.planner.delivery_vehicles import vehicle
+    veh = vehicle(design.delivery_vehicle) or {}
+    cap = veh.get("cargo_capacity_bp")
+    if not cap:
+        return _na(rule, "vehicle has no capacity")
+    margin = float(rule.param.get("margin_frac", 0.9))       # within 90-100% of capacity -> efficiency penalty
+    frac = design.cargo_bp / cap
+    if frac >= margin:
+        return _result(rule, "flag", f"cargo {design.cargo_bp} bp is {frac:.0%} of {design.delivery_vehicle} "
+                       f"capacity {cap} bp (packaging efficiency / titre drops near the limit)",
+                       value=round(frac, 3))
+    return _result(rule, "pass", f"cargo {frac:.0%} of capacity (comfortable packaging margin)",
+                   value=round(frac, 3))
+
+
 @evaluator("delivery_sequence_constraints")
 def delivery_sequence_constraints(design: Design, rule: Rule) -> RuleResult:
     if not design.cargo_seq or not design.delivery_vehicle:
