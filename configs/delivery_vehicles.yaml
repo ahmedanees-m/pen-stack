@@ -1,0 +1,105 @@
+# PEN-STACK v3.3 — Delivery vehicle palette (WS-D / North-Star §4). The substrate must score and constrain
+# the WHOLE delivery palette, not just dual-AAV. Each row: cargo capacity, integration, division dependence,
+# immunogenicity PRIOR (qualitative; MAGNITUDE is a known-unknown — never predicted), re-dosability, tropism,
+# ex/in-vivo, compatible cargo form {DNA, mRNA, RNP}, and >=1 DOI. Values cited to 2026 sources.
+# `constraint_key` maps to configs/delivery_constraints.yaml for the sequence-level scan.
+
+version: "1.0"
+
+vehicles:
+  AAV_single:
+    cargo_capacity_bp: 4700
+    integrating: false            # episomal
+    division_dependent: false
+    immunogenicity_prior: "moderate-high; pre-existing NAbs exclude 30-60% of patients"
+    re_dosable: false
+    tropism: "serotype-dependent (liver, muscle, CNS, retina)"
+    in_vivo: true
+    compatible_cargo_form: [DNA]
+    constraint_key: AAV
+    dois: ["10.1038/s41573-019-0012-9"]
+
+  AAV_dual:
+    cargo_capacity_bp: 9000       # split across 2 capsids (~9 kb); efficiency drops sharply
+    integrating: false
+    division_dependent: false
+    immunogenicity_prior: "as AAV; split lowers efficiency"
+    re_dosable: false
+    tropism: "serotype-dependent"
+    in_vivo: true
+    compatible_cargo_form: [DNA]
+    constraint_key: AAV
+    dois: ["10.1089/hum.2017.084"]
+
+  lentivirus:
+    cargo_capacity_bp: 8000
+    integrating: true             # semi-random integration
+    division_dependent: false     # integrates in non-dividing too; strong in dividing
+    immunogenicity_prior: "moderate"
+    re_dosable: false
+    tropism: "broad (VSV-G pseudotyped)"
+    ex_vivo: true
+    compatible_cargo_form: [DNA]
+    constraint_key: lentiviral
+    dois: ["10.1126/science.1233151"]
+
+  helper_dependent_adenovirus:
+    cargo_capacity_bp: 35000      # "gutless" HDAd, up to ~35 kb
+    integrating: false
+    division_dependent: false
+    immunogenicity_prior: "high (innate + adaptive)"
+    re_dosable: false
+    tropism: "liver and others"
+    in_vivo: true
+    compatible_cargo_form: [DNA]
+    constraint_key: plasmid
+    dois: ["10.1089/hum.2009.213"]
+
+  hsv_amplicon:
+    cargo_capacity_bp: 100000     # >100 kb
+    integrating: false
+    division_dependent: false
+    immunogenicity_prior: "high; neurotropic"
+    re_dosable: false
+    tropism: "neurotropic (CNS)"
+    in_vivo: true
+    compatible_cargo_form: [DNA]
+    constraint_key: plasmid
+    dois: ["10.1038/sj.gt.3302529"]
+
+  lnp_mrna:
+    cargo_capacity_bp: 15000      # large RNA payload (mRNA encoding the writer/RNP)
+    integrating: false            # transient
+    division_dependent: false
+    immunogenicity_prior: "low/transient"
+    re_dosable: true
+    tropism: "liver-tropic by default"
+    in_vivo: true
+    compatible_cargo_form: [mRNA, RNP]
+    constraint_key: lnp_mrna
+    dois: ["10.1038/s41578-021-00358-0"]
+
+  evlp:
+    cargo_capacity_bp: null       # RNP payload (not a DNA packaging limit)
+    integrating: false
+    division_dependent: false
+    immunogenicity_prior: "low (transient, no DNA)"
+    re_dosable: true
+    tropism: "engineerable (T cells, retina)"
+    in_vivo: true
+    ex_vivo: true
+    compatible_cargo_form: [RNP]
+    constraint_key: evlp
+    dois: ["10.1016/j.cell.2022.03.045"]
+
+  electroporation:
+    cargo_capacity_bp: null       # physical; no packaging limit
+    integrating: false            # depends on cargo
+    division_dependent: false
+    immunogenicity_prior: "n/a (ex vivo)"
+    re_dosable: false
+    tropism: "n/a (ex vivo)"
+    ex_vivo: true
+    compatible_cargo_form: [DNA, mRNA, RNP]
+    constraint_key: electroporation
+    dois: ["10.1038/nprot.2014.157"]

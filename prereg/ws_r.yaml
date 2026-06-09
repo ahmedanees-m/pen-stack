@@ -1,0 +1,51 @@
+# PEN-STACK v3.3 - WS-R (machine-readable rule base + solver) pre-registered acceptance.
+# Locked before the controls run. The rules are RELOCATED from existing validated code into versioned data;
+# the parity test proves no decision changes. Results reported verbatim including negatives.
+cycle: "v3.3"
+workstream: "WS-R"
+prepared: "2026-06-09"
+
+rule_schema:
+  fields: [id, kind, category, mechanism, evaluator, param, provenance, test_ref, scope]
+  kinds: [hard_reject, soft_penalty, scope_flag]
+  categories: [reachability, fold, payload, multiplex, delivery]
+  contract: "a rule is DATA (configs/rules/*.yaml); an evaluator (pen_stack/rules/evaluators.py) executes it by
+    delegating to the existing validated function; the solver aggregates legal = every APPLICABLE hard_reject
+    rule passes. Legality and confidence are DIFFERENT axes — the solver decides legality only; the verifier
+    (WS-V) attaches calibrated confidence separately, never collapsing the two."
+
+R1_rule_base:
+  deliverable: "configs/rules/{reachability,fold,payload,multiplex,delivery}.yaml; pen_stack/rules/{schema,loader}.py;
+    configs/delivery_vehicles.yaml (>=6 vehicles) + pen_stack/planner/delivery_vehicles.py"
+  acceptance: "every rule has id+kind+category+mechanism+evaluator+param+provenance+test_ref; the union
+    reproduces the SAME decisions the prior in-code logic makes on a regression set (PARITY test) — relocation,
+    not behaviour change."
+
+R2_solver:
+  deliverable: "pen_stack/rules/solver.py (evaluate / is_legal / legality_report)"
+  acceptance: "POSITIVE controls all legal; NEGATIVE controls each rejected by the CORRECT named hard rule."
+
+controls:
+  positive:
+    - "bridge_IS110 into a CT-core+PAM-bearing site, 3 kb cargo, AAV_single -> legal"
+    - "serine_integrase at a pre-installed attP landing pad, 3 kb, AAV_single -> legal"
+    - "bridge_IS110, 35 kb cargo, helper_dependent_adenovirus -> legal (HDAd capacity ~35 kb)"
+    - "Cas9 (RNP) delivered by electroporation (RNP-compatible) -> legal"
+  negative:
+    - "cargo 35 kb in AAV_single -> illegal by payload.cargo_within_capacity"
+    - "serine_integrase at a motif-absent site (no att) -> illegal by reachability.target_element_available"
+    - "Cas9 (RNP-only) into AAV_single (DNA-only) -> illegal by delivery.cargo_form_compatible"
+    - "non-integrating goal + lentivirus (integrating) -> illegal by delivery.no_integration_constraint"
+    - "CAST_VK at a PAM-absent (poly-A) site -> illegal by reachability.target_element_available"
+
+gate_G_R: "WS-V and WS-BA may not ship until (a) the parity test passes (rules == prior code decisions) and
+  (b) every positive control is legal and every negative control is rejected by the correctly-named rule."
+
+locked_files:
+  - prereg/ws_r.yaml
+  - configs/rules/reachability.yaml
+  - configs/rules/fold.yaml
+  - configs/rules/payload.yaml
+  - configs/rules/multiplex.yaml
+  - configs/rules/delivery.yaml
+  - configs/delivery_vehicles.yaml

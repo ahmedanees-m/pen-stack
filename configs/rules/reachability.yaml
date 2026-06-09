@@ -1,0 +1,16 @@
+# Reachability / target-site rules (relocated from planner/target_site.py + configs/target_sites.yaml).
+# The per-family element detail (PAM / CAST GTN+spacing / serine att / bridge CT core / PE-installable) lives
+# in configs/target_sites.yaml; this rule delegates to that validated logic (parity by construction).
+category: reachability
+rules:
+  - id: reachability.target_element_available
+    kind: hard_reject
+    category: reachability
+    mechanism: "the writer family's required targeting element must be present at the site (Cas NGG/TTTV PAM; CAST GTN PAM + fixed insertion distance; serine integrase attB/attP; bridge/seek central CT core; PE-installable) — else the writer physically cannot engage the locus"
+    evaluator: reachability_target_site
+    param: { config: "configs/target_sites.yaml" }
+    provenance:
+      doi: ["10.1126/science.adz0276", "10.1038/s41586-024-07552-4", "10.1126/science.aax9181", "10.1038/s41587-022-01527-4"]
+      note: "v3.2 MC1 hard filter; per-family motifs in configs/target_sites.yaml"
+    test_ref: "tests/unit/test_ws_r.py::test_reachability_controls"
+    scope: "sequence-computable screen, not a guarantee of activity (relaxed-PAM engineered variants approximate)"
