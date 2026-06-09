@@ -15,7 +15,7 @@ and durably write new DNA, **which enzyme** can write it there, and **how** to d
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Version](https://img.shields.io/badge/version-4.5.0-blue.svg)](CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-208%20passing-success.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-224%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
