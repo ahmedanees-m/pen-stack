@@ -20,7 +20,7 @@ gsh:
   - {name: CLYBL,    tier: validated, anchor_gene: CLYBL,    doi: "10.1371/journal.pone.0116032"}  # Cerbini 2015
   - {name: CCR5,     tier: validated, anchor_gene: CCR5,     doi: "10.1038/nbt1353"}          # Lombardo 2007
   - {name: hRosa26,  tier: validated, anchor_gene: THUMPD3,  doi: "10.1038/nbt1362"}          # Irion 2007
-  - {name: H11,      tier: validated, anchor_gene: EIF4ENIF1, doi: "10.1371/journal.pone.0113481"}  # H11/HIPP11
+  - {name: H11,      tier: validated, anchor_gene: EIF4ENIF1, doi: "10.1093/nar/gkt1290"}  # H11/HIPP11 (Zhu 2014, DICE; hH11 on chr22q12.2 between DRG1 and EIF4ENIF1)
   # --- tier 1 (cont.): functionally validated in Lin et al. 2024 (eLife 79592), precise hg38 spans ---
   - {name: Pansio-1, tier: validated, anchor_coord: {chrom: chr1,  start: 113339961, end: 113340514}, anchor_gene_note: HIPK1, doi: "10.7554/eLife.79592"}
   - {name: Olonne-18, tier: validated, anchor_coord: {chrom: chr18, start: 56534775,  end: 56536439},  anchor_gene_note: TXNL1, doi: "10.7554/eLife.79592"}

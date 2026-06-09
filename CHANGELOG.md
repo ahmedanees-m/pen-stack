@@ -3,6 +3,28 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [4.0.2] - 2026-06-09 - citation-correctness patch: full-repo DOI audit
+
+### Fixed
+A full sweep of all 56 DOIs in the repo (verified via Crossref + doi.org) found six incorrect or
+non-existent citations — all now corrected to verified, topically-correct references:
+- `configs/gsh_validated_heldout.yaml` H11 locus: `10.1371/journal.pone.0113481` (resolved to an unrelated
+  cardiology paper) → **`10.1093/nar/gkt1290`** (Zhu et al. 2014, *DICE*, NAR 42:e34 — the paper that
+  characterized human H11 on chr22q12.2 between DRG1 and EIF4ENIF1).
+- `configs/delivery_vehicles.yaml` + `configs/rules/{delivery,payload}.yaml`: `10.1089/hum.2017.084`
+  (non-existent), `10.1089/hum.2009.213` (non-existent), `10.1038/sj.gt.3302529` (unrelated erratum) →
+  **`10.1128/JVI.79.15.9933-9944.2005`** (Grieger & Samulski, AAV packaging capacity),
+  **`10.1128/JVI.72.2.926-933.1998`** (multiply-deleted adenovirus vectors), **`10.1038/nbt1101-1067`**
+  (Wade-Martins, HSV-1 amplicon large-capacity).
+- `pen_stack/validate/bench_writetype_tasks.py` provenance: `10.1038/s41586-023-06756-4` (diabetes program)
+  and `10.1126/science.abm1123` (freshwater fish) → **`10.1016/j.cell.2022.03.045`** and
+  **`10.1128/JVI.79.15.9933-9944.2005`**.
+
+The remaining 50 DOIs resolve correctly; three legacy DOIs in `mech/pfam_whitelist.yaml` (Rice 1995 Cell,
+Kholodii 1997 Res Microbiol, Prudhomme 2002 J Bacteriol) carry full author/year/journal references and are
+real classic papers whose pre-modern DOIs do not resolve at doi.org — left unchanged (a registration artifact,
+not an error).
+
 ## [4.0.1] - 2026-06-09 - data-correctness patch: writer-verification panel verified against Perry 2025
 
 ### Fixed

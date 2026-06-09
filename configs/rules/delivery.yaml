@@ -26,7 +26,7 @@ rules:
     mechanism: "vehicle-specific construct hazards (lentiviral internal poly(A), AAV inverted-repeat/homopolymer, recombinogenic direct repeats, GC extremes) lower titre/yield"
     evaluator: delivery_sequence_constraints
     param: {}
-    provenance: { doi: ["10.1089/hum.2017.084"], note: "v3.2 MC2 delivery_constraints scan" }
+    provenance: { doi: ["10.1128/JVI.79.15.9933-9944.2005"], note: "AAV genome/sequence constraints; v3.2 MC2 delivery_constraints scan (labelled heuristic, per-check sources in configs/delivery_constraints.yaml)" }
     test_ref: "tests/unit/test_ws_r.py::test_delivery_controls"
     scope: "labeled heuristic, directional; not a titre predictor"
   - id: delivery.aav_packaging_margin

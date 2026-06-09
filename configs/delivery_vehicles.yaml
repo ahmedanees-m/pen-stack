@@ -29,7 +29,7 @@ vehicles:
     in_vivo: true
     compatible_cargo_form: [DNA]
     constraint_key: AAV
-    dois: ["10.1089/hum.2017.084"]
+    dois: ["10.1128/JVI.79.15.9933-9944.2005"]   # Grieger & Samulski 2005, AAV packaging capacity
 
   lentivirus:
     cargo_capacity_bp: 8000
@@ -53,7 +53,7 @@ vehicles:
     in_vivo: true
     compatible_cargo_form: [DNA]
     constraint_key: plasmid
-    dois: ["10.1089/hum.2009.213"]
+    dois: ["10.1128/JVI.72.2.926-933.1998"]   # multiply-deleted (gutless-class) adenovirus vectors
 
   hsv_amplicon:
     cargo_capacity_bp: 100000     # >100 kb
@@ -65,7 +65,7 @@ vehicles:
     in_vivo: true
     compatible_cargo_form: [DNA]
     constraint_key: plasmid
-    dois: ["10.1038/sj.gt.3302529"]
+    dois: ["10.1038/nbt1101-1067"]   # Wade-Martins 2001, HSV-1 amplicon (iBAC) large genomic-DNA transfer
 
   lnp_mrna:
     cargo_capacity_bp: 15000      # large RNA payload (mRNA encoding the writer/RNP)

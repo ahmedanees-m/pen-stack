@@ -53,7 +53,7 @@ PANEL = [
 
 # documented mechanisms behind the legality labels (provenance, not circular)
 PROVENANCE = {
-    "doi": ["10.1038/s41586-023-06756-4", "10.1126/science.abm1123", "10.1038/s41587-020-0561-9"],
+    "doi": ["10.1016/j.cell.2022.03.045", "10.1128/JVI.79.15.9933-9944.2005", "10.1038/s41587-020-0561-9"],
     "note": "RNP/DNA cargo-form compatibility (delivery) + AAV ~4.7 kb packaging limit (payload) are the "
             "documented physical facts; routing per write type follows the v3.3 write-type taxonomy.",
 }

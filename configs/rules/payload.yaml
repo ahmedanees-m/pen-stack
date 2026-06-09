@@ -17,6 +17,6 @@ rules:
     mechanism: "an AAV cargo above a single capsid (~4.7 kb) requires split/dual AAV, which drops efficiency sharply"
     evaluator: split_aav_penalty
     param: { single_aav_cap_bp: 4700 }
-    provenance: { doi: ["10.1089/hum.2017.084"], note: "dual-AAV split efficiency" }
+    provenance: { doi: ["10.1128/JVI.79.15.9933-9944.2005"], note: "AAV packaging capacity (~4.7 kb); oversize cargo needs split/dual AAV" }
     test_ref: "tests/unit/test_ws_r.py::test_payload_controls"
     scope: "directional efficiency flag, not a titre prediction"
