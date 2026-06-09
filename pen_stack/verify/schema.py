@@ -24,6 +24,8 @@ class Verdict(BaseModel):
     epistemic_status: str = "not-computable"
     provenance: dict[str, Any] = Field(default_factory=dict)
     no_fabrication: bool = True
+    writer_critique: dict[str, Any] | None = None   # v4.0 WS-WV: critique of a generated candidate writer
+                                                     # (pass/flag + reasons); NEVER a claim that it works
 
     def summary(self) -> str:
         if self.deferred:

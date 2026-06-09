@@ -78,6 +78,20 @@ def verify(design: Design | dict, question: str | None = None) -> Verdict:
     pc = _plan_confidence(design)
     verdict = classify(grounded=True, confidence=pc["confidence"], out_of_scope=oos_hit)
 
+    # v4.0 WS-WV: if the design carries a GENERATED candidate writer sequence, critique it (fold / active
+    # site / deliverability / reachability) — never a claim that it works. Adds a scope flag, never confidence.
+    writer_critique = None
+    cand_seq = (design.model_extra or {}).get("writer_candidate_seq")
+    if cand_seq:
+        from pen_stack.atlas.writer_verify import critique_candidate
+        writer_critique = critique_candidate(
+            cand_seq, writer_family=design.writer_family or "bridge_IS110",
+            delivery_vehicle=design.delivery_vehicle, no_integration=design.no_integration,
+            site_seq=design.site_seq)
+        scope_flags.append({"kind": "writer_candidate_critique", "pass": writer_critique["pass"],
+                            "flags": writer_critique["flags"],
+                            "reason": "generated writer is critiqued, never claimed to work (v4.0 WS-WV)"})
+
     return Verdict(
         legal=routed["legal"], deferred=False, write_type=design.write_type, routing=routing,
         rule_results=results,
@@ -87,4 +101,4 @@ def verify(design: Design | dict, question: str | None = None) -> Verdict:
         scope_flags=scope_flags,
         confidence=pc["confidence"], interval=pc["interval"], epistemic_status=verdict.status,
         provenance={"rules_version": RULES_VERSION, "source": "rules.solver + L4(uncertainty/scope/epistemic)"},
-        no_fabrication=True)
+        no_fabrication=True, writer_critique=writer_critique)
