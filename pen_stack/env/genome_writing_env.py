@@ -1,20 +1,22 @@
-"""Gymnasium environment INTERFACE for genome-write planning (Phase 3.2, WS-OPT1).
+"""Gymnasium environment for genome-write planning (v3.4, WS-ENV) — the train/eval surface.
 
-A thin `gymnasium.Env` wrapper over the deterministic planner so agent-developer tooling (RL libraries, env
-suites) can drive PEN-STACK through a standard interface. An episode builds a write plan as a short sequence
-of decisions:
+v3.2 shipped a *thin* interface (insertion only). v3.4 hardens it into a **full environment** whose state is
+a partial design across **all v3.3 write types**, whose every action is checked by the **rule-grounded
+verifier** (`pen_stack.verify.verify`), and whose reward is the **legal, calibrated plan score** (the planner
+objective scaled by the L4 calibrated confidence, minus soft-rule penalties). An episode is a complete legal
+plan **or a justified refusal** (an explicit abstain action):
 
-    stage 0: choose a SITE (a candidate bin) -> stage 1: choose a WRITER family ->
-    stage 2: choose a CARGO size bucket -> terminate; reward = the plan's validity/score.
+    stage 0: WRITE TYPE  ->  stage 1: SITE  ->  stage 2: WRITER family  ->
+    stage 3: CARGO bucket -> stage 4: DELIVERY vehicle -> terminate (verify -> reward)
 
-Reward reuses the planner's transparent components (safety, durability, writer activity, intent weights from
-`configs/intent_weights.yaml`) with penalties for an unreachable writer or a cargo that no reachable writer
-can deliver — i.e. the same objective the deterministic planner optimises.
+At any stage the agent may take the reserved **abstain** action (``action == action_space.n - 1``) and end
+the episode with a refusal: refusing beats committing to an *illegal* plan (refusal reward > illegal penalty),
+but a good legal plan beats refusing — the contract that makes "abstention over guessing" measurable.
 
-**Explicitly an INTERFACE, not a claim.** The genome-writing decision is near-one-shot, so RL benefit is
-unproven; no RL agent is claimed to beat the deterministic planner. The greedy(planner) policy here *is* the
-deterministic optimum and is provided as the reference. Behind the optional `[env]` extra (gymnasium); the
-rest of PEN-STACK does not import this module.
+**Explicitly an INTERFACE + EVALUATION HARNESS, not an RL-superiority claim.** The genome-writing decision is
+near-one-shot; the greedy(planner) policy *is* the deterministic optimum and is the reference. No learned
+policy is claimed to beat it (the `greedy >= random` check is a sanity test, not a result). Behind the
+optional ``[env]`` extra (gymnasium); the rest of PEN-STACK does not import this module.
 """
 from __future__ import annotations
 
@@ -36,10 +38,25 @@ from pen_stack.planner.optimize import (
     writer_activity_by_family,
 )
 
+WRITE_TYPES = ["insertion", "excision", "inversion", "replacement",
+               "regulatory_rewrite", "landing_pad_install", "multiplex"]
 WRITER_FAMILIES = ["bridge_IS110", "seek_IS1111", "CAST_VK", "serine_integrase",
                    "PE_integrase", "Cas9", "Cas12a"]
+# writers whose output is DNA (AAV/lenti/HDAd-compatible). Cas9/Cas12a deliver RNP.
+_DNA_WRITERS = ["bridge_IS110", "seek_IS1111", "CAST_VK", "serine_integrase", "PE_integrase"]
 CARGO_BUCKETS = [1000, 3000, 6000, 12000, 30000]   # bp
-_N_STAGES = 3
+_N_STAGES = 5
+
+# reward shaping constants (pre-registered in prereg/ws_env.yaml)
+_ILLEGAL_PENALTY = -1.0      # committing to an illegal plan is the worst outcome
+_ABSTAIN_REWARD = 0.05       # a justified refusal beats an illegal plan, loses to a good legal one
+_SOFT_PENALTY = 0.1          # per soft-rule flag (e.g. split-AAV efficiency)
+_CARGO_SHORT_PENALTY = 0.1   # chosen bucket smaller than the target insert
+
+
+def delivery_vehicles() -> list[str]:
+    from pen_stack.planner.delivery_vehicles import names
+    return list(names())
 
 
 def demo_candidates(n: int = 8, seed: int = 0) -> pd.DataFrame:
@@ -57,8 +74,17 @@ def _base():
     return gym.Env if _HAVE_GYM else object
 
 
+def writer_form(family: str | None) -> str:
+    """DNA for integrase/recombinase/prime-editor writers; RNP for Cas9/Cas12a."""
+    return "DNA" if family in _DNA_WRITERS else "RNP"
+
+
 class GenomeWritingEnv(_base()):
-    """Gymnasium interface over the planner (see module docstring). Conforms to reset/step/spaces."""
+    """Full Gymnasium environment over the v3.3 router + verifier (see module docstring).
+
+    State = partial design; actions build it stage by stage; the terminal reward is the verifier's legality
+    gate times the L4 calibrated plan confidence. The reserved abstain action ends the episode with a refusal.
+    """
     metadata = {"render_modes": []}
 
     def __init__(self, candidates: pd.DataFrame | None = None,
@@ -68,35 +94,66 @@ class GenomeWritingEnv(_base()):
         super().__init__()
         self.cands = (candidates if candidates is not None else demo_candidates(seed=seed)).reset_index(drop=True)
         self.intent = EditIntent(intent) if not isinstance(intent, EditIntent) else intent
-        self.cargo_bp = int(cargo_bp)
+        self.cargo_bp = int(cargo_bp)                 # target insert size the plan must accommodate
         self.w = load_intent_weights()["intents"][self.intent.value]
         self.activity = writer_activity_by_family()
+        self.vehicles = delivery_vehicles()
         self.n_sites = len(self.cands)
-        # fixed Discrete action space sized to the largest stage; actions are taken modulo the stage's options
-        self.action_space = spaces.Discrete(max(self.n_sites, len(WRITER_FAMILIES), len(CARGO_BUCKETS)))
-        # observation: [stage/Nstages, site_safety, site_p_durable, writer_activity, cargo_frac]
-        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(5,), dtype=np.float32)
+        self._stage_sizes = [len(WRITE_TYPES), self.n_sites, len(WRITER_FAMILIES),
+                             len(CARGO_BUCKETS), len(self.vehicles)]
+        # one fixed Discrete space sized to the largest stage + 1 reserved ABSTAIN action.
+        self._abstain = max(self._stage_sizes)
+        self.action_space = spaces.Discrete(self._abstain + 1)
+        # observation: [stage_frac, write_type_frac, site_safety, site_p_durable, writer_activity,
+        #               cargo_frac, delivery_cap_frac, legal_flag]
+        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(8,), dtype=np.float32)
         self._rng = np.random.default_rng(seed)
         self.reset(seed=seed)
 
     # ---- helpers -------------------------------------------------------------------------------
     def _obs(self) -> np.ndarray:
         site = self.cands.iloc[self._site] if self._site is not None else None
+        cap = 0.0
+        if self._delivery:
+            from pen_stack.planner.delivery_vehicles import vehicle
+            c = (vehicle(self._delivery) or {}).get("cargo_capacity_bp")
+            cap = min(1.0, (c or 0) / 100000.0)
         return np.array([
             self._stage / _N_STAGES,
+            (WRITE_TYPES.index(self._write_type) / len(WRITE_TYPES)) if self._write_type else 0.0,
             float(site["safety"]) if site is not None else 0.0,
             float(site["p_durable"]) if site is not None else 0.0,
             float(self.activity.get(self._writer, 0.0)) if self._writer else 0.0,
             (self._cargo / max(CARGO_BUCKETS)) if self._cargo else 0.0,
+            cap,
+            1.0 if self._legal else 0.0,
         ], dtype=np.float32)
 
     def site_options(self) -> list[int]:
         return list(range(self.n_sites))
 
     def writer_options(self) -> list[str]:
+        """Writer families reachable at the chosen site (tier-1 reachability), or all if no site yet."""
         if self._site is None:
             return WRITER_FAMILIES
         return [f for f in str(self.cands.iloc[self._site]["reachable_tier1"]).split(";") if f] or WRITER_FAMILIES
+
+    def _build_design(self):
+        from pen_stack.rules import Design
+        site = self.cands.iloc[self._site] if self._site is not None else None
+        return Design(
+            write_type=self._write_type or "insertion",
+            writer_family=self._writer,
+            writer_output_form=writer_form(self._writer),
+            cargo_bp=self._cargo,
+            delivery_vehicle=self._delivery,
+            edit_intent=self.intent.value,
+            chrom=str(site["chrom"]) if site is not None else None,
+            # per-axis scores let the verifier attach a CALIBRATED confidence (no fabrication otherwise)
+            safety=float(site["safety"]) if site is not None else None,
+            p_durable=float(site["p_durable"]) if site is not None else None,
+            writer_activity=float(self.activity.get(self._writer, 0.4)),
+        )
 
     # ---- Gymnasium API -------------------------------------------------------------------------
     def reset(self, seed: int | None = None, options: dict | None = None):
@@ -104,89 +161,88 @@ class GenomeWritingEnv(_base()):
         if seed is not None:
             self._rng = np.random.default_rng(seed)
         self._stage = 0
+        self._write_type = None
         self._site = None
         self._writer = None
         self._cargo = None
-        return self._obs(), {"stage": "site"}
+        self._delivery = None
+        self._legal = False
+        self._refused = False
+        return self._obs(), {"stage": "write_type"}
 
     def step(self, action: int):
         action = int(action)
         reward, terminated, info = 0.0, False, {}
-        if self._stage == 0:                                   # choose SITE
+        if action == self._abstain:                            # justified refusal -> end episode
+            self._refused = True
+            terminated = True
+            reward = _ABSTAIN_REWARD
+            info = {"stage": "refused", "abstained": True,
+                    "note": "refusal beats an illegal plan; loses to a good legal one"}
+            self._stage += 1
+            return self._obs(), float(reward), True, False, info
+
+        if self._stage == 0:                                   # choose WRITE TYPE
+            self._write_type = WRITE_TYPES[action % len(WRITE_TYPES)]
+            info = {"stage": "site", "chose_write_type": self._write_type}
+        elif self._stage == 1:                                 # choose SITE
             self._site = self.site_options()[action % self.n_sites]
             info = {"stage": "writer", "chose_site": int(self._site)}
-        elif self._stage == 1:                                 # choose WRITER family
-            opts = WRITER_FAMILIES
-            self._writer = opts[action % len(opts)]
+        elif self._stage == 2:                                 # choose WRITER family
+            self._writer = WRITER_FAMILIES[action % len(WRITER_FAMILIES)]
             info = {"stage": "cargo", "chose_writer": self._writer,
                     "writer_reachable": self._writer in self.writer_options()}
-        elif self._stage == 2:                                 # choose CARGO bucket -> terminate
+        elif self._stage == 3:                                 # choose CARGO bucket
             self._cargo = CARGO_BUCKETS[action % len(CARGO_BUCKETS)]
-            reward = self._plan_reward()
+            info = {"stage": "delivery", "chose_cargo_bp": self._cargo}
+        elif self._stage == 4:                                 # choose DELIVERY vehicle -> terminate
+            self._delivery = self.vehicles[action % len(self.vehicles)]
+            reward, info = self._verified_reward()
             terminated = True
-            info = {"stage": "done", "chose_cargo_bp": self._cargo, **self.plan()}
+            info = {"stage": "done", "chose_delivery": self._delivery, **info, **self.plan()}
         self._stage += 1
         return self._obs(), float(reward), bool(terminated), False, info
 
-    # ---- reward = the planner's transparent objective ------------------------------------------
-    def _plan_reward(self) -> float:
+    # ---- reward = legality gate x calibrated plan score ----------------------------------------
+    def _verified_reward(self) -> tuple[float, dict]:
+        from pen_stack.verify import verify
+        design = self._build_design()
+        v = verify(design)
         site = self.cands.iloc[self._site]
-        reachable = self._writer in self.writer_options()
-        act = float(self.activity.get(self._writer, 0.4))
         base = (self.w["safety"] * float(site["safety"])
                 + self.w["durability"] * float(site["p_durable"])
-                + self.w["activity"] * act)
-        if not reachable:                                      # writer cannot engage this site (MC1 spirit)
-            base -= 0.5
-        if self._cargo < self.cargo_bp:                        # cargo bucket too small for the target insert
-            base -= 0.25
-        return float(base)
+                + self.w["activity"] * float(self.activity.get(self._writer, 0.4)))
+        meta = {"legal": v.legal, "deferred": v.deferred, "confidence": v.confidence,
+                "violations": [x["rule_id"] for x in v.violations],
+                "soft_flags": [s["rule_id"] for s in v.soft_flags]}
+        if v.deferred:                                         # unsupported/ambiguous write type -> honest refusal
+            self._refused = True
+            return _ABSTAIN_REWARD, {**meta, "note": "router deferred (unsupported write type)"}
+        if not v.legal:                                        # committed to an illegal plan -> worst outcome
+            self._legal = False
+            return _ILLEGAL_PENALTY, meta
+        self._legal = True
+        conf = v.confidence if v.confidence is not None else 0.5
+        reward = base * (0.5 + 0.5 * conf) - _SOFT_PENALTY * len(v.soft_flags)
+        if self._cargo is not None and self._cargo < self.cargo_bp:
+            reward -= _CARGO_SHORT_PENALTY
+        return float(reward), meta
 
     def plan(self) -> dict:
-        return {"site": None if self._site is None else int(self._site),
-                "writer": self._writer, "cargo_bp": self._cargo, "intent": self.intent.value}
+        return {"write_type": self._write_type,
+                "site": None if self._site is None else int(self._site),
+                "writer": self._writer, "cargo_bp": self._cargo, "delivery": self._delivery,
+                "intent": self.intent.value, "legal": self._legal, "refused": self._refused}
 
 
-# --------------------------------------------------------------------------------------------------
-# reference policies + rollout (a random policy and the greedy planner policy both run)
-# --------------------------------------------------------------------------------------------------
-def random_policy(env: "GenomeWritingEnv", obs, rng) -> int:
-    return int(rng.integers(0, env.action_space.n))
+# re-export the reference policies + rollout helpers (defined in policies.py) for backward-compatible imports
+from pen_stack.env.policies import (  # noqa: E402
+    compare_policies,
+    greedy_planner_policy,
+    random_policy,
+    rollout,
+)
 
-
-def greedy_planner_policy(env: "GenomeWritingEnv", obs, rng) -> int:
-    """The deterministic optimum at each stage: best site by base score, its highest-activity reachable
-    writer, then the smallest cargo bucket that fits the target insert."""
-    if env._stage == 0:
-        scores = [(env.w["safety"] * float(r["safety"]) + env.w["durability"] * float(r["p_durable"]))
-                  for _, r in env.cands.iterrows()]
-        return int(np.argmax(scores))
-    if env._stage == 1:
-        reachable = env.writer_options()
-        best = max(reachable, key=lambda f: env.activity.get(f, 0.0))
-        return WRITER_FAMILIES.index(best)
-    fits = [i for i, b in enumerate(CARGO_BUCKETS) if b >= env.cargo_bp] or [len(CARGO_BUCKETS) - 1]
-    return fits[0]
-
-
-def rollout(env: "GenomeWritingEnv", policy, seed: int = 0) -> dict:
-    """Run one episode under `policy`; return the final reward + the assembled plan."""
-    rng = np.random.default_rng(seed)
-    obs, _ = env.reset(seed=seed)
-    total, term, info = 0.0, False, {}
-    while not term:
-        a = policy(env, obs, rng)
-        obs, r, term, _trunc, info = env.step(a)
-        total += r
-    return {"reward": round(total, 4), "plan": env.plan(), "terminal_info": info}
-
-
-def compare_policies(seed: int = 0) -> dict:
-    """Run the random and greedy(planner) policies on the same env — the interface smoke test. The greedy
-    policy is the deterministic optimum; RL is NOT claimed to beat it (near-one-shot decision)."""
-    env = GenomeWritingEnv(seed=seed)
-    rnd = rollout(env, random_policy, seed=seed)
-    grd = rollout(GenomeWritingEnv(seed=seed), greedy_planner_policy, seed=seed)
-    return {"random": rnd, "greedy_planner": grd,
-            "greedy_at_least_random": bool(grd["reward"] >= rnd["reward"]),
-            "note": "interface only — greedy(planner) is the deterministic optimum; no RL superiority claimed."}
+__all__ = ["WRITE_TYPES", "WRITER_FAMILIES", "CARGO_BUCKETS", "GenomeWritingEnv", "demo_candidates",
+           "delivery_vehicles", "writer_form", "random_policy", "greedy_planner_policy", "rollout",
+           "compare_policies"]
