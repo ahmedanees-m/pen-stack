@@ -21,16 +21,20 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-# Known ISCro4 enhancers (Perry 2025 DMS) + documented-neutral/worse controls — a FROZEN retrospective panel
-# (relative activity Z-score wrt WT; positive = enhancing). Used only when the full Perry DMS is absent.
+# A FROZEN retrospective panel of REAL values from the Perry 2025 ISCro4 deep mutational scan
+# (science.adz0276 Table S3, sheet "L2FC_Relative_Z-Scores", column Z_Score_wrt_WT) — the three top-ranked
+# enhancers, three near-neutral variants, and the three most-deleterious variants, copied verbatim from the
+# measured table. Used only when the full Perry DMS is absent (offline/CI); never fabricated.
 _FROZEN_DMS_Z = {
-    "N322P": 2.6, "H50K": 2.1, "R278M": 1.7,            # published enhancers
-    "K12A": 0.1, "S40T": -0.2, "V90I": 0.0,             # ~neutral
-    "G15D": -2.4, "P88R": -1.9, "L120E": -1.5,          # deleterious / worse
+    "N322P": 0.754, "H50K": 0.742, "R278M": 0.709,      # top-3 enhancers (measured Z, ranks 1-3)
+    "V21R": -0.000, "S312Q": -0.001, "G286T": -0.001,   # near-neutral (|Z| ~ 0)
+    "R132E": -5.400, "R137E": -5.115, "R195D": -4.984,  # most-deleterious (measured worst by Z)
 }
 KNOWN_ISCRO4_ENHANCERS = ["N322P", "H50K", "R278M"]
-# minimal conserved core residues a plausible ISCro4-family candidate should retain (active-site heuristic)
-_CORE_RESIDUES = {49: "R", 277: "R"}                     # 0-based; illustrative conserved arginines
+_WORSE_CONTROLS = ["R132E", "R137E", "R195D"]            # measured-worst variants (Perry Table S3)
+# the catalytic residues a plausible ISCro4-family candidate must retain (Perry Table S3, sheet
+# "Residue Groups", Catalytic_Residues == "Catalytic"): D11, E60, D102, D105, S241 (1-based) -> 0-based below
+_CORE_RESIDUES = {10: "D", 59: "E", 101: "D", 104: "D", 240: "S"}
 
 
 def _sigmoid(x: float) -> float:
@@ -91,9 +95,8 @@ def blind_recovery(top_k: int = 5) -> dict:
     ranked = sorted(scores, key=scores.get, reverse=True)
     top = ranked[:top_k]
     recovered = {e: (e in top) for e in KNOWN_ISCRO4_ENHANCERS}
-    worse = ["G15D", "P88R", "L120E"]
     enh_min = min(scores[e] for e in KNOWN_ISCRO4_ENHANCERS)
-    worse_max = max(scores[w] for w in worse)
+    worse_max = max(scores[w] for w in _WORSE_CONTROLS)
     return {"available": True, "model": "frozen_retrospective_panel", "n": len(_FROZEN_DMS_Z), "top_k": top_k,
             "top": top, "recovered": recovered, "all_enhancers_recovered": all(recovered.values()),
             "enhancers_outrank_worse": bool(enh_min > worse_max),

@@ -3,6 +3,18 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [4.0.1] - 2026-06-09 - data-correctness patch: writer-verification panel verified against Perry 2025
+
+### Fixed
+- **WS-WV frozen panel is now verbatim from the measured Perry 2025 ISCro4 DMS.** The offline-fallback panel
+  in `atlas/writer_verify.py` previously used *illustrative* Z-scores (2.6/2.1/1.7) and invented control
+  variants (G15D/P88R/L120E), and `_CORE_RESIDUES` used illustrative arginines. Replaced with the REAL values
+  from `science.adz0276` Table S3: the top-3 enhancers **N322P (Z 0.754), H50K (0.742), R278M (0.709)**, real
+  near-neutral variants (V21R, S312Q, G286T), the most-deleterious variants (R132E −5.40, R137E −5.12,
+  R195D −4.98), and the documented catalytic residues **D11/E60/D102/D105/S241** ("Residue Groups" sheet). The
+  real-DMS path (on the VM/Drive) was already correct; only the offline fallback constants were illustrative.
+  Added `test_ws_wv.py::test_frozen_panel_matches_real_perry_dms_table_s3` to guard against drift.
+
 ## [4.0.0] - 2026-06-09 - v4.0 release: the Oracle Mesh (on top of the foundation models) + writer verification
 
 A major bump: the substrate now *composes* the biomolecular foundation models under one contract and verifies
