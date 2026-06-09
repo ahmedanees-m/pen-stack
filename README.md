@@ -14,12 +14,12 @@ and durably write new DNA, **which enzyme** can write it there, and **how** to d
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-4.0.3-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.5.0-blue.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-208%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
-[![Genome-Writing Bench v0.3](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.3-6f42c1.svg)](benchmarks/genome_writing_bench/)
+[![Genome-Writing Bench v0.3](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.3.1-6f42c1.svg)](benchmarks/genome_writing_bench/)
 
 **Built on five prior, separately published repositories:**
 
@@ -57,6 +57,24 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v4.5 — the Living World-Model (a knowledge graph that keeps itself current)
+
+v4.5 promotes the flat atlas/WT-KB/crosslink tables into a queryable **knowledge graph**: writers, loci,
+cargo, delivery vehicles, cell types, write types and measured outcomes are typed nodes joined by typed edges,
+**each carrying its provenance, its uncertainty, and the scope within which it holds**. An agent answers a
+multi-hop design question in one grounded traversal, and the graph stays current through a **gated loop** —
+new literature evidence is *proposed* as candidate edges and admitted only through a validation/human gate,
+**never auto-merged**.
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **G — knowledge graph** | `pen_stack/graph/{schema,build,query}` — typed nodes + provenance/uncertainty/scope-tagged edges, built from the v4.0 curated tables; REST `POST /graph/query` + MCP `graph_query` | multi-hop design queries return **fully provenanced paths** (the answer *is* the path); `deliverable_by` edges reproduce the v3.3 verifier with **0 parity mismatches** |
+| **MON — gated living loop** | `pen_stack/graph/ingest.py` — PEN-MONITOR emits **candidate** edges; quarantined; admitted only via `gate_admit(approved)` with a versioned record | **no process auto-edits the curated truth** (Principle 1, asserted); back-test admits the recent ISPpu10 bridge system only through the gate |
+| **CT — cell-type expansion** | Tier-A cell types (iPSC/ESC, primary T cells, hepatocytes) as nodes with **coverage cards** + Tier-B roadmap | partial coverage **degrades gracefully** (confidence capped, raw reported); cross-cell-type queries **OOD-labelled** (v3.2 finding); Tier-B documented, never silently extrapolated |
+| **BA — graph reasoning bench** | `graph_multihop_reasoning` (bench v0.3.1) | graph reasoning accuracy **1.0** vs ungrounded **0.0**; every answer grounded by a provenanced path; no-fabrication holds |
+
+See `docs/world_model.md` and `prereg/ws_{graph,mon,ct,ba_v45}.yaml`.
 
 ## What is new in v4.0 — the Oracle Mesh (sitting on top of the foundation models)
 
@@ -321,6 +339,7 @@ pen-stack/
 │   │                                   + v3.2 offtarget_energetics (position x substitution; held-out 0.88, ships)
 │   ├── agent/                        agentic platform: tools / orchestrator / pen_agent / mcp_server / guardrails
 │   │                                   + v3.2 epistemic (3-tier status) / scope (known-unknowns matcher)
+│   ├── graph/                        v4.5 living world-model knowledge graph (schema/build/query/ingest/cell_types); typed provenanced edges; gated living loop (propose-only)
 │   ├── oracles/                      v4.0 L1 oracle mesh: OracleResult contract + adapters (genome/structure/protein_design/rna/energetics) over the foundation models; version-pinned cache
 │   ├── rules/                        v3.3 machine-readable rules engine (schema/evaluators/loader/solver) over configs/rules/*.yaml
 │   ├── verify/                       v3.3 verification service: verify(design) -> Verdict (legal+reasons+confidence+scope; v4.0 writer_critique)

@@ -8,23 +8,36 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_4_0_3_everywhere():
-    assert pen_stack.__version__ == "4.0.3"
-    assert 'version = "4.0.3"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 4.0.3" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-4.0.3" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_4_5_0_everywhere():
+    assert pen_stack.__version__ == "4.5.0"
+    assert 'version = "4.5.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 4.5.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-4.5.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_4_0_3_entry():
+def test_changelog_has_4_5_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[4.0.3] -" in cl and "[4.0.2] -" in cl       # both kept
-    assert "WS-O" in cl and "WS-WV" in cl
+    assert "[4.5.0] -" in cl and "[4.0.3] -" in cl       # both kept
+    assert "WS-G" in cl and "WS-MON" in cl
 
 
-def test_readme_has_v4_0_section():
+def test_readme_has_v4_5_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v4.0" in r
-    assert "oracle" in r.lower()
+    assert "What is new in v4.5" in r
+    assert "world-model" in r.lower() or "knowledge graph" in r.lower()
+
+
+def test_v4_5_artifacts():
+    # the v4.5 artifacts: world-model graph + gated ingest + cell-type coverage + graph bench
+    from pen_stack.graph import build_graph  # noqa: F401
+    from pen_stack.graph.cell_types import coverage_card  # noqa: F401
+    from pen_stack.graph.ingest import gate_admit  # noqa: F401
+    from pen_stack.validate import bench_graph_tasks  # noqa: F401
+    for p in ("docs/world_model.md", "configs/cell_types.yaml", "pen_stack/graph/schema.py",
+              "prereg/ws_graph.yaml", "prereg/ws_mon.yaml", "prereg/ws_ct.yaml", "prereg/ws_ba_v45.yaml",
+              "prereg/SHA256_LOCK_ws_graph.json", "prereg/SHA256_LOCK_ws_mon.json",
+              "prereg/SHA256_LOCK_ws_ct.json", "prereg/SHA256_LOCK_ws_ba_v45.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v4_0_artifacts():

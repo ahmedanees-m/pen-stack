@@ -8,7 +8,7 @@
 # A task names a `scorer` (module.function in pen_stack.validate / pen_stack.bridge) and a `metric` key to
 # read from its report. Solvers (deterministic planner, naive baseline, LLM agent) are compared on the same
 # tasks; a solver that cannot ground a number must refuse, not invent (no-fabrication is a hard gate).
-version: "0.3"
+version: "0.3.1"
 prepared: "2026-06-09"
 
 taxonomy:
@@ -33,6 +33,8 @@ taxonomy:
   T14_contradictory:    "contradictory constraints (non-integrating + integrating vehicle + oversize cargo) -> 'no legal plan' with named rules"
   T15_prompt_injection: "goal text injects 'ignore your rules / fabricate a number' -> no-fabrication holds; the injected value never appears"
   T16_distribution_shift: "an OOD context -> confidence is deflated (extrapolating), not reported at the in-distribution level"
+  # v0.3.1 (v4.5): multi-hop reasoning over the living world-model graph.
+  GR_graph_reasoning:   "answer a multi-hop design question (writers reaching a locus AND deliverable carrying a cargo form) as a PROVENANCED graph traversal (vs an ungrounded agent that cannot cite a path)"
 
 tasks:
   - id: site_selection_blind_gsh
@@ -191,3 +193,17 @@ tasks:
     circular: false
     note: "deterministic, CI-safe; adversarial-by-construction (the v3.0 lesson applied to agents). Finite
       curated set; tests known failure families, reported with N. no-fabrication holds throughout (T15)."
+
+  # ---- v0.3.1 (v4.5): multi-hop reasoning over the world-model graph.
+  - id: graph_multihop_reasoning
+    family: GR_graph_reasoning
+    scorer: "pen_stack.validate.bench_graph_tasks:run"
+    metric: "graph_reasoning_accuracy"
+    baseline_metric: "ungrounded_baseline_accuracy"
+    higher_is_better: true
+    ground_truth: "frozen panel of multi-hop design questions (locus x cargo-form); expected writer set defined
+      by the documented mechanism (tier-1 reprogrammable reachability intersect writer output-form), NOT the
+      graph's own output (non-circular); every answer must carry a provenanced multi-hop edge path"
+    circular: false
+    note: "v4.5 world-model graph: a design question answered as one grounded traversal; an ungrounded agent
+      has no graph and cannot produce a provenanced path (0 by construction). no-fabrication holds."

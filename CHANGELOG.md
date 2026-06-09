@@ -3,6 +3,31 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [4.5.0] - 2026-06-09 - v4.5 release: the Living World-Model (knowledge graph + gated living loop)
+
+v4.5 promotes the flat tables into a queryable knowledge graph that keeps itself current. Workstreams
+WS-{G,MON,CT,BA}, each SHA-locked. The agent proposes; a gate disposes — no process auto-edits curated truth.
+
+### Added
+- **WS-G - knowledge graph.** `pen_stack/graph/{schema,build,query}.py`: typed nodes
+  (writer/locus/cargo/vehicle/cell_type/write_type/outcome) + typed edges
+  (reaches/deliverable_by/performs/durable_in/carries/used_writer/observed_at), each carrying evidence kind
+  (measured>curated>predicted) + confidence + scope + provenance. Built deterministically from the v4.0
+  curated tables (94 nodes / 288 edges), pure-Python JSON store. Multi-hop queries return provenanced paths;
+  `deliverable_by` reproduces the v3.3 verifier (0 parity mismatches). REST `POST /graph/query` + MCP
+  `graph_query`. `docs/world_model.md`; `prereg/ws_graph.yaml`.
+- **WS-MON - gated living loop.** `pen_stack/graph/ingest.py`: Candidate + Quarantine (propose never mutates
+  a graph), `automated_checks` + `gate_admit(approved, admitted_by)` as the sole admission path with versioned
+  records; back-test surfaces ISPpu10 (Europe PMC PPR1218813). No auto-edit path (asserted). `prereg/ws_mon.yaml`.
+- **WS-CT - cell-type expansion.** `configs/cell_types.yaml` Tier-A (iPSC/ESC, primary T cells, hepatocytes)
+  with coverage cards + Tier-B roadmap; `pen_stack/graph/cell_types.py` graceful degradation (partial coverage
+  caps confidence) + cross-cell-type OOD labelling. `prereg/ws_ct.yaml`.
+- **WS-BA - graph reasoning bench.** `graph_multihop_reasoning` (bench v0.3.1): graph reasoning accuracy 1.0
+  vs ungrounded 0.0, every answer a provenanced path. `prereg/ws_ba_v45.yaml`.
+
+### Changed
+- Version 4.0.3 -> 4.5.0; bench 0.3 -> 0.3.1; README "What is new in v4.5"; M1/M2 + world-model note updates.
+
 ## [4.0.3] - 2026-06-09 - ID-correctness patch: UniProt + Pfam + ontology audit
 
 ### Fixed
