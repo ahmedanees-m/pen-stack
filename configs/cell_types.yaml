@@ -36,13 +36,13 @@ cell_types:
     note: "iPSC/ESC; broad chromatin but TRIP durability not measured here -> durability OOD-labelled, degraded."
   primary_T_cell:
     tier: A
-    efo: "EFO:0002322"        # CD4+/CD8+ primary T cell (CAR-T relevant)
+    ontology: "CL:0000084"    # T cell (Cell Ontology); CAR-T relevant
     coverage: partial
     tracks: [atac, expression]
     note: "primary T cells (CAR-T context); accessibility + expression only -> histone-dependent safety degraded."
   hepatocyte:
     tier: A
-    efo: "EFO:0004146"        # primary hepatocyte
+    ontology: "CL:0000182"    # hepatocyte (Cell Ontology); in-vivo liver target
     coverage: partial
     tracks: [atac, h3k27ac, expression]
     note: "primary hepatocytes (in-vivo liver target); partial panel -> graceful degradation, scope-flagged."

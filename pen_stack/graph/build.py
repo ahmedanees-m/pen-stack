@@ -75,8 +75,8 @@ def build_graph() -> Graph:
     cts = _yaml("configs/cell_types.yaml")["cell_types"]
     for ct, card in cts.items():
         g.add_node(Node(id=f"cell_type:{ct}", type="cell_type", props={
-            "tier": card.get("tier"), "efo": card.get("efo"), "coverage": card.get("coverage"),
-            "tracks": card.get("tracks", []), "note": card.get("note")}))
+            "tier": card.get("tier"), "ontology": card.get("efo") or card.get("ontology"),
+            "coverage": card.get("coverage"), "tracks": card.get("tracks", []), "note": card.get("note")}))
 
     # ---- locus nodes (DOI-validated GSH) -------------------------------------------------------
     gsh = _yaml("configs/gsh_validated_heldout.yaml")["gsh"]

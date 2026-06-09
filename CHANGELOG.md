@@ -3,6 +3,17 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [4.5.1] - 2026-06-09 - ID-correctness patch: cell-type ontology IDs
+
+### Fixed
+Two of the three new v4.5 Tier-A cell-type ontology IDs in `configs/cell_types.yaml` were wrong (verified via
+EBI-OLS): `EFO:0002322` resolved to the **RPMI8226 myeloma line** (not a T cell) and `EFO:0004146` to an
+**obsolete myopathy term** (not hepatocyte). Corrected to the canonical, non-obsolete Cell Ontology terms:
+**primary_T_cell → `CL:0000084`** (T cell), **hepatocyte → `CL:0000182`** (hepatocyte). iPSC (`EFO:0004905`),
+K562 (`EFO:0002067`), HepG2 (`EFO:0001187`) verified correct, as was the ISPpu10 back-test record (Europe PMC
+**PPR1218813** — "ISPpu10 is a structure-gated bridge RNA recombinase…"). No result/test change (the IDs are
+coverage-card metadata; `cell_types.py` reads coverage, not the ontology id).
+
 ## [4.5.0] - 2026-06-09 - v4.5 release: the Living World-Model (knowledge graph + gated living loop)
 
 v4.5 promotes the flat tables into a queryable knowledge graph that keeps itself current. Workstreams

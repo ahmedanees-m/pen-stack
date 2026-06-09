@@ -8,16 +8,16 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_4_5_0_everywhere():
-    assert pen_stack.__version__ == "4.5.0"
-    assert 'version = "4.5.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 4.5.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-4.5.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_4_5_1_everywhere():
+    assert pen_stack.__version__ == "4.5.1"
+    assert 'version = "4.5.1"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 4.5.1" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-4.5.1" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_4_5_0_entry():
+def test_changelog_has_4_5_1_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[4.5.0] -" in cl and "[4.0.3] -" in cl       # both kept
+    assert "[4.5.1] -" in cl and "[4.5.0] -" in cl       # both kept
     assert "WS-G" in cl and "WS-MON" in cl
 
 
