@@ -140,3 +140,12 @@ def plan(gene: str, intent: str, cargo_bp: int = 2000, ct: str = "k562", k: int 
         raise HTTPException(503, str(e)) from e
     return {"gene": gene, "intent": intent, "ct": ct, "n": len(plans), "plans": plans,
             "disclaimer": _DISCLAIMER}
+
+
+@app.post("/verify")
+def verify_endpoint(design: dict):
+    """v3.3 verification service (WS-V): submit a proposed genomic write, get back a structured Verdict —
+    legality + named rejections + calibrated confidence + epistemic status + scope flags. Legality and
+    confidence are distinct axes. A `question` key (optional) is checked against the known-unknowns registry."""
+    from pen_stack.verify import verify
+    return verify(design).model_dump()

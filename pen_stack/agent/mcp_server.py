@@ -38,5 +38,16 @@ def plan_write_session(gene: str, intent: str, cargo_bp: int = 2000, ct: str = "
                                         payload_seq=payload_seq, mode=mode)
 
 
+@mcp.tool()
+def verify_write(design: dict) -> dict:
+    """v3.3 verifier (WS-V): submit a proposed genomic write as a dict (write_type, writer_family, site_seq,
+    cargo_bp, delivery_vehicle, cell_type, edit_intent, no_integration, target_guide/donor_guide, edits, ...)
+    and get back a Verdict: legal/illegal + the named violated rule(s) + citation, a calibrated confidence on
+    the soft components, an epistemic status, and any out-of-scope flags. Legality and confidence are distinct
+    axes; every number traces to a tool (no fabrication). Unsupported write types defer."""
+    from pen_stack.verify import verify
+    return verify(design).model_dump()
+
+
 if __name__ == "__main__":  # pragma: no cover
     mcp.run()

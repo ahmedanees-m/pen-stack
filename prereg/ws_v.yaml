@@ -1,0 +1,15 @@
+# PEN-STACK v3.3 - WS-V (verification service) pre-registered acceptance. Requires gate G-R.
+cycle: "v3.3"
+workstream: "WS-V"
+prepared: "2026-06-09"
+V1_verdict:
+  deliverable: "pen_stack/verify/{service,schema}.py : verify(design) -> Verdict {legal, rule_results, violations, soft_flags, scope_flags, confidence, interval, epistemic_status, provenance, no_fabrication}"
+  acceptance: "every Verdict carries legality + (confidence OR explicit abstention) + scope; numeric fields trace to a tool/oracle call (no-fabrication audit passes on the verifier); legality and confidence are DISTINCT fields, never collapsed (asserted)."
+V2_surfaces:
+  deliverable: "POST /verify in server/api.py; MCP tool verify_write in agent/mcp_server.py; docs/verify.md"
+  acceptance: "a documented round-trip returns a correct Verdict on a positive and a negative control (REST TestClient round-trip test; MCP tool registered)."
+V3_explanations:
+  deliverable: "each violation renders rule_id + one-line reason + citation; Streamlit Verify page (G5)"
+  acceptance: "each negative control shows the correct reason string; UI renders headless."
+gate: "no-fabrication on the verifier = 0 fabricated; legality != confidence asserted."
+locked_files: [prereg/ws_v.yaml]
