@@ -1,4 +1,4 @@
-"""v3.4 WS-REL - release meta-tests: the v3.4 release artifacts are present and consistent."""
+"""v4.0 WS-REL - release meta-tests: the v4.0 release artifacts are present and consistent."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -8,32 +8,35 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_3_4_0_everywhere():
-    assert pen_stack.__version__ == "3.4.0"
-    assert 'version = "3.4.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 3.4.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-3.4.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_4_0_0_everywhere():
+    assert pen_stack.__version__ == "4.0.0"
+    assert 'version = "4.0.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 4.0.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-4.0.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_3_4_0_entry():
+def test_changelog_has_4_0_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[3.4.0] -" in cl and "[3.3.0] -" in cl       # both kept
-    assert "WS-ENV" in cl and "WS-BENCH" in cl
+    assert "[4.0.0] -" in cl and "[3.4.0] -" in cl       # both kept
+    assert "WS-O" in cl and "WS-WV" in cl
 
 
-def test_readme_has_v3_4_section():
+def test_readme_has_v4_0_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v3.4" in r
-    assert "environment" in r.lower()
+    assert "What is new in v4.0" in r
+    assert "oracle" in r.lower()
 
 
-def test_v3_4_artifacts():
-    # the v3.4 artifacts: environment + bench v0.3 scorers + outcome-calibration, docs + prereg present
-    from pen_stack.validate import bench_adversarial_tasks, bench_writetype_tasks, outcome_calibration  # noqa: F401
-    for p in ("docs/environment.md", "pen_stack/env/policies.py",
-              "prereg/ws_env.yaml", "prereg/ws_bench.yaml", "prereg/ws_cal.yaml",
-              "prereg/SHA256_LOCK_ws_env.json", "prereg/SHA256_LOCK_ws_bench.json",
-              "prereg/SHA256_LOCK_ws_cal.json"):
+def test_v4_0_artifacts():
+    # the v4.0 artifacts: oracle mesh + writer-verification + mesh atlas, docs + prereg present
+    from pen_stack.atlas import writer_verify  # noqa: F401
+    from pen_stack.oracles import OracleResult  # noqa: F401
+    from pen_stack.wgenome import mesh_features  # noqa: F401
+    for p in ("docs/oracles.md", "docs/writer_verification.md",
+              "configs/oracles/scope_cards.yaml", "pen_stack/oracles/schema.py",
+              "prereg/ws_o.yaml", "prereg/ws_wv.yaml", "prereg/ws_atlas.yaml",
+              "prereg/SHA256_LOCK_ws_o.json", "prereg/SHA256_LOCK_ws_wv.json",
+              "prereg/SHA256_LOCK_ws_atlas.json"):
         assert (_ROOT / p).exists(), p
 
 

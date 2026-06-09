@@ -14,7 +14,7 @@ and durably write new DNA, **which enzyme** can write it there, and **how** to d
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-3.4.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-190%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
@@ -57,6 +57,25 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v4.0 — the Oracle Mesh (sitting on top of the foundation models)
+
+v4.0 makes PEN-STACK the **composition + verification layer over the biomolecular foundation models**. It
+wraps AlphaGenome, Evo2, AlphaFold3, Boltz-2, Chai-1, Protenix, ESM3, RFdiffusion and ProteinMPNN under one
+contract that carries each model's provenance, native uncertainty, and a **scope card** stating what it is
+valid for — then routes their outputs through the rule-grounded verifier and the calibrated trust layer. A
+generated sequence or structure is always a **candidate to be checked, never a claim**. For the writer enzyme
+itself, v4.0 builds **verification, not invention**: proposed/variant writers are scored against measured DMS
+data and predicted structure, recovering known enhanced variants blind and refusing to assert activity for
+anything unsupported.
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **O — the oracle mesh** | `pen_stack/oracles/` — `OracleResult{value, provenance(model+version), native_uncertainty, scope_card, output_kind}`; adapters for genome / structure / protein-design / RNA / energetics; deterministic version-pinned cache | one contract; **generative output = candidate** (`as_claim()` raises — the pen-assemble lesson in code); AlphaGenome **OOD-gated**; cross-oracle **disagreement widens the interval**; ViennaRNA + energetics real |
+| **WV — writer verification** | `atlas/writer_verify.py` — DMS- + structure-grounded variant scoring; candidate **critique** wired into `verify()` | recovers the known enhancers (**N322P / H50K / R278M**) above measured-worse controls; unmeasured variants flagged, **not claimable**; a generated writer is critiqued (fold/active-site/deliverable/reachable), **never returned as a working pen** |
+| **ATLAS — mesh + delivery oracle** | `wgenome/mesh_features.py` (OOD-gated feature hook + honest blind re-validation) + a computable **AAV packaging-margin** delivery rule | atlas re-validation reports **parity** vs v3.x when oracles are deferred (delta 0.0, never hidden); titre-margin flag fires near the AAV capsid limit; immunogenicity magnitude stays a scope flag |
+
+See `docs/oracles.md`, `docs/writer_verification.md`, and `prereg/ws_{o,wv,atlas}.yaml`.
 
 ## What is new in v3.4 — the Environment (a place to train and grade genome-writing AI)
 
@@ -302,8 +321,9 @@ pen-stack/
 │   │                                   + v3.2 offtarget_energetics (position x substitution; held-out 0.88, ships)
 │   ├── agent/                        agentic platform: tools / orchestrator / pen_agent / mcp_server / guardrails
 │   │                                   + v3.2 epistemic (3-tier status) / scope (known-unknowns matcher)
+│   ├── oracles/                      v4.0 L1 oracle mesh: OracleResult contract + adapters (genome/structure/protein_design/rna/energetics) over the foundation models; version-pinned cache
 │   ├── rules/                        v3.3 machine-readable rules engine (schema/evaluators/loader/solver) over configs/rules/*.yaml
-│   ├── verify/                       v3.3 verification service: verify(design) -> Verdict (legal+reasons+confidence+scope)
+│   ├── verify/                       v3.3 verification service: verify(design) -> Verdict (legal+reasons+confidence+scope; v4.0 writer_critique)
 │   ├── adapt/                        local recalibration / private-data adaptation behind a gate (v3.1, WS-F)
 │   ├── env/                          v3.4 full Gymnasium environment over router+verifier (genome_writing_env + policies; [env] extra)
 │   ├── monitor/                      PEN-MONITOR living database (Europe PMC)

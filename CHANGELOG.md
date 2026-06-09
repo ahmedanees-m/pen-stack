@@ -3,6 +3,33 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [4.0.0] - 2026-06-09 - v4.0 release: the Oracle Mesh (on top of the foundation models) + writer verification
+
+A major bump: the substrate now *composes* the biomolecular foundation models under one contract and verifies
+the writer enzyme itself. Workstreams WS-{O,WV,ATLAS}, each SHA-locked. No de-novo writer invention — score
+and critique only (the pen-assemble lesson).
+
+### Added
+- **WS-O - the oracle mesh.** `pen_stack/oracles/` with `OracleResult{value, provenance(model+version),
+  native_uncertainty, scope_card, in_scope, extrapolating, output_kind, available, cached}`. Adapters:
+  `genome.py` (AlphaGenome OOD-gated; Evo2 likelihood=claim / generation=candidate; ChromBPNet·Borzoi
+  baseline), `structure.py` (AlphaFold3/Boltz-2/Chai-1/Protenix + `consensus()` that widens the interval on
+  cross-oracle disagreement), `protein_design.py` (RFdiffusion/ProteinMPNN/ESM3 - all candidates), `rna.py`
+  (ViennaRNA - real, hard fold-legality), `energetics.py` (bridge off-target, MC3 gate ≥0.77).
+  `configs/oracles/scope_cards.yaml` (11 models); deterministic version-pinned `oracle_cache/`. Guard:
+  generative candidate `as_claim()` raises. `docs/oracles.md`; `prereg/ws_o.yaml`.
+- **WS-WV - writer verification.** `pen_stack/atlas/writer_verify.py`: DMS- + structure-grounded variant
+  scoring (measured=claimable, unmeasured=not), `blind_recovery` recovers N322P/H50K/R278M above
+  measured-worse controls, and `critique_candidate` (fold/active-site/deliverable/reachable) wired into
+  `verify()` as `Verdict.writer_critique` - always `no_claim=True`. `docs/writer_verification.md`;
+  `prereg/ws_wv.yaml`.
+- **WS-ATLAS - mesh upgrade + delivery oracle.** `wgenome/mesh_features.py` (OOD-gated feature hook + honest
+  blind re-validation reporting parity vs v3.x when oracles are deferred) + a computable
+  `delivery.aav_packaging_margin` soft rule (titre drops near the AAV capsid limit). `prereg/ws_atlas.yaml`.
+
+### Changed
+- Version 3.4.0 -> 4.0.0; `Verdict` gains `writer_critique`; M1 + writer-verification note + M2 updates.
+
 ## [3.4.0] - 2026-06-09 - v3.4 release: the Environment (train/eval surface + bench v0.3 + outcome-calibration)
 
 v3.4 turns the thin Gym interface into a full environment an AI agent can be trained and graded in, ships
