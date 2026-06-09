@@ -1,0 +1,8 @@
+{
+  "cycle": "v3.4",
+  "workstream": "WS-BENCH",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_bench.yaml": "24012e8a49db872944842ec53e2018bfaee973f3608d8be88fb82aa05ee3bc48"
+  }
+}

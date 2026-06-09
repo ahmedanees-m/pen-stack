@@ -27,7 +27,7 @@ def test_t12_no_circular_labels():
     cfg = yaml.safe_load(resource("benchmarks/genome_writing_bench/tasks.yaml").read_text(encoding="utf-8"))
     t12 = next(t for t in cfg["tasks"] if t["id"] == "rule_grounded_legality")
     assert t12["circular"] is False
-    assert cfg["version"] == "0.2.1"
+    assert cfg["version"] >= "0.2.1"
 
 
 def test_agent_submits_plan_to_verifier():

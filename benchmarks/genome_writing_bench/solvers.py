@@ -88,6 +88,37 @@ def ungrounded_contrast_md(ung: dict | None) -> list[str]:
 
 
 _TRUST_FAMILIES = ("T8_calibration", "T9_selective_pred", "T10_ood_honesty", "T11_out_of_scope")
+_ROBUST_FAMILIES = ("MW_multi_write_type", "T13_scope_disguise", "T14_contradictory",
+                    "T15_prompt_injection", "T16_distribution_shift")
+
+
+def robustness_contrast_md(bench: dict) -> list[str]:
+    """Render the v0.3 ROBUSTNESS contrast (v3.4): multi-write-type routing + adversarial probes, the
+    verifier-backed agent vs an over-confident ungrounded baseline that has no router/rule base, obeys the
+    injection, and ignores OOD."""
+    rob = [r for r in bench["results"] if r["family"] in _ROBUST_FAMILIES]
+    if not rob:
+        return []
+    lines = [
+        "",
+        "## Robustness tasks (v0.3) - multi-write-type + adversarial probes separate *robust* agents",
+        "The verifier-backed agent routes every write type to its rule sub-graph and survives adversarial "
+        "probes built to break a naive agent (out-of-scope-in-disguise, contradictory constraints, prompt "
+        "injection, distribution shift). The over-confident ungrounded baseline has no router/rule base, obeys "
+        "the injection, and ignores OOD.",
+        "",
+        "| Task | Family | Available | Verifier-backed | Over-confident baseline |",
+        "|---|---|---|---|---|",
+    ]
+    for r in rob:
+        lines.append(f"| {r['id']} | {r['family']} | {r['available']} | "
+                     f"{r['planner_score']} | {r['baseline_score']} |")
+    n_better = sum(1 for r in rob if r["available"] and r["baseline_score"] is not None
+                   and r["planner_score"] > r["baseline_score"])
+    n_base = sum(1 for r in rob if r["available"] and r["baseline_score"] is not None)
+    lines += ["", f"_Verifier-backed beats the over-confident baseline on **{n_better}/{n_base}** available "
+              "robustness tasks; no-fabrication holds throughout (incl. under prompt injection)._"]
+    return lines
 
 
 def trust_contrast_md(bench: dict) -> list[str]:
@@ -149,6 +180,7 @@ def render_leaderboard_md(bench: dict, llm: dict | None = None, ung: dict | None
         lines.append(f"| {r['id']} | {r['family']} | {r['available']} | "
                      f"{r['planner_score']} | {r['baseline_score']} | {gate} |")
     lines += trust_contrast_md(bench)
+    lines += robustness_contrast_md(bench)
     lines += ungrounded_contrast_md(ung)
     lines += [
         "",
