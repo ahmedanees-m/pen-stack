@@ -25,3 +25,32 @@ cell_types:
     coverage: partial         # clinical genotoxicity context; partial histone panel (the v3.1 honesty result)
     tracks: [atac, expression, genotoxicity]
     note: "CD34+ HSPC; clinical genotoxic CIS context (LMO2/MECOM); PARTIAL histone panel -> graceful degradation."
+
+  # --- Tier-A expansion (v4.5 WS-CT): added as graph nodes with coverage cards. Cross-cell-type scores are
+  #     OOD-labelled (v3.2 finding: chromatin marks are conserved, so context-OOD is intrinsically weak). ---
+  iPSC:
+    tier: A
+    efo: "EFO:0004905"        # induced pluripotent stem cell
+    coverage: partial
+    tracks: [atac, h3k27ac, expression]
+    note: "iPSC/ESC; broad chromatin but TRIP durability not measured here -> durability OOD-labelled, degraded."
+  primary_T_cell:
+    tier: A
+    efo: "EFO:0002322"        # CD4+/CD8+ primary T cell (CAR-T relevant)
+    coverage: partial
+    tracks: [atac, expression]
+    note: "primary T cells (CAR-T context); accessibility + expression only -> histone-dependent safety degraded."
+  hepatocyte:
+    tier: A
+    efo: "EFO:0004146"        # primary hepatocyte
+    coverage: partial
+    tracks: [atac, h3k27ac, expression]
+    note: "primary hepatocytes (in-vivo liver target); partial panel -> graceful degradation, scope-flagged."
+
+# Tier-B roadmap (documented, gated by data availability; NOT yet scored - listed honestly, never silently
+# extrapolated). Added as nodes only when their data tracks become available.
+tier_b_roadmap:
+  - {cell_type: HSPC_subsets, blocker: "lineage-resolved ATAC/expression per subset"}
+  - {cell_type: neurons, blocker: "post-mitotic chromatin + durability tracks"}
+  - {cell_type: skeletal_muscle, blocker: "myofiber accessibility + integration durability data"}
+  - {cell_type: retina_photoreceptor, blocker: "tissue-specific tracks; AAV-subretinal context"}
