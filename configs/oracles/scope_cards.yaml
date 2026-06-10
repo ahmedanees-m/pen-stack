@@ -125,3 +125,16 @@ oracles:
       classes with too few catalogued sites (flagged extrapolating)"
     generalizes_to_unseen_loci: false
     license: "open (this work; VISDB 10.1093/nar/gkz867, COSMIC CGC 10.1038/s41568-018-0060-1)"
+
+  capsid_epitope:               # v5.3 WS-EPITOPE: computed capsid/envelope CD8 T-cell epitope load
+    family: protein_design
+    version: "mhcflurry2.0-2026"
+    output_kind: baseline       # sequence-intrinsic presentation comparator, not generative
+    valid_for: "RELATIVE adaptive (CD8 / MHC-I) immunogenicity ordering of VIRAL vector capsids/envelopes via
+      the fraction of the antigen presentable across a frequent HLA-I panel (MHCflurry %rank<=0.5), from
+      UniProt-sourced sequences; population-level, sequence-intrinsic"
+    not_valid_for: "the realized in-vivo / PATIENT-HLA-specific T-cell response (a known-unknown); antibody /
+      neutralizing-antibody (B-cell) immunity (this is CD8/MHC-I only); non-viral vehicles (no capsid protein);
+      a viral vehicle whose antigen sequence is not committed (abstains)"
+    generalizes_to_unseen_loci: false
+    license: "open (this work; MHCflurry 10.1016/j.cels.2020.06.010, HLA-I supertypes 10.1186/1471-2172-9-1)"

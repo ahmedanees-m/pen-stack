@@ -8,23 +8,32 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_2_0_everywhere():
-    assert pen_stack.__version__ == "5.2.0"
-    assert 'version = "5.2.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.2.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.2.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_3_0_everywhere():
+    assert pen_stack.__version__ == "5.3.0"
+    assert 'version = "5.3.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.3.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.3.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_2_0_entry():
+def test_changelog_has_5_3_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.2.0] -" in cl and "[5.1.0] -" in cl       # both kept
-    assert "WS-GENOTOX" in cl and "WS-IMMUNE" in cl
+    assert "[5.3.0] -" in cl and "[5.2.0] -" in cl       # both kept
+    assert "WS-EPITOPE" in cl and "WS-GENOTOX" in cl
 
 
-def test_readme_has_v5_2_section():
+def test_readme_has_v5_3_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v5.2" in r
-    assert "genotoxicity" in r.lower()
+    assert "What is new in v5.3" in r
+    assert "epitope" in r.lower()
+
+
+def test_v5_3_artifacts():
+    # the v5.3 artifacts: computed capsid epitope oracle + committed summary + sequences + scope card + prereg
+    from pen_stack.planner.capsid_epitope_oracle import capsid_epitope_oracle, computed_capsid_immune_score  # noqa: F401,E501
+    for p in ("pen_stack/planner/capsid_epitope_oracle.py", "configs/capsid_epitope_oracle.yaml",
+              "configs/capsid_sequences.fasta", "scripts/p53_build_epitope_oracle.py",
+              "prereg/ws_epitope.yaml", "prereg/SHA256_LOCK_ws_epitope.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v5_2_artifacts():

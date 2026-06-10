@@ -58,8 +58,28 @@ def safety_efficacy_profile(name: str) -> dict | None:
     if rec is None:
         return None
     imm = rec.get("immune_safety") or {}
-    immune_present = [t for ax in _IMMUNE_AXES if (t := _tier(imm.get(ax))) is not None]
-    immune_score = (1.0 - (sum(immune_present) / len(immune_present)) / 2.0) if immune_present else None
+    # per immune axis -> a 0..1 "safety" score (1 = least immunogenic). The ADAPTIVE (CD8 T-cell) axis can be
+    # COMPUTED from the capsid epitope load (v5.3 WS-EPITOPE: MHCflurry x HLA panel over the capsid/envelope
+    # antigen). The computed signal is INTRINSIC antigen presentability; it only translates to a realized host
+    # response when the host is actually exposed to the capsid (IN-VIVO use). So it is folded into the adaptive
+    # axis only for in-vivo vehicles; for EX-VIVO-only viral vectors (e.g. lentivirus, whose VSV-G envelope is
+    # intrinsically epitope-dense but barely seen by the host ex vivo) it is surfaced but NOT folded, and the
+    # documented tier is kept. The other three axes stay documented ordinal tiers. No number is fabricated.
+    from pen_stack.planner.capsid_epitope_oracle import computed_capsid_immune_score
+    cap_score, cap_oracle = computed_capsid_immune_score(name)
+    in_vivo = bool(rec.get("in_vivo"))
+    axis_scores: dict[str, float | None] = {}
+    for ax in _IMMUNE_AXES:
+        t = _tier(imm.get(ax))
+        axis_scores[ax] = (1.0 - t / 2.0) if t is not None else None
+    adaptive_source = "documented"
+    if cap_score is not None and in_vivo:
+        axis_scores["adaptive_immune"] = cap_score          # in-vivo: host sees the capsid -> fold computed
+        adaptive_source = "computed"
+    elif cap_score is not None and not in_vivo:
+        adaptive_source = "computed_ex_vivo_muted"          # reported, but ex-vivo mutes the realized response
+    immune_present = [s for s in axis_scores.values() if s is not None]
+    immune_score = (sum(immune_present) / len(immune_present)) if immune_present else None
     # genotoxicity: prefer the COMPUTED oracle (v5.2 WS-GENOTOX: integration-site x COSMIC-oncogene
     # enrichment, from VISDB) for integrating vectors; fall back to the documented ordinal tier when the
     # oracle abstains. No number is fabricated either way.
@@ -79,6 +99,9 @@ def safety_efficacy_profile(name: str) -> dict | None:
         "vehicle": name,
         "tiers": {ax: imm.get(ax) for ax in (*_IMMUNE_AXES, _GENOTOX_AXIS)} | {"efficacy": imm.get("efficacy")},
         "immune_score": _r(immune_score),
+        "adaptive_source": adaptive_source,      # computed | computed_ex_vivo_muted | documented
+        "capsid_presentability_score": _r(cap_score),   # computed intrinsic capsid CD8 presentability (or None)
+        "adaptive_provenance": (cap_oracle.note if cap_score is not None else None),
         "genotox_score": _r(genotox_score),
         "genotox_source": genotox_source,        # "computed" (VISDBxCOSMIC oracle) | "documented" (ordinal tier)
         "genotox_provenance": (gtox_oracle.note if genotox_source == "computed" else None),

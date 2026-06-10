@@ -3,6 +3,41 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.3.0] - 2026-06-10 - v5.3 release: Computed capsid epitope-load oracle (covers all vectors)
+
+v5.2 computed genotoxicity only meaningfully touches integrating vectors. v5.3 brings the **NetMHC-style
+calculation** to the **adaptive (CD8 T-cell)** axis — the fraction of a viral vector's capsid/envelope that is
+presentable across a frequent HLA-I panel (MHCflurry) — so the computed immune signal **covers all 8 vehicles**
+(5 viral computed, 3 non-viral by mechanism). Workstream WS-EPITOPE, SHA-locked.
+
+### Added
+- **WS-EPITOPE build** — `scripts/p53_build_epitope_oracle.py` (runs in a dedicated `penstack:mhcflurry` image)
+  slides 9-mers across each capsid/envelope antigen and predicts MHCflurry 2.0 affinity %rank per allele across
+  12 frequent HLA-I alleles; `epitope_fraction_strong` = residues covered by a strong binder (%rank ≤ 0.5);
+  `capsid_immune_score = 1 − epitope_fraction_strong`. Sequences UniProt-verified and committed
+  (`configs/capsid_sequences.fasta`): AAV2 VP1 P03135, Ad5 hexon P04133, VSV-G P03522, HSV-1 gD P57083 + gB
+  P06437. Emits the small committed summary `configs/capsid_epitope_oracle.yaml` (MHCflurry + raw sequences stay
+  on the VM → CI-safe).
+- **WS-EPITOPE oracle** — `pen_stack/planner/capsid_epitope_oracle.py`: `capsid_epitope_oracle(vehicle)` returns
+  an `OracleResult` (`output_kind="baseline"`, scope card `capsid_epitope`). Non-viral vehicles → 1.0 by
+  mechanism; unknown / sequence-less → **abstains**.
+- **Wired into the adaptive axis** — `safety_efficacy_profile()` folds the computed capsid score into the
+  adaptive (CD8) sub-axis **only for in-vivo vehicles**. The computed score is *intrinsic* antigen
+  presentability; for **ex-vivo** lentivirus (whose VSV-G envelope is intrinsically epitope-dense but barely
+  seen by the host ex vivo) it is **reported but not folded** (`adaptive_source = computed_ex_vivo_muted`), the
+  documented tier kept. `capsid_presentability_score` surfaces the raw computed value.
+- **Result:** AAV2 capsid is the *least* epitope-dense (0.72) and Ad5 hexon among the most (0.82); HDAd's in-vivo
+  immune score drops accordingly — the documented adaptive ordering reproduced from sequence. `prereg/ws_epitope.yaml`.
+
+### Changed
+- Version 5.2.0 -> 5.3.0 (minor — additive computed oracle); `cite.curated_dois()` ingests the epitope
+  provenance DOIs (MHCflurry 10.1016/j.cels.2020.06.010, HLA-I supertypes 10.1186/1471-2172-9-1).
+
+### Honesty invariant (unchanged)
+- Population-level, **sequence-intrinsic presentation** signal (does the capsid contain HLA binders) — **not**
+  the realized in-vivo / **patient-HLA-specific** T-cell response (a known-unknown), and **CD8/MHC-I only** (not
+  antibody / neutralizing-antibody). No magnitude predicted.
+
 ## [5.2.0] - 2026-06-10 - v5.2 release: Computed genotoxicity oracle (data, not a documented tier)
 
 The v5.1 genotoxicity axis was a documented ordinal tier; for **integrating** vectors that signal is in fact

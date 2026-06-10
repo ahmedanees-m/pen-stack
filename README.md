@@ -16,7 +16,7 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-5.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.3.0-blue.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-240%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
@@ -59,6 +59,22 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v5.3 — Computed capsid epitope-load oracle (covers all vectors)
+
+v5.2 computed genotoxicity only touches integrating vectors. v5.3 brings the **NetMHC-style calculation** to the
+**adaptive (CD8 T-cell)** axis: the fraction of a viral vector's capsid/envelope presentable across a frequent
+HLA-I panel (MHCflurry), so the computed immune signal now **covers all 8 vehicles** — 5 viral computed, 3
+non-viral by mechanism. It is a population-level, *sequence-intrinsic* presentation signal; the realized
+patient-HLA-specific T-cell response stays a known-unknown (and it is CD8/MHC-I only, not antibody).
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **EPITOPE build** | `scripts/p53_build_epitope_oracle.py` → committed `configs/capsid_epitope_oracle.yaml` | per viral capsid: `epitope_fraction_strong` over 9-mers × 12 HLA-I alleles (MHCflurry %rank ≤ 0.5), from UniProt-verified sequences (AAV2 VP1, Ad5 hexon, VSV-G, HSV gD/gB); MHCflurry stays on the VM, only the summary ships |
+| **EPITOPE oracle** | `planner/capsid_epitope_oracle.py` (`OracleResult`) | `capsid_immune_score = 1 − epitope_fraction_strong`; non-viral → 1.0 by mechanism; abstains when no sequence |
+| **wired into the adaptive axis** | folded **only for in-vivo** vehicles | AAV2 least epitope-dense (0.72), Ad5 hexon among the most (0.82) — documented adaptive ordering reproduced from sequence; **ex-vivo** lentivirus's intrinsic VSV-G load is *reported but muted* (host barely sees it ex vivo) |
+
+See `prereg/ws_epitope.yaml` and the `capsid_epitope` scope card.
 
 ## What is new in v5.2 — Computed genotoxicity oracle (data, not a documented tier)
 

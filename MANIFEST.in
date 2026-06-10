@@ -2,7 +2,7 @@
 # source build is reproducible. Large artifacts (atlases, BigWig, models) are NOT shipped - they are on
 # Zenodo (DOI) per the data policy; clone the repo + fetch Zenodo for the full pipeline.
 include README.md LICENSE CHANGELOG.md CITATION.cff pyproject.toml
-recursive-include configs *.yaml *.yml *.txt.example
+recursive-include configs *.yaml *.yml *.txt.example *.fasta
 recursive-include prereg *.yaml *.json
 recursive-include data/curated *
 recursive-include benchmarks *.yaml *.md SHA256SUMS
