@@ -8,7 +8,7 @@
 # A task names a `scorer` (module.function in pen_stack.validate / pen_stack.bridge) and a `metric` key to
 # read from its report. Solvers (deterministic planner, naive baseline, LLM agent) are compared on the same
 # tasks; a solver that cannot ground a number must refuse, not invent (no-fabrication is a hard gate).
-version: "0.3.1"
+version: "0.3.2"
 prepared: "2026-06-09"
 
 taxonomy:
@@ -35,6 +35,8 @@ taxonomy:
   T16_distribution_shift: "an OOD context -> confidence is deflated (extrapolating), not reported at the in-distribution level"
   # v0.3.1 (v4.5): multi-hop reasoning over the living world-model graph.
   GR_graph_reasoning:   "answer a multi-hop design question (writers reaching a locus AND deliverable carrying a cargo form) as a PROVENANCED graph traversal (vs an ungrounded agent that cannot cite a path)"
+  # v0.3.2 (v5.0): the matured co-scientist as reference solver.
+  CS_co_scientist:      "end-to-end grounded design: multiple materially-distinct legal confidence-tagged strategies, each citation-grounded + scope-ledgered, no-fabrication across the full reasoning stack (vs an ungrounded agent producing none of these)"
 
 tasks:
   - id: site_selection_blind_gsh
@@ -207,3 +209,18 @@ tasks:
     circular: false
     note: "v4.5 world-model graph: a design question answered as one grounded traversal; an ungrounded agent
       has no graph and cannot produce a provenanced path (0 by construction). no-fabrication holds."
+
+  # ---- v0.3.2 (v5.0): the matured co-scientist as the reference solver.
+  - id: co_scientist_grounded
+    family: CS_co_scientist
+    scorer: "pen_stack.validate.bench_coscientist_tasks:run"
+    metric: "co_scientist_grounded_rate"
+    baseline_metric: "ungrounded_baseline_rate"
+    higher_is_better: true
+    ground_truth: "frozen panel of write goals; a recommendation set is 'fully grounded' iff it is multiple
+      materially-distinct (>=2 design axes) + each legal (verifier) + confidence-tagged (calibrated) + the
+      rationale's citations are in the curated DOI set + the scope ledger is complete + no-fabrication - all
+      mechanistic/verifier facts, not the agent's own claim (non-circular)"
+    circular: false
+    note: "v5.0 capstone: the matured co-scientist; the central gate is no-fabrication under the FULL reasoning
+      stack. An ungrounded agent produces none of these grounded properties (0 by construction)."

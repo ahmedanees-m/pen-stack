@@ -14,12 +14,12 @@ and durably write new DNA, **which enzyme** can write it there, and **how** to d
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-4.5.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.0.0-blue.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-224%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
-[![Genome-Writing Bench v0.3](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.3.1-6f42c1.svg)](benchmarks/genome_writing_bench/)
+[![Genome-Writing Bench v0.3](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.3.2-6f42c1.svg)](benchmarks/genome_writing_bench/)
 
 **Built on five prior, separately published repositories:**
 
@@ -57,6 +57,23 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v5.0 — the Co-Scientist (smart because it is grounded)
+
+v5.0 matures the reasoning layer on top of everything beneath it. Given a goal and an intent, PEN-STACK
+returns a small set of **materially distinct, ranked, fully-traceable strategies** — each verified,
+calibrated, cited, and scope-ledgered — while the **no-fabrication guarantee holds by construction**: the
+reasoning layer proposes and critiques, but every number still comes from a validated tool or oracle.
+Intelligence rises while groundedness never falls.
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **PLAN + MULTI** | `agent/co_scientist.py` — `propose_strategies()` / `deliberate()` | 2–3 **materially-distinct** strategies (≥2 design axes differ — *measured*, not reworded), each independently **legal** + **confidence-tagged**; deliberative planner benchmarked vs the deterministic baseline |
+| **CRIT + SCOPE2** | self-critique/revise loop + scope ledger | the critic only flags + swaps (never invents a number); revisions are **re-verified** and **falsifiable** (improve flawed plans illegal→legal, never touch clean ones); every recommendation carries a **complete scope ledger** itemising the known-unknowns |
+| **CITE + GEN** | `agent/cite.py` — cited rationale + scoped generalisation | citations are **drawn from the curated world-model** (resolve by construction); a guard **rejects any hallucinated DOI**; adjacent tasks are **grounded-or-refused** |
+| **central gate** | `co_scientist_grounded` bench (v0.3.2) | grounded rate **1.0** vs ungrounded **0.0**; **no-fabrication holds across the full reasoning stack** (asserted) |
+
+See `docs/co_scientist.md` and `prereg/ws_{plan,crit,cite}.yaml`.
 
 ## What is new in v4.5 — the Living World-Model (a knowledge graph that keeps itself current)
 
@@ -337,7 +354,7 @@ pen-stack/
 │   │                                   + v3.3 router (write-type dispatch) / delivery_vehicles (8-vehicle palette)
 │   ├── bridge/                       bridge off-target engine (Paper 4): offtarget / fold_qc / guide_qc / pipeline / cli
 │   │                                   + v3.2 offtarget_energetics (position x substitution; held-out 0.88, ships)
-│   ├── agent/                        agentic platform: tools / orchestrator / pen_agent / mcp_server / guardrails
+│   ├── agent/                        agentic platform: tools / orchestrator / pen_agent / mcp_server / guardrails; v5.0 co_scientist + cite (multi-strategy, self-critique, cited rationale, scope ledger)
 │   │                                   + v3.2 epistemic (3-tier status) / scope (known-unknowns matcher)
 │   ├── graph/                        v4.5 living world-model knowledge graph (schema/build/query/ingest/cell_types); typed provenanced edges; gated living loop (propose-only)
 │   ├── oracles/                      v4.0 L1 oracle mesh: OracleResult contract + adapters (genome/structure/protein_design/rna/energetics) over the foundation models; version-pinned cache

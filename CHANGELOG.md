@@ -3,6 +3,31 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.0.0] - 2026-06-09 - v5.0 release: the Co-Scientist (capstone — smart because it is grounded)
+
+The reasoning ceiling rises while the grounding floor stays fixed: a co-scientist that proposes multiple
+distinct strategies, critiques and revises its own plans, cites its reasoning, and itemises what it cannot
+assess — with **no-fabrication holding across the full reasoning stack** (the central gate). Workstreams
+WS-{PLAN,MULTI,CRIT,SCOPE2,CITE,GEN}, each SHA-locked.
+
+### Added
+- **WS-PLAN + WS-MULTI** — `pen_stack/agent/co_scientist.py`: `propose_strategies()` returns 2–3 **materially
+  distinct** strategies (≥2 design axes differ — measured by `distinctness()`, not reworded), each
+  independently legal + confidence-tagged; `deliberate()` benchmarks the deliberative planner vs the
+  deterministic baseline. `prereg/ws_plan.yaml`.
+- **WS-CRIT + WS-SCOPE2** — `critique()` / `critique_and_revise()` (the critic only flags + swaps a design
+  choice, never invents a number; revisions re-verified) + `critique_falsifiability()` (improves flawed plans
+  illegal→legal, 0 spurious revisions on clean) + `scope_ledger()` (per-recommendation: what was/ wasn't
+  assessed, the known-unknowns itemised). `prereg/ws_crit.yaml`.
+- **WS-CITE + WS-GEN** — `pen_stack/agent/cite.py`: `cited_rationale()` (citations drawn from the curated
+  world-model → resolve by construction) + `citations_grounded()` guard (rejects any DOI not in the curated
+  set) + `generalise()` (adjacent tasks grounded-or-refused). `prereg/ws_cite.yaml`.
+- **Bench v0.3.2** — `co_scientist_grounded` reference-solver task: grounded rate 1.0 vs ungrounded 0.0;
+  no-fabrication across the full stack. `docs/co_scientist.md`.
+
+### Changed
+- Version 4.5.1 -> 5.0.0 (major — the substrate matured into a grounded co-scientist); bench 0.3.1 -> 0.3.2.
+
 ## [4.5.1] - 2026-06-09 - ID-correctness patch: cell-type ontology IDs
 
 ### Fixed

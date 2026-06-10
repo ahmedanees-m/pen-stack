@@ -8,17 +8,42 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_4_5_1_everywhere():
-    assert pen_stack.__version__ == "4.5.1"
-    assert 'version = "4.5.1"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 4.5.1" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-4.5.1" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_0_0_everywhere():
+    assert pen_stack.__version__ == "5.0.0"
+    assert 'version = "5.0.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.0.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.0.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_4_5_1_entry():
+def test_changelog_has_5_0_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[4.5.1] -" in cl and "[4.5.0] -" in cl       # both kept
+    assert "[5.0.0] -" in cl and "[4.5.1] -" in cl       # both kept
     assert "WS-G" in cl and "WS-MON" in cl
+
+
+def test_readme_has_v5_0_section():
+    r = (_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "What is new in v5.0" in r
+    assert "co-scientist" in r.lower()
+
+
+def test_v5_0_artifacts():
+    # the v5.0 artifacts: co-scientist (plan/multi/crit/scope/cite/gen) + bench reference solver
+    from pen_stack.agent.cite import cited_rationale, generalise  # noqa: F401
+    from pen_stack.agent.co_scientist import critique_and_revise, propose_strategies, scope_ledger  # noqa: F401
+    from pen_stack.validate import bench_coscientist_tasks  # noqa: F401
+    for p in ("docs/co_scientist.md", "pen_stack/agent/co_scientist.py", "pen_stack/agent/cite.py",
+              "prereg/ws_plan.yaml", "prereg/ws_crit.yaml", "prereg/ws_cite.yaml",
+              "prereg/SHA256_LOCK_ws_plan.json", "prereg/SHA256_LOCK_ws_crit.json",
+              "prereg/SHA256_LOCK_ws_cite.json"):
+        assert (_ROOT / p).exists(), p
+
+
+def test_no_fabrication_under_full_reasoning_stack():
+    # the central v5.0 gate, asserted at release: the matured co-scientist never fabricates
+    from pen_stack.validate.bench_coscientist_tasks import run
+    rep = run()
+    assert rep["co_scientist_grounded_rate"] == 1.0 and rep["no_fabrication"] is True
 
 
 def test_readme_has_v4_5_section():

@@ -1,12 +1,12 @@
-# Genome-Writing Bench v0.3.1 - Leaderboard
+# Genome-Writing Bench v0.3.2 - Leaderboard
 
-Tasks: **15/15 available** in this run (unavailable = needs the Phase-1 atlas / Perry tables / an LLM, which run on the VM/local).
-Deterministic planner beats the naive baseline on **11/11** grounded tasks with a baseline.
+Tasks: **16/16 available** in this run (unavailable = needs the Phase-1 atlas / Perry tables / an LLM, which run on the VM/local).
+Deterministic planner beats the naive baseline on **12/12** grounded tasks with a baseline.
 
 | Solver | Tasks scored | Beats naive | No-fabrication | Note |
 |---|---|---|---|---|
-| deterministic_planner | 15 | 11/11 | n/a (deterministic) | validated planning tools - the reference |
-| naive_baseline | 11 | - | n/a (deterministic) | safety-only / prevalence / Hamming baselines |
+| deterministic_planner | 16 | 12/12 | n/a (deterministic) | validated planning tools - the reference |
+| naive_baseline | 12 | - | n/a (deterministic) | safety-only / prevalence / Hamming baselines |
 
 ## Per-task results
 | Task | Family | Available | Planner | Naive baseline | Gate |
@@ -26,6 +26,7 @@ Deterministic planner beats the naive baseline on **11/11** grounded tasks with 
 | multi_write_type_legality | MW_multi_write_type | True | 1.0 | 0.0 | - |
 | adversarial_robustness | T13_scope_disguise | True | 1.0 | 0.0 | - |
 | graph_multihop_reasoning | GR_graph_reasoning | True | 1.0 | 0.0 | - |
+| co_scientist_grounded | CS_co_scientist | True | 1.0 | 0.0 | - |
 
 ## Trust tasks (T8-T11) - calibration + scope-awareness separate *trustworthy* agents
 Each contrasts the **uncertainty-aware** agent (conformal coverage, selective prediction, OOD flagging, out-of-scope deferral) with an **over-confident** baseline (an uncalibrated interval, no abstention, never flags OOD, no scope layer). The over-confident agent is the realistic failure mode a calibrated co-scientist must beat.
