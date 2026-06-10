@@ -8,23 +8,31 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_4_0_everywhere():
-    assert pen_stack.__version__ == "5.4.0"
-    assert 'version = "5.4.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.4.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.4.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_5_0_everywhere():
+    assert pen_stack.__version__ == "5.5.0"
+    assert 'version = "5.5.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.5.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.5.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_4_0_entry():
+def test_changelog_has_5_5_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.4.0] -" in cl and "[5.3.0] -" in cl       # both kept
-    assert "WS-INNATE" in cl and "WS-EPITOPE" in cl
+    assert "[5.5.0] -" in cl and "[5.4.0] -" in cl       # both kept
+    assert "WS-SEROPREV" in cl and "WS-INNATE" in cl
 
 
-def test_readme_has_v5_4_section():
+def test_readme_has_v5_5_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v5.4" in r
-    assert "innate" in r.lower()
+    assert "What is new in v5.5" in r
+    assert "seroprevalence" in r.lower()
+
+
+def test_v5_5_artifacts():
+    # the v5.5 artifacts: anti-vector seroprevalence oracle + curated table + scope card + prereg
+    from pen_stack.planner.seroprevalence_oracle import computed_preexisting_score, seroprevalence_oracle  # noqa: F401,E501
+    for p in ("pen_stack/planner/seroprevalence_oracle.py", "configs/seroprevalence.yaml",
+              "prereg/ws_seroprev.yaml", "prereg/SHA256_LOCK_ws_seroprev.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v5_4_artifacts():

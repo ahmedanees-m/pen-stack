@@ -39,6 +39,13 @@ def curated_dois() -> frozenset[str]:
     # v5.4 computed innate-sensing provenance (CpG-TLR9 / AAV CpG-depletion / RNA modification)
     from pen_stack.planner.innate_sensing import PROVENANCE_DOIS as _innate_dois
     dois.update(_innate_dois)
+    # v5.5 anti-vector seroprevalence provenance (serosurveys)
+    try:
+        sp = yaml.safe_load(resource("configs/seroprevalence.yaml").read_text(encoding="utf-8"))
+        for _rec in (sp.get("serotypes") or {}).values():
+            dois.update(_rec.get("dois", []) or [])
+    except FileNotFoundError:
+        pass
     gsh = yaml.safe_load(resource("configs/gsh_validated_heldout.yaml").read_text(encoding="utf-8"))["gsh"]
     for g in gsh:
         if g.get("doi"):

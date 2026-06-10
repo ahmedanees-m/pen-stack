@@ -152,3 +152,17 @@ oracles:
     generalizes_to_unseen_loci: false
     license: "open (this work; CpG-TLR9 10.1073/pnas.161293498, CpG-depleted AAV 10.1172/JCI68205,
       RNA modification 10.1016/j.immuni.2005.06.008)"
+
+  seroprevalence:               # v5.5 WS-SEROPREV: anti-vector NAb seroprevalence from serosurvey data
+    family: genome
+    version: "serosurvey-2026"
+    output_kind: baseline       # curated empirical population data, not a model
+    valid_for: "POPULATION pre-existing neutralizing-antibody seroprevalence per capsid serotype, from published
+      serosurveys (AAV Calcedo/Boutin, Ad5 Mast, HSV-1 Looker); preexisting_score = 1 - midpoint/100. The one
+      immune axis that is empirical, not sequence-computable"
+    not_valid_for: "a given PATIENT's NAb titer / sero-status (a clinical test, patient-specific -> a
+      known-unknown); precise region/age/assay-specific values (a range, not a point); functional-NAb vs
+      IgG-binding distinctions; T-cell immunity (that is the capsid_epitope oracle); anti-PEG immunity"
+    generalizes_to_unseen_loci: false
+    license: "open (this work; Calcedo 10.1086/595830, Boutin 10.1089/hum.2009.182, Mast
+      10.1016/j.vaccine.2009.10.145, Looker 10.1371/journal.pone.0140765)"

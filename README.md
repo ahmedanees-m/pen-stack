@@ -16,7 +16,7 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-5.4.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.5.0-blue.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-240%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
@@ -59,6 +59,30 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v5.5 — Anti-vector seroprevalence oracle (the last immune axis, from data)
+
+This completes the computable delivery-immunology axes. **Pre-existing humoral immunity** (B-cell / NAb) to a
+viral capsid is the one axis that *cannot* be computed from sequence — it is a population prevalence from
+natural exposure — so v5.5 grounds it in published **serosurvey data** (AAV: Calcedo 2009 / Boutin 2010;
+adenovirus: Mast 2010; HSV-1: Looker 2015). `preexisting_score = 1 − midpoint(seroprevalence)/100`, with the
+literature range surfaced as native uncertainty.
+
+| serotype (vehicle) | NAb seroprevalence | pre-existing score |
+|---|---|---|
+| Ad5 → HDAd | 40–90% | 0.35 |
+| AAV (aggregate) → AAV | 30–60% | 0.55 |
+| HSV-1 → HSV | 50–70% | 0.40 |
+| VSV → lentivirus | 0–5% | 0.975 |
+
+Folded into the pre-existing axis for **in-vivo** vehicles (muted for ex-vivo, where serum NAb can't reach
+ex-vivo cells); non-viral → 1.0 by mechanism. It is a **population** prevalence — **not** a given patient's NAb
+titer (a known-unknown). See `pen_stack/planner/seroprevalence_oracle.py`, `configs/seroprevalence.yaml`,
+`prereg/ws_seroprev.yaml`, and the `seroprevalence` scope card.
+
+**With v5.5, four of the five delivery-immunology axes are grounded in data or sequence** — genotoxicity
+(VISDB×COSMIC), adaptive/CD8 (MHCflurry), innate (CpG/dsRNA), pre-existing/NAb (serosurveys) — each abstaining
+rather than fabricating, with the in-vivo *magnitude* always a declared known-unknown.
 
 ## What is new in v5.4 — Computed innate-sensing scorer (completes the computable immune axes)
 

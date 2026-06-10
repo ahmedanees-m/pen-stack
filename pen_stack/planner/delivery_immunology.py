@@ -78,6 +78,17 @@ def safety_efficacy_profile(name: str) -> dict | None:
         adaptive_source = "computed"
     elif cap_score is not None and not in_vivo:
         adaptive_source = "computed_ex_vivo_muted"          # reported, but ex-vivo mutes the realized response
+    # PRE-EXISTING immunity (B-cell / NAb): grounded in published serosurvey data (v5.5 WS-SEROPREV). Folded
+    # only for IN-VIVO vehicles (serum NAb neutralises the vector in vivo; ex-vivo transduction in a dish is
+    # not reached by host antibody, so for ex-vivo vehicles it is reported but muted).
+    from pen_stack.planner.seroprevalence_oracle import computed_preexisting_score
+    pre_score, pre_oracle = computed_preexisting_score(name)
+    preexisting_source = "documented"
+    if pre_score is not None and in_vivo:
+        axis_scores["preexisting_immunity"] = pre_score
+        preexisting_source = "computed"
+    elif pre_score is not None and not in_vivo:
+        preexisting_source = "computed_ex_vivo_muted"
     immune_present = [s for s in axis_scores.values() if s is not None]
     immune_score = (sum(immune_present) / len(immune_present)) if immune_present else None
     # genotoxicity: prefer the COMPUTED oracle (v5.2 WS-GENOTOX: integration-site x COSMIC-oncogene
@@ -102,6 +113,9 @@ def safety_efficacy_profile(name: str) -> dict | None:
         "adaptive_source": adaptive_source,      # computed | computed_ex_vivo_muted | documented
         "capsid_presentability_score": _r(cap_score),   # computed intrinsic capsid CD8 presentability (or None)
         "adaptive_provenance": (cap_oracle.note if cap_score is not None else None),
+        "preexisting_source": preexisting_source,       # computed | computed_ex_vivo_muted | documented
+        "seroprevalence_score": _r(pre_score),          # computed pre-existing-NAb score (or None)
+        "preexisting_provenance": (pre_oracle.note if pre_score is not None else None),
         "genotox_score": _r(genotox_score),
         "genotox_source": genotox_source,        # "computed" (VISDBxCOSMIC oracle) | "documented" (ordinal tier)
         "genotox_provenance": (gtox_oracle.note if genotox_source == "computed" else None),

@@ -3,6 +3,37 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.5.0] - 2026-06-10 - v5.5 release: Anti-vector seroprevalence oracle (the last immune axis, from data)
+
+Completes the computable delivery-immunology axes. **Pre-existing humoral immunity** (B-cell / neutralizing
+antibody) to a viral capsid is the one immune axis that *cannot* be computed from sequence — it is a population
+prevalence from natural exposure. v5.5 grounds it in published **serosurvey data**. Workstream WS-SEROPREV,
+SHA-locked.
+
+### Added
+- **WS-SEROPREV table** — `configs/seroprevalence.yaml`: curated population NAb/IgG seroprevalence per serotype
+  as **ranges** (region/age/assay variation) with DOIs — AAV (Calcedo 2009, Boutin 2010), adenovirus type 5
+  (Mast 2010), HSV-1 (Looker 2015), VSV (negligible).
+- **WS-SEROPREV oracle** — `pen_stack/planner/seroprevalence_oracle.py`: `seroprevalence_oracle(vehicle,
+  serotype=None)` → `OracleResult`. `preexisting_score = 1 − midpoint(seroprevalence)/100`; the range width is
+  surfaced as `native_uncertainty`. Non-viral → 1.0 by mechanism; unknown → **abstains**.
+- **Wired into the pre-existing axis** — `safety_efficacy_profile()` folds the computed seroprevalence score
+  into the `preexisting_immunity` sub-axis **only for in-vivo vehicles** (serum NAb neutralises the vector in
+  vivo; ex-vivo transduction in a dish is not reached by host antibody → reported but muted). `seroprevalence_score`
+  surfaces the raw value.
+- **Result (from data):** adenovirus has the highest pre-existing seroprevalence (40–90%, score 0.35), AAV
+  intermediate (30–60%, 0.55), VSV/lentivirus negligible (0–5%, 0.975) — the documented ordering quantified
+  from serosurveys. `prereg/ws_seroprev.yaml`.
+
+### Changed
+- Version 5.4.0 -> 5.5.0 (minor — additive data-grounded oracle); `cite.curated_dois()` ingests the
+  seroprevalence DOIs.
+
+### Honesty invariant (unchanged)
+- A **population** prevalence (a range; region/age/assay-dependent), **not** a given **patient's** NAb titer /
+  sero-status (a clinical test, patient-specific → a known-unknown); the **humoral (B-cell)** axis only,
+  distinct from the v5.3 T-cell epitope load. No patient-specific magnitude predicted.
+
 ## [5.4.0] - 2026-06-10 - v5.4 release: Computed innate-sensing scorer (completes the computable immune axes)
 
 The third computed delivery-immunology signal, after v5.2 genotoxicity and v5.3 capsid epitope load. Innate

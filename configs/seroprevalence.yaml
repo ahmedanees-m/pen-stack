@@ -1,0 +1,64 @@
+# PEN-STACK v5.5 - anti-vector neutralizing-antibody SEROPREVALENCE (WS-SEROPREV).
+#
+# Pre-existing humoral immunity to a viral capsid is the one immune axis that CANNOT be computed from sequence:
+# it is the prevalence, in a population, of people who already carry neutralizing antibodies against the vector
+# from natural exposure. The only honest grounding is published serosurvey DATA. This table curates the
+# population NAb/IgG seroprevalence per serotype from canonical serosurveys, as RANGES (the literature varies by
+# region, age, and assay - IgG-binding vs functional-NAb), each with >=1 DOI.
+#
+# preexisting_score = 1 - midpoint(seroprevalence_pct)/100   (1 = fewest patients excluded by pre-existing NAb).
+#
+# HONESTY (scope card `seroprevalence`): this is a POPULATION prevalence, NOT a given patient's NAb titer (that
+# is a clinical test, patient-specific -> a known-unknown); it is region/age/assay-dependent (ranges, not point
+# values); and it is the pre-existing HUMORAL axis only (B-cell / antibody), distinct from the T-cell epitope
+# load computed in v5.3.
+
+version: "1.0"
+
+serotypes:
+  AAV_aggregate:                 # serotype-agnostic AAV (AAV_single / AAV_dual): across common serotypes
+    nab_seroprevalence_pct: [30, 60]
+    note: "serotype- and region-dependent; AAV2 highest, AAV8/9 lower"
+    dois: ["10.1086/595830", "10.1089/hum.2009.182"]
+  AAV2:
+    nab_seroprevalence_pct: [50, 72]
+    note: "highest of the common serotypes (Calcedo ~72%, Boutin IgG ~67%)"
+    dois: ["10.1086/595830", "10.1089/hum.2009.182"]
+  AAV1:
+    nab_seroprevalence_pct: [50, 67]
+    dois: ["10.1089/hum.2009.182"]
+  AAV5:
+    nab_seroprevalence_pct: [30, 40]
+    dois: ["10.1089/hum.2009.182", "10.1086/595830"]
+  AAV6:
+    nab_seroprevalence_pct: [30, 46]
+    dois: ["10.1089/hum.2009.182"]
+  AAV8:
+    nab_seroprevalence_pct: [20, 40]
+    note: "lower pre-existing immunity (Calcedo ~38%)"
+    dois: ["10.1086/595830", "10.1089/hum.2009.182"]
+  AAV9:
+    nab_seroprevalence_pct: [30, 50]
+    dois: ["10.1086/595830"]
+  Ad5:
+    nab_seroprevalence_pct: [40, 90]
+    note: "very high and strongly region-dependent (highest in sub-Saharan Africa); Mast 2010"
+    dois: ["10.1016/j.vaccine.2009.10.145"]
+  HSV1:
+    nab_seroprevalence_pct: [50, 70]
+    note: "global adult HSV-1 seroprevalence (Looker 2015, ages 0-49 ~67%)"
+    dois: ["10.1371/journal.pone.0140765"]
+  VSV:
+    nab_seroprevalence_pct: [0, 5]
+    note: "VSV is not endemic in humans -> negligible pre-existing immunity to VSV-G-pseudotyped lentivirus"
+    dois: ["10.1038/mt.2011.287"]
+
+# which serotype grounds each vehicle's pre-existing-immunity axis. Non-viral vehicles carry no foreign capsid
+# -> no pre-existing ANTI-VECTOR humoral immunity (anti-PEG for LNP is an emerging, separate exception).
+vehicle_serotype:
+  AAV_single: AAV_aggregate
+  AAV_dual: AAV_aggregate
+  helper_dependent_adenovirus: Ad5
+  hsv_amplicon: HSV1
+  lentivirus: VSV
+non_viral: [lnp_mrna, evlp, electroporation]
