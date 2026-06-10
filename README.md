@@ -2,10 +2,12 @@
 
 # PEN-STACK
 
-### The Writable Genome - open infrastructure for genome *writing*
+### The verification & grounding substrate for genome-writing AI — matured into a co-scientist
 
-*Editing tools tell you **how** to change a base. PEN-STACK tells you **where** in the genome you can safely
-and durably write new DNA, **which enzyme** can write it there, and **how** to design the write end-to-end.*
+*The foundation models *generate*; PEN-STACK *checks*. It tells you **where** in the genome you can safely and
+durably write, **which enzyme** can write it there, and **how** to design the write end-to-end — then verifies
+every design against rule-grounded mechanism, reports calibrated confidence, cites its reasoning, and says
+"out of scope" rather than guess. Every number comes from a validated tool; nothing is fabricated.*
 
 [![PyPI](https://img.shields.io/pypi/v/pen-stack.svg)](https://pypi.org/project/pen-stack/)
 [![CI](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmedanees-m/pen-stack/actions/workflows/ci.yml)
