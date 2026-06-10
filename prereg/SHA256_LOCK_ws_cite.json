@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.0",
+  "workstream": "WS-CITE-GEN",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_cite.yaml": "e46e34df8ca288a644f7bbf023d94de813d8cf235cfdb92b72515129f37a68a5"
+  }
+}
