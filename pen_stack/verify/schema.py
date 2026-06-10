@@ -26,6 +26,8 @@ class Verdict(BaseModel):
     no_fabrication: bool = True
     writer_critique: dict[str, Any] | None = None   # v4.0 WS-WV: critique of a generated candidate writer
                                                      # (pass/flag + reasons); NEVER a claim that it works
+    delivery_profile: dict[str, Any] | None = None  # v5.1 WS-IMMUNE: documented ordinal immune/safety/efficacy
+                                                     # priors for the chosen vehicle (NEVER a predicted magnitude)
 
     def summary(self) -> str:
         if self.deferred:

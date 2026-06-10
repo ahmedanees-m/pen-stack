@@ -8,17 +8,31 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_0_0_everywhere():
-    assert pen_stack.__version__ == "5.0.0"
-    assert 'version = "5.0.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.0.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.0.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_1_0_everywhere():
+    assert pen_stack.__version__ == "5.1.0"
+    assert 'version = "5.1.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.1.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.1.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_0_0_entry():
+def test_changelog_has_5_1_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.0.0] -" in cl and "[4.5.1] -" in cl       # both kept
-    assert "WS-G" in cl and "WS-MON" in cl
+    assert "[5.1.0] -" in cl and "[5.0.0] -" in cl       # both kept
+    assert "WS-IMMUNE" in cl
+
+
+def test_readme_has_v5_1_section():
+    r = (_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "What is new in v5.1" in r
+    assert "safety" in r.lower() and "efficacy" in r.lower()
+
+
+def test_v5_1_artifacts():
+    # the v5.1 artifacts: delivery-immunology planner + per-vehicle immune profiles + verify surfacing
+    from pen_stack.planner.delivery_immunology import recommend_delivery, safety_efficacy_profile  # noqa: F401
+    for p in ("pen_stack/planner/delivery_immunology.py", "prereg/ws_immune.yaml",
+              "prereg/SHA256_LOCK_ws_immune.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_readme_has_v5_0_section():

@@ -3,6 +3,38 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.1.0] - 2026-06-10 - v5.1 release: Delivery immunology (the safety↔efficacy balance)
+
+The delivery palette gains a **documented, cited, qualitative immune + safety + efficacy profile** per vehicle,
+so the substrate can make the safety↔efficacy tradeoff legible and user-weightable — without ever predicting an
+immune magnitude (that stays a declared known-unknown). Workstream WS-IMMUNE, SHA-locked.
+
+### Added
+- **WS-IMMUNE config** — `configs/delivery_vehicles.yaml` (v1.1): an `immune_safety` block on all 8 vehicles
+  (`preexisting_immunity`, `neutralizing_antibody`, `innate_immune`, `adaptive_immune`, `genotoxicity`,
+  `efficacy`, `tradeoff`, `immune_dois`) — DOCUMENTED ordinal low/moderate/high priors, every `immune_doi`
+  Crossref-verified and in the curated-DOI set (citations resolve by construction).
+- **WS-IMMUNE planner** — `pen_stack/planner/delivery_immunology.py`: `safety_efficacy_profile()` reports two
+  **separate** safety sub-axes — `immune_score` (immunogenicity; reversible, eligibility/re-dosing) and
+  `genotox_score` (insertional/oncogenic; permanent) — never collapsed, with headline
+  `safety_score = min(immune_score, genotox_score)` (precautionary worst-axis). `recommend_delivery(cargo_form,
+  cargo_bp, safety_weight, in_vivo)` ranks the eligible palette along the safety↔efficacy frontier by a
+  user-supplied weight. Reproduces the stated tradeoff: AAV is dinged on immunogenicity, lentivirus on
+  genotoxicity. `prereg/ws_immune.yaml`.
+- **WS-IMMUNE verify** — `Verdict.delivery_profile` + a `delivery_immune_profile` scope flag: `verify()` now
+  surfaces the documented profile and tradeoff for a chosen vehicle, always attaching the standing
+  `in_vivo_immunogenicity` known-unknown flag — never adding confidence, never predicting a magnitude.
+
+### Changed
+- Version 5.0.0 -> 5.1.0 (minor — additive delivery-immunology layer); `cite.curated_dois()` now also ingests
+  the per-vehicle `immune_dois`.
+
+### Honesty invariant (unchanged)
+- The in-vivo immune MAGNITUDE (patient/construct-specific response) remains a declared known-unknown
+  (`configs/known_unknowns.yaml: in_vivo_immunogenicity`) and is **never** predicted. v5.1 exposes only
+  documented ordinal priors plus a transparent, user-weighted ranking — it makes the boundary legible, it does
+  not close it.
+
 ## [5.0.0] - 2026-06-09 - v5.0 release: the Co-Scientist (capstone — smart because it is grounded)
 
 The reasoning ceiling rises while the grounding floor stays fixed: a co-scientist that proposes multiple

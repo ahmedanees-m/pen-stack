@@ -16,7 +16,7 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-5.0.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-240%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
@@ -59,6 +59,23 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v5.1 — Delivery immunology (the safety↔efficacy balance)
+
+v5.1 makes the delivery palette's **safety↔efficacy tradeoff legible and user-weightable**. Every vehicle now
+carries a documented, cited, qualitative immune + safety + efficacy profile — so you can ask for a *balance*
+(AAV is safe by integration but neutralizing-antibody/pre-existing-immunity limited; lentivirus is a highly
+efficacious integrator but its genotoxicity is the dominant concern). Crucially, the in-vivo immune
+**magnitude** stays a declared known-unknown — v5.1 surfaces documented priors, it does **not** predict a
+patient-specific immune response.
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **IMMUNE config** | `immune_safety` block on all 8 vehicles in `configs/delivery_vehicles.yaml` | documented ordinal (low/moderate/high) priors for pre-existing immunity, neutralizing antibody, innate/adaptive immune, **genotoxicity**, efficacy — every `immune_doi` Crossref-verified and in the curated-DOI set |
+| **IMMUNE planner** | `planner/delivery_immunology.py` — `safety_efficacy_profile()` / `recommend_delivery()` | two **separate** safety sub-axes (`immune_score` reversible vs `genotox_score` permanent), never collapsed; headline `safety_score = min(...)` (worst-axis); ranks the palette along the safety↔efficacy frontier by a **user weight** |
+| **IMMUNE verify** | `Verdict.delivery_profile` + `delivery_immune_profile` scope flag | `verify()` surfaces the documented tradeoff for a chosen vehicle, always attaching the `in_vivo_immunogenicity` known-unknown flag — never adding confidence, never predicting a magnitude |
+
+See `prereg/ws_immune.yaml`.
 
 ## What is new in v5.0 — the Co-Scientist (smart because it is grounded)
 

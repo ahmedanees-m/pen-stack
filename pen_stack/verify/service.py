@@ -92,6 +92,21 @@ def verify(design: Design | dict, question: str | None = None) -> Verdict:
                             "flags": writer_critique["flags"],
                             "reason": "generated writer is critiqued, never claimed to work (v4.0 WS-WV)"})
 
+    # v5.1 WS-IMMUNE: if the design names a delivery vehicle, surface its DOCUMENTED ordinal immune/safety/
+    # efficacy priors (with the standing "magnitude is a known-unknown" scope flag). This never adds confidence
+    # and never predicts a magnitude — it exposes the curated qualitative tradeoff so safety can be weighed.
+    delivery_profile = None
+    if design.delivery_vehicle:
+        from pen_stack.planner.delivery_immunology import safety_efficacy_profile
+        delivery_profile = safety_efficacy_profile(design.delivery_vehicle)
+        if delivery_profile and delivery_profile.get("tradeoff"):
+            scope_flags.append({"kind": "delivery_immune_profile",
+                                "vehicle": delivery_profile["vehicle"],
+                                "tradeoff": delivery_profile["tradeoff"],
+                                "magnitude_id": delivery_profile["magnitude_scope_flag"]["id"],
+                                "reason": "documented ordinal immune/safety priors surfaced; the in-vivo immune "
+                                          "MAGNITUDE remains a known-unknown (not predicted)"})
+
     return Verdict(
         legal=routed["legal"], deferred=False, write_type=design.write_type, routing=routing,
         rule_results=results,
@@ -101,4 +116,4 @@ def verify(design: Design | dict, question: str | None = None) -> Verdict:
         scope_flags=scope_flags,
         confidence=pc["confidence"], interval=pc["interval"], epistemic_status=verdict.status,
         provenance={"rules_version": RULES_VERSION, "source": "rules.solver + L4(uncertainty/scope/epistemic)"},
-        no_fabrication=True, writer_critique=writer_critique)
+        no_fabrication=True, writer_critique=writer_critique, delivery_profile=delivery_profile)
