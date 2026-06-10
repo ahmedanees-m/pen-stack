@@ -3,6 +3,39 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.2.0] - 2026-06-10 - v5.2 release: Computed genotoxicity oracle (data, not a documented tier)
+
+The v5.1 genotoxicity axis was a documented ordinal tier; for **integrating** vectors that signal is in fact
+computable from data the stack already holds. v5.2 adds a **computed genotoxicity oracle** — the observed
+enrichment of a vector class's integration sites near COSMIC oncogenes — answering through the v4.0
+OracleResult contract. Workstream WS-GENOTOX, SHA-locked.
+
+### Added
+- **WS-GENOTOX build** — `scripts/p52_build_genotox_oracle.py` (runs on the VM where the data lives) computes,
+  per integrating vector class, `P(integration site within 50 kb of a COSMIC Cancer-Gene-Census oncogene)` and
+  its enrichment over genome background, from **VISDB** per-virus catalogues × the Phase-1 oncogene annotation
+  (**COSMIC CGC v104**). Emits the small, auditable, committed summary `configs/genotoxicity_oracle.yaml` (raw
+  catalogues stay on the VM; only the statistics ship → CI-safe).
+- **WS-GENOTOX oracle** — `pen_stack/planner/genotoxicity_oracle.py`: `genotoxicity_oracle(vehicle)` returns an
+  `OracleResult` (`output_kind="baseline"`) with `genotox_score = min(1, 1/enrichment)`, native uncertainty
+  (CI on the observed fraction), the `delivery_genotoxicity` scope card, and `extrapolating` for small-n
+  classes. Non-integrating vehicles → 1.0 by mechanism; no computed class → **abstains** (never fabricates).
+- **Wired into the v5.1 balance** — `safety_efficacy_profile()` now **prefers the computed genotox_score** for
+  integrating vectors and falls back to the documented tier otherwise (`genotox_source` records which).
+- **Result (from data):** lentiviral (HIV) integration is **2.08×** enriched near oncogenes (n=88,743, robust)
+  vs **5.65×** for gammaretroviral (MLV, the LMO2/SCID-X1 comparator, small-n flagged) — reproducing the
+  lentivirus-safer-than-gammaretrovirus ordering **from VISDB×COSMIC**, and the computed lentivirus score
+  (0.48) **validates** the v5.1 documented "moderate" tier (0.5). `prereg/ws_genotox.yaml`.
+
+### Changed
+- Version 5.1.0 -> 5.2.0 (minor — additive computed oracle); `cite.curated_dois()` ingests the genotox
+  provenance DOIs (VISDB 10.1093/nar/gkz867, COSMIC CGC 10.1038/s41568-018-0060-1, HIV/MLV integration biology).
+
+### Honesty invariant (unchanged)
+- This is a **relative integration-preference** signal. The in-vivo clonal-expansion / leukemogenesis OUTCOME
+  in a patient is **not** modelled and stays a known-unknown (`delivery_genotoxicity` scope card); the immune
+  MAGNITUDE likewise stays `in_vivo_immunogenicity`. No magnitude is predicted.
+
 ## [5.1.0] - 2026-06-10 - v5.1 release: Delivery immunology (the safety↔efficacy balance)
 
 The delivery palette gains a **documented, cited, qualitative immune + safety + efficacy profile** per vehicle,

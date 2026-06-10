@@ -112,3 +112,16 @@ oracles:
     not_valid_for: "absolute off-target rates; non-bridge writers; a non-recombining background"
     generalizes_to_unseen_loci: false
     license: "open (this work)"
+
+  delivery_genotoxicity:        # v5.2 WS-GENOTOX: computed integration-site oncogene-proximity
+    family: genome
+    version: "visdb+cgc_v104-2026"
+    output_kind: baseline       # an observed-data comparator (integration catalogues), not generative
+    valid_for: "RELATIVE genotoxicity ordering of INTEGRATING vector classes via the observed enrichment of
+      integration sites near COSMIC oncogenes (lentiviral vs gammaretroviral, from VISDB x CGC); reproduces the
+      lentivirus-safer-than-gammaretrovirus ordering from data"
+    not_valid_for: "the IN-VIVO clonal-expansion / leukemogenesis OUTCOME in a patient (a known-unknown); an
+      absolute per-insertion oncogenesis probability; non-integrating vectors (no insertional mechanism);
+      classes with too few catalogued sites (flagged extrapolating)"
+    generalizes_to_unseen_loci: false
+    license: "open (this work; VISDB 10.1093/nar/gkz867, COSMIC CGC 10.1038/s41568-018-0060-1)"

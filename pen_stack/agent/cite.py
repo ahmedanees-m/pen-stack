@@ -29,6 +29,12 @@ def curated_dois() -> frozenset[str]:
     for v in veh.values():
         dois.update(v.get("dois", []) or [])
         dois.update((v.get("immune_safety") or {}).get("immune_dois", []) or [])  # v5.1 immune priors
+    # v5.2 computed-genotoxicity oracle provenance (VISDB, COSMIC CGC, integration-biology refs)
+    try:
+        gt = yaml.safe_load(resource("configs/genotoxicity_oracle.yaml").read_text(encoding="utf-8"))
+        dois.update(gt.get("provenance_dois", []) or [])
+    except FileNotFoundError:
+        pass
     gsh = yaml.safe_load(resource("configs/gsh_validated_heldout.yaml").read_text(encoding="utf-8"))["gsh"]
     for g in gsh:
         if g.get("doi"):

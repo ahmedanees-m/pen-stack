@@ -8,23 +8,32 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_1_0_everywhere():
-    assert pen_stack.__version__ == "5.1.0"
-    assert 'version = "5.1.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.1.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.1.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_2_0_everywhere():
+    assert pen_stack.__version__ == "5.2.0"
+    assert 'version = "5.2.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.2.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.2.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_1_0_entry():
+def test_changelog_has_5_2_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.1.0] -" in cl and "[5.0.0] -" in cl       # both kept
-    assert "WS-IMMUNE" in cl
+    assert "[5.2.0] -" in cl and "[5.1.0] -" in cl       # both kept
+    assert "WS-GENOTOX" in cl and "WS-IMMUNE" in cl
 
 
-def test_readme_has_v5_1_section():
+def test_readme_has_v5_2_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v5.1" in r
-    assert "safety" in r.lower() and "efficacy" in r.lower()
+    assert "What is new in v5.2" in r
+    assert "genotoxicity" in r.lower()
+
+
+def test_v5_2_artifacts():
+    # the v5.2 artifacts: computed genotoxicity oracle + committed summary + scope card + prereg
+    from pen_stack.planner.genotoxicity_oracle import computed_genotox_score, genotoxicity_oracle  # noqa: F401
+    for p in ("pen_stack/planner/genotoxicity_oracle.py", "configs/genotoxicity_oracle.yaml",
+              "scripts/p52_build_genotox_oracle.py", "prereg/ws_genotox.yaml",
+              "prereg/SHA256_LOCK_ws_genotox.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v5_1_artifacts():

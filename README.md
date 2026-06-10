@@ -16,7 +16,7 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.2.0-blue.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-240%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
@@ -59,6 +59,22 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v5.2 — Computed genotoxicity oracle (data, not a documented tier)
+
+v5.1 scored genotoxicity as a documented `low/moderate/high` tier. v5.2 makes it **computed from data** for
+integrating vectors: the observed enrichment of a vector class's integration sites near COSMIC oncogenes
+(VISDB integration catalogues × the Phase-1 COSMIC-CGC oncogene annotation), surfaced through the v4.0
+`OracleResult` contract. The in-vivo clonal / leukemogenesis **outcome** stays a known-unknown — this is a
+relative integration-*preference* signal, not a per-patient oncogenesis probability.
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **GENOTOX build** | `scripts/p52_build_genotox_oracle.py` → committed `configs/genotoxicity_oracle.yaml` | per integrating class: `P(site within 50 kb of a COSMIC oncogene)`, enrichment vs background, CI, n — from VISDB × COSMIC CGC v104 (raw data stays on the VM; only the auditable summary ships) |
+| **GENOTOX oracle** | `planner/genotoxicity_oracle.py` (`OracleResult`, `output_kind="baseline"`) | `genotox_score = min(1, 1/enrichment)`; non-integrating → 1.0 by mechanism; **abstains** when it has no computed class (never fabricates); small-n classes flagged `extrapolating` |
+| **wired into v5.1 balance** | `safety_efficacy_profile()` prefers computed genotox, falls back to the documented tier | **lentiviral 2.08×** vs **gammaretroviral 5.65×** oncogene-proximity enrichment — reproduces the lentivirus-safer-than-gammaretrovirus ordering **from data**; computed LV score (0.48) **validates** the v5.1 documented tier (0.5) |
+
+See `prereg/ws_genotox.yaml` and the `delivery_genotoxicity` scope card.
 
 ## What is new in v5.1 — Delivery immunology (the safety↔efficacy balance)
 

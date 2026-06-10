@@ -60,8 +60,16 @@ def safety_efficacy_profile(name: str) -> dict | None:
     imm = rec.get("immune_safety") or {}
     immune_present = [t for ax in _IMMUNE_AXES if (t := _tier(imm.get(ax))) is not None]
     immune_score = (1.0 - (sum(immune_present) / len(immune_present)) / 2.0) if immune_present else None
-    gtox = _tier(imm.get(_GENOTOX_AXIS))
-    genotox_score = (1.0 - gtox / 2.0) if gtox is not None else None
+    # genotoxicity: prefer the COMPUTED oracle (v5.2 WS-GENOTOX: integration-site x COSMIC-oncogene
+    # enrichment, from VISDB) for integrating vectors; fall back to the documented ordinal tier when the
+    # oracle abstains. No number is fabricated either way.
+    from pen_stack.planner.genotoxicity_oracle import computed_genotox_score
+    computed, gtox_oracle = computed_genotox_score(name)
+    gtox_tier = _tier(imm.get(_GENOTOX_AXIS))
+    documented_genotox = (1.0 - gtox_tier / 2.0) if gtox_tier is not None else None
+    genotox_score = computed if computed is not None else documented_genotox
+    genotox_source = "computed" if computed is not None else ("documented" if documented_genotox is not None
+                                                              else None)
     sub = [s for s in (immune_score, genotox_score) if s is not None]
     safety_score = min(sub) if sub else None       # worst-axis; abstain if neither documented
     eff = _tier(imm.get("efficacy"))
@@ -72,6 +80,8 @@ def safety_efficacy_profile(name: str) -> dict | None:
         "tiers": {ax: imm.get(ax) for ax in (*_IMMUNE_AXES, _GENOTOX_AXIS)} | {"efficacy": imm.get("efficacy")},
         "immune_score": _r(immune_score),
         "genotox_score": _r(genotox_score),
+        "genotox_source": genotox_source,        # "computed" (VISDBxCOSMIC oracle) | "documented" (ordinal tier)
+        "genotox_provenance": (gtox_oracle.note if genotox_source == "computed" else None),
         "safety_score": _r(safety_score),
         "efficacy_score": _r(efficacy_score),
         "re_dosable": imm.get("re_dosable", rec.get("re_dosable")),
