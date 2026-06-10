@@ -6,7 +6,7 @@ import pen_stack
 
 def test_version():
     # don't pin the exact version (it bumps per phase/cycle) - just assert it's a valid released-series string
-    assert pen_stack.__version__.split(".")[0] in {"3", "4"}
+    assert pen_stack.__version__.split(".")[0] in {"3", "4", "5"}
 
 
 def test_all_modules_import():
