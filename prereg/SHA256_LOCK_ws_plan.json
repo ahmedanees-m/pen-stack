@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.0",
+  "workstream": "WS-PLAN-MULTI",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_plan.yaml": "20f4edec2bfc719356df705e578a427a4e82865d6986ffbd97892929bbb969d8"
+  }
+}

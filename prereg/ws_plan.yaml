@@ -1,0 +1,18 @@
+# PEN-STACK v5.0 - WS-PLAN + WS-MULTI (deliberative planner + distinct strategies) pre-registered.
+# Directional acceptance (re-frozen at cycle start). Builds on v4.5.x. The reasoning ceiling rises; the
+# grounding floor (verifier/oracle/graph) does NOT move - no-fabrication holds by construction.
+cycle: "v5.0"
+workstream: "WS-PLAN + WS-MULTI"
+prepared: "2026-06-09"
+
+WS_PLAN_deliberative:
+  deliverable: "pen_stack/agent/co_scientist.py: deliberate() - the deliberative planner (best of the distinct verified strategies) vs the deterministic pen_agent baseline (head-to-head)."
+  acceptance: "the deliberative planner explores alternative verified design paths and returns a best plan; the deterministic state machine remains the baseline/fallback; both reported honestly; NO-FABRICATION holds for both (every number verifier/tool-sourced) - asserted (the central v5.0 gate)."
+
+WS_MULTI_distinct:
+  deliverable: "co_scientist.propose_strategies() - 2-3 strategies + distinctness() metric."
+  acceptance: "returns 2-3 strategies that are MATERIALLY DISTINCT (every pair differs on >=2 of {write_type, writer_family, delivery_vehicle, edit_intent} - measured, not asserted/reworded); EACH is independently LEGAL (verifier) and CONFIDENCE-TAGGED (calibrated, tool-sourced); tradeoffs surfaced per strategy; no fabrication."
+  scope: "strategy templates are documented design archetypes (safe-harbour insertion / landing-pad install / in-locus RNP knock-in / multiplex); confidence is calibrated but marginal (inherits v3.2); the reasoning proposes/ranks, it never sources a number."
+
+gate: "no-fabrication under the matured agent (central gate); strategies materially-distinct (>=2 axes) + each legal + confidence-tagged."
+locked_files: [prereg/ws_plan.yaml]
