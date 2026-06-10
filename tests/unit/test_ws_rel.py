@@ -8,23 +8,31 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_3_0_everywhere():
-    assert pen_stack.__version__ == "5.3.0"
-    assert 'version = "5.3.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.3.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.3.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_4_0_everywhere():
+    assert pen_stack.__version__ == "5.4.0"
+    assert 'version = "5.4.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.4.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.4.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_3_0_entry():
+def test_changelog_has_5_4_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.3.0] -" in cl and "[5.2.0] -" in cl       # both kept
-    assert "WS-EPITOPE" in cl and "WS-GENOTOX" in cl
+    assert "[5.4.0] -" in cl and "[5.3.0] -" in cl       # both kept
+    assert "WS-INNATE" in cl and "WS-EPITOPE" in cl
 
 
-def test_readme_has_v5_3_section():
+def test_readme_has_v5_4_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v5.3" in r
-    assert "epitope" in r.lower()
+    assert "What is new in v5.4" in r
+    assert "innate" in r.lower()
+
+
+def test_v5_4_artifacts():
+    # the v5.4 artifacts: computed innate-sensing scorer + scope card + prereg
+    from pen_stack.planner.innate_sensing import computed_innate_score, innate_sensing  # noqa: F401
+    for p in ("pen_stack/planner/innate_sensing.py", "prereg/ws_innate.yaml",
+              "prereg/SHA256_LOCK_ws_innate.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v5_3_artifacts():

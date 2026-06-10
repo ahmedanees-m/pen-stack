@@ -107,6 +107,27 @@ def verify(design: Design | dict, question: str | None = None) -> Verdict:
                                 "reason": "documented ordinal immune/safety priors surfaced; the in-vivo immune "
                                           "MAGNITUDE remains a known-unknown (not predicted)"})
 
+    # v5.4 WS-INNATE: if a cargo SEQUENCE is supplied, compute its innate-sensing load from sequence
+    # (CpG/TLR9 for DNA, U/dsRNA for mRNA). Surfaced as a scope flag; the realized innate RESPONSE magnitude
+    # is a known-unknown. Cargo form = the writer output form, else the vehicle's first compatible form.
+    if design.cargo_seq:
+        form = design.writer_output_form
+        if not form and design.delivery_vehicle:
+            from pen_stack.planner.delivery_vehicles import vehicle as _veh
+            forms = (_veh(design.delivery_vehicle) or {}).get("compatible_cargo_form") or []
+            form = forms[0] if forms else None
+        if form:
+            from pen_stack.planner.innate_sensing import innate_sensing
+            inr = innate_sensing(design.cargo_seq, form)
+            if inr.available:
+                scope_flags.append({"kind": "cargo_innate_sensing", "cargo_form": form,
+                                    "innate_score": inr.value["innate_score"], "pathway": inr.value["pathway"],
+                                    "reason": "computed sequence-intrinsic innate-sensing load; the realized "
+                                              "in-vivo innate RESPONSE magnitude is a known-unknown"})
+                if delivery_profile is not None:
+                    delivery_profile = dict(delivery_profile)
+                    delivery_profile["cargo_innate"] = inr.value
+
     return Verdict(
         legal=routed["legal"], deferred=False, write_type=design.write_type, routing=routing,
         rule_results=results,

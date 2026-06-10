@@ -3,6 +3,36 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.4.0] - 2026-06-10 - v5.4 release: Computed innate-sensing scorer (completes the computable immune axes)
+
+The third computed delivery-immunology signal, after v5.2 genotoxicity and v5.3 capsid epitope load. Innate
+sensing of a delivered nucleic acid is computed directly from the **cargo sequence** — CpG O/E for DNA (TLR9),
+U-richness + dsRNA for mRNA (TLR7/RIG-I) — covering every cargo form. Workstream WS-INNATE, SHA-locked.
+
+### Added
+- **WS-INNATE scorer** — `pen_stack/planner/innate_sensing.py`: `cpg_observed_expected()` (Gardiner-Garden &
+  Frommer) + `innate_sensing(seq, cargo_form)` → `OracleResult`. **DNA** → CpG O/E (vertebrate genome ~0.2
+  tolerated; non-depleted DNA → 1 TLR9-stimulatory), `innate_score = max(0, 1 − CpG_O/E)`. **mRNA** → uridine
+  fraction + ViennaRNA dsRNA pairing (graceful when ViennaRNA absent), flagged **partial/`extrapolating`**.
+  **RNP** → minimal/transient. Abstains on empty / unrecognised input (never fabricates). Pure sequence
+  computation — no external data, runs in CI.
+- **Surfaced in `verify()`** — when a design supplies `cargo_seq`, the computed innate load is attached as a
+  `cargo_innate_sensing` scope flag (cargo form from the writer output form, else the vehicle's first
+  compatible form) and added to `delivery_profile.cargo_innate`. No confidence added; the realized in-vivo
+  innate response stays a known-unknown.
+- Scope card `innate_sensing`; `prereg/ws_innate.yaml`. `cite.curated_dois()` ingests the innate provenance
+  DOIs (CpG-TLR9 10.1073/pnas.161293498, CpG-depleted AAV 10.1172/JCI68205, RNA modification
+  10.1016/j.immuni.2005.06.008, + Krieg 1995 / Hornung 2006).
+
+### Changed
+- Version 5.3.0 -> 5.4.0 (minor — additive computed scorer).
+
+### Honesty invariant (unchanged)
+- Sequence-intrinsic motif-**load** signal. The realized **in-vivo innate response** magnitude in a patient is
+  **not** modelled (known-unknown); the mRNA score is **partial** because the dominant evasion lever —
+  **nucleoside modification** (m1-pseudouridine) — is a manufacturing choice not derivable from sequence; DNA
+  methylation state is likewise out of scope. No magnitude predicted.
+
 ## [5.3.0] - 2026-06-10 - v5.3 release: Computed capsid epitope-load oracle (covers all vectors)
 
 v5.2 computed genotoxicity only meaningfully touches integrating vectors. v5.3 brings the **NetMHC-style

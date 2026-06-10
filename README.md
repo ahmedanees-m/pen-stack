@@ -16,7 +16,7 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-5.3.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.4.0-blue.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-240%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
@@ -59,6 +59,23 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v5.4 — Computed innate-sensing scorer (completes the computable immune axes)
+
+The third computed delivery-immunology signal (after v5.2 genotoxicity and v5.3 capsid epitope load). Innate
+sensing of a delivered nucleic acid is computed directly from the **cargo sequence**, covering every cargo
+form. It is a sequence-intrinsic motif-*load* signal; the realized in-vivo innate response stays a
+known-unknown, and the mRNA score is honestly *partial* (the dominant lever — nucleoside modification — isn't
+derivable from sequence).
+
+| Cargo form | Pathway | Computed from sequence | Score |
+|---|---|---|---|
+| **DNA** (AAV / HDAd / HSV / plasmid) | TLR9 / cGAS | CpG observed/expected ratio | `max(0, 1 − CpG_O/E)` — vertebrate genome ~0.2 tolerated, non-depleted DNA → 1 stimulatory |
+| **mRNA** (LNP-mRNA / electroporation) | TLR7/8 + RIG-I/MDA5/PKR | U-fraction + ViennaRNA dsRNA pairing | partial / `extrapolating` (nucleoside modification out of scope) |
+| **RNP** (eVLP / electroporation) | minimal (transient gRNA) | — | ~0.9 by mechanism |
+
+`verify()` surfaces it as a `cargo_innate_sensing` flag whenever a `cargo_seq` is supplied. See
+`pen_stack/planner/innate_sensing.py`, `prereg/ws_innate.yaml`, and the `innate_sensing` scope card.
 
 ## What is new in v5.3 — Computed capsid epitope-load oracle (covers all vectors)
 

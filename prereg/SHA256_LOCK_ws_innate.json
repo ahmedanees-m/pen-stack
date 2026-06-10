@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.4",
+  "workstream": "WS-INNATE",
+  "prepared": "2026-06-10",
+  "sha256": {
+    "prereg/ws_innate.yaml": "732ed00254b8caf2f0edca0eb3e1dc697e480c1a9f59556d5fea654e39ee5b09"
+  }
+}

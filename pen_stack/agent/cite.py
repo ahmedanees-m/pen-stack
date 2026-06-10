@@ -36,6 +36,9 @@ def curated_dois() -> frozenset[str]:
             dois.update(a.get("provenance_dois", []) or [])
         except FileNotFoundError:
             pass
+    # v5.4 computed innate-sensing provenance (CpG-TLR9 / AAV CpG-depletion / RNA modification)
+    from pen_stack.planner.innate_sensing import PROVENANCE_DOIS as _innate_dois
+    dois.update(_innate_dois)
     gsh = yaml.safe_load(resource("configs/gsh_validated_heldout.yaml").read_text(encoding="utf-8"))["gsh"]
     for g in gsh:
         if g.get("doi"):
