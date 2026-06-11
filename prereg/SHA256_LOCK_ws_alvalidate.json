@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.10",
+  "workstream": "WS-VALIDATE",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_alvalidate.yaml": "ef8bd5b68c3e7522b2b891e7de4bf742234e1d97d57e3d225b423f8321f9af8c"
+  }
+}

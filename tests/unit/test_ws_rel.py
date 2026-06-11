@@ -8,23 +8,41 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_9_0_everywhere():
-    assert pen_stack.__version__ == "5.9.0"
-    assert 'version = "5.9.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.9.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.9.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_10_0_everywhere():
+    assert pen_stack.__version__ == "5.10.0"
+    assert 'version = "5.10.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.10.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.10.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_9_0_entry():
+def test_changelog_has_5_10_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.9.0] -" in cl and "[5.8.0] -" in cl       # both kept
-    assert "WS-VCELL" in cl and "WS-MECH" in cl and "WS-OUTCOME" in cl
+    assert "[5.10.0] -" in cl and "[5.9.0] -" in cl       # both kept
+    assert "WS-ACQ" in cl and "WS-DESIGN" in cl and "WS-VALIDATE" in cl
 
 
-def test_readme_has_v5_9_section():
+def test_readme_has_v5_10_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v5.9" in r
-    assert "digital twin" in r.lower() and "ood" in r.lower()
+    assert "What is new in v5.10" in r
+    assert "experiment designer" in r.lower() and ("active learning" in r.lower() or "eig" in r.lower())
+
+
+def test_v5_10_artifacts():
+    # the v5.10 artifacts: the experiment designer (acquire + design + validate) + bench + preregs
+    from pen_stack.active import (  # noqa: F401
+        acquisition_score,
+        expected_information_gain,
+        immune_voi,
+        retrospective_active_learning,
+        select_batch,
+    )
+    from pen_stack.validate.experiment_design import run as _ed_bench  # noqa: F401
+    for p in ("pen_stack/active/__init__.py", "pen_stack/active/acquire.py", "pen_stack/active/design.py",
+              "pen_stack/active/validate.py", "pen_stack/validate/experiment_design.py",
+              "docs/experiment_design.md", "prereg/ws_acq.yaml", "prereg/SHA256_LOCK_ws_acq.json",
+              "prereg/ws_aldesign.yaml", "prereg/SHA256_LOCK_ws_aldesign.json", "prereg/ws_alvalidate.yaml",
+              "prereg/SHA256_LOCK_ws_alvalidate.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v5_9_artifacts():

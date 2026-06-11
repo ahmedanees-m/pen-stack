@@ -3,6 +3,37 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.10.0] - 2026-06-11 - v5.10 release: The Experiment Designer (active learning / EIG)
+
+**Closed-Loop arc, Cycle 4 of 7.** The "Learn" brain of a self-driving lab: turn *"I'm uncertain"* into *"run
+this experiment next."* Reads the calibrated v5.9 twin's uncertainty + the v5.6 immune labels, scores each
+candidate experiment by expected information gain, assembles a diverse batch, and proves on held-out data — with
+CIs — that this learns faster than random/greedy (reporting honestly when it does not). Workstreams
+WS-{ACQ,DESIGN,VALIDATE}, SHA-locked.
+
+### Added
+- **WS-ACQ** — `pen_stack/active/acquire.py`: `expected_information_gain` (reducible uncertainty from the twin's
+  predictive distribution; `≥ 0`, monotone in uncertainty), `predictive_entropy` (from the twin's interval width),
+  and **`immune_voi`** — value of information for **validating an immune PROXY axis** (v5.6): an experiment that
+  would measure a still-proxy axis is high-VOI (turns proxy → outcome-validated). `acquisition_score` is fully
+  traceable to twin quantities + v5.6 labels; deterministic; no fabricated values.
+- **WS-DESIGN** — `pen_stack/active/design.py`: `select_batch` greedily maximises acquisition **minus a
+  redundancy penalty** (shared design facets) → a **diverse** batch (not k copies of the most-uncertain point);
+  each experiment carries its expected info gain.
+- **WS-VALIDATE** — `pen_stack/active/validate.py`: `retrospective_active_learning` simulates active vs random vs
+  greedy campaigns on a held-out split, reports mean±CI learning curves and a **bootstrap CI on the curve-area
+  gap**; `active_beats_random` only when the CI excludes zero — else the not-yet-useful negative is reported.
+- **WS-BENCH** — bench **v0.3.6**: new `experiment_design` hard-gate task — the gate is the Learn engine's
+  honesty + falsifiability (twin-sourced EIG monotone in uncertainty + immune-VOI for proxy validation + diverse
+  batch + retrospective active-vs-random with reps+CI); a random selector fails by construction. Active-beats-
+  random is reported informationally.
+- Docs: `docs/experiment_design.md`; prereg `ws_{acq,aldesign,alvalidate}` + SHA locks; deposit `phase_5.10/`.
+
+### Notes
+- The experiment designer is only as good as the v5.9 twin + v5.6 labels it queries; its advantage is validated
+  **retrospectively** with CIs and reported honestly when absent. It chooses informative experiments but **does
+  not run them** — prospective benefit awaits a lab partner (v5.11+). No autonomy claim.
+
 ## [5.9.0] - 2026-06-11 - v5.9 release: The Digital Twin (calibrated outcome prediction)
 
 **Closed-Loop arc, Cycle 3 of 7.** The missing layer: *what does the cell do after the write?* — predicted with

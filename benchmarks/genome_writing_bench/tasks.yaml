@@ -8,7 +8,7 @@
 # A task names a `scorer` (module.function in pen_stack.validate / pen_stack.bridge) and a `metric` key to
 # read from its report. Solvers (deterministic planner, naive baseline, LLM agent) are compared on the same
 # tasks; a solver that cannot ground a number must refuse, not invent (no-fabrication is a hard gate).
-version: "0.3.5"
+version: "0.3.6"
 prepared: "2026-06-11"
 
 taxonomy:
@@ -43,6 +43,8 @@ taxonomy:
   GD_generative_design: "generate candidate writing systems and keep ONLY legal+safe+calibrated+immune-profiled survivors (hazardous toxin payload + illegal oversize/form-incompatible designs DISCARDED), returning a Pareto frontier with a grounded immune-risk axis (vs an ungrounded generator that ships hazardous/illegal designs)"
   # v0.3.5 (v5.9): the digital twin - calibrated, OOD-aware, immune-aware, phenotype-bounded outcome prediction.
   OP_outcome_prediction: "predict a write's computable outcome with HONEST calibration (two-sided MAE-vs-naive with bootstrap CI), an interval that WIDENS under OOD, an immune-outcome dimension from v5.6, and phenotype out of scope (vs an overconfident predictor with a fixed narrow interval and no scope awareness)"
+  # v0.3.6 (v5.10): the experiment designer - active learning / EIG, falsifiable vs random/greedy.
+  ED_experiment_design: "choose the experiment(s) that most reduce model uncertainty: EIG from the calibrated twin (monotone in uncertainty), immune-VOI rewarding proxy-validating experiments, a diverse batch, and a RETROSPECTIVE active-vs-random validation with reps + bootstrap CI (vs a random selector with no acquisition signal and no falsifiable curve)"
 
 tasks:
   - id: site_selection_blind_gsh
@@ -280,3 +282,19 @@ tasks:
     note: "v5.9 the digital twin: a trustworthy predictor is calibrated + OOD-aware + immune-aware + phenotype-
       bounded; an overconfident predictor (fixed narrow interval, no OOD/scope awareness) fails the gate by
       construction. Honest about what the field cannot yet do."
+
+  - id: experiment_design
+    family: ED_experiment_design
+    scorer: "pen_stack.validate.experiment_design:run"
+    metric: "experiment_designer_honest"
+    baseline_metric: "random_selector_honest"
+    higher_is_better: true
+    hard_gate: true
+    gate_rule: "experiment_designer_honest == True (EIG monotone in uncertainty AND immune-VOI rewards proxy validation AND batch diverse AND retrospective active-vs-random reported with reps+CI)"
+    ground_truth: "structural honesty + falsifiability properties of the Learn engine (twin-sourced EIG, immune-VOI,
+      diverse batch, retrospective active-vs-random with reps + bootstrap CI), NOT a beat-the-world claim -
+      non-circular; the active-beats-random outcome is reported either way (not-yet-useful is a valid result)"
+    circular: false
+    note: "v5.10 the experiment designer: a trustworthy Learn engine computes acquisition from the calibrated twin,
+      rewards proxy-validating experiments, selects a diverse batch, and validates active-vs-random retrospectively
+      with CIs; a random selector has no acquisition signal and no falsifiable curve and fails by construction."
