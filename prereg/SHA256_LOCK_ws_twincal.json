@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.9",
+  "workstream": "WS-CAL (twin)",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_twincal.yaml": "d16ff13d473135d964e17897c3da72a1b508668148b2fac73d4bbf54e8dcd667"
+  }
+}

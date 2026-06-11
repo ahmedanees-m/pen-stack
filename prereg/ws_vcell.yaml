@@ -1,0 +1,20 @@
+# PEN-STACK v5.9 - WS-VCELL (virtual-cell models as OOD-gated outcome oracles). Directional.
+cycle: "v5.9"
+workstream: "WS-VCELL"
+prepared: "2026-06-11"
+motivation: >
+  Wrap virtual-cell models (Arc STATE, scGPT) under the v4.0 OracleResult contract so a perturbation-response
+  prediction is a CANDIDATE, OOD-gated, cached - never a confident claim.
+deliverable: >
+  pen_stack/oracles/vcell.py (predict_response(cell_state, perturbation, model)) + scope cards `state`/`scgpt`
+  in configs/oracles/scope_cards.yaml.
+method: >
+  OOD gate via a documented in-distribution envelope (trained human cell contexts + supported perturbation
+  kinds): outside -> extrapolating=True / in_scope=False. Backend deferred/cache-replayed; absent -> value None
+  (never fabricated). output_kind=candidate.
+acceptance: >
+  in-distribution predictions are in_scope; OOD flagged extrapolating; deterministic cached round-trip; honest
+  baseline note reported (Arc VCC: perturbation models do not yet consistently beat naive baselines).
+honesty_invariant: "a prediction is a candidate/hypothesis; OOD is load-bearing; the model does not generalize to unseen contexts; deferred value is never fabricated."
+gate: "G-VCELL - in_scope vs extrapolating gated by the scope card; deferred value None; output_kind=candidate."
+locked_files: [prereg/ws_vcell.yaml]

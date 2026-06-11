@@ -179,3 +179,26 @@ oracles:
     generalizes_to_unseen_loci: false
     license: "open (this work; Chen 10.1021/acs.analchem.6b03109, Yang&Lai 10.1002/wnan.1339,
       Armstrong 10.1002/cncr.22739, Kozma 10.1016/j.addr.2020.07.024)"
+
+  state:                          # v5.9 WS-VCELL: Arc STATE virtual-cell perturbation-response model
+    family: vcell
+    version: "state-2025"
+    output_kind: candidate        # a perturbation-response PREDICTION is a candidate/hypothesis, never a claim
+    valid_for: "IN-DISTRIBUTION single-gene / chemical / cytokine perturbation transcriptional-response estimates
+      in TRAINED human cell contexts (Arc STATE; ~70 contexts, 167M+100M cells)"
+    not_valid_for: "OUT-OF-DISTRIBUTION cell types / perturbations (Arc's own Virtual Cell Challenge result:
+      perturbation models do NOT yet consistently beat naive baselines -> OOD sets extrapolating=True); phenotype;
+      in-vivo behaviour; clinical endpoints"
+    generalizes_to_unseen_loci: false
+    license: "Arc Institute (github.com/ArcInstitute/state)"
+
+  scgpt:                          # v5.9 WS-VCELL: scGPT single-cell foundation model (perturbation prediction)
+    family: vcell
+    version: "scgpt-2024"
+    output_kind: candidate
+    valid_for: "IN-DISTRIBUTION genetic-perturbation transcriptional-response estimates within trained single-cell
+      contexts (scGPT; >33M cells)"
+    not_valid_for: "OOD cell types / perturbations (does not consistently beat naive baselines); phenotype; in-vivo;
+      absolute expression"
+    generalizes_to_unseen_loci: false
+    license: "MIT (github.com/bowang-lab/scGPT; Nature Methods 10.1038/s41592-024-02201-0)"

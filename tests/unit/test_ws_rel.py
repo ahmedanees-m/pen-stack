@@ -8,23 +8,41 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_8_0_everywhere():
-    assert pen_stack.__version__ == "5.8.0"
-    assert 'version = "5.8.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.8.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.8.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_9_0_everywhere():
+    assert pen_stack.__version__ == "5.9.0"
+    assert 'version = "5.9.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.9.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.9.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_8_0_entry():
+def test_changelog_has_5_9_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.8.0] -" in cl and "[5.7.0] -" in cl       # both kept
-    assert "WS-GEN" in cl and "WS-PARETO" in cl and "WS-ORCH" in cl
+    assert "[5.9.0] -" in cl and "[5.8.0] -" in cl       # both kept
+    assert "WS-VCELL" in cl and "WS-MECH" in cl and "WS-OUTCOME" in cl
 
 
-def test_readme_has_v5_8_section():
+def test_readme_has_v5_9_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v5.8" in r
-    assert "generative" in r.lower() and "discriminator" in r.lower()
+    assert "What is new in v5.9" in r
+    assert "digital twin" in r.lower() and "ood" in r.lower()
+
+
+def test_v5_9_artifacts():
+    # the v5.9 artifacts: the digital twin (vcell oracle + mechanistic + outcome + calibrate) + bench + preregs
+    from pen_stack.oracles.vcell import predict_response  # noqa: F401
+    from pen_stack.twin import calibrate_outcome, cassette_expression, predict_outcome  # noqa: F401
+    from pen_stack.validate.outcome_prediction import run as _twin_bench  # noqa: F401
+    for p in ("pen_stack/oracles/vcell.py", "pen_stack/twin/__init__.py", "pen_stack/twin/mechanistic.py",
+              "pen_stack/twin/outcome.py", "pen_stack/twin/calibrate.py",
+              "pen_stack/validate/outcome_prediction.py", "docs/digital_twin.md",
+              "prereg/ws_vcell.yaml", "prereg/SHA256_LOCK_ws_vcell.json", "prereg/ws_mech.yaml",
+              "prereg/SHA256_LOCK_ws_mech.json", "prereg/ws_outcome.yaml", "prereg/SHA256_LOCK_ws_outcome.json",
+              "prereg/ws_twincal.yaml", "prereg/SHA256_LOCK_ws_twincal.json"):
+        assert (_ROOT / p).exists(), p
+    # the v5.9 scope cards for the virtual-cell oracle are registered
+    import yaml
+    cards = yaml.safe_load((_ROOT / "configs/oracles/scope_cards.yaml").read_text(encoding="utf-8"))["oracles"]
+    assert "state" in cards and "scgpt" in cards and cards["state"]["family"] == "vcell"
 
 
 def test_v5_8_artifacts():

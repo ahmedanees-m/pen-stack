@@ -8,7 +8,7 @@
 # A task names a `scorer` (module.function in pen_stack.validate / pen_stack.bridge) and a `metric` key to
 # read from its report. Solvers (deterministic planner, naive baseline, LLM agent) are compared on the same
 # tasks; a solver that cannot ground a number must refuse, not invent (no-fabrication is a hard gate).
-version: "0.3.4"
+version: "0.3.5"
 prepared: "2026-06-11"
 
 taxonomy:
@@ -41,6 +41,8 @@ taxonomy:
   SF_safety_screening:  "screen a design for select-agent / pandemic-pathogen / controlled-toxin signatures: benign therapeutics pass (0 false refusals), hazards refused/escalated, AI-homolog + chimera + reframing evasions never `clear` (vs a no-safety baseline that clears everything)"
   # v0.3.4 (v5.8): the generative designer - verifier-as-discriminator over a mixed candidate pool.
   GD_generative_design: "generate candidate writing systems and keep ONLY legal+safe+calibrated+immune-profiled survivors (hazardous toxin payload + illegal oversize/form-incompatible designs DISCARDED), returning a Pareto frontier with a grounded immune-risk axis (vs an ungrounded generator that ships hazardous/illegal designs)"
+  # v0.3.5 (v5.9): the digital twin - calibrated, OOD-aware, immune-aware, phenotype-bounded outcome prediction.
+  OP_outcome_prediction: "predict a write's computable outcome with HONEST calibration (two-sided MAE-vs-naive with bootstrap CI), an interval that WIDENS under OOD, an immune-outcome dimension from v5.6, and phenotype out of scope (vs an overconfident predictor with a fixed narrow interval and no scope awareness)"
 
 tasks:
   - id: site_selection_blind_gsh
@@ -261,3 +263,20 @@ tasks:
     note: "v5.8 verifier-as-discriminator: the ungrounded generator returns the raw pool (ships hazardous +
       illegal designs) and fails by construction; the grounded designer discards them and returns calibrated,
       immune-profiled candidates on a Pareto frontier with a grounded immune-risk axis."
+
+  - id: outcome_prediction
+    family: OP_outcome_prediction
+    scorer: "pen_stack.validate.outcome_prediction:run"
+    metric: "twin_honest_and_calibrated"
+    baseline_metric: "overconfident_predictor_honest"
+    higher_is_better: true
+    hard_gate: true
+    gate_rule: "twin_honest_and_calibrated == True (calibration two-sided w/ CI AND OOD widens interval AND immune-outcome present AND phenotype out-of-scope)"
+    ground_truth: "structural honesty properties of the outcome prediction (two-sided calibration + OOD widening +
+      immune dimension from v5.6 + phenotype out-of-scope), NOT a beat-the-world claim - non-circular; twin-vs-naive
+      skill is reported informationally on a labelled synthetic stream because no public perturbation-outcome
+      calibration set exists (Arc Virtual Cell Challenge: models do not yet consistently beat naive baselines)"
+    circular: false
+    note: "v5.9 the digital twin: a trustworthy predictor is calibrated + OOD-aware + immune-aware + phenotype-
+      bounded; an overconfident predictor (fixed narrow interval, no OOD/scope awareness) fails the gate by
+      construction. Honest about what the field cannot yet do."

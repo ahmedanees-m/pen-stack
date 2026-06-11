@@ -3,6 +3,42 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.9.0] - 2026-06-11 - v5.9 release: The Digital Twin (calibrated outcome prediction)
+
+**Closed-Loop arc, Cycle 3 of 7.** The missing layer: *what does the cell do after the write?* — predicted with
+calibrated honesty. The twin computes what mechanism allows, adds an in-distribution virtual-cell estimate
+(OOD-gated), screens immune outcome from the v5.6 profile, and is explicit about its boundary at phenotype.
+Workstreams WS-{VCELL,MECH,OUTCOME,CAL}, SHA-locked.
+
+### Added
+- **WS-VCELL** — `pen_stack/oracles/vcell.py` + scope cards `state`/`scgpt`: `predict_response(cell_state,
+  perturbation, model)` wraps **Arc STATE** / **scGPT** under the v4.0 `OracleResult` contract. A
+  perturbation-response prediction is a **candidate**, OOD-gated (a context outside the documented envelope →
+  `extrapolating`), cached/deferred (value `None` when absent — never fabricated). Encodes the field's own result
+  (Arc Virtual Cell Challenge): perturbation models don't yet consistently beat naive baselines.
+- **WS-MECH** — `pen_stack/twin/mechanistic.py`: `cassette_expression` = `promoter_strength × copy_number ×
+  accessibility` (closed-form steady state); assumptions + scope flags attached; **physics where computable, NOT
+  a phenotype**.
+- **WS-OUTCOME** — `pen_stack/twin/outcome.py`: `predict_outcome(design, cell_state)` fuses mechanism +
+  in-distribution virtual-cell response + the v5.6 immune profile into one prediction with an interval that
+  **widens under OOD**, an immune-outcome dimension, and an explicit **phenotype / in-vivo-magnitude boundary**.
+  In-vivo durability may be **conditioned on the grounded pre-existing-NAb axis** (no invented immune numbers);
+  `output_kind="candidate"`.
+- **WS-CAL** — `pen_stack/twin/calibrate.py`: `calibrate_outcome(...)` reports calibration **two-sided** — interval
+  coverage + a bootstrap CI on the MAE gap vs a naive mean baseline; the twin "beats" naive **only when the CI
+  excludes zero**, else the negative is reported verbatim; abstains at `N < 3`.
+- **WS-BENCH** — bench **v0.3.5**: new `outcome_prediction` hard-gate task (`pen_stack/validate/outcome_prediction.py`)
+  — the gate is the twin's **honesty properties** (two-sided calibration + OOD widening + immune dimension +
+  phenotype out-of-scope), which an overconfident predictor fails by construction; twin-vs-naive skill is reported
+  informationally on a labelled synthetic stream (no public perturbation-outcome calibration set exists).
+- Docs: `docs/digital_twin.md`; prereg `ws_{vcell,mech,outcome,twincal}` + SHA locks; deposit `phase_5.9/`.
+
+### Notes
+- The twin is a **hypothesis engine, not an oracle of truth**: predictions are candidates with intervals;
+  phenotype, in-vivo behaviour, immunogenicity *magnitude*, and durability beyond the computable stay
+  scope-flagged. The interval is a heuristic band, **not** a trained conformal interval (no public outcome
+  calibration set). Immune-outcome is sourced from v5.6, never invented.
+
 ## [5.8.0] - 2026-06-11 - v5.8 release: The Live Agent & Generative Designer
 
 **Closed-Loop arc, Cycle 2 of 7.** PEN-STACK turns from a *checker* into a grounded *designer*: it generates
