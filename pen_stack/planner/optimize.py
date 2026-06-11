@@ -209,9 +209,20 @@ def _gene_coords(path: str | None = None) -> pd.DataFrame:
     return pd.read_parquet(Path(path) if path else gene_coords_path())
 
 
+# Genomic safe-harbour *locus nicknames* are not HGNC gene symbols, so they are absent from gene_coords; map the
+# well-documented ones to their host gene so a user who types the common name still gets a plan. AAVS1 = intron 1
+# of PPP1R12C (19q13.42); H11/Hipp11 = an intron of EIF4ENIF1 (22q12). (CCR5, CLYBL, HPRT1 are real symbols.)
+_GSH_ALIASES = {"AAVS1": "PPP1R12C", "H11": "EIF4ENIF1", "HIPP11": "EIF4ENIF1"}
+
+
+def resolve_gene(gene: str) -> str:
+    """Map a safe-harbour locus nickname (e.g. AAVS1) to its HGNC host gene; pass real symbols through unchanged."""
+    return _GSH_ALIASES.get(str(gene).strip().upper(), gene)
+
+
 def gene_region(gene: str, flank_kb: int = 50) -> tuple[str, int, int] | None:
     gc = _gene_coords()
-    g = gc[gc["gene"] == gene]
+    g = gc[gc["gene"] == resolve_gene(gene)]
     if g.empty:
         return None
     r = g.iloc[0]
@@ -232,7 +243,7 @@ def plan(gene: str, intent: EditIntent | str, cargo_bp: int, writable_df: pd.Dat
         return pd.DataFrame()
     # on_target = bin overlaps the gene body (not just the flank)
     g = _gene_coords()
-    gr = g[g["gene"] == gene].iloc[0]
+    gr = g[g["gene"] == resolve_gene(gene)].iloc[0]
     sub["on_target"] = sub["bin"].between(int(gr["start"]) // BIN_BP, int(gr["end"]) // BIN_BP)
     scored = score_candidates(sub, intent, cargo_bp)
     cols = ["chrom", "bin", "writer", "safety", "p_durable", "writer_activity",

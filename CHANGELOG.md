@@ -3,6 +3,19 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.2.2] - 2026-06-12 - v6.2.2: safe-harbour locus-nickname resolution (patch)
+
+**Usability fix.** Site Finder / `/plan` / `/writable` returned 0 plans for `AAVS1` because it is a genomic
+safe-harbour *locus nickname*, not an HGNC gene symbol, so the gene→coordinate lookup (`gene_coords`, 60,888
+symbols) could not resolve it — honest empty, but unhelpful for the most-typed safe harbour. (The cell-type
+atlases are complete; real symbols like `PCSK9`/`HBB`/`CCR5`/`CLYBL` resolved fine.)
+
+### Fixed
+- `pen_stack/planner/optimize.py`: `resolve_gene()` maps well-documented safe-harbour nicknames to their host
+  gene (`AAVS1`→`PPP1R12C` 19q13.42; `H11`/`Hipp11`→`EIF4ENIF1` 22q12) at every gene→coordinate lookup
+  (`gene_region`, `plan`, `crosslink.loci_for_gene`); real symbols pass through unchanged. Regression test
+  `tests/unit/test_ws_api.py::test_safe_harbour_nickname_resolves_to_host_gene`.
+
 ## [6.2.1] - 2026-06-12 - v6.2.1: JSON-safe atlas/crosslink endpoints (patch)
 
 **Bug fix.** The `/atlas`, `/writable`, and `/crosslink/loci` endpoints returned raw DataFrame records, which

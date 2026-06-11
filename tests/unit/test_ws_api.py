@@ -77,6 +77,14 @@ def test_dispatch_routes_to_the_validated_engine():
 
 # --- WS-OPENAPI / WS-MCP endpoints (VM / server extra) ---------------------------------
 
+def test_safe_harbour_nickname_resolves_to_host_gene():
+    # AAVS1 etc. are locus nicknames, NOT HGNC symbols -> map to the host gene so /plan + /writable answer.
+    from pen_stack.planner.optimize import resolve_gene
+    assert resolve_gene("AAVS1") == "PPP1R12C" and resolve_gene("aavs1") == "PPP1R12C"
+    assert resolve_gene("H11") == "EIF4ENIF1"
+    assert resolve_gene("PCSK9") == "PCSK9" and resolve_gene("HBB") == "HBB"   # real symbols unchanged
+
+
 def test_records_helper_is_json_safe_with_non_finite_floats():
     pytest.importorskip("fastapi")
     import math
