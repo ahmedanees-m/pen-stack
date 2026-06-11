@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.11",
+  "workstream": "WS-PROTO",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_proto.yaml": "2e98a82345cf744c0b79a0c0b84dae746c1269755f0c4a84624a9ca2087dbb7c"
+  }
+}

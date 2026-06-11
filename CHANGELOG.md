@@ -3,6 +3,36 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.11.0] - 2026-06-11 - v5.11 release: The Build Interface (digital→physical bridge)
+
+**Closed-Loop arc, Cycle 5 of 7.** Make designs executable and results ingestible — loop-ready, lab-optional,
+safety-gated, with the immune-risk profile attached as protocol metadata. Workstreams WS-{PROTO,INGEST,SIMLAB},
+SHA-locked.
+
+### Added
+- **WS-PROTO** — `pen_stack/build/protocol.py`: `export_protocol(design, experiment, target, actor)` for
+  Opentrons / PyLabRobot / cloud-lab. Runs `verify()` **first**: a safety-`refuse` or illegal design raises
+  **`ProtocolExportError`** (no export path for a flagged design); a cleared design is emitted as a **DRAFT**
+  ("human/lab review required") carrying the v5.6 immune profile + provenance in its metadata. Never auto-run.
+- **WS-INGEST** — `pen_stack/build/ingest.py`: `ingest_result(result, ...)` validates a result (assay / readout /
+  provenance) and turns it into a **quarantined measured edge Candidate**; the ONLY path into the curated
+  world-model is the v4.5 gate (`gate_admit`) — automated checks **and** explicit human approval. No auto-edit
+  (Principle 1). Immune measurements can begin validating the v5.6 proxies on a later pass.
+- **WS-SIMLAB** — `pen_stack/build/simlab.py`: `run_simulated(protocol_ir, design, cell_state)` executes a
+  protocol in silico (samples from the v5.9 twin + measurement noise), **labelled `SIMULATED`**, so the closed
+  loop (v5.12) runs end-to-end **export → sim → ingest** without hardware; never enters the world-model as
+  measured truth.
+- **WS-BENCH** — bench **v0.3.7**: new `protocol_safety` hard-gate task (`pen_stack/validate/protocol_safety.py`)
+  — a cleared design exports with immune metadata, a safety-refused/illegal design is blocked, and the simulated
+  loop completes with quarantined SIMULATED results; an ungated exporter (which would emit the hazardous protocol)
+  fails by construction.
+- Docs: `docs/build_interface.md`; prereg `ws_{proto,ingest,simlab}` + SHA locks; deposit `phase_5.11/`.
+
+### Notes
+- PEN-STACK emits protocols and ingests results; it does **not** run experiments — protocols are drafts requiring
+  human/lab review, results enter only through the gate, and the simulated lab is for development / loop-validation,
+  never a substitute for real data. Export is hard-blocked for anything the safety gate flags.
+
 ## [5.10.0] - 2026-06-11 - v5.10 release: The Experiment Designer (active learning / EIG)
 
 **Closed-Loop arc, Cycle 4 of 7.** The "Learn" brain of a self-driving lab: turn *"I'm uncertain"* into *"run

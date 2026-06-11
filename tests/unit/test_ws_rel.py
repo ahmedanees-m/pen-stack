@@ -8,23 +8,39 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_10_0_everywhere():
-    assert pen_stack.__version__ == "5.10.0"
-    assert 'version = "5.10.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.10.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.10.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_11_0_everywhere():
+    assert pen_stack.__version__ == "5.11.0"
+    assert 'version = "5.11.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.11.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.11.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_10_0_entry():
+def test_changelog_has_5_11_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.10.0] -" in cl and "[5.9.0] -" in cl       # both kept
-    assert "WS-ACQ" in cl and "WS-DESIGN" in cl and "WS-VALIDATE" in cl
+    assert "[5.11.0] -" in cl and "[5.10.0] -" in cl       # both kept
+    assert "WS-PROTO" in cl and "WS-INGEST" in cl and "WS-SIMLAB" in cl
 
 
-def test_readme_has_v5_10_section():
+def test_readme_has_v5_11_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v5.10" in r
-    assert "experiment designer" in r.lower() and ("active learning" in r.lower() or "eig" in r.lower())
+    assert "What is new in v5.11" in r
+    assert "build interface" in r.lower() and "protocol" in r.lower()
+
+
+def test_v5_11_artifacts():
+    # the v5.11 artifacts: the build interface (protocol + ingest + simlab) + bench + preregs
+    from pen_stack.build import (  # noqa: F401
+        ProtocolExportError,
+        export_protocol,
+        ingest_result,
+        run_simulated,
+    )
+    from pen_stack.validate.protocol_safety import run as _ps_bench  # noqa: F401
+    for p in ("pen_stack/build/__init__.py", "pen_stack/build/protocol.py", "pen_stack/build/ingest.py",
+              "pen_stack/build/simlab.py", "pen_stack/validate/protocol_safety.py", "docs/build_interface.md",
+              "prereg/ws_proto.yaml", "prereg/SHA256_LOCK_ws_proto.json", "prereg/ws_ingest.yaml",
+              "prereg/SHA256_LOCK_ws_ingest.json", "prereg/ws_simlab.yaml", "prereg/SHA256_LOCK_ws_simlab.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v5_10_artifacts():

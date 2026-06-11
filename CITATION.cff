@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use PEN-STACK, please cite it as below."
 title: "PEN-STACK: open infrastructure for genome writing"
-version: 5.10.0
+version: 5.11.0
 date-released: 2026-06-11
 authors:
   - family-names: "Mahaboob Ali"

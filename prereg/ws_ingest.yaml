@@ -1,0 +1,18 @@
+# PEN-STACK v5.11 - WS-INGEST (typed, gated result ingestion). Directional.
+cycle: "v5.11"
+workstream: "WS-INGEST"
+prepared: "2026-06-11"
+motivation: >
+  An experimental result must enter as CANDIDATE evidence, never auto-merged: the only path into the curated
+  world-model is the v4.5 gate (automated checks AND explicit human approval).
+deliverable: "pen_stack/build/ingest.py: ingest_result(result, admitted_by, graph, approved) -> quarantined Candidate or gate decision."
+method: >
+  validate the result schema (assay/readout/provenance with source); build a measured EDGE Candidate
+  (design --measured_outcome--> outcome), quarantined; admit ONLY via gate_admit(graph, cand, approved, admitted_by)
+  when a graph + explicit approval are supplied. Immune-measurement results can validate v5.6 proxies on a later pass.
+acceptance: >
+  results validate against the schema; un-admitted results are quarantined; admission is the only path into the
+  curated world-model (no auto-edit, asserted - inherits v4.5).
+honesty_invariant: "no process auto-edits curated truth; provenance required; ingestion is gated evidence, not a fact."
+gate: "G-INGEST - typed validation; quarantined by default; admit only via the v4.5 gate (human-approved)."
+locked_files: [prereg/ws_ingest.yaml]

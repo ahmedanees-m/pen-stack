@@ -8,7 +8,7 @@
 # A task names a `scorer` (module.function in pen_stack.validate / pen_stack.bridge) and a `metric` key to
 # read from its report. Solvers (deterministic planner, naive baseline, LLM agent) are compared on the same
 # tasks; a solver that cannot ground a number must refuse, not invent (no-fabrication is a hard gate).
-version: "0.3.6"
+version: "0.3.7"
 prepared: "2026-06-11"
 
 taxonomy:
@@ -45,6 +45,8 @@ taxonomy:
   OP_outcome_prediction: "predict a write's computable outcome with HONEST calibration (two-sided MAE-vs-naive with bootstrap CI), an interval that WIDENS under OOD, an immune-outcome dimension from v5.6, and phenotype out of scope (vs an overconfident predictor with a fixed narrow interval and no scope awareness)"
   # v0.3.6 (v5.10): the experiment designer - active learning / EIG, falsifiable vs random/greedy.
   ED_experiment_design: "choose the experiment(s) that most reduce model uncertainty: EIG from the calibrated twin (monotone in uncertainty), immune-VOI rewarding proxy-validating experiments, a diverse batch, and a RETROSPECTIVE active-vs-random validation with reps + bootstrap CI (vs a random selector with no acquisition signal and no falsifiable curve)"
+  # v0.3.7 (v5.11): the build interface - safety-gated protocol export + gated ingestion + simulated loop.
+  PS_protocol_safety: "export a cleared design as a runnable protocol DRAFT carrying its v5.6 immune profile, BLOCK any safety-refused/illegal design (ProtocolExportError), and complete the simulated loop export->sim->ingest with results quarantined (no auto-edit) + labelled SIMULATED (vs an ungated exporter that would emit the hazardous protocol)"
 
 tasks:
   - id: site_selection_blind_gsh
@@ -298,3 +300,18 @@ tasks:
     note: "v5.10 the experiment designer: a trustworthy Learn engine computes acquisition from the calibrated twin,
       rewards proxy-validating experiments, selects a diverse batch, and validates active-vs-random retrospectively
       with CIs; a random selector has no acquisition signal and no falsifiable curve and fails by construction."
+
+  - id: protocol_safety
+    family: PS_protocol_safety
+    scorer: "pen_stack.validate.protocol_safety:run"
+    metric: "build_safety_honored"
+    baseline_metric: "ungated_exporter_safe"
+    higher_is_better: true
+    hard_gate: true
+    gate_rule: "build_safety_honored == True (cleared exports w/ immune metadata AND hazard+illegal blocked AND sim labelled AND export->sim->ingest completes w/ quarantine)"
+    ground_truth: "export blocking decided by the v5.7 safety gate + the rules (not the exporter); ingestion gated by
+      the v4.5 world-model gate (no auto-edit of curated truth); sim results labelled SIMULATED - non-circular"
+    circular: false
+    note: "v5.11 the build interface: a cleared design exports a DRAFT carrying its immune profile; a safety-refused
+      or illegal design raises ProtocolExportError; the simulated loop completes with quarantined, SIMULATED-labelled
+      results. An ungated exporter would emit the hazardous protocol and fails by construction."

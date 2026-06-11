@@ -16,6 +16,7 @@ nav:
   - Generative designer: generative_design.md
   - Digital twin: digital_twin.md
   - Experiment designer: experiment_design.md
+  - Build interface: build_interface.md
   - Tutorials:
       - Where can I write X in cell type Y: tutorials/where-can-i-write.md
       - Which writer reaches locus Z: tutorials/which-writer-reaches-locus.md

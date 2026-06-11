@@ -26,7 +26,8 @@ venv/
 .coverage
 htmlcov/
 dist/
-build/
+# the setuptools dist build dir at repo ROOT only (NOT pen_stack/build/ the v5.11 package)
+/build/
 
 # secrets — NEVER commit
 .pen/
