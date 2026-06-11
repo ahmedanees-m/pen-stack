@@ -223,3 +223,29 @@ def session_endpoint(req: dict):
     predicted outcomes + per-axis immune profiles + suggested experiments + citations + scope ledger + safety."""
     from pen_stack.agent.co_scientist import co_scientist_session
     return co_scientist_session(req["goal"], req.get("cell_state", "k562"), candidates=req.get("candidates"))
+
+
+# ======================================================================================
+# v5.13 — The Genome-Writing Challenge (read-only surface for the web Challenge page).
+# Public tasks (NO labels) + the PEN-STACK reference submission that anchors the leaderboard. Submissions
+# are Python `predict_fn`s scored offline (`benchmarks/genome_writing_challenge/run.py`) — never accepted
+# over HTTP — so these routes only EXPOSE the held-out round and the anchor score.
+# ======================================================================================
+@app.get("/challenge/tasks", tags=["challenge"])
+def challenge_tasks(round_id: str = "2026R1"):
+    """The public inputs of the current held-out round (family + design + instructions; NEVER the label)."""
+    from benchmarks.genome_writing_challenge.harness import _round_tasks
+    tasks = _round_tasks(round_id)
+    return {"round": round_id, "n_tasks": len(tasks),
+            "tasks": [{"id": t.id, "family": t.family, "public_input": t.public_input} for t in tasks]}
+
+
+@app.get("/challenge/leaderboard", tags=["challenge"])
+def challenge_leaderboard(round_id: str = "2026R1"):
+    """The leaderboard anchored by the PEN-STACK reference submission (deterministic, non-circular labels,
+    no-fabrication audited). External submissions are scored offline and appended here after a round."""
+    from benchmarks.genome_writing_challenge.harness import evaluate, reference_submission
+    ref = evaluate(reference_submission(), round_id)
+    return {"round": round_id, "leaderboard": [ref],
+            "rules": {"no_circular_labels": ref["no_circular_labels"],
+                      "no_fabrication_audited": True, "labels": "validated PEN-STACK verifier / oracles"}}

@@ -40,6 +40,22 @@ services:
     ports: ["8765:8765"]
     depends_on: [ollama]
 
+  # v6.2 The Web Platform: the grounded co-scientist + every engine feature behind one gateway (port 8000).
+  # `docker compose up web ollama` builds the React frontend (node:20 stage) and serves dist/ + the API from
+  # one origin. Open http://localhost:8000. The LLM is optional — Ollama primary, Nemotron fallback, then the
+  # deterministic narrator — so the app is useful even with no model running.
+  web:
+    build: {context: ., dockerfile: docker/web.Dockerfile}
+    environment:
+      PYTHONPATH: /work
+      OLLAMA_HOST: "http://ollama:11434"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-qwen2.5:7b-instruct}"
+      NVIDIA_API_KEY: "${NVIDIA_API_KEY:-}"
+    working_dir: /work
+    volumes: ["./data:/work/data"]
+    ports: ["8000:8000"]
+    depends_on: [ollama]
+
   # Genome-Writing Bench (WS-E): one-command reproducible run on the clean image.
   #   docker compose run --rm bench               # leaderboard from the deterministic solvers
   #   docker compose run --rm bench python bench/run.py --agent   # + the real LLM-agent baseline (Ollama)

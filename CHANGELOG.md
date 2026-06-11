@@ -3,6 +3,43 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.2.0] - 2026-06-11 - v6.2: The Web Platform (the human surface)
+
+**Post-1.0 adoption surface for bench scientists.** A complete, friendly web application — a grounded co-scientist
+chat plus structured feature pages — over the same typed v6.1 API the AI surface uses. The LLM **narrates and
+routes but never sources a number**; every quantitative answer renders with its confidence band, provenance, and
+an explicit ledger of what PEN-STACK can't tell you. MINOR release on the stable 6.0 API. Workstreams
+WS-{BACKEND,CHAT,FRONTEND,PAGES,DEPLOY}, SHA-locked.
+
+### Added
+- **WS-BACKEND** — `pen_stack/web/server.py`: one FastAPI gateway that **mounts the v6.1 engine surface** under
+  `/api` (so the frontend has one base URL / one OpenAPI) and adds the grounded `/chat` (+ SSE `/chat/stream`),
+  CORS, and static serving of the built frontend (`web/dist`). A `/health` for the live grounded indicator.
+- **WS-CHAT** *(the hard gate)* — `pen_stack/web/tools.py` (the deterministic engine tool-runner: parse a goal →
+  run `verify`/`safety`/`immune_profile`/scope → a grounded dossier; `extract_grounded_numbers` = the allow-list)
+  and `pen_stack/web/llm.py` (the grounded co-scientist: **Ollama → Nemotron → deterministic narrator**, with
+  `_enforce_grounding` striking any numeric token the model can't trace to a tool result). A reply's numbers are
+  always engine-sourced; `tests/unit/test_ws_chat.py` asserts **no number in a reply is absent from the tool
+  results**, and that the deterministic narrator works with both LLMs offline.
+- **WS-FRONTEND** — `web/` (React/Vite + Tailwind): the **honest-UX component library** — `ConfidenceBand`,
+  `ProvenanceChip`, `ScopeLedger`, `SafetyBadge`, `ImmuneProfileCard` — so a number is never shown without its
+  uncertainty + provenance, and the scope ledger appears on every answer.
+- **WS-PAGES** — 11 feature pages over the typed API: Co-Scientist · Site Finder · Writer Atlas · Designer ·
+  Verify · Delivery & Immunity · Digital Twin · Guardian · Experiments · Challenge · Scope & About. Each renders
+  through the honest-UX library and degrades gracefully when the LLM is offline.
+- **WS-DEPLOY** — `docker/web.Dockerfile` (multi-stage: a **node:20** stage builds the frontend, a slim Python
+  serves UI + API from one origin) + a `web` service in `docker-compose.yml`: **one-command self-host**
+  (`docker compose up web ollama`, open `http://localhost:8000`). `web/.env.example`, `web/README.md` quickstart.
+- Read-only Challenge surface for the web page: `GET /api/challenge/{tasks,leaderboard}` (public tasks + the
+  PEN-STACK reference leaderboard; submissions are still scored offline, never accepted over HTTP).
+- prereg `ws_{chat,frontend}` + SHA locks; deposit `phase_6.2/`.
+
+### Notes
+- **The LLM never sources a number.** It explains, compares, and routes over the engine's tool outputs; the
+  grounding guard strips any value it can't trace, and the app runs in a deterministic, no-LLM mode (the science
+  lives in the engine, not the model). This cycle improves **usability/adoption**, not validation — a real-data
+  result and a first lab user remain the standing bottleneck. No new science; contracts under the 1.0 commitment.
+
 ## [6.1.0] - 2026-06-11 - v6.1: The AI Integration Surface
 
 **Post-1.0 adoption surface for AI builders.** Not new capability — the *introspectable, documented, dependable*

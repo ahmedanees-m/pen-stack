@@ -29,12 +29,18 @@ dist/
 # the setuptools dist build dir at repo ROOT only (NOT pen_stack/build/ the v5.11 package)
 /build/
 
+# v6.2 web frontend — build artifacts + deps + local env (never commit)
+web/node_modules/
+web/dist/
+web/.env
+
 # secrets — NEVER commit
 .pen/
 secrets.env
 *.pat
 Keys.txt
 GitHub_Access_Token.txt
+configs/nvidia_api_key.txt
 
 # unpublished manuscripts — kept local only, never public
 manuscripts/

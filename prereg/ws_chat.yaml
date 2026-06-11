@@ -1,0 +1,20 @@
+# PEN-STACK v6.2 - WS-CHAT (the grounded co-scientist for the web). Directional.
+cycle: "v6.2"
+workstream: "WS-CHAT"
+prepared: "2026-06-11"
+motivation: >
+  Give the web platform a conversational front door that is helpful AND cannot fabricate: a co-scientist that
+  explains, compares, and routes the engine's tools in plain language while NEVER sourcing a number itself.
+deliverable: "pen_stack/web/{tools,llm}.py: run_tools (engine dossier) + grounded_reply (Ollama -> Nemotron -> deterministic) + the grounding guard."
+method: >
+  the ENGINE computes every number (verify / safety / immune_profile / scope) in run_tools; extract_grounded_numbers
+  is the allow-list of values the LLM may cite; grounded_reply tries Ollama (local, free) then Nemotron (hosted free
+  tier), passing the tool results as the only source of numbers, and _enforce_grounding strikes any numeric token not
+  traceable to a tool result; with no LLM reachable the deterministic narrator composes the reply from the dossier.
+acceptance: >
+  the chat answers the example goals from engine tool results; a test asserts NO numeric claim in a reply is absent
+  from the tool results (the grounding guard); the deterministic fallback works with both LLMs offline; the system
+  prompt forbids invented numbers/citations.
+honesty_invariant: "the LLM narrates and routes; it never sources a number - any model-emitted number absent from the tool results is struck before the reply is returned."
+gate: "G-CHAT - grounded_reply returns only grounded numbers (guard asserted); deterministic narrator works LLM-offline; numbers are engine-sourced."
+locked_files: [prereg/ws_chat.yaml]

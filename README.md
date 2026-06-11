@@ -15,7 +15,7 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-6.1.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-6.2.0-blue.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-1.0%20First%20Stable-success.svg)](docs/STABILITY.md)
 [![Tests](https://img.shields.io/badge/tests-360%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
@@ -72,6 +72,26 @@ demonstrated (v5.12) and the benchmark went public (v5.13).
 > "1.0 — First Stable" is a commitment to **API stability**, not a claim of solving genetic engineering. The
 > unknown funnel remains — made legible (scope flags, known-unknowns, honest baselines, no fabrication), not
 > hidden.
+
+## What is new in v6.2 — The Web Platform (the human surface)
+
+Post-1.0, the adoption surface for **bench scientists**: a complete, friendly **web application** — a grounded
+co-scientist chat plus structured feature pages — over the same typed v6.1 API the AI surface uses. The LLM
+**narrates and routes but never sources a number**; every quantitative answer renders with its confidence band,
+its provenance, and an explicit ledger of what PEN-STACK *can't* tell you.
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **BACKEND** | `pen_stack/web/server.py` | one FastAPI gateway that mounts the v6.1 engine surface (under `/api`) + adds the grounded `/chat` (+ SSE `/chat/stream`) + CORS + serves the built frontend |
+| **CHAT** *(the hard gate)* | `pen_stack/web/{tools,llm}.py` | the grounded co-scientist: the **engine** computes every number (`run_tools`), the LLM narrates over the tool results (**Ollama → Nemotron → deterministic**), and a **grounding guard strikes any number the model can't trace to a tool result** (asserted in `tests/unit/test_ws_chat.py`) |
+| **FRONTEND** | `web/` (React/Vite + Tailwind) | the **honest-UX library** — `ConfidenceBand · ProvenanceChip · ScopeLedger · SafetyBadge · ImmuneProfileCard` — so a number is never shown without its uncertainty + provenance |
+| **PAGES** | 11 feature pages | Co-Scientist · Site Finder · Writer Atlas · Designer · Verify · Delivery & Immunity · Digital Twin · Guardian · Experiments · Challenge · Scope & About |
+| **DEPLOY** | `docker/web.Dockerfile` + compose | **one-command self-host**: a `node:20` stage builds the frontend, a slim Python serves UI + API from one origin — `docker compose up web ollama`, open `http://localhost:8000` |
+
+**The LLM never sources a number** — it explains, compares, and routes over the engine's tool outputs, and the
+science runs (deterministic mode) with no LLM at all. See [`web/README.md`](web/README.md) and
+`prereg/ws_{chat,frontend}.yaml`. (Lowers the usability barrier; a real-data validation + a first lab user remain
+the standing bottleneck — no new science.)
 
 ## What is new in v6.1 — The AI Integration Surface
 
@@ -705,13 +725,15 @@ pen-stack/
 │   │                                   v5.12 closed_loop (loop-integrity hard-gate: gated end-to-end run · Level-3 human-in-control · drift detection · versioned/reversible continual learning)
 │   ├── data/                         ingestion (genome, chromatin, integration, TRIP, safety annotations)
 │   ├── api/                          v6.1 AI integration surface: manifest (capability_manifest + scope_manifest = machine-readable known-unknowns + oracle scope cards)
-│   ├── server/api.py                 FastAPI REST (atlas, crosslink, writable, plan, bridge, ask; v3.3 verify; v6.1 /capabilities /scope /safety /immune /generate /predict /suggest /session + openapi.json 3.1)
+│   ├── web/                          v6.2 Web Platform backend: tools (deterministic engine dossier) / llm (grounded co-scientist: Ollama→Nemotron→deterministic + grounding-guard hard gate) / server (FastAPI gateway mounting the v6.1 surface + /chat + SSE + static frontend)
+│   ├── server/api.py                 FastAPI REST (atlas, crosslink, writable, plan, bridge, ask; v3.3 verify; v6.1 /capabilities /scope /safety /immune /generate /predict /suggest /session + openapi.json 3.1; v5.13 /challenge/{tasks,leaderboard})
 │   ├── ui/app.py                     Streamlit web app (16 pages; v3.2 PEN-Agent shows confidence + epistemic status)
 │   └── cli.py                        unified CLI
 ├── benchmarks/genome_writing_bench/  Genome-Writing Bench v0.3.8 (T1-T16 + co_scientist + safety_screening + generative_design + outcome_prediction + experiment_design + protocol_safety + closed_loop; tasks / harness / solvers / LEADERBOARD / SHAs)
 ├── benchmarks/genome_writing_challenge/ v5.13 the public Genome-Writing Challenge (held-out rounds + immune-risk task + submission API; harness / run / README / SUBMISSIONS)
 ├── bench/run.py                      one-command bench entrypoint (--agent, --verify)
 ├── examples/                         v6.1 runnable golden path: external_agent.py (REST) / mcp_client.py (MCP) / agent_tools.py (framework-agnostic tool specs from the live manifest + dispatcher)
+├── web/                              v6.2 the Web Platform frontend (React/Vite + Tailwind): honest-UX library (ConfidenceBand/ProvenanceChip/ScopeLedger/SafetyBadge/ImmuneProfileCard) + 11 feature pages + the grounded co-scientist chat; built by docker/web.Dockerfile (node:20 stage)
 ├── scripts/                          reproducible pipeline drivers (p1_*, p2_*, p4_*, p52/p53 delivery-immunology oracle builds, ws_*_report)
 ├── configs/                          pinned datasets + thresholds + curation (YAML); v3.2 known_unknowns /
 │                                       target_sites / delivery_constraints; v5.1-5.6 delivery_vehicles immune_safety /
@@ -724,7 +746,7 @@ pen-stack/
 │                                       genotox,epitope,innate,seroprev,peg,calib,profile,screen,policy,redteam,
 │                                       gen,pareto,orch,vcell,mech,outcome,twincal,acq,aldesign,alvalidate,
 │                                       proto,ingest,simlab,loop,continual,drift,challenge,cosci2,
-│                                       manifest,openapi,mcp} + SHA256 locks)
+│                                       manifest,openapi,mcp,chat,frontend} + SHA256 locks)
 ├── data/curated/                     small committed tables (universe, gene coords, measured bridge profile,
 │                                       v3.2 bridge_offtarget_energetics.json)
 ├── data/llm_bench_cache/             28 cached ungrounded-LLM transcripts (T7, offline/CI replay)
@@ -738,7 +760,7 @@ pen-stack/
 │                                       generative_design.md / digital_twin.md / experiment_design.md /
 │                                       build_interface.md / closed_loop.md / autonomy.md / challenge.md /
 │                                       co_scientist_loop.md / integrations.md / STABILITY.md (1.0 API freeze)
-├── docker/                           CUDA image + UI image + pinned requirements
+├── docker/                           CUDA image + UI image + v6.2 web.Dockerfile (multi-stage: node:20 frontend build → slim Python gateway) + pinned requirements
 ├── tools/penctl.py                   laptop<->VM orchestrator (paramiko SSH/SFTP, Docker-only)
 ├── docker-compose.yml                one-command self-hostable platform
 └── pyproject.toml  CITATION.cff  CHANGELOG.md  LICENSE

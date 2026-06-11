@@ -1,0 +1,21 @@
+# PEN-STACK v6.2 - WS-FRONTEND (the honest-UX web application). Directional.
+cycle: "v6.2"
+workstream: "WS-FRONTEND"
+prepared: "2026-06-11"
+motivation: >
+  Make PEN-STACK usable by a bench scientist without reading the code or the API docs, and make the engine's
+  HONESTY visible by default: every quantitative output rendered with its confidence band, its provenance, and an
+  explicit ledger of what the engine cannot tell them.
+deliverable: "web/ (React/Vite + Tailwind): the honest-UX component library + 11 feature pages + the grounded chat; served by pen_stack/web/server.py; one-command Docker self-host (docker/web.Dockerfile)."
+method: >
+  a small honest-UX component set every page reuses - ConfidenceBand (interval coloured by grounded/extrapolating/
+  out-of-scope), ProvenanceChip (dataset/model + version behind a number), ScopeLedger (the known-unknowns),
+  SafetyBadge (clear/flag/escalate/refuse), ImmuneProfileCard (per-axis, never collapsed). Pages call the typed v6.1
+  API (mounted at /api by the gateway) + the grounded /chat; the UI adds NO new numbers - it renders the engine's.
+acceptance: >
+  every page renders quantitative outputs through the honest-UX components; a raw number is never shown without a
+  confidence band / provenance; the scope ledger appears on every answer; a refused design shows the safety verdict;
+  the app degrades gracefully when the LLM is offline; one-command Docker self-host serves UI + API from one origin.
+honesty_invariant: "the UI renders the engine's outputs and adds no number of its own; uncertainty and the scope ledger are mandatory, not optional - a component that shows a number without its uncertainty fails review."
+gate: "G-FRONTEND - honest-UX library + 11 pages over the typed API; no naked numbers; scope ledger always present; Docker self-host builds (node:20 stage) and serves."
+locked_files: [prereg/ws_frontend.yaml]

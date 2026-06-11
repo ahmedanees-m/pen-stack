@@ -8,11 +8,37 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_6_1_0_everywhere():
-    assert pen_stack.__version__ == "6.1.0"
-    assert 'version = "6.1.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 6.1.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-6.1.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_6_2_0_everywhere():
+    assert pen_stack.__version__ == "6.2.0"
+    assert 'version = "6.2.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 6.2.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-6.2.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+
+
+def test_v6_2_artifacts():
+    # the v6.2 artifacts: the Web Platform (grounded co-scientist + honest-UX frontend + Docker self-host + preregs)
+    from pen_stack.web import extract_grounded_numbers, grounded_reply, run_tools  # noqa: F401
+    from pen_stack.web.llm import _deterministic_narrate, _enforce_grounding  # noqa: F401
+    cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "[6.2.0] -" in cl and "WS-CHAT" in cl and "WS-FRONTEND" in cl
+    r = (_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "What is new in v6.2" in r and "grounding guard" in r.lower()
+    for p in ("pen_stack/web/__init__.py", "pen_stack/web/tools.py", "pen_stack/web/llm.py",
+              "pen_stack/web/server.py", "tests/unit/test_ws_chat.py", "docker/web.Dockerfile",
+              "web/package.json", "web/src/App.jsx", "web/src/components/ConfidenceBand.jsx",
+              "web/src/pages/CoScientist.jsx", "web/README.md",
+              "prereg/ws_chat.yaml", "prereg/SHA256_LOCK_ws_chat.json",
+              "prereg/ws_frontend.yaml", "prereg/SHA256_LOCK_ws_frontend.json"):
+        assert (_ROOT / p).exists(), p
+
+
+def test_grounding_guard_strikes_ungrounded_numbers():
+    # the central v6.2 gate, asserted at release: a reply never carries a number absent from the tool results
+    from pen_stack.web.llm import _enforce_grounding, ungrounded_numbers
+    grounded = {"0.28", "1", "4500"}
+    cleaned = _enforce_grounding("conf 0.28 but titer 9.99 at 4500 bp", grounded)
+    assert "9.99" not in cleaned and "[unverified]" in cleaned
+    assert ungrounded_numbers(cleaned, grounded) == []
 
 
 def test_v6_1_artifacts():
