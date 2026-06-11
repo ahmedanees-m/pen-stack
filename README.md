@@ -17,7 +17,7 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Version](https://img.shields.io/badge/version-6.2.0-blue.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-1.0%20First%20Stable-success.svg)](docs/STABILITY.md)
-[![Tests](https://img.shields.io/badge/tests-360%20passing-success.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-368%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
