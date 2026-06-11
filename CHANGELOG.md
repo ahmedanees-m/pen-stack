@@ -3,6 +3,39 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.8.0] - 2026-06-11 - v5.8 release: The Live Agent & Generative Designer
+
+**Closed-Loop arc, Cycle 2 of 7.** PEN-STACK turns from a *checker* into a grounded *designer*: it generates
+candidate end-to-end writing systems, keeps only those that pass safety + legality + calibration
+(verifier-as-discriminator), and returns the **Pareto frontier** of real tradeoffs — in which immunogenicity-risk
+is, for the first time, a **grounded** axis sourced from the v5.6 profile rather than a placeholder. Workstreams
+WS-{ORCH,GEN,PARETO,BENCH}, SHA-locked.
+
+### Added
+- **WS-GEN** — `pen_stack/design/{space,generate}.py`: `generate_designs(goal|candidates)` PROPOSES candidates
+  (`candidate_space` = the validated Phase-3 planner × the compatible delivery palette) and the v3.3 `verify()`
+  — now **safety-gated (v5.7)** + legality + calibration + immune-profiled — DISPOSES. A candidate survives only
+  if **legal AND safe** (`clear`/`flag`); hazardous (`refuse`/`escalate`) and illegal proposals are **discarded,
+  never returned** (the `as_claim()` guard generalised to whole designs). Survivors carry calibrated confidence,
+  the v5.6 immune profile, the safety decision, and `output_kind="candidate"` — never asserted to work.
+- **WS-PARETO** — `pen_stack/design/pareto.py`: `pareto_front(designs)` over `(efficiency, durability, safety,
+  deliverability, neg_immune_risk, neg_cost)`. **`neg_immune_risk` is grounded by the v5.6 profile** — the
+  worst-case per-axis in-scope score with the per-axis uncertainty carried as a band; the profile is never
+  collapsed into one number and the in-vivo magnitude stays scope-flagged (`in_vivo_magnitude_unknown`).
+- **WS-ORCH** — `pen_stack/agent/orchestrator_live.py`: `orchestrate(goal)` — plan → generate → call an oracle
+  (cache-first/replayable) for a critique signal → dispose via `verify()` → refine. Every number is tool-sourced;
+  a seed-locked replay reproduces the trace (replay is the CI default); no fabrication.
+- **WS-BENCH** — bench **v0.3.4**: new `generative_design` hard-gate task (`pen_stack/validate/generative_design.py`)
+  — on a frozen mixed pool (benign + hazardous ricin payload + illegal oversize/mRNA-incompatible), the grounded
+  designer returns only legal+safe+calibrated+immune-profiled survivors on a grounded-immune-axis Pareto frontier,
+  while an ungrounded generator ships hazardous/illegal designs and fails by construction.
+- Docs: `docs/generative_design.md`; prereg `ws_{gen,pareto,orch}` + SHA locks; deposit `phase_5.8/`.
+
+### Notes
+- A generated output is a **candidate, never a claim**; novelty is bounded by the oracles' validity and the
+  rules' legality, and never asserted to work. The immune-risk Pareto axis is a worst-case **screen** — the
+  per-axis v5.6 profile (with its validation labels) remains authoritative; in-vivo magnitude is a known-unknown.
+
 ## [5.7.0] - 2026-06-11 - v5.7 release: The Guardian (biosecurity / dual-use safety gate)
 
 Opens the **Closed-Loop arc (Cycle 1 of 7)**. Before PEN-STACK moves toward "build", it is made **safe by

@@ -8,23 +8,36 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_7_0_everywhere():
-    assert pen_stack.__version__ == "5.7.0"
-    assert 'version = "5.7.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.7.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.7.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_8_0_everywhere():
+    assert pen_stack.__version__ == "5.8.0"
+    assert 'version = "5.8.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.8.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.8.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_7_0_entry():
+def test_changelog_has_5_8_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.7.0] -" in cl and "[5.6.0] -" in cl       # both kept
-    assert "WS-SCREEN" in cl and "WS-POLICY" in cl and "WS-REDTEAM" in cl
+    assert "[5.8.0] -" in cl and "[5.7.0] -" in cl       # both kept
+    assert "WS-GEN" in cl and "WS-PARETO" in cl and "WS-ORCH" in cl
 
 
-def test_readme_has_v5_7_section():
+def test_readme_has_v5_8_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v5.7" in r
-    assert "guardian" in r.lower() and "biosecurity" in r.lower()
+    assert "What is new in v5.8" in r
+    assert "generative" in r.lower() and "discriminator" in r.lower()
+
+
+def test_v5_8_artifacts():
+    # the v5.8 artifacts: the generative designer (space/generate/pareto) + live orchestrator + bench + preregs
+    from pen_stack.agent.orchestrator_live import orchestrate  # noqa: F401
+    from pen_stack.design import candidate_space, generate_designs, neg_immune_risk, pareto_front  # noqa: F401
+    from pen_stack.validate.generative_design import run as _gen_bench  # noqa: F401
+    for p in ("pen_stack/design/__init__.py", "pen_stack/design/space.py", "pen_stack/design/generate.py",
+              "pen_stack/design/pareto.py", "pen_stack/agent/orchestrator_live.py",
+              "pen_stack/validate/generative_design.py", "docs/generative_design.md",
+              "prereg/ws_gen.yaml", "prereg/SHA256_LOCK_ws_gen.json", "prereg/ws_pareto.yaml",
+              "prereg/SHA256_LOCK_ws_pareto.json", "prereg/ws_orch.yaml", "prereg/SHA256_LOCK_ws_orch.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v5_7_artifacts():
