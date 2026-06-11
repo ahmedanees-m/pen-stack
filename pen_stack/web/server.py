@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 
 try:
-    from fastapi import FastAPI
+    from fastapi import FastAPI, HTTPException
     from fastapi.middleware.cors import CORSMiddleware
     from fastapi.responses import StreamingResponse
 except ImportError as e:  # pragma: no cover - server extra optional
@@ -22,6 +22,13 @@ except ImportError as e:  # pragma: no cover - server extra optional
 
 from pen_stack import __version__
 from pen_stack.server.api import app as _engine_app   # the v6.1 typed engine surface (reused verbatim)
+
+
+def _require_message(req: dict) -> str:
+    msg = (req or {}).get("message")
+    if not isinstance(msg, str) or not msg.strip():
+        raise HTTPException(422, "field 'message' is required and must be a non-empty string")
+    return msg
 
 app = FastAPI(
     title="PEN-STACK — Web Platform",
@@ -55,7 +62,7 @@ def chat_route(req: dict) -> dict:
     {reply, tool_results, grounded, backend}."""
     from pen_stack.web.llm import grounded_reply
 
-    return grounded_reply(req["message"], history=req.get("history", []),
+    return grounded_reply(_require_message(req), history=req.get("history", []),
                           allow_llm=bool(req.get("allow_llm", True)))
 
 
@@ -65,7 +72,7 @@ def chat_stream_route(req: dict) -> StreamingResponse:
     applied), then emitted word-by-word so the UI can render progressively; a final event carries the dossier."""
     from pen_stack.web.llm import grounded_reply
 
-    result = grounded_reply(req["message"], history=req.get("history", []),
+    result = grounded_reply(_require_message(req), history=req.get("history", []),
                             allow_llm=bool(req.get("allow_llm", True)))
 
     def _events():

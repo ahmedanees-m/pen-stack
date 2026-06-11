@@ -48,7 +48,10 @@ def parse_goal(message: str) -> dict:
     return {"write_type": "insertion", "gene": gene, "chrom": "chr19",
             "edit_intent": _first(message, _INTENTS, "safe_harbour_insertion"),
             "delivery_vehicle": _first(message, _VEHICLES, "AAV_single"), "cargo_bp": cargo,
-            "cell_type": _first(message, _CELLS, "k562")}
+            "cell_type": _first(message, _CELLS, "k562"),
+            # the user's plain-language goal IS the cargo-function description the Guardian must screen — so a
+            # message like "express a ricin toxin" is biosecurity-screened, not silently passed as benign.
+            "cargo_function": message.strip()}
 
 
 def run_tools(message: str, history: list | None = None) -> dict[str, Any]:

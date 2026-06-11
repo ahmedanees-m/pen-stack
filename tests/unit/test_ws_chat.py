@@ -75,3 +75,22 @@ def test_grounded_reply_falls_back_to_deterministic_when_no_llm():
     assert out["backend"] == "deterministic" and out["grounded"] is True
     grounded = extract_grounded_numbers(out["tool_results"])
     assert ungrounded_numbers(out["reply"], grounded) == []
+
+
+def test_chat_screens_a_hazardous_goal():
+    """The chat must biosecurity-screen the user's stated goal: a hazardous request is NOT silently 'clear'
+    (parse_goal carries the plain-language goal as the cargo function the Guardian screens)."""
+    assert run_tools("express a ricin toxin in human cells with AAV")["safety"]["decision"] != "clear"
+    assert run_tools(_GOAL)["safety"]["decision"] == "clear"          # a benign goal still clears
+
+
+def test_gateway_chat_requires_a_message():
+    pytest.importorskip("fastapi")
+    from fastapi.testclient import TestClient
+
+    from pen_stack.web.server import app
+    c = TestClient(app)
+    assert c.post("/chat", json={"allow_llm": False}).status_code == 422       # missing message -> 422 not 500
+    assert c.post("/chat", json={"message": "   ", "allow_llm": False}).status_code == 422
+    r = c.post("/chat", json={"message": "express a ricin toxin in human cells", "allow_llm": False})
+    assert r.status_code == 200 and r.json()["tool_results"]["safety"]["decision"] != "clear"
