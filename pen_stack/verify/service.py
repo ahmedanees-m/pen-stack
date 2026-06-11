@@ -37,11 +37,33 @@ def _plan_confidence(design: Design) -> dict:
     return {"confidence": float(r["confidence"]), "interval": [float(r["score_lo"]), float(r["score_hi"])]}
 
 
-def verify(design: Design | dict, question: str | None = None) -> Verdict:
-    """Verify a proposed write. ``design`` may be a Design or a plain dict (e.g. from REST/MCP JSON)."""
+def verify(design: Design | dict, question: str | None = None, *, actor: str = "anonymous") -> Verdict:
+    """Verify a proposed write. ``design`` may be a Design or a plain dict (e.g. from REST/MCP JSON).
+
+    v5.7 the Guardian: a biosecurity / dual-use safety gate runs FIRST. A design that matches a high-severity
+    hazard signature is REFUSED and returned un-evaluated (not scored further); every call is logged to the
+    tamper-evident audit trail. The safety verdict is orthogonal to the v5.6 immune profile and is attached to
+    every Verdict. ``actor`` is recorded in the audit log."""
     if isinstance(design, dict):
-        question = question or design.pop("question", None)
-        design = Design(**design)
+        d = dict(design)
+        question = question or d.pop("question", None)
+        screen_payload = dict(d)
+        design = Design(**d)
+    else:
+        screen_payload = {**design.model_dump(exclude_none=False), **(design.model_extra or {})}
+
+    # v5.7 WS-INTEGRATE: the safety gate is the first thing every caller inherits.
+    from pen_stack.safety.gate import safety_gate
+    safety = safety_gate(screen_payload, actor=actor)
+    if safety.decision == "refuse":
+        return Verdict(
+            legal=None, deferred=False, write_type=design.write_type, routing={},
+            rule_results=[], violations=[], soft_flags=[],
+            scope_flags=[{"kind": "safety_refused", "reason": safety.reason,
+                          "signatures": [h.provenance.get("signature_id") for h in safety.hits]}],
+            confidence=None, interval=None, epistemic_status="refused",
+            provenance={"rules_version": RULES_VERSION, "source": "safety_gate(refused)"},
+            no_fabrication=True, safety=safety)
 
     from pen_stack.agent.epistemic import classify
     from pen_stack.planner.router import route_and_evaluate
@@ -66,7 +88,8 @@ def verify(design: Design | dict, question: str | None = None) -> Verdict:
             rule_results=[], violations=[], soft_flags=[],
             scope_flags=scope_flags + [{"kind": "unsupported_write_type", "reason": routing["reason"]}],
             confidence=None, interval=None, epistemic_status=verdict.status,
-            provenance={"rules_version": RULES_VERSION, "source": "router(deferred)"}, no_fabrication=True)
+            provenance={"rules_version": RULES_VERSION, "source": "router(deferred)"}, no_fabrication=True,
+            safety=safety)
 
     results = routed["rule_results"]
     violations = [r for r in results if r["kind"] == "hard_reject" and r["status"] == "violate"]
@@ -150,4 +173,4 @@ def verify(design: Design | dict, question: str | None = None) -> Verdict:
         confidence=pc["confidence"], interval=pc["interval"], epistemic_status=verdict.status,
         provenance={"rules_version": RULES_VERSION, "source": "rules.solver + L4(uncertainty/scope/epistemic)"},
         no_fabrication=True, writer_critique=writer_critique, delivery_profile=delivery_profile,
-        immune_profile=immune_profile)
+        immune_profile=immune_profile, safety=safety)

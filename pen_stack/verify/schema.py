@@ -9,6 +9,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from pen_stack.safety.policy import SafetyVerdict
+
 
 class Verdict(BaseModel):
     legal: bool | None                      # True/False; None when the write type is deferred
@@ -31,8 +33,13 @@ class Verdict(BaseModel):
     immune_profile: dict[str, Any] | None = None    # v5.6 WS-PROFILE: per-axis immune-risk vector (genotox/CD8/
                                                      # innate/NAb/anti-PEG), each w/ own uncertainty + validation
                                                      # label; collapsed_score is None (never fused); magnitude KU
+    safety: SafetyVerdict | None = None              # v5.7 the Guardian: biosecurity/dual-use screen
+                                                     # (clear/flag/refuse/escalate); a refused design is NOT
+                                                     # evaluated further; orthogonal to immune_profile
 
     def summary(self) -> str:
+        if self.safety is not None and self.safety.decision == "refuse":
+            return f"REFUSED (safety): {self.safety.reason}"
         if self.deferred:
             return f"DEFERRED ({self.write_type}): {self.routing.get('reason', 'unsupported write type')}"
         verdict = "LEGAL" if self.legal else "ILLEGAL"

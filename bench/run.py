@@ -33,6 +33,9 @@ _FROZEN = [
     "configs/gsh_validated_heldout.yaml",
     "data/writer_panel.csv",
     "data/gsh_matched_controls.parquet",
+    "configs/safety/probes.yaml",           # v5.7 the Guardian: frozen hazard/benign/red-team probe set
+    "configs/safety/hazard_registry.yaml",  # v5.7: version-pinned hazard signatures
+    "configs/safety/policy.yaml",           # v5.7: severity->decision policy
 ]
 
 

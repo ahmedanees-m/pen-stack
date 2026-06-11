@@ -1,0 +1,9 @@
+{
+  "cycle": "v5.7",
+  "workstream": "WS-POLICY",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_policy.yaml": "46e7606572a4da6b2a4d0b160def9c93393c69df332ce12eac0b8ed752c3a036",
+    "configs/safety/policy.yaml": "6cfc261bf2e224442d51d853bf2869bb147f89a891a8b81ae6de90b2e62ab5b8"
+  }
+}

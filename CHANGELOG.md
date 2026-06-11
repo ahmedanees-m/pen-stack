@@ -3,6 +3,49 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.7.0] - 2026-06-11 - v5.7 release: The Guardian (biosecurity / dual-use safety gate)
+
+Opens the **Closed-Loop arc (Cycle 1 of 7)**. Before PEN-STACK moves toward "build", it is made **safe by
+construction**: every design submitted to `verify()` first passes a biosecurity / dual-use screening gate that
+refuses or escalates select-agent, pandemic-pathogen, and controlled-toxin signatures — with function-based and
+chimera checks that catch AI-designed homologs homology alone would miss — while legitimate therapeutic designs
+pass untouched. Orthogonal to (and complementary with) the v5.1–v5.6 immune-risk profile. Workstreams
+WS-{SCREEN,POLICY,INTEGRATE,REDTEAM,BENCH}, SHA-locked.
+
+### Added
+- **WS-SCREEN** — `pen_stack/safety/{registry,screen}.py` + `configs/safety/hazard_registry.yaml`: a curated,
+  **version-pinned** `HazardRegistry` (`registry_version`) and three+ screens returning typed, provenanced
+  `ScreenHit`s — `function_flag` (toxin / pathogen-essential **functions**, the screen that catches AI-homologs
+  at low identity), `taxon_flag` (regulated-pathogen taxa), `chimera_context` (hazardous assembly of benign
+  parts + split-hazard), and `sequence_homology` (delegated to a wrappable external screener — IBBIS Common
+  Mechanism / SecureDNA-style; in-repo baseline is an honest no-op). **Signatures are function/family/taxon-level
+  only** (public Pfam accessions + public control-list references: 42 CFR 73 / 7 CFR 331 / 9 CFR 121 / Australia
+  Group / HHS P3CO/DURC) — no hazard sequences, no synthesis/enhancement detail. **All 14+ Pfam accessions
+  independently verified against EBI InterPro before reliance; one error (PF01375, mislabeled anthrax — it is
+  heat-labile/cholera enterotoxin) caught and corrected; anthrax PA re-sourced from UniProt P13423.**
+- **WS-POLICY** — `pen_stack/safety/{policy,gate,audit}.py` + `configs/safety/policy.yaml`: `SafetyVerdict`
+  {clear, flag, refuse, escalate}; `safety_gate(design, actor=…)` = strip-framing → screen → decide → audit;
+  ambiguous dual-use (gain-of-function) **escalates** to human review (HHS P3CO/DURC), not auto-refuse; an
+  append-only **hash-chained, tamper-evident** `audit_log` (+ `verify_chain`) storing a design *digest*, not the
+  design. Re-framing as "defensive research" cannot flip refuse→clear (the artifact decides, not the wording).
+- **WS-INTEGRATE** — `Verdict.safety: SafetyVerdict`; `verify(design, actor=…)` runs the gate **first** and a
+  `refuse` **short-circuits** (the design is returned un-evaluated, not scored/critiqued). No-fabrication holds:
+  hits come only from the versioned registry.
+- **WS-REDTEAM** — `pen_stack/safety/redteam.py`: adversarial harness (AI-homolog, split-hazard, reframing,
+  chimera) + reframing-stability pairs; reports set size + caught count.
+- **WS-BENCH** — bench **v0.3.3**: new `safety_screening` hard-gate task (`pen_stack/validate/safety_screening.py`)
+  — benign therapeutics 0 false refusals, hazards refused/escalated at correct severity, evasions never `clear`;
+  beats a no-safety baseline (1.0 vs 0.33) by construction. Frozen probes/registry/policy SHA-locked into the
+  bench. Bench now **17/17 available, planner beats naive on 13/13**.
+- Docs: `docs/responsible_use.md` + `docs/biosecurity.md`; prereg `ws_{screen,policy,redteam}` + SHA locks;
+  deposit `phase_5.7/` (execution summary + independent data/ID verification record).
+
+### Notes
+- The safety gate is a **defensive safeguard, not a guarantee**, and **not a substitute for institutional
+  biosafety / IBC review**; signatures are versioned and exploit detail is intentionally not published.
+- Orthogonal to the immune-risk profile: the Guardian asks *"is this design hazardous/dual-use?"*; the immune
+  profile asks *"will the patient react?"*. Both attach to every `Verdict`; neither subsumes the other.
+
 ## [5.6.0] - 2026-06-11 - v5.6 release: Immunology completion & calibration (anti-PEG · proxy honesty · unified profile)
 
 Finishes the delivery-immunology arc (v5.1–v5.5): adds the missing **anti-PEG** axis, **calibrates** the

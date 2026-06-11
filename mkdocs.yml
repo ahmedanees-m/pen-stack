@@ -11,6 +11,8 @@ nav:
   - Writer-Targeting KB: wtkb.md
   - Scorecard: scorecard.md
   - Delivery immunology: delivery_immunology.md
+  - Responsible use & safety gate: responsible_use.md
+  - Biosecurity internals: biosecurity.md
   - Tutorials:
       - Where can I write X in cell type Y: tutorials/where-can-i-write.md
       - Which writer reaches locus Z: tutorials/which-writer-reaches-locus.md

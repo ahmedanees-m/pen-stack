@@ -15,12 +15,12 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-5.6.0-blue.svg)](CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-240%20passing-success.svg)](tests/)
+[![Version](https://img.shields.io/badge/version-5.7.0-blue.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-307%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
-[![Genome-Writing Bench v0.3](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.3.2-6f42c1.svg)](benchmarks/genome_writing_bench/)
+[![Genome-Writing Bench v0.3](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.3.3-6f42c1.svg)](benchmarks/genome_writing_bench/)
 
 **Built on five prior, separately published repositories:**
 
@@ -58,6 +58,30 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v5.7 — The Guardian (biosecurity / dual-use safety gate)
+
+v5.7 opens the **Closed-Loop arc (Cycle 1 of 7)** by making PEN-STACK **safe by construction**: every design
+submitted to `verify()` first passes a biosecurity / dual-use screening gate. A design matching a select-agent,
+pandemic-pathogen, or controlled-toxin signature is **refused or escalated**; legitimate therapeutic designs
+pass untouched. This is **orthogonal** to the v5.1–v5.6 immune-risk profile — the Guardian asks *"is this design
+itself hazardous/dual-use?"*, the immune profile asks *"will the patient react?"* — and both attach to every
+`Verdict`.
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **SCREEN** | `safety/{registry,screen}.py` + `configs/safety/hazard_registry.yaml` | version-pinned `HazardRegistry`; `function_flag` / `taxon_flag` / `chimera_context` / `sequence_homology` screens; the **function** screen catches AI-homologs (low identity, hazardous function) homology alone misses |
+| **POLICY** | `safety/{policy,gate,audit}.py` + `configs/safety/policy.yaml` | `SafetyVerdict` {clear/flag/refuse/escalate}; ambiguous dual-use → **escalate** (human review); **tamper-evident hash-chained audit**; re-framing can't flip refuse→clear |
+| **INTEGRATE** | `Verdict.safety`; `verify(design, actor=…)` | the gate runs **first**; a `refuse` **short-circuits** (design not scored further); no-fabrication holds |
+| **REDTEAM** | `safety/redteam.py` | adversarial probes (AI-homolog, split-hazard, reframing, chimera) caught; reframing-stable |
+| **BENCH** | bench **v0.3.3** `safety_screening` hard gate | benign 0 false refusals · hazards refused/escalated · evasions never `clear`; beats a no-safety baseline (1.0 vs 0.33); **17/17 tasks, planner beats naive 13/13** |
+
+Signatures are **function/family/taxon-level only** (public Pfam accessions + public control-list references:
+42 CFR 73 / 7 CFR 331 / 9 CFR 121 / Australia Group / HHS P3CO/DURC) — no hazard sequences, no synthesis detail.
+**All Pfam accessions were independently verified against EBI InterPro before reliance** (one error, PF01375,
+caught and corrected). The gate is a **defensive safeguard, not a guarantee**, and not a substitute for
+institutional biosafety / IBC review. See [`docs/responsible_use.md`](docs/responsible_use.md),
+[`docs/biosecurity.md`](docs/biosecurity.md), and `prereg/ws_{screen,policy,redteam}.yaml`.
 
 ## What is new in v5.6 — Immunology completion & calibration (anti-PEG · proxy honesty · unified profile)
 
@@ -485,7 +509,8 @@ pen-stack/
 │   ├── graph/                        v4.5 living world-model knowledge graph (schema/build/query/ingest/cell_types); typed provenanced edges; gated living loop (propose-only)
 │   ├── oracles/                      v4.0 L1 oracle mesh: OracleResult contract + adapters (genome/structure/protein_design/rna/energetics) over the foundation models; version-pinned cache; v5.2-5.6 delivery-immunology scope cards (delivery_genotoxicity/capsid_epitope/innate_sensing/seroprevalence/antipeg)
 │   ├── rules/                        v3.3 machine-readable rules engine (schema/evaluators/loader/solver) over configs/rules/*.yaml
-│   ├── verify/                       v3.3 verification service: verify(design) -> Verdict (legal+reasons+confidence+scope; v4.0 writer_critique; v5.1 delivery_profile; v5.6 immune_profile per-axis vector)
+│   ├── verify/                       v3.3 verification service: verify(design) -> Verdict (legal+reasons+confidence+scope; v4.0 writer_critique; v5.1 delivery_profile; v5.6 immune_profile per-axis vector; v5.7 safety SafetyVerdict)
+│   ├── safety/                       v5.7 the Guardian: biosecurity/dual-use gate (registry/screen/policy/gate/audit/redteam); runs first in verify(); refuse short-circuits; tamper-evident audit
 │   ├── adapt/                        local recalibration / private-data adaptation behind a gate (v3.1, WS-F)
 │   ├── env/                          v3.4 full Gymnasium environment over router+verifier (genome_writing_env + policies; [env] extra)
 │   ├── monitor/                      PEN-MONITOR living database (Europe PMC)
@@ -495,22 +520,24 @@ pen-stack/
 │   │                                   v3.2 selective_prediction / uncertainty_eval / bench_trust_tasks (T8-T11) /
 │   │                                   out_of_scope_refusal / target_site_controls / offtarget_energetics_eval /
 │   │                                   v3.3 bench_rule_tasks (T12) / v3.4 bench_writetype_tasks + bench_adversarial_tasks (T13-16) + outcome_calibration /
-│   │                                   v5.6 immune_calibration (proxy-vs-observed; labels each axis validated-or-proxy, two-sided)
+│   │                                   v5.6 immune_calibration (proxy-vs-observed; labels each axis validated-or-proxy, two-sided) /
+│   │                                   v5.7 safety_screening (the Guardian hard-gate: benign 0-false-refusal · hazards refused/escalated · evasions never clear)
 │   ├── data/                         ingestion (genome, chromatin, integration, TRIP, safety annotations)
 │   ├── server/api.py                 FastAPI REST (atlas, crosslink, writable, plan, bridge, ask)
 │   ├── ui/app.py                     Streamlit web app (16 pages; v3.2 PEN-Agent shows confidence + epistemic status)
 │   └── cli.py                        unified CLI
-├── benchmarks/genome_writing_bench/  Genome-Writing Bench v0.3 (T1-T16 + co_scientist; tasks / harness / solvers / LEADERBOARD / SHAs)
+├── benchmarks/genome_writing_bench/  Genome-Writing Bench v0.3.3 (T1-T16 + co_scientist + safety_screening; tasks / harness / solvers / LEADERBOARD / SHAs)
 ├── bench/run.py                      one-command bench entrypoint (--agent, --verify)
 ├── scripts/                          reproducible pipeline drivers (p1_*, p2_*, p4_*, p52/p53 delivery-immunology oracle builds, ws_*_report)
 ├── configs/                          pinned datasets + thresholds + curation (YAML); v3.2 known_unknowns /
 │                                       target_sites / delivery_constraints; v5.1-5.6 delivery_vehicles immune_safety /
 │                                       genotoxicity_oracle / capsid_epitope_oracle + capsid_sequences.fasta /
 │                                       seroprevalence / antipeg + oracles/scope_cards (+ v5.6 known_unknowns:
-│                                       cd4_mhcii_help / preexisting_capsid_tcell / complement_carpa)
-├── prereg/                           SHA-locked success criteria (paper1..4 + ws_a..ws_h + v3.2-v5.6 ws_{uq,ep,mc,ba,
+│                                       cd4_mhcii_help / preexisting_capsid_tcell / complement_carpa);
+│                                       v5.7 safety/{hazard_registry,policy,probes} (Guardian; function/family/taxon-level only)
+├── prereg/                           SHA-locked success criteria (paper1..4 + ws_a..ws_h + v3.2-v5.7 ws_{uq,ep,mc,ba,
 │                                       r,v,route,env,bench,cal,o,wv,atlas,graph,mon,ct,plan,crit,cite,immune,
-│                                       genotox,epitope,innate,seroprev,peg,calib,profile} + SHA256 locks)
+│                                       genotox,epitope,innate,seroprev,peg,calib,profile,screen,policy,redteam} + SHA256 locks)
 ├── data/curated/                     small committed tables (universe, gene coords, measured bridge profile,
 │                                       v3.2 bridge_offtarget_energetics.json)
 ├── data/llm_bench_cache/             28 cached ungrounded-LLM transcripts (T7, offline/CI replay)

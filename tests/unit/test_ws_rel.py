@@ -8,23 +8,40 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_6_0_everywhere():
-    assert pen_stack.__version__ == "5.6.0"
-    assert 'version = "5.6.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.6.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.6.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_7_0_everywhere():
+    assert pen_stack.__version__ == "5.7.0"
+    assert 'version = "5.7.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.7.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.7.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_6_0_entry():
+def test_changelog_has_5_7_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.6.0] -" in cl and "[5.5.0] -" in cl       # both kept
-    assert "WS-PEG" in cl and "WS-PROFILE" in cl and "WS-CALIB" in cl
+    assert "[5.7.0] -" in cl and "[5.6.0] -" in cl       # both kept
+    assert "WS-SCREEN" in cl and "WS-POLICY" in cl and "WS-REDTEAM" in cl
 
 
-def test_readme_has_v5_6_section():
+def test_readme_has_v5_7_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v5.6" in r
-    assert "anti-peg" in r.lower() and "profile" in r.lower()
+    assert "What is new in v5.7" in r
+    assert "guardian" in r.lower() and "biosecurity" in r.lower()
+
+
+def test_v5_7_artifacts():
+    # the v5.7 artifacts: the Guardian safety gate (registry/screen/policy/gate/audit/redteam) +
+    # Verdict.safety + bench safety_screening + docs + preregs
+    from pen_stack.safety import SafetyVerdict, safety_gate, screen_design, verify_chain  # noqa: F401
+    from pen_stack.validate.safety_screening import run as _safety_bench  # noqa: F401
+    from pen_stack.verify.schema import Verdict
+    assert "safety" in Verdict.model_fields
+    for p in ("pen_stack/safety/registry.py", "pen_stack/safety/screen.py", "pen_stack/safety/policy.py",
+              "pen_stack/safety/gate.py", "pen_stack/safety/audit.py", "pen_stack/safety/redteam.py",
+              "configs/safety/hazard_registry.yaml", "configs/safety/policy.yaml", "configs/safety/probes.yaml",
+              "pen_stack/validate/safety_screening.py", "docs/responsible_use.md", "docs/biosecurity.md",
+              "prereg/ws_screen.yaml", "prereg/SHA256_LOCK_ws_screen.json", "prereg/ws_policy.yaml",
+              "prereg/SHA256_LOCK_ws_policy.json", "prereg/ws_redteam.yaml",
+              "prereg/SHA256_LOCK_ws_redteam.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v5_6_artifacts():

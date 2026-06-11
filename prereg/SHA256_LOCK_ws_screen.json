@@ -1,0 +1,10 @@
+{
+  "cycle": "v5.7",
+  "workstream": "WS-SCREEN",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_screen.yaml": "475b63fd2e961e093f7686dc9fc04718a626a26a6e699b83961a8312d2311dd4",
+    "configs/safety/hazard_registry.yaml": "ac87392db5d736f646ee13a9f16685ba534b6789116198293082345418d40d27",
+    "configs/safety/probes.yaml": "18ec55e1bb78ce5e808d8b4ecd38d756bc421fafe9c20c6117e2ce21d7df1d9d"
+  }
+}

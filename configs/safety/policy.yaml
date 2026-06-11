@@ -1,0 +1,23 @@
+# PEN-STACK v5.7 — Safety Policy (the Guardian / WS-POLICY)
+# Maps screen-hit severity to a principled, logged decision. Conservative by design:
+# ambiguous dual-use -> ESCALATE (human review), never a silent pass or a blanket refuse.
+policy_version: "2026.06-v1"
+
+# Highest-severity hit present  ->  decision
+severity_to_decision:
+  high:   refuse      # matches a high-severity hazard signature
+  medium: escalate    # dual-use signal requires human review
+  low:    flag        # low-severity advisory; proceeds with a recorded note
+none:     clear       # no hazard signal
+
+# A design that is refused is NOT evaluated/scored further (verify() short-circuits).
+short_circuit_on:
+  - refuse
+
+# Re-framing must never flip a decision: the artifact decides, not the prompt wording.
+# (Enforced in code — the gate screens the DESIGN, not any free-text justification.)
+ignore_framing_fields:
+  - justification
+  - rationale
+  - intent_note
+  - purpose
