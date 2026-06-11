@@ -12,6 +12,7 @@ Three layers, one engine:
 | **Writer Atlas** (`pen_stack.atlas` / `mech` / `score`) | What can write, and how well? (33,370 systems across 8 families, measured axes) |
 | **Cross-link** (`pen_stack.atlas.crosslink`) | Which writers reach a locus / which loci a writer reaches |
 | **Write Planner** (`pen_stack.planner`, Phase 3) | Find the optimal site x writer x cargo x delivery for a goal |
+| **Delivery immunology** (`pen_stack.planner.delivery_immunology` + oracles) | Balance safety vs efficacy across the 8-vehicle palette — four of five immune/safety axes **computed from data/sequence** ([details](delivery_immunology.md)) |
 
 ## Install
 

@@ -142,6 +142,11 @@ efficacious integrator but its genotoxicity is the dominant concern). Crucially,
 **magnitude** stays a declared known-unknown — v5.1 surfaces documented priors, it does **not** predict a
 patient-specific immune response.
 
+> **The full delivery-immunology story (v5.1 → v5.5), with every axis, method, and outcome, is in
+> [`docs/delivery_immunology.md`](docs/delivery_immunology.md).** By v5.5, four of the five immune/safety axes
+> are computed from data or sequence (genotoxicity, adaptive/CD8, innate, pre-existing/NAb) rather than
+> hand-typed tiers.
+
 | Workstream | What it adds | Result |
 |---|---|---|
 | **IMMUNE config** | `immune_safety` block on all 8 vehicles in `configs/delivery_vehicles.yaml` | documented ordinal (low/moderate/high) priors for pre-existing immunity, neutralizing antibody, innate/adaptive immune, **genotoxicity**, efficacy — every `immune_doi` Crossref-verified and in the curated-DOI set |
