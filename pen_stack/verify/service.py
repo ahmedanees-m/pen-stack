@@ -128,6 +128,18 @@ def verify(design: Design | dict, question: str | None = None) -> Verdict:
                     delivery_profile = dict(delivery_profile)
                     delivery_profile["cargo_innate"] = inr.value
 
+    # v5.6 WS-PROFILE: the unified per-axis immune-risk profile (genotox / CD8 epitope / innate / pre-existing
+    # NAb / anti-PEG), each with its own uncertainty + WS-CALIB validation label; collapsed_score is None
+    # (never fused into one number); the in-vivo magnitude + patient titer stay known-unknowns.
+    immune_profile = None
+    if design.delivery_vehicle:
+        from pen_stack.planner.immune_profile import immune_profile as _immune_profile
+        extra = design.model_extra or {}
+        immune_profile = _immune_profile({
+            "delivery_vehicle": design.delivery_vehicle, "serotype": extra.get("serotype"),
+            "cargo_seq": design.cargo_seq, "writer_output_form": design.writer_output_form,
+            "pegylated": extra.get("pegylated")})
+
     return Verdict(
         legal=routed["legal"], deferred=False, write_type=design.write_type, routing=routing,
         rule_results=results,
@@ -137,4 +149,5 @@ def verify(design: Design | dict, question: str | None = None) -> Verdict:
         scope_flags=scope_flags,
         confidence=pc["confidence"], interval=pc["interval"], epistemic_status=verdict.status,
         provenance={"rules_version": RULES_VERSION, "source": "rules.solver + L4(uncertainty/scope/epistemic)"},
-        no_fabrication=True, writer_critique=writer_critique, delivery_profile=delivery_profile)
+        no_fabrication=True, writer_critique=writer_critique, delivery_profile=delivery_profile,
+        immune_profile=immune_profile)

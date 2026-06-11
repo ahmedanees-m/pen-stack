@@ -65,3 +65,30 @@ known_unknowns:
     match_terms: ["germline", "heritable", "pass to offspring", "embryo", "inherited by children",
                   "future generations"]
     patterns: []
+
+  # v5.6 WS-EXT — immune axes that are mechanistically distinct from what the v5.2-v5.6 oracles compute, and
+  # for which PEN-STACK has no grounded model: declared known-unknowns rather than faked.
+  - id: cd4_mhcii_help
+    title: "CD4 / MHC-II helper-epitope load"
+    requires: "MHC-II binding prediction over the capsid/transgene + a model linking CD4 help to antibody/memory formation"
+    why: "the v5.3 capsid-epitope oracle computes CD8 / MHC-I presentation ONLY; CD4 / MHC-II helper epitopes
+      (which drive antibody formation and durable memory) are NOT modelled — a distinct, ungrounded axis here"
+    match_terms: ["cd4", "mhc-ii", "mhc class ii", "helper t", "helper epitope", "th cell", "t-helper"]
+    patterns: []
+
+  - id: preexisting_capsid_tcell
+    title: "pre-existing capsid-specific memory T-cell immunity"
+    requires: "population prevalence of capsid-specific memory T cells (distinct from neutralizing-antibody serosurveys)"
+    why: "v5.5 seroprevalence is anti-vector ANTIBODY (B-cell) prevalence; pre-existing capsid-specific
+      memory T-CELL immunity is a separate dimension PEN-STACK does NOT model (sparse, assay-dependent data)"
+    match_terms: ["pre-existing t-cell", "preexisting t cell", "capsid-specific t cell", "memory t cell",
+                  "t-cell immunity to capsid", "cellular pre-existing immunity"]
+    patterns: []
+
+  - id: complement_carpa
+    title: "complement activation / CARPA (complement-activation-related pseudoallergy)"
+    requires: "a model of complement activation by the vector/LNP surface (C3/C5 turnover, anaphylatoxins) and infusion-reaction risk"
+    why: "complement/CARPA is mechanistically distinct from the cargo CpG/dsRNA innate axis (v5.4) and the
+      capsid epitope axis; PEN-STACK does NOT model complement activation or infusion-reaction risk"
+    match_terms: ["complement", "carpa", "c3a", "c5a", "anaphylatox", "infusion reaction", "pseudoallergy"]
+    patterns: []

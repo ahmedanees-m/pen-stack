@@ -8,23 +8,36 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_5_0_everywhere():
-    assert pen_stack.__version__ == "5.5.0"
-    assert 'version = "5.5.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.5.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.5.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_6_0_everywhere():
+    assert pen_stack.__version__ == "5.6.0"
+    assert 'version = "5.6.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.6.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.6.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_5_0_entry():
+def test_changelog_has_5_6_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.5.0] -" in cl and "[5.4.0] -" in cl       # both kept
-    assert "WS-SEROPREV" in cl and "WS-INNATE" in cl
+    assert "[5.6.0] -" in cl and "[5.5.0] -" in cl       # both kept
+    assert "WS-PEG" in cl and "WS-PROFILE" in cl and "WS-CALIB" in cl
 
 
-def test_readme_has_v5_5_section():
+def test_readme_has_v5_6_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v5.5" in r
-    assert "seroprevalence" in r.lower()
+    assert "What is new in v5.6" in r
+    assert "anti-peg" in r.lower() and "profile" in r.lower()
+
+
+def test_v5_6_artifacts():
+    # the v5.6 artifacts: anti-PEG oracle + calibration + unified profile + Verdict.immune_profile + preregs
+    from pen_stack.planner.antipeg_oracle import antipeg_oracle  # noqa: F401
+    from pen_stack.planner.immune_profile import immune_profile  # noqa: F401
+    from pen_stack.validate.immune_calibration import calibrate_axis  # noqa: F401
+    for p in ("pen_stack/planner/antipeg_oracle.py", "configs/antipeg.yaml",
+              "pen_stack/planner/immune_profile.py", "pen_stack/validate/immune_calibration.py",
+              "prereg/ws_peg.yaml", "prereg/SHA256_LOCK_ws_peg.json", "prereg/ws_calib.yaml",
+              "prereg/SHA256_LOCK_ws_calib.json", "prereg/ws_profile.yaml",
+              "prereg/SHA256_LOCK_ws_profile.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v5_5_artifacts():

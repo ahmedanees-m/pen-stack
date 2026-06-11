@@ -46,6 +46,15 @@ def curated_dois() -> frozenset[str]:
             dois.update(_rec.get("dois", []) or [])
     except FileNotFoundError:
         pass
+    # v5.6 anti-PEG serosurvey provenance
+    try:
+        ap = yaml.safe_load(resource("configs/antipeg.yaml").read_text(encoding="utf-8"))
+        dois.update((ap.get("prevalence") or {}).get("dois", []) or [])
+    except FileNotFoundError:
+        pass
+    # v5.6 WS-EXT route/immune-privilege modifier provenance
+    from pen_stack.planner.immune_profile import ROUTE_MODIFIER_DOI
+    dois.add(ROUTE_MODIFIER_DOI)
     gsh = yaml.safe_load(resource("configs/gsh_validated_heldout.yaml").read_text(encoding="utf-8"))["gsh"]
     for g in gsh:
         if g.get("doi"):

@@ -1,0 +1,32 @@
+# PEN-STACK v5.6 - WS-PROFILE (unified per-design immune-risk profile; never collapsed). Directional.
+cycle: "v5.6"
+workstream: "WS-PROFILE"
+prepared: "2026-06-11"
+
+motivation: >
+  Present the 4-5 immune axes as a per-design PROFILE with per-axis uncertainty preserved - feeding the
+  co-scientist / closed-loop arc - but NEVER fused into one overconfident number.
+
+deliverable: >
+  pen_stack/planner/immune_profile.py (immune_profile(design)); Verdict.immune_profile (schema + verify()
+  wiring); WS-EXT route/immune-privilege modifier + cd4_mhcii_help/preexisting_capsid_tcell/complement_carpa
+  registered as known-unknowns; docs/delivery_immunology.md v5.6 section.
+
+method: >
+  call every axis oracle (genotoxicity, capsid CD8 epitope, innate sensing, pre-existing NAb seroprevalence,
+  anti-PEG); assemble a profile where each axis carries value + native_uncertainty + scope + WS-CALIB
+  validation label; collapsed_score is deliberately None; known_unknowns listed; abstaining axes -> None (not a
+  guess). WS-EXT: a DOCUMENTED qualitative route/immune-privilege modifier (eye/CNS lower realized
+  immunogenicity vs systemic; Streilein 2003 [10.1038/nri1224]) - no fabricated magnitude; the
+  mechanistically-distinct axes (CD4/MHC-II, pre-existing capsid T-cell, complement/CARPA) are declared
+  known-unknowns. verify() exposes Verdict.immune_profile.
+
+acceptance: >
+  the profile returns all axes with per-axis uncertainty + validation label; `collapsed_score is None`
+  (asserted - no fused number); known-unknowns listed incl. patient titer + in-vivo magnitude; abstaining axes
+  report None; verify().immune_profile present; route modifier is documented (DOI curated), not a magnitude.
+
+honesty_invariant: "a relative immune-risk SCREEN across axes, not a patient-level prediction; per-axis uncertainty mandatory; fusing into one number is forbidden; patient titer + in-vivo magnitude stay known-unknowns."
+
+gate: "G-IMM - all axes carry WS-CALIB labels; collapsed_score None (asserted); abstain-not-fabricate; magnitude + patient titer known-unknowns; verify exposes the profile."
+locked_files: [prereg/ws_profile.yaml]

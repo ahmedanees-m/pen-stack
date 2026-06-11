@@ -166,3 +166,16 @@ oracles:
     generalizes_to_unseen_loci: false
     license: "open (this work; Calcedo 10.1086/595830, Boutin 10.1089/hum.2009.182, Mast
       10.1016/j.vaccine.2009.10.145, Looker 10.1371/journal.pone.0140765)"
+
+  antipeg:                      # v5.6 WS-PEG: anti-PEG antibody prevalence (gates LNP re-dosing)
+    family: genome
+    version: "serosurvey-2026"
+    output_kind: baseline       # curated empirical population data, not a model
+    valid_for: "POPULATION pre-existing anti-PEG antibody prevalence for PEGylated LNP (a property of the PEG
+      chemistry, not an encoded sequence); preexisting_antipeg_score = 1 - midpoint/100; gates RE-DOSING"
+    not_valid_for: "a given PATIENT's anti-PEG titer / sero-status (a clinical test, patient-specific -> a
+      known-unknown); INDUCED anti-PEG after dose 1 (a separate, larger dynamic, esp. post mRNA-LNP); precise
+      region/age/assay values (a range, not a point); non-PEGylated vehicles (abstains)"
+    generalizes_to_unseen_loci: false
+    license: "open (this work; Chen 10.1021/acs.analchem.6b03109, Yang&Lai 10.1002/wnan.1339,
+      Armstrong 10.1002/cncr.22739, Kozma 10.1016/j.addr.2020.07.024)"

@@ -37,7 +37,32 @@ integrator whose insertional risk is the dominant concern).
 `verify(design)` surfaces the profile as `delivery_profile` plus a `delivery_immune_profile` scope flag, and —
 when a `cargo_seq` is supplied — a `cargo_innate_sensing` flag (see below).
 
-## The five axes — four computed, one documented
+## v5.6 — completion & calibration: anti-PEG, proxy honesty, and the unified profile
+
+v5.6 finishes the picture and tells the truth about it (`docs` + `pen_stack/planner/{antipeg_oracle,immune_profile}.py`,
+`pen_stack/validate/immune_calibration.py`):
+
+- **Anti-PEG axis (WS-PEG)** — `antipeg_oracle.py` + `configs/antipeg.yaml`. Pre-existing/induced anti-PEG
+  antibodies gate **re-dosing** of PEGylated LNP. Same honest serosurvey pattern as v5.5: a population
+  prevalence **range** (25–72 %, Chen 2016 / Yang & Lai 2015 / Armstrong 2007 / Kozma 2020) →
+  `preexisting_antipeg_score = 1 − midpoint/100 = 0.515`, range surfaced as uncertainty. **Abstains** for
+  non-PEGylated vehicles. Patient titer and post-dose-1 *induced* anti-PEG stay known-unknowns.
+- **Proxy calibration (WS-CALIB)** — `immune_calibration.py`. `calibrate_axis()` computes a Spearman ρ +
+  bootstrap CI and labels an axis **outcome-validated only when the CI excludes zero** (else `weak_proxy`;
+  `mechanistic_proxy` when N < 6). Because no sufficient public *paired* (proxy, observed-immunogenicity)
+  dataset exists, **every axis is currently labelled a mechanistic/population proxy** — that honest label is
+  the deliverable, and it travels with the profile. (The machinery is proven on synthetic data; it will
+  promote an axis only from real data.)
+- **Unified immune-risk profile (WS-PROFILE)** — `immune_profile.py`, exposed as **`Verdict.immune_profile`**.
+  A per-design **vector** of all axes, each with its own value + uncertainty + scope + validation label;
+  **`collapsed_score is None`** (never fused into one overconfident number — asserted by test);
+  `known_unknowns` listed; abstaining axes report `None`, not a guess.
+- **WS-EXT** — a documented qualitative **route/immune-privilege modifier** (eye/CNS materially lower realized
+  immunogenicity vs systemic; Streilein 2003 `10.1038/nri1224`; *no* fabricated magnitude), and three
+  mechanistically-distinct axes registered as **known-unknowns**: CD4/MHC-II helper epitopes,
+  pre-existing capsid-specific T-cell immunity, and complement/CARPA.
+
+## The axes — four computed/grounded, anti-PEG added, one documented
 
 | Axis | Risk kind | v5.1 | Now | Grounding |
 |---|---|---|---|---|
@@ -45,6 +70,7 @@ when a `cargo_seq` is supplied — a `cargo_innate_sensing` flag (see below).
 | **Adaptive (CD8 T-cell)** | reversible | tier | **computed** (v5.3) | MHC-I epitope load over the capsid sequence |
 | **Innate** | reversible | tier | **computed** (v5.4) | CpG / dsRNA motif load of the cargo sequence |
 | **Pre-existing / NAb (B-cell)** | reversible (eligibility) | tier | **data-grounded** (v5.5) | published serosurveys |
+| **Anti-PEG (LNP re-dosing)** | reversible (re-dosing) | — | **data-grounded** (v5.6) | anti-PEG serosurveys |
 | **Efficacy** | — | tier | documented | construct/context-specific by nature |
 
 Each computed signal answers through the v4.0 `OracleResult` contract (value + provenance + native uncertainty

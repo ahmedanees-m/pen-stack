@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.6",
+  "workstream": "WS-PEG",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_peg.yaml": "ab36af05cb0ca29ab5bd7e8dea5bff64403bab6198e25054f797b57b0c2562af"
+  }
+}

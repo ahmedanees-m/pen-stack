@@ -28,6 +28,9 @@ class Verdict(BaseModel):
                                                      # (pass/flag + reasons); NEVER a claim that it works
     delivery_profile: dict[str, Any] | None = None  # v5.1 WS-IMMUNE: documented ordinal immune/safety/efficacy
                                                      # priors for the chosen vehicle (NEVER a predicted magnitude)
+    immune_profile: dict[str, Any] | None = None    # v5.6 WS-PROFILE: per-axis immune-risk vector (genotox/CD8/
+                                                     # innate/NAb/anti-PEG), each w/ own uncertainty + validation
+                                                     # label; collapsed_score is None (never fused); magnitude KU
 
     def summary(self) -> str:
         if self.deferred:

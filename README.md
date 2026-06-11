@@ -15,7 +15,7 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-5.5.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.6.0-blue.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-240%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
@@ -58,6 +58,22 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v5.6 — Immunology completion & calibration (anti-PEG · proxy honesty · unified profile)
+
+v5.6 finishes the delivery-immunology arc and tells the truth about it. It adds the missing **anti-PEG** axis
+(gates LNP re-dosing), **calibrates** every proxy two-sided, and exposes a **unified per-design immune-risk
+profile** in which each axis keeps its own uncertainty and none is ever fused into one overconfident number.
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **PEG** | `planner/antipeg_oracle.py` + `configs/antipeg.yaml` | anti-PEG prevalence (25–72%) → `preexisting_antipeg_score`; gates **re-dosing**; abstains for non-PEG vehicles; range surfaced as uncertainty |
+| **CALIB** | `validate/immune_calibration.py` | each axis labelled **outcome-validated** (ρ + CI excluding 0) or **mechanistic/population proxy**; with no public paired-outcome data, all axes are honestly labelled proxies (the label travels with the profile) |
+| **PROFILE** | `planner/immune_profile.py` + `Verdict.immune_profile` | per-design **vector** of all axes, each with value + uncertainty + scope + validation label; **`collapsed_score is None`** (never fused); known-unknowns listed |
+| **EXT** | route/immune-privilege modifier + new known-unknowns | eye/CNS immune-privilege as a *documented qualitative* modifier (no magnitude); CD4/MHC-II, pre-existing capsid T-cell, complement/CARPA registered as known-unknowns |
+
+The in-vivo magnitude and patient-specific titer stay declared known-unknowns. See
+[`docs/delivery_immunology.md`](docs/delivery_immunology.md) and `prereg/ws_{peg,calib,profile}.yaml`.
 
 ## What is new in v5.5 — Anti-vector seroprevalence oracle (the last immune axis, from data)
 

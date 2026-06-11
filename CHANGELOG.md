@@ -3,6 +3,40 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.6.0] - 2026-06-11 - v5.6 release: Immunology completion & calibration (anti-PEG · proxy honesty · unified profile)
+
+Finishes the delivery-immunology arc (v5.1–v5.5): adds the missing **anti-PEG** axis, **calibrates** the
+proxies honestly, and exposes a **unified per-design immune-risk profile** that never collapses into one number.
+Workstreams WS-{PEG,CALIB,PROFILE} (+ optional WS-EXT), SHA-locked.
+
+### Added
+- **WS-PEG** — `pen_stack/planner/antipeg_oracle.py` + `configs/antipeg.yaml`: pre-existing/induced anti-PEG
+  antibodies gate **re-dosing** of PEGylated LNP. Population prevalence range (25–72 %) →
+  `preexisting_antipeg_score = 1 − midpoint/100`, range surfaced as `native_uncertainty`; **abstains** for
+  non-PEGylated vehicles. Serosurvey DOIs Crossref-verified (Chen 2016 `10.1021/acs.analchem.6b03109`, Yang &
+  Lai `10.1002/wnan.1339`, Armstrong `10.1002/cncr.22739`, Kozma `10.1016/j.addr.2020.07.024`). Scope card `antipeg`.
+- **WS-CALIB** — `pen_stack/validate/immune_calibration.py`: `calibrate_axis()` (Spearman ρ + percentile
+  bootstrap CI) labels an axis **outcome-validated only when the CI excludes zero**, else `weak_proxy`, and
+  `mechanistic_proxy` when N < 6. With no sufficient public paired (proxy, observed) dataset, **every axis is
+  honestly labelled a mechanistic/population proxy** — the label travels with the profile. (No fabricated
+  outcome data; machinery proven on synthetic input.)
+- **WS-PROFILE** — `pen_stack/planner/immune_profile.py` + **`Verdict.immune_profile`**: a per-design **vector**
+  of all axes (genotoxicity, CD8 epitope, innate, pre-existing NAb, anti-PEG), each with its own value +
+  uncertainty + scope + validation label. **`collapsed_score is None`** (never fused — asserted); known-unknowns
+  listed; abstaining axes report `None`.
+- **WS-EXT** — a documented qualitative **route/immune-privilege modifier** (eye/CNS lower realized
+  immunogenicity vs systemic; Streilein 2003 `10.1038/nri1224`; no fabricated magnitude); **CD4/MHC-II helper
+  epitopes**, **pre-existing capsid-specific T-cell immunity**, and **complement/CARPA** registered as
+  known-unknowns. `prereg/ws_{peg,calib,profile}.yaml` + SHA locks.
+
+### Changed
+- Version 5.5.0 -> 5.6.0 (minor — additive); `cite.curated_dois()` ingests the anti-PEG + immune-privilege DOIs.
+
+### Honesty invariant (unchanged)
+- Every axis is a **relative-risk screen** (sequence/mechanistic or population proxy), labelled as such until
+  outcome-validated; the profile is **never** collapsed into one number; patient-specific titer, post-dose-1
+  induced immunity, and exact in-vivo magnitude stay **known-unknowns**.
+
 ## [5.5.0] - 2026-06-10 - v5.5 release: Anti-vector seroprevalence oracle (the last immune axis, from data)
 
 Completes the computable delivery-immunology axes. **Pre-existing humoral immunity** (B-cell / neutralizing
