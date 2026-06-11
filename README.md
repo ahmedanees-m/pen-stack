@@ -15,8 +15,9 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-5.13.0-blue.svg)](CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-353%20passing-success.svg)](tests/)
+[![Version](https://img.shields.io/badge/version-6.0.0-blue.svg)](CHANGELOG.md)
+[![Status](https://img.shields.io/badge/status-1.0%20First%20Stable-success.svg)](docs/STABILITY.md)
+[![Tests](https://img.shields.io/badge/tests-354%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
@@ -58,6 +59,19 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## 🎓 v6.0.0 — "1.0 — First Stable"
+
+The **Closed-Loop arc is complete (7/7)** and PEN-STACK has graduated to **1.0 — First Stable**. The public API
+exercised across every surface — `verify`, `safety`, generative `design`, the `twin`, `active` experiment design,
+the `build` interface, the closed `loop`, the `co_scientist`, and the **Genome-Writing Challenge** — is documented
+and **frozen** with a deprecation policy ([`docs/STABILITY.md`](docs/STABILITY.md)). `Development Status ::
+5 - Production/Stable`. "First Stable" is **earned, not declared** — cut only after the closed loop was
+demonstrated (v5.12) and the benchmark went public (v5.13).
+
+> "1.0 — First Stable" is a commitment to **API stability**, not a claim of solving genetic engineering. The
+> unknown funnel remains — made legible (scope flags, known-unknowns, honest baselines, no fabrication), not
+> hidden.
 
 ## What is new in v5.13 — The Standard (Genome-Writing Challenge + Co-Scientist II)
 

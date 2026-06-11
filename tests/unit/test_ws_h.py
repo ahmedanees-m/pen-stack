@@ -11,7 +11,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 def test_version_consistent_everywhere():
     # consistency, not a pinned value (the version bumps per cycle): __init__ == pyproject == CITATION
     v = pen_stack.__version__
-    assert v.split(".")[0] in {"3", "4", "5"}
+    assert v.split(".")[0] in {"3", "4", "5", "6"}
     assert f'version = "{v}"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert f"version: {v}" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
 
@@ -51,7 +51,7 @@ def test_pypi_packaging_ready():
     assert (_ROOT / ".github/workflows/publish.yml").exists()     # automated publish workflow
     assert (_ROOT / "MANIFEST.in").exists() and (_ROOT / "docs/RELEASING.md").exists()
     pp = (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "Development Status :: 4 - Beta" in pp and "Issues =" in pp
+    assert "Development Status :: 5 - Production/Stable" in pp and "Issues =" in pp   # v6.0.0: 1.0 First Stable
 
 
 def test_resource_resolver_finds_and_errors_clearly():

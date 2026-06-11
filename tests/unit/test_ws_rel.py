@@ -8,11 +8,22 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_13_0_everywhere():
-    assert pen_stack.__version__ == "5.13.0"
-    assert 'version = "5.13.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.13.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.13.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_6_0_0_everywhere():
+    assert pen_stack.__version__ == "6.0.0"
+    assert 'version = "6.0.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 6.0.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-6.0.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+
+
+def test_v6_0_0_first_stable_graduation():
+    # 1.0 - First Stable: Production/Stable classifier + a documented API stability / deprecation policy
+    pp = (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "Development Status :: 5 - Production/Stable" in pp
+    assert (_ROOT / "docs/STABILITY.md").exists()
+    cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "[6.0.0] -" in cl and "First Stable" in cl
+    r = (_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "1.0 — First Stable" in r or "1.0 - First Stable" in r
 
 
 def test_changelog_has_5_13_0_entry():

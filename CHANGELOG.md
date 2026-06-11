@@ -3,6 +3,26 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.0.0] - 2026-06-11 - 1.0 — First Stable (the graduation)
+
+**The Closed-Loop arc is complete (7/7), and PEN-STACK graduates to "1.0 — First Stable."** The public API
+exercised across every surface — verify, safety, generative design, twin, experiment design, build interface,
+closed loop, co-scientist, and the Genome-Writing Challenge — is documented and **frozen** with a deprecation
+policy. "First Stable" is **earned, not declared**: it is cut only after the closed loop is demonstrated (v5.12),
+the benchmark is public (v5.13), and the integration surface ships.
+
+### Changed
+- **`Development Status :: 5 - Production/Stable`** (was Beta). Version **6.0.0** (MAJOR).
+- The public API is documented + frozen with a deprecation policy: **`docs/STABILITY.md`** (semver from 6.0.0;
+  deprecations warn ≥1 MINOR before removal in a MAJOR; the `OracleResult`/`Verdict`/`SafetyVerdict`/immune-profile
+  contracts and invariants — incl. `collapsed_score is None` and the no-fabrication guard — are stable across 6.x).
+- The Genome-Writing Challenge is **public**.
+
+### Notes
+- "1.0 — First Stable" is a commitment to **API stability**, **not** a claim of solving genetic engineering. The
+  unknown funnel remains — made legible (scope flags, known-unknowns, honest baselines, no fabrication), not
+  hidden. The high version numbers of the program's fast youth finally meet a real stability commitment.
+
 ## [5.13.0] - 2026-06-11 - v5.13 release: The Standard (Genome-Writing Challenge + Co-Scientist II)
 
 **Closed-Loop arc, Cycle 7 of 7.** Make PEN-STACK the field's reference — an open, recurring, held-out benchmark

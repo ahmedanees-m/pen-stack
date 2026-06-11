@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pen-stack"
-version = "5.13.0"
+version = "6.0.0"
 description = "Open infrastructure for genome writing: the Writable Genome atlas, the Writer Atlas, and the Write Planner."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -15,7 +15,7 @@ keywords = [
   "writable-genome", "writer-atlas", "write-planner", "bioinformatics",
 ]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
