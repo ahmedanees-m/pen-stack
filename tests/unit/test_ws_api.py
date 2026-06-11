@@ -11,11 +11,17 @@ The manifests + the framework tool wrapper are pure-Python (CI-safe). The FastAP
 from __future__ import annotations
 
 import json
+import sys
+from pathlib import Path
 
 import pytest
 
-from examples.agent_tools import dispatch, scope_tools, tool_specs
-from pen_stack.api.manifest import capability_manifest, scope_manifest
+_ROOT = Path(__file__).resolve().parents[2]                 # repo root: `examples/` lives here, not in the wheel
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+from examples.agent_tools import dispatch, scope_tools, tool_specs  # noqa: E402
+from pen_stack.api.manifest import capability_manifest, scope_manifest  # noqa: E402
 
 _BENIGN = {"write_type": "insertion", "gene": "AAVS1", "chrom": "chr19", "delivery_vehicle": "AAV_single",
            "cargo_bp": 3000, "cargo_function": "human factor IX"}
