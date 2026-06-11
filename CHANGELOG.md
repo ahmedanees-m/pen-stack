@@ -3,6 +3,18 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.2.1] - 2026-06-12 - v6.2.1: JSON-safe atlas/crosslink endpoints (patch)
+
+**Bug fix.** The `/atlas`, `/writable`, and `/crosslink/loci` endpoints returned raw DataFrame records, which
+leak non-finite floats (`NaN`/`inf`) present in `atlas.parquet`; the JSON encoder rejects these
+(`ValueError: Out of range float values are not JSON compliant` → HTTP 500). Surfaced on the v6.2 Web Platform's
+Writer Atlas and Site Finder pages.
+
+### Fixed
+- `pen_stack/server/api.py`: a `_records()` helper serializes DataFrame rows JSON-safely (via pandas `to_json`,
+  so `NaN`/`inf` → `null` and numpy scalars → native), applied to `/atlas`, `/writable`, `/crosslink/loci`.
+  Regression test `tests/unit/test_ws_api.py::test_records_helper_is_json_safe_with_non_finite_floats`.
+
 ## [6.2.0] - 2026-06-11 - v6.2: The Web Platform (the human surface)
 
 **Post-1.0 adoption surface for bench scientists.** A complete, friendly web application — a grounded co-scientist

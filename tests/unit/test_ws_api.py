@@ -77,6 +77,22 @@ def test_dispatch_routes_to_the_validated_engine():
 
 # --- WS-OPENAPI / WS-MCP endpoints (VM / server extra) ---------------------------------
 
+def test_records_helper_is_json_safe_with_non_finite_floats():
+    pytest.importorskip("fastapi")
+    import math
+
+    import pandas as pd
+
+    from pen_stack.server.api import _records
+    df = pd.DataFrame([{"a": 1.0, "b": float("nan"), "c": float("inf"), "d": "x"},
+                       {"a": 2.0, "b": 3.0, "c": -float("inf"), "d": "y"}])
+    recs = _records(df)
+    json.dumps(recs)                                                # must not raise (the 500 we fixed)
+    assert recs[0]["b"] is None and recs[0]["c"] is None            # NaN/inf -> null
+    assert recs[1]["b"] == 3.0 and recs[1]["d"] == "y"             # finite values preserved
+    assert all(not (isinstance(v, float) and not math.isfinite(v)) for r in recs for v in r.values())
+
+
 def test_rest_endpoints_and_openapi():
     pytest.importorskip("fastapi")
     pytest.importorskip("httpx")

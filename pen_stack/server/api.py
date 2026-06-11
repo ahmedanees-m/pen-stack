@@ -8,6 +8,7 @@ Run: ``uvicorn pen_stack.server.api:app --host 0.0.0.0 --port 8000`` (needs the 
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -32,6 +33,12 @@ def _atlas_df() -> pd.DataFrame:
     if not _ATLAS.exists():
         raise HTTPException(503, "atlas.parquet not built")
     return pd.read_parquet(_ATLAS)
+
+
+def _records(df: pd.DataFrame) -> list[dict]:
+    """JSON-safe records from a DataFrame: NaN/inf -> null and numpy scalars -> native (pandas `to_json`
+    handles both). Raw `to_dict('records')` leaks non-finite floats, which the JSON encoder rejects (500)."""
+    return json.loads(df.to_json(orient="records"))
 
 
 @app.get("/health")
@@ -60,7 +67,7 @@ def atlas(family: str | None = None, limit: int = Query(50, le=500)):
     cols = [c for c in ["representative_system", "family", "confidence", "mechanism_bucket",
                         "deliv_class", "readiness", "cargo_capacity_bp", "reachability_tier",
                         "human_cell_activity"] if c in df.columns]
-    return {"n": int(len(df)), "rows": df[cols].head(limit).to_dict("records"), "disclaimer": _DISCLAIMER}
+    return {"n": int(len(df)), "rows": _records(df[cols].head(limit)), "disclaimer": _DISCLAIMER}
 
 
 @app.get("/crosslink/writers")
@@ -86,7 +93,7 @@ def crosslink_loci(family: str, ct: str = "k562", top: int = Query(20, le=200)):
         loci = cl.loci_for_writer(family, ct, top=top)
     except FileNotFoundError as e:
         raise HTTPException(503, str(e)) from e
-    return {"family": family, "ct": ct, "loci": loci.to_dict("records"), "disclaimer": _DISCLAIMER}
+    return {"family": family, "ct": ct, "loci": _records(loci), "disclaimer": _DISCLAIMER}
 
 
 @app.get("/writable")
@@ -99,7 +106,7 @@ def writable(gene: str, ct: str = "k562", top: int = Query(20, le=200)):
     if g.empty:
         return {"gene": gene, "ct": ct, "loci": [], "disclaimer": _DISCLAIMER}
     cols = ["chrom", "bin", "safety", "p_durable", "writability"]
-    return {"gene": gene, "ct": ct, "loci": g[cols].head(top).to_dict("records"), "disclaimer": _DISCLAIMER}
+    return {"gene": gene, "ct": ct, "loci": _records(g[cols].head(top)), "disclaimer": _DISCLAIMER}
 
 
 @app.get("/bridge/design")
