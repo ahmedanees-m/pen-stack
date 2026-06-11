@@ -326,9 +326,12 @@ benchmark with deterministic scorers and no circular labels. See
          |  off-target + DMS (Perry 2025)                                           |
          +-------------------------------------------------------------------------+
 
-   Delivery layer (v5.1-5.5, feeds the planner): a safety<->efficacy balance over the 8-vehicle palette,
-   with four of five immune/safety axes computed from data/sequence (genotoxicity = VISDB x COSMIC;
-   adaptive/CD8 = MHCflurry over the capsid; innate = CpG/dsRNA of the cargo; pre-existing/NAb = serosurveys).
+   Delivery immunology (v5.1-5.6, feeds the planner): a safety<->efficacy balance over the 8-vehicle palette,
+   with the immune/safety axes computed/grounded from data + sequence (genotoxicity = VISDB x COSMIC;
+   adaptive/CD8 = MHCflurry over the capsid; innate = CpG/dsRNA of the cargo; pre-existing/NAb = serosurveys;
+   anti-PEG = serosurveys, gates LNP re-dosing) -> a unified per-axis immune-risk PROFILE (Verdict.immune_profile),
+   each axis labelled validated-or-proxy (WS-CALIB), never collapsed into one number; in-vivo magnitude + patient
+   titer stay declared known-unknowns.
 
    Platform services (on top of the validated core): PEN-MONITOR (Europe PMC living database),
    grounded RAG/Q&A, a tool-using agent + MCP server, and a Streamlit web app.
@@ -344,7 +347,7 @@ PEN-STACK is organised as **two reference layers + one engine + a services layer
 | **Writer Atlas** (companion) | `pen_stack.atlas`, `.mech`, `.score` | cross-family enzyme catalogue + Writer-Targeting KB | Paper 2 |
 | **Cross-link** | `pen_stack.atlas.crosslink` | bidirectional writer to locus queries | Paper 2 |
 | **Write Planner** (engine) | `pen_stack.planner` | inverse design, `edit_intent`-conditioned | Paper 3 |
-| **Delivery immunology** (v5.1-5.5) | `pen_stack.planner.delivery_immunology` + `{genotoxicity,capsid_epitope,seroprevalence}_oracle`, `innate_sensing` | safety↔efficacy balance over the 8-vehicle palette; 4 of 5 immune axes **computed from data/sequence**, magnitude stays a known-unknown ([docs](docs/delivery_immunology.md)) | M2 |
+| **Delivery immunology** (v5.1-5.6) | `pen_stack.planner.delivery_immunology` + `{genotoxicity,capsid_epitope,seroprevalence,antipeg}_oracle`, `innate_sensing`, `immune_profile`; `validate.immune_calibration` | safety↔efficacy balance over the 8-vehicle palette; immune axes **computed/grounded from data+sequence** + anti-PEG (gates LNP re-dosing) → a unified per-axis `Verdict.immune_profile` (each axis validated-or-proxy, never collapsed); magnitude + patient titer stay known-unknowns ([docs](docs/delivery_immunology.md)) | M2 |
 | **Agentic platform** | `pen_stack.agent` | goal to cited, auditable plan; MCP server; one-command deploy | Paper 3 |
 | **Bridge off-target engine** | `pen_stack.bridge` | "CRISPOR for bridge recombinases" + guide QC (v3.1) | Paper 4 |
 | **Genome-Writing Bench** (v3.1) | `benchmarks/`, `bench/run.py` | first writing-side benchmark; deterministic scorers, leaderboard | M2 |
@@ -469,18 +472,20 @@ pen-stack/
 │   ├── planner/                      Write Planner (Paper 3): optimize / cargo / cargo_polish / multiplex / pipeline
 │   │                                   + v3.2 target_site (hard PAM/att/core reject) / delivery_constraints
 │   │                                   + v3.3 router (write-type dispatch) / delivery_vehicles (8-vehicle palette)
-│   │                                   + v5.1-5.5 delivery_immunology (safety<->efficacy balance) and the four
-│   │                                     computed immune-axis oracles: genotoxicity_oracle (VISDB x COSMIC) /
+│   │                                   + v5.1-5.6 delivery_immunology (safety<->efficacy balance) and the five
+│   │                                     immune-axis oracles: genotoxicity_oracle (VISDB x COSMIC) /
 │   │                                     capsid_epitope_oracle (MHCflurry) / innate_sensing (CpG-O/E + dsRNA) /
-│   │                                     seroprevalence_oracle (anti-vector NAb serosurveys)
+│   │                                     seroprevalence_oracle (anti-vector NAb serosurveys) /
+│   │                                     antipeg_oracle (anti-PEG, gates LNP re-dosing) [v5.6]
+│   │                                   + v5.6 immune_profile (unified per-axis immune-risk vector; never collapsed)
 │   ├── bridge/                       bridge off-target engine (Paper 4): offtarget / fold_qc / guide_qc / pipeline / cli
 │   │                                   + v3.2 offtarget_energetics (position x substitution; held-out 0.88, ships)
 │   ├── agent/                        agentic platform: tools / orchestrator / pen_agent / mcp_server / guardrails; v5.0 co_scientist + cite (multi-strategy, self-critique, cited rationale, scope ledger)
 │   │                                   + v3.2 epistemic (3-tier status) / scope (known-unknowns matcher)
 │   ├── graph/                        v4.5 living world-model knowledge graph (schema/build/query/ingest/cell_types); typed provenanced edges; gated living loop (propose-only)
-│   ├── oracles/                      v4.0 L1 oracle mesh: OracleResult contract + adapters (genome/structure/protein_design/rna/energetics) over the foundation models; version-pinned cache; v5.2-5.5 delivery-immunology scope cards (delivery_genotoxicity/capsid_epitope/innate_sensing/seroprevalence)
+│   ├── oracles/                      v4.0 L1 oracle mesh: OracleResult contract + adapters (genome/structure/protein_design/rna/energetics) over the foundation models; version-pinned cache; v5.2-5.6 delivery-immunology scope cards (delivery_genotoxicity/capsid_epitope/innate_sensing/seroprevalence/antipeg)
 │   ├── rules/                        v3.3 machine-readable rules engine (schema/evaluators/loader/solver) over configs/rules/*.yaml
-│   ├── verify/                       v3.3 verification service: verify(design) -> Verdict (legal+reasons+confidence+scope; v4.0 writer_critique)
+│   ├── verify/                       v3.3 verification service: verify(design) -> Verdict (legal+reasons+confidence+scope; v4.0 writer_critique; v5.1 delivery_profile; v5.6 immune_profile per-axis vector)
 │   ├── adapt/                        local recalibration / private-data adaptation behind a gate (v3.1, WS-F)
 │   ├── env/                          v3.4 full Gymnasium environment over router+verifier (genome_writing_env + policies; [env] extra)
 │   ├── monitor/                      PEN-MONITOR living database (Europe PMC)
@@ -489,7 +494,8 @@ pen-stack/
 │   │                                   within_locus_ranking / agent_eval / ungrounded_baseline (T7) / adapt_demo /
 │   │                                   v3.2 selective_prediction / uncertainty_eval / bench_trust_tasks (T8-T11) /
 │   │                                   out_of_scope_refusal / target_site_controls / offtarget_energetics_eval /
-│   │                                   v3.3 bench_rule_tasks (T12) / v3.4 bench_writetype_tasks + bench_adversarial_tasks (T13-16) + outcome_calibration
+│   │                                   v3.3 bench_rule_tasks (T12) / v3.4 bench_writetype_tasks + bench_adversarial_tasks (T13-16) + outcome_calibration /
+│   │                                   v5.6 immune_calibration (proxy-vs-observed; labels each axis validated-or-proxy, two-sided)
 │   ├── data/                         ingestion (genome, chromatin, integration, TRIP, safety annotations)
 │   ├── server/api.py                 FastAPI REST (atlas, crosslink, writable, plan, bridge, ask)
 │   ├── ui/app.py                     Streamlit web app (16 pages; v3.2 PEN-Agent shows confidence + epistemic status)
@@ -498,12 +504,13 @@ pen-stack/
 ├── bench/run.py                      one-command bench entrypoint (--agent, --verify)
 ├── scripts/                          reproducible pipeline drivers (p1_*, p2_*, p4_*, p52/p53 delivery-immunology oracle builds, ws_*_report)
 ├── configs/                          pinned datasets + thresholds + curation (YAML); v3.2 known_unknowns /
-│                                       target_sites / delivery_constraints; v5.1-5.5 delivery_vehicles immune_safety /
+│                                       target_sites / delivery_constraints; v5.1-5.6 delivery_vehicles immune_safety /
 │                                       genotoxicity_oracle / capsid_epitope_oracle + capsid_sequences.fasta /
-│                                       seroprevalence + oracles/scope_cards
-├── prereg/                           SHA-locked success criteria (paper1..4 + ws_a..ws_h + v3.2-v5.5 ws_{uq,ep,mc,ba,
+│                                       seroprevalence / antipeg + oracles/scope_cards (+ v5.6 known_unknowns:
+│                                       cd4_mhcii_help / preexisting_capsid_tcell / complement_carpa)
+├── prereg/                           SHA-locked success criteria (paper1..4 + ws_a..ws_h + v3.2-v5.6 ws_{uq,ep,mc,ba,
 │                                       r,v,route,env,bench,cal,o,wv,atlas,graph,mon,ct,plan,crit,cite,immune,
-│                                       genotox,epitope,innate,seroprev} + SHA256 locks)
+│                                       genotox,epitope,innate,seroprev,peg,calib,profile} + SHA256 locks)
 ├── data/curated/                     small committed tables (universe, gene coords, measured bridge profile,
 │                                       v3.2 bridge_offtarget_energetics.json)
 ├── data/llm_bench_cache/             28 cached ungrounded-LLM transcripts (T7, offline/CI replay)
