@@ -445,45 +445,68 @@ benchmark with deterministic scorers and no circular labels. See
 
 ## Architecture
 
-```
-                           +-------------------------------------------+
-                           |            WRITE PLANNER (engine)         |
-                           |   inverse design: destination x writer    |
-                           |   x cargo/guide x delivery -> ranked plan  |
-                           +----------------^-------------^-------------+
-                                            |             |
-                  +-------------------------+--+      +---+------------------------+
-                  |    WRITABLE GENOME (B)     |      |      WRITER ATLAS (A)      |
-                  |    flagship reference      |<---->|   companion reference      |
-                  |                            | reach|                            |
-                  |  - Safety layer (learned)  | ability  - Family targeting KB    |
-                  |  - Durability layer (learned)|      |  - Measured scoring axes   |
-                  |  - Reachability layer  -----+------+  - Mechanism classifier    |
-                  |  -> writability profile    |      |  - DMS variant model        |
-                  +-------------------------^--+      +---+------------------------+
-                                            |             |
-         +----------------------------------+-------------+-------------------------+
-         |                       DATA FOUNDATION (bulk-downloadable)                |
-         |  hg38 . ENCODE/Roadmap chromatin . Hi-C/LADs . TRIP position effects .   |
-         |  RID/VISDB/MLV integration sites . clinical genotoxic CIS . COSMIC .     |
-         |  DepMap . gnomAD . GTEx . UniProt . Pfam/InterPro . bridge-recombinase   |
-         |  off-target + DMS (Perry 2025)                                           |
-         +-------------------------------------------------------------------------+
+At **1.0**, PEN-STACK is a **closed design→build→test→learn loop** standing on two reference layers, the oracle
+mesh, and the data foundation — with **the verifier at the centre as the discriminator**: nothing is generated,
+built, or learned unless it passes *safe + legal + calibrated*, and no number is fabricated. The loop stops
+deliberately at **autonomy Level 3** (a human in control at every gate).
 
-   Delivery immunology (v5.1-5.6, feeds the planner): a safety<->efficacy balance over the 8-vehicle palette,
-   with the immune/safety axes computed/grounded from data + sequence (genotoxicity = VISDB x COSMIC;
-   adaptive/CD8 = MHCflurry over the capsid; innate = CpG/dsRNA of the cargo; pre-existing/NAb = serosurveys;
-   anti-PEG = serosurveys, gates LNP re-dosing) -> a unified per-axis immune-risk PROFILE (Verdict.immune_profile),
-   each axis labelled validated-or-proxy (WS-CALIB), never collapsed into one number; in-vivo magnitude + patient
-   titer stay declared known-unknowns.
-
-   Platform services (on top of the validated core): PEN-MONITOR (Europe PMC living database),
-   grounded RAG/Q&A, a tool-using agent + MCP server, and a Streamlit web app.
 ```
+                  +-----------------------------------------------------------------------+
+                  |  THE FACES (v5.13 / 1.0)                                               |
+                  |  Co-Scientist (drives the loop) . Genome-Writing Challenge (held-out)  |
+                  |  . MCP server . REST API . Streamlit web app                           |
+                  +-----------------------------------^-----------------------------------+
+                                                      |
+ +----------------------------------------------------+---------------------------------------------------+
+ |  THE CLOSED LOOP  (v5.12 - autonomy Level 3; a human in control at safety / build / belief-admission)  |
+ |                                                                                                        |
+ |   GENERATE ----> PREDICT ----> DECIDE ----> [ SAFETY ] ----> BUILD ----> INGEST ----> LEARN            |
+ |   v5.8           v5.9          v5.10         v5.7            v5.11       v4.5 gate    v5.12             |
+ |   generative     digital       experiment    GUARDIAN        protocol    (no auto-    continual         |
+ |   designer       twin          designer       gate           export      edit)        + drift          |
+ |   (Pareto)       (OOD-gated)   (EIG+immVOI)   (refuse=stop)  (DRAFT)                  (versioned)       |
+ |                                                                                                        |
+ |   Every candidate is DISCARDED unless it passes THE VERIFIER below.  No number is fabricated.          |
+ +----------------------------------------------------+---------------------------------------------------+
+                                                      |
+                  +-----------------------------------v-----------------------------------+
+                  |  THE VERIFIER   verify(design) -> Verdict        (the discriminator)   |
+                  |  legality (v3.3 rules)  .  SAFETY gate (v5.7, runs first)  .            |
+                  |  calibrated confidence (v3.2)  .  per-axis immune-risk profile (v5.6)   |
+                  +-----------------------------------^-----------------------------------+
+                                                      |
+ +--------------------------------+-------------------+----------------+--------------------------------+
+ |  WRITABLE GENOME  (Paper 1)    |  WRITER ATLAS  (Paper 2)           |  ORACLE MESH  (v4.0)            |
+ |  learned safety x durability   |  33,370 systems on measured axes   |  AF3 . Boltz-2 . Chai-1 . ESM3  |
+ |  x reachability                |  + Writer-Targeting KB (8 families)|  . Evo2 . AlphaGenome . RFdiff. |
+ |  -> writability profile        |      <----- reachability ----->    |  ProteinMPNN . v5.9 STATE/scGPT |
+ |  + WRITE PLANNER (Paper 3)     |  + BRIDGE OFF-TARGET ENGINE (P4)   |  one OracleResult contract,     |
+ |    inverse design (edit_intent)|                                    |  OOD-gated, generative=candidate|
+ |  + DELIVERY IMMUNOLOGY (v5.1-6) per-axis immune-risk profile (each axis validated-or-proxy, never collapsed) |
+ |  + WORLD-MODEL GRAPH (v4.5)     typed provenanced edges, gated living loop (propose-only)              |
+ +--------------------------------+------------------------------------+--------------------------------+
+ +----------------------------------------------------------------------------------------------------+
+ |  DATA FOUNDATION  (bulk-downloadable, public)                                                       |
+ |  hg38 . ENCODE/Roadmap chromatin . Hi-C/LADs . TRIP position effects . RID/VISDB/MLV integration .   |
+ |  clinical genotoxic CIS . COSMIC . DepMap . gnomAD . GTEx . UniProt . Pfam/InterPro .                |
+ |  bridge off-target + DMS (Perry 2025) . anti-vector + anti-PEG serosurveys (immunology)              |
+ +----------------------------------------------------------------------------------------------------+
+```
+
+**Reading the loop.** A *goal* enters at the top. The **generative designer** (v5.8) proposes candidate
+writing systems; the **twin** (v5.9) predicts their calibrated outcomes; the **experiment designer** (v5.10)
+chooses the most informative ones to test; the **Guardian** (v5.7) refuses anything hazardous; the **build
+interface** (v5.11) exports a safety-gated protocol DRAFT and ingests results through the v4.5 gate; and
+**continual learning** (v5.12) recalibrates, drift-aware, versioned and reversible. Each stage is gated by the
+**verifier** — the single discriminator that keeps the whole loop honest. Two **faces** sit on top: a
+**co-scientist** that drives the loop for a working scientist, and the **Genome-Writing Challenge**, an open
+held-out benchmark others build to.
 
 ## How it works
 
-PEN-STACK is organised as **two reference layers + one engine + a services layer**.
+PEN-STACK is organised as **the data + reference layers, the oracle mesh, the verifier (the discriminator), the
+closed loop, and the faces** — each layer below feeding the one above, with the verifier keeping the whole loop
+honest.
 
 | Component | Module | Role | Status |
 |---|---|---|---|
@@ -494,6 +517,16 @@ PEN-STACK is organised as **two reference layers + one engine + a services layer
 | **Delivery immunology** (v5.1-5.6) | `pen_stack.planner.delivery_immunology` + `{genotoxicity,capsid_epitope,seroprevalence,antipeg}_oracle`, `innate_sensing`, `immune_profile`; `validate.immune_calibration` | safety↔efficacy balance over the 8-vehicle palette; immune axes **computed/grounded from data+sequence** + anti-PEG (gates LNP re-dosing) → a unified per-axis `Verdict.immune_profile` (each axis validated-or-proxy, never collapsed); magnitude + patient titer stay known-unknowns ([docs](docs/delivery_immunology.md)) | M2 |
 | **Agentic platform** | `pen_stack.agent` | goal to cited, auditable plan; MCP server; one-command deploy | Paper 3 |
 | **Bridge off-target engine** | `pen_stack.bridge` | "CRISPOR for bridge recombinases" + guide QC (v3.1) | Paper 4 |
+| **Oracle Mesh** (v4.0) | `pen_stack.oracles` | one `OracleResult` contract over AF3/Boltz-2/Chai-1/ESM3/Evo2/AlphaGenome/STATE/scGPT; OOD-gated; generative=candidate | v4.0 |
+| **World-Model Graph** (v4.5) | `pen_stack.graph` | living knowledge graph; typed provenanced edges; gated propose-only loop | v4.5 |
+| **The Verifier** (v3.3+) | `pen_stack.verify` | `verify(design) -> Verdict`: legality + **safety** + calibrated confidence + immune profile — the discriminator | v3.3 |
+| **The Guardian** (v5.7) | `pen_stack.safety` | biosecurity / dual-use gate; runs first in `verify()`; refuse short-circuits; tamper-evident audit | v5.7 |
+| **Generative Designer** (v5.8) | `pen_stack.design` | generate → verifier-as-discriminator (hazardous/illegal discarded); Pareto with grounded immune axis | v5.8 |
+| **Digital Twin** (v5.9) | `pen_stack.twin` | calibrated, OOD-gated outcome prediction; immune-outcome from v5.6; phenotype-bounded | v5.9 |
+| **Experiment Designer** (v5.10) | `pen_stack.active` | active learning (EIG + immune-VOI); retrospective active-vs-random (reps+CI) | v5.10 |
+| **Build Interface** (v5.11) | `pen_stack.build` | safety-gated protocol export (DRAFT + immune metadata); gated ingestion; sim-lab | v5.11 |
+| **The Closed Loop** (v5.12) | `pen_stack.loop` | one gated DBTL command; autonomy **Level 3**; drift-aware; versioned/reversible continual learning | v5.12 |
+| **Co-Scientist + Challenge** (v5.13) | `pen_stack.agent.co_scientist`, `benchmarks/genome_writing_challenge` | the co-scientist drives the loop; the public held-out benchmark others build to | v5.13 |
 | **Genome-Writing Bench** (v3.1) | `benchmarks/`, `bench/run.py` | first writing-side benchmark; deterministic scorers, leaderboard | M2 |
 | **PEN-Agent** (v3.1) | `pen_stack.agent.pen_agent` | grounded write-planning state machine; zero fabrication | M2 |
 | **3D structural risk** (v3.1) | `pen_stack.wgenome.structure3d` | AlphaGenome contact-map deltas as a safety axis | M1 |
@@ -666,7 +699,7 @@ pen-stack/
 │                                       seroprevalence / antipeg + oracles/scope_cards (+ v5.6 known_unknowns:
 │                                       cd4_mhcii_help / preexisting_capsid_tcell / complement_carpa);
 │                                       v5.7 safety/{hazard_registry,policy,probes} (Guardian; function/family/taxon-level only)
-├── prereg/                           SHA-locked success criteria (paper1..4 + ws_a..ws_h + v3.2-v5.9 ws_{uq,ep,mc,ba,
+├── prereg/                           SHA-locked success criteria (paper1..4 + ws_a..ws_h + v3.2-v6.0 ws_{uq,ep,mc,ba,
 │                                       r,v,route,env,bench,cal,o,wv,atlas,graph,mon,ct,plan,crit,cite,immune,
 │                                       genotox,epitope,innate,seroprev,peg,calib,profile,screen,policy,redteam,
 │                                       gen,pareto,orch,vcell,mech,outcome,twincal,acq,aldesign,alvalidate,
@@ -677,7 +710,13 @@ pen-stack/
 ├── data/alphagenome_cache/           cached AlphaGenome predictions (tracks + contact maps; offline reproducibility)
 ├── tests/unit/                       unit + regression + blind-validation suite
 ├── docs/                             mkdocs site (cards, tutorials, INFRA, DEPLOY, MCP);
-│                                       v3.2: uncertainty.md / scope.md / mechanistic_constraints.md / BACKLOG.md
+│                                       v3.2: uncertainty.md / scope.md / mechanistic_constraints.md / BACKLOG.md;
+│                                       v4.0-4.5: oracles.md / writer_verification.md / world_model.md;
+│                                       v5.0-5.6: co_scientist.md / delivery_immunology.md;
+│                                       v5.7-v6.0 (the closed loop): responsible_use.md / biosecurity.md /
+│                                       generative_design.md / digital_twin.md / experiment_design.md /
+│                                       build_interface.md / closed_loop.md / autonomy.md / challenge.md /
+│                                       co_scientist_loop.md / integrations.md / STABILITY.md (1.0 API freeze)
 ├── docker/                           CUDA image + UI image + pinned requirements
 ├── tools/penctl.py                   laptop<->VM orchestrator (paramiko SSH/SFTP, Docker-only)
 ├── docker-compose.yml                one-command self-hostable platform
