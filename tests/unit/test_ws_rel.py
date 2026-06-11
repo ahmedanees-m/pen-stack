@@ -8,23 +8,35 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_11_0_everywhere():
-    assert pen_stack.__version__ == "5.11.0"
-    assert 'version = "5.11.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.11.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.11.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_12_0_everywhere():
+    assert pen_stack.__version__ == "5.12.0"
+    assert 'version = "5.12.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.12.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.12.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_11_0_entry():
+def test_changelog_has_5_12_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.11.0] -" in cl and "[5.10.0] -" in cl       # both kept
-    assert "WS-PROTO" in cl and "WS-INGEST" in cl and "WS-SIMLAB" in cl
+    assert "[5.12.0] -" in cl and "[5.11.0] -" in cl       # both kept
+    assert "WS-LOOP" in cl and "WS-CONTINUAL" in cl and "WS-DRIFT" in cl
 
 
-def test_readme_has_v5_11_section():
+def test_readme_has_v5_12_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v5.11" in r
-    assert "build interface" in r.lower() and "protocol" in r.lower()
+    assert "What is new in v5.12" in r
+    assert "closed loop" in r.lower() and "level 3" in r.lower()
+
+
+def test_v5_12_artifacts():
+    # the v5.12 artifacts: the closed loop (cycle + drift + continual) + bench + docs + preregs
+    from pen_stack.loop import continual_update, detect_drift, run_loop  # noqa: F401
+    from pen_stack.validate.closed_loop import run as _cl_bench  # noqa: F401
+    for p in ("pen_stack/loop/__init__.py", "pen_stack/loop/cycle.py", "pen_stack/loop/drift.py",
+              "pen_stack/loop/continual.py", "pen_stack/validate/closed_loop.py", "docs/closed_loop.md",
+              "docs/autonomy.md", "prereg/ws_loop.yaml", "prereg/SHA256_LOCK_ws_loop.json",
+              "prereg/ws_continual.yaml", "prereg/SHA256_LOCK_ws_continual.json", "prereg/ws_drift.yaml",
+              "prereg/SHA256_LOCK_ws_drift.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v5_11_artifacts():

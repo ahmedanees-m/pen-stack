@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.12",
+  "workstream": "WS-LOOP",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_loop.yaml": "a8bb5f8249cceea55f949fc8e6a1e34581c478b93fb0c048b27fc1500ae05552"
+  }
+}

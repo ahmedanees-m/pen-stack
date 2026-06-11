@@ -8,7 +8,7 @@
 # A task names a `scorer` (module.function in pen_stack.validate / pen_stack.bridge) and a `metric` key to
 # read from its report. Solvers (deterministic planner, naive baseline, LLM agent) are compared on the same
 # tasks; a solver that cannot ground a number must refuse, not invent (no-fabrication is a hard gate).
-version: "0.3.7"
+version: "0.3.8"
 prepared: "2026-06-11"
 
 taxonomy:
@@ -47,6 +47,8 @@ taxonomy:
   ED_experiment_design: "choose the experiment(s) that most reduce model uncertainty: EIG from the calibrated twin (monotone in uncertainty), immune-VOI rewarding proxy-validating experiments, a diverse batch, and a RETROSPECTIVE active-vs-random validation with reps + bootstrap CI (vs a random selector with no acquisition signal and no falsifiable curve)"
   # v0.3.7 (v5.11): the build interface - safety-gated protocol export + gated ingestion + simulated loop.
   PS_protocol_safety: "export a cleared design as a runnable protocol DRAFT carrying its v5.6 immune profile, BLOCK any safety-refused/illegal design (ProtocolExportError), and complete the simulated loop export->sim->ingest with results quarantined (no auto-edit) + labelled SIMULATED (vs an ungated exporter that would emit the hazardous protocol)"
+  # v0.3.8 (v5.12): the closed loop - one gated, drift-aware DBTL cycle at autonomy Level 3.
+  CL_closed_loop: "run the full generate->predict->decide->safety->build->ingest->learn loop end-to-end (sim-lab) with a human in control at every gate, drift detection that widens uncertainty, and versioned+reversible continual learning - autonomy Level 3, no fabrication (vs an ungated autopilot with no human gates, no drift, no versioned beliefs)"
 
 tasks:
   - id: site_selection_blind_gsh
@@ -315,3 +317,19 @@ tasks:
     note: "v5.11 the build interface: a cleared design exports a DRAFT carrying its immune profile; a safety-refused
       or illegal design raises ProtocolExportError; the simulated loop completes with quarantined, SIMULATED-labelled
       results. An ungated exporter would emit the hazardous protocol and fails by construction."
+
+  - id: closed_loop
+    family: CL_closed_loop
+    scorer: "pen_stack.validate.closed_loop:run"
+    metric: "closed_loop_honest"
+    baseline_metric: "ungated_autopilot_honest"
+    higher_is_better: true
+    hard_gate: true
+    gate_rule: "closed_loop_honest == True (gated end-to-end run + no-fabrication + Level-3 human-in-control + drift detection + versioned/reversible continual learning)"
+    ground_truth: "structural integrity properties of a Level-3 DBTL loop (gated end-to-end run, human-in-control,
+      drift detection, versioned + reversible continual learning), NOT a beat-the-world claim - non-circular; the
+      active-vs-random convergence is reported with a CI either way (retrospective/simulated)"
+    circular: false
+    note: "v5.12 the closed loop: one command runs generate->predict->decide->safety->build->ingest->learn with a
+      human in control at every gate; drift widens uncertainty; continual learning is versioned + reversible.
+      Stops deliberately at autonomy Level 3. An ungated autopilot fails by construction."

@@ -15,12 +15,12 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-5.11.0-blue.svg)](CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-339%20passing-success.svg)](tests/)
+[![Version](https://img.shields.io/badge/version-5.12.0-blue.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-346%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
-[![Genome-Writing Bench v0.3](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.3.7-6f42c1.svg)](benchmarks/genome_writing_bench/)
+[![Genome-Writing Bench v0.3](https://img.shields.io/badge/benchmark-Genome--Writing%20Bench%20v0.3.8-6f42c1.svg)](benchmarks/genome_writing_bench/)
 
 **Built on five prior, separately published repositories:**
 
@@ -58,6 +58,24 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v5.12 — The Closed Loop (autonomy Level 3)
+
+v5.12 (**Closed-Loop arc, Cycle 6 of 7**) integrates every prior cycle into one continual **design→build→test→learn**
+loop — humans/lab in control, no fabrication, drift-aware — reaching **autonomy Level 3** (the program's honest
+ceiling, not Level 5).
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **LOOP** | `loop/cycle.py` | `run_loop` orchestrates generate(v5.8)→decide(v5.10)→**safety-gated** export(v5.7+v5.11)→sim/real run(v5.11)→ingest(v4.5)→drift→learn; gates await the `approver`; `autonomy_level=3`, `human_in_control=True` |
+| **DRIFT** | `loop/drift.py` | predicted (twin) vs observed → growing miscalibration **widens uncertainty** (inflate, don't over-trust) |
+| **CONTINUAL** | `loop/continual.py` | recalibrate on **admitted** outcomes only; **versioned + reversible** (`rollback_to`); immune proxy → validated needs a CI'd measurement |
+| **DEMO+AUTONOMY** | `loop_converges_faster_than_random` · `docs/autonomy.md` | convergence reported with CI; **Level-3 criteria asserted** (closed · human-gated · anomaly-flagging · no-fabrication); Levels 4/5 not claimed |
+| **BENCH** | bench **v0.3.8** `closed_loop` hard gate | loop integrity vs an ungated autopilot (no gates, no drift, no versioned beliefs) |
+
+The loop is **Level 3 — closed, but with a human in control at every gate, NOT autonomous.** See
+[`docs/closed_loop.md`](docs/closed_loop.md), [`docs/autonomy.md`](docs/autonomy.md), and
+`prereg/ws_{loop,continual,drift}.yaml`.
 
 ## What is new in v5.11 — The Build Interface (digital→physical bridge)
 
@@ -585,6 +603,7 @@ pen-stack/
 │   ├── twin/                         v5.9 digital twin: mechanistic (cassette expression, closed-form) / outcome (fuse mech+vcell+v5.6 immune; OOD widens interval; phenotype-bounded) / calibrate (honest two-sided)
 │   ├── active/                       v5.10 experiment designer: acquire (EIG/immune-VOI over the v5.9 twin) / design (diverse batch) / validate (retrospective active-vs-random, reps+CI, falsifiable)
 │   ├── build/                        v5.11 build interface: protocol (safety-gated export, DRAFT + v5.6 immune metadata) / ingest (typed gated -> v4.5 world-model, no auto-edit) / simlab (export->sim->ingest, SIMULATED)
+│   ├── loop/                         v5.12 closed loop (autonomy L3): cycle (run_loop, gated DBTL) / drift (predicted-vs-observed, inflate) / continual (admitted-only, versioned+reversible recalibration)
 │   ├── adapt/                        local recalibration / private-data adaptation behind a gate (v3.1, WS-F)
 │   ├── env/                          v3.4 full Gymnasium environment over router+verifier (genome_writing_env + policies; [env] extra)
 │   ├── monitor/                      PEN-MONITOR living database (Europe PMC)
@@ -599,12 +618,13 @@ pen-stack/
 │   │                                   v5.8 generative_design (verifier-as-discriminator hard-gate: hazardous+illegal discarded; survivors calibrated+immune; grounded-immune Pareto) /
 │   │                                   v5.9 outcome_prediction (digital-twin hard-gate: two-sided calibration + OOD widening + immune dim + phenotype out-of-scope) /
 │   │                                   v5.10 experiment_design (active-learning hard-gate: EIG monotone + immune-VOI + diverse batch + retrospective active-vs-random reps+CI) /
-│   │                                   v5.11 protocol_safety (build-interface hard-gate: cleared exports w/ immune metadata · hazard+illegal blocked · sim loop completes)
+│   │                                   v5.11 protocol_safety (build-interface hard-gate: cleared exports w/ immune metadata · hazard+illegal blocked · sim loop completes) /
+│   │                                   v5.12 closed_loop (loop-integrity hard-gate: gated end-to-end run · Level-3 human-in-control · drift detection · versioned/reversible continual learning)
 │   ├── data/                         ingestion (genome, chromatin, integration, TRIP, safety annotations)
 │   ├── server/api.py                 FastAPI REST (atlas, crosslink, writable, plan, bridge, ask)
 │   ├── ui/app.py                     Streamlit web app (16 pages; v3.2 PEN-Agent shows confidence + epistemic status)
 │   └── cli.py                        unified CLI
-├── benchmarks/genome_writing_bench/  Genome-Writing Bench v0.3.7 (T1-T16 + co_scientist + safety_screening + generative_design + outcome_prediction + experiment_design + protocol_safety; tasks / harness / solvers / LEADERBOARD / SHAs)
+├── benchmarks/genome_writing_bench/  Genome-Writing Bench v0.3.8 (T1-T16 + co_scientist + safety_screening + generative_design + outcome_prediction + experiment_design + protocol_safety + closed_loop; tasks / harness / solvers / LEADERBOARD / SHAs)
 ├── bench/run.py                      one-command bench entrypoint (--agent, --verify)
 ├── scripts/                          reproducible pipeline drivers (p1_*, p2_*, p4_*, p52/p53 delivery-immunology oracle builds, ws_*_report)
 ├── configs/                          pinned datasets + thresholds + curation (YAML); v3.2 known_unknowns /
@@ -617,7 +637,7 @@ pen-stack/
 │                                       r,v,route,env,bench,cal,o,wv,atlas,graph,mon,ct,plan,crit,cite,immune,
 │                                       genotox,epitope,innate,seroprev,peg,calib,profile,screen,policy,redteam,
 │                                       gen,pareto,orch,vcell,mech,outcome,twincal,acq,aldesign,alvalidate,
-│                                       proto,ingest,simlab} + SHA256 locks)
+│                                       proto,ingest,simlab,loop,continual,drift} + SHA256 locks)
 ├── data/curated/                     small committed tables (universe, gene coords, measured bridge profile,
 │                                       v3.2 bridge_offtarget_energetics.json)
 ├── data/llm_bench_cache/             28 cached ungrounded-LLM transcripts (T7, offline/CI replay)

@@ -3,6 +3,39 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.12.0] - 2026-06-11 - v5.12 release: The Closed Loop (autonomy Level 3)
+
+**Closed-Loop arc, Cycle 6 of 7.** Integrate everything into one continual design→build→test→learn cycle —
+humans/lab in control, no fabrication, drift-aware. Reaches **autonomy Level 3** (the program's honest ceiling).
+Workstreams WS-{LOOP,CONTINUAL,DRIFT} (+ WS-DEMO, WS-AUTONOMY), SHA-locked.
+
+### Added
+- **WS-LOOP** — `pen_stack/loop/cycle.py`: `run_loop(goal, cell_state, …)` orchestrates every prior cycle each
+  round — generate (v5.8) → decide/batch (v5.10) → **safety-gated** export (v5.7 + v5.11) → run (sim-lab v5.11 /
+  real lab) → ingest (v4.5 gate) → drift (v5.12) → continual learn (v5.12). **Gated**: safety, build, and
+  belief-admission each await the `approver`. Returns `autonomy_level=3`, `human_in_control=True`,
+  `no_fabrication=True`. A hazardous candidate is discarded by the safety-gated pipeline before it is ever run.
+- **WS-DRIFT** — `pen_stack/loop/drift.py`: `detect_drift(designs, results)` compares the v5.9 twin's predictions
+  vs observed readouts; growing miscalibration → `severity:"high"` → `inflate_intervals` (widen, don't over-trust).
+- **WS-CONTINUAL** — `pen_stack/loop/continual.py`: `continual_update(...)` recalibrates trust + twin + immune
+  proxies on **admitted outcomes only**; each update is **versioned + reversible** (`rollback_to`); high drift
+  widens intervals; an admitted immune measurement **with a CI** can graduate a v5.6 proxy → outcome-validated.
+  Recalibration, **not** foundation-model retraining.
+- **WS-DEMO + WS-AUTONOMY** — `loop_converges_faster_than_random` reports the active-vs-random convergence with a
+  bootstrap CI (retrospective/simulated, honest either way); `docs/autonomy.md` asserts the **Level-3 criteria**
+  (closed loop · human in control at every gate · anomaly flagging · no fabrication) and that Levels 4/5 are
+  **not** claimed.
+- **WS-BENCH** — bench **v0.3.8**: new `closed_loop` hard-gate task — the gate is the loop's integrity (gated
+  end-to-end run + no-fabrication + Level-3 human-in-control + drift detection + versioned/reversible continual
+  learning); an ungated autopilot fails by construction. Convergence reported informationally.
+- Docs: `docs/{closed_loop,autonomy}.md`; prereg `ws_{loop,continual,drift}` + SHA locks; deposit `phase_5.12/`.
+
+### Notes
+- The loop is **Level 3 — closed, but with humans/lab in control at every gate, NOT autonomous.** It runs in
+  silico via the sim-lab (a real lab attaches at the same interface); continual learning recalibrates rather than
+  retrains; drift covers calibration/residual shift, not all failures; the convergence demo is retrospective/
+  simulated, reported with CIs.
+
 ## [5.11.0] - 2026-06-11 - v5.11 release: The Build Interface (digital→physical bridge)
 
 **Closed-Loop arc, Cycle 5 of 7.** Make designs executable and results ingestible — loop-ready, lab-optional,

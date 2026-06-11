@@ -1,0 +1,19 @@
+# PEN-STACK v5.12 - WS-LOOP (the DBTL orchestrator; autonomy Level 3). Directional.
+cycle: "v5.12"
+workstream: "WS-LOOP"
+prepared: "2026-06-11"
+motivation: >
+  Integrate everything into one continual design->build->test->learn cycle - humans/lab in control, no
+  fabrication, drift-aware - reaching autonomy Level 3 (the program's honest ceiling).
+deliverable: "pen_stack/loop/cycle.py: run_loop(goal, cell_state, candidates, rounds, use_lab, approver, seed)."
+method: >
+  each round: generate (v5.8 safe+legal+calibrated+immune) -> select_batch (v5.10 info+immune-VOI+diverse) ->
+  export_protocol (v5.7 safety-gated; may block) -> run_simulated (v5.11) / real lab -> ingest_result (v4.5 gate) ->
+  detect_drift -> continual_update. Gated: safety + build + belief-admission each await `approver`. Numbers come
+  only from tools; no stage fabricates. Returns autonomy_level=3, human_in_control=True.
+acceptance: >
+  one command runs the full loop end-to-end (sim-lab); each gate awaits the approver; the trace shows every number
+  tool-sourced; no-fabrication holds across the loop (asserted); Level-3, human-in-control (NOT autonomous).
+honesty_invariant: "Level 3, NOT Level 5; humans/lab in control at every gate; sim-lab unless a real lab is attached; recalibration not retraining."
+gate: "G-LOOP - full gated loop runs; every gate awaits the approver; no fabrication; autonomy Level 3 asserted."
+locked_files: [prereg/ws_loop.yaml]
