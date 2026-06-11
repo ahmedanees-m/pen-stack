@@ -1,0 +1,8 @@
+{
+  "cycle": "v6.1",
+  "workstream": "WS-MANIFEST",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_manifest.yaml": "8054eba7d580a91b2464fa5502dc876fd1f8ef6c27e46e116072633ed36e72b6"
+  }
+}

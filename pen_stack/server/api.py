@@ -157,3 +157,69 @@ def graph_query_endpoint(q: dict):
     reach the locus AND are deliverable by a cargo-form-compatible vehicle, each with its provenanced path."""
     from pen_stack.graph import writers_reaching_and_deliverable
     return writers_reaching_and_deliverable(q.get("locus"), cargo_form=q.get("cargo_form"))
+
+
+# ======================================================================================
+# v6.1 — The AI Integration Surface: the self-describing contract + the engine tool routes.
+# An external agent fetches /capabilities + /scope and ROUTES on them, then calls the tools.
+# ======================================================================================
+@app.get("/capabilities", tags=["v6.1 AI surface"])
+def capabilities_endpoint():
+    """Machine-readable: WHAT PEN-STACK can do (tools, inputs, outputs, stability). Route on this, not prose."""
+    from pen_stack.api.manifest import capability_manifest
+    return capability_manifest()
+
+
+@app.get("/scope", tags=["v6.1 AI surface"])
+def scope_endpoint():
+    """Machine-readable: WHAT PEN-STACK REFUSES to answer (known-unknowns + oracle scope cards). The contract
+    that makes depending on PEN-STACK safe: outputs outside scope are out_of_scope/extrapolating, never asserted."""
+    from pen_stack.api.manifest import scope_manifest
+    return scope_manifest()
+
+
+@app.post("/safety", tags=["v6.1 AI surface"])
+def safety_endpoint(design: dict):
+    """v5.7 Guardian: biosecurity / dual-use screen -> SafetyVerdict (clear/flag/escalate/refuse) + reason."""
+    from pen_stack.safety import safety_gate
+    return safety_gate(design, actor=str(design.get("actor", "api"))).model_dump()
+
+
+@app.post("/immune", tags=["v6.1 AI surface"])
+def immune_endpoint(design: dict):
+    """v5.6 immune-risk profile: per-axis screen (never collapsed; collapsed_score is None)."""
+    from pen_stack.planner.immune_profile import immune_profile
+    return immune_profile(design)
+
+
+@app.post("/generate", tags=["v6.1 AI surface"])
+def generate_endpoint(req: dict):
+    """v5.8 generative designer: verifier-as-discriminator. Body: {goal?, candidates?, keep?}. Hazardous/illegal
+    candidates are discarded; survivors are calibrated + immune-profiled candidates (never asserted to work)."""
+    from pen_stack.design import generate_designs
+    return {"survivors": generate_designs(req.get("goal"), candidates=req.get("candidates"),
+                                          keep=int(req.get("keep", 25)), actor=str(req.get("actor", "api"))),
+            "disclaimer": _DISCLAIMER}
+
+
+@app.post("/predict", tags=["v6.1 AI surface"])
+def predict_endpoint(req: dict):
+    """v5.9 digital twin: calibrated, OOD-gated, phenotype-bounded outcome. Body: {design, cell_state}."""
+    from pen_stack.twin import predict_outcome
+    return predict_outcome(req["design"], req.get("cell_state", "k562"))
+
+
+@app.post("/suggest", tags=["v6.1 AI surface"])
+def suggest_endpoint(req: dict):
+    """v5.10 experiment designer: a diverse, informative next-experiment batch. Body: {candidates, cell_state, k?}."""
+    from pen_stack.active import select_batch
+    return {"batch": select_batch(req["candidates"], req.get("cell_state", "k562"), {},
+                                  k=int(req.get("k", 8))), "disclaimer": _DISCLAIMER}
+
+
+@app.post("/session", tags=["v6.1 AI surface"])
+def session_endpoint(req: dict):
+    """v5.13 co-scientist: drive the full loop. Body: {goal, cell_state, candidates?}. Returns strategies +
+    predicted outcomes + per-axis immune profiles + suggested experiments + citations + scope ledger + safety."""
+    from pen_stack.agent.co_scientist import co_scientist_session
+    return co_scientist_session(req["goal"], req.get("cell_state", "k562"), candidates=req.get("candidates"))

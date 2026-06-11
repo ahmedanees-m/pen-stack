@@ -1,56 +1,87 @@
-# Integrations & adoption (v5.13)
+# Integrate PEN-STACK in your AI (v6.1)
 
-PEN-STACK exposes two integration surfaces so a general AI scientist or a lab can call it, and so external agents
-can enter the Genome-Writing Challenge.
+PEN-STACK is a **grounding substrate** an AI agent can depend on. From v6.1 the AI-facing surface is
+**self-describing**: an agent can ask, programmatically, *"what can you do, and what do you refuse to answer?"* —
+and get a typed, honest answer it can route on. Integrate in minutes over REST or MCP.
 
-## 1. MCP — call PEN-STACK from any MCP client
+## The four guarantees
 
-PEN-STACK ships an MCP server (`pen_stack/agent/mcp_server.py`) registering the validated tools. Any MCP client
-(Claude, a Co-Scientist/Robin-class agent, …) can call them:
+When your agent calls PEN-STACK, every answer carries:
+
+1. **Rule-grounded legality** — a design is legal/illegal per machine-readable rules, with the *named* rule cited.
+2. **Calibrated confidence** — soft scores come with conformal intervals; out-of-distribution is flagged.
+3. **Explicit scope** — what PEN-STACK *cannot* tell you is returned as data (`out_of_scope` / `extrapolating`), never guessed.
+4. **Biosecurity safety** — a dual-use/hazardous design is refused or escalated, as a structured verdict.
+
+…and **no fabrication**: every number is computed by a validated tool.
+
+## Discover capabilities — and scope (the differentiator)
 
 ```bash
-python -m pen_stack.agent.mcp_server      # starts the MCP server (fastmcp)
+GET /capabilities      # machine-readable: the tools, inputs, outputs, stability
+GET /scope             # machine-readable: the known-unknowns + every oracle's in-distribution envelope
 ```
 
-Tools include `writability`, `reachable_writers`, `writer_axes`, `plan_write`, `ask_literature`,
-`multiplex_translocation_risk`, and the v3.3+ `verify_write` (legality + reasons + confidence + scope + safety +
-immune profile). Every number a client gets back is tool-sourced — the no-fabrication gate holds across the
-boundary.
-
-## 2. The co-scientist over the full loop
+`/scope` is the contract that makes depending on PEN-STACK safe: it lists, as data, the questions PEN-STACK
+**refuses** to answer (phenotype, in-vivo immunogenicity magnitude, long-term clinical durability, …) and what
+each wrapped model is *not* valid for. Your agent reads it and never builds on a non-answer.
 
 ```python
-from pen_stack.agent.co_scientist import co_scientist_session
-session = co_scientist_session(goal, cell_state="k562")
-# -> strategies (Pareto, incl. immune axis), predicted_outcomes (calibrated),
-#    immune_profiles (per-axis, first-class), suggested_experiments, citations,
-#    scope_ledger, safety. The scientist/lab decides; the co-scientist drives.
+from pen_stack.api import capability_manifest, scope_manifest   # in-process
+caps = capability_manifest()      # {"tools": [...], "guarantees": [...], "stability": "stable"}
+scope = scope_manifest()          # {"known_unknowns": [...], "oracle_scope_cards": [...], "policy": "..."}
 ```
 
-See [The co-scientist over the loop](co_scientist_loop.md).
-
-## 3. Submit to the Genome-Writing Challenge
+## REST — the golden path
 
 ```python
-from benchmarks.genome_writing_challenge.harness import Submission, evaluate
+import requests
+BASE = "http://localhost:8000"            # uvicorn pen_stack.server.api:app
 
-def my_predict(public_input):                       # public_input has NO label
-    fam = public_input["family"]
-    if fam == "legality":    return True
-    if fam == "safety":      return "clear"
-    if fam == "immune_risk": return "genotoxicity"
-    return None
-
-print(evaluate(Submission("my-agent", my_predict), round_id="2026R1"))
+scope = requests.get(f"{BASE}/scope").json()
+v = requests.post(f"{BASE}/verify", json=design).json()
+if v["safety"]["decision"] == "refuse":   # safety branch — halt
+    ...
+elif not v["legal"]:                      # legality branch — revise
+    ...
+else:                                     # proceed, with calibrated confidence + immune profile
+    use(v["confidence"], v["immune_profile"])
 ```
 
-The reference (`reference_submission()`) anchors the leaderboard. See
-[`benchmarks/genome_writing_challenge/README.md`](../benchmarks/genome_writing_challenge/README.md).
+Tool routes: `/verify · /safety · /immune · /generate · /predict · /suggest · /session` + `/capabilities · /scope`.
+The full typed contract is the auto-generated **OpenAPI 3.1** spec at `/openapi.json`. Runnable example:
+[`examples/external_agent.py`](../examples/external_agent.py).
 
-## The standing adoption bottleneck (honest)
+## MCP — call PEN-STACK from any MCP client
 
-A standard requires a community. PEN-STACK provides the **open, reproducible, held-out benchmark** and the
-**integration surface** (MCP + submission API + a worked reference example); landing **≥1 external integration**
-and **≥1 external submission** depends on outreach — the non-code bottleneck flagged since v3.1. The surface is
-shipped and documented so a partner can integrate in minutes; `SUBMISSIONS.md` is updated as external entries
-arrive.
+```bash
+python -m pen_stack.agent.mcp_server      # fastmcp; tools + the capabilities/scope resources
+```
+
+Tools: `verify_write · safety_screen · immune_profile · generate_designs · predict_outcome · suggest_experiment
+· co_scientist_session · graph_query · plan_write · …`. Resources: `pen-stack://capabilities`,
+`pen-stack://scope`. A hazardous design returns a **structured refusal** (`safety.decision == "refuse"`) an agent
+branches on. Runnable example: [`examples/mcp_client.py`](../examples/mcp_client.py).
+
+## Drop into any tool-calling framework
+
+[`examples/agent_tools.py`](../examples/agent_tools.py) builds OpenAI/Anthropic-shaped tool specs **from the live
+capability manifest** (so they never drift from the code) and dispatches to the validated engine in-process:
+
+```python
+from examples.agent_tools import tool_specs, dispatch
+specs = tool_specs()                                  # hand to LangChain / the OpenAI or Anthropic SDK
+result = dispatch("verify_write", {"payload": {...}}) # numbers come only from the engine
+```
+
+## Stability
+
+All exposed contracts (the manifests, the OpenAPI schemas, the MCP tool/resource shapes) are versioned and
+deprecation-policed under the **1.0 commitment** — see [API stability](STABILITY.md). The
+`OracleResult`/`Verdict`/`SafetyVerdict`/immune-profile contracts and invariants are stable across 6.x.
+
+## The honest bottleneck
+
+This surface makes integration **easy and dependable**; it does not, by itself, create adoption — landing a first
+external integration and a demonstrated real-world result remain the standing outreach work. The surface is
+shipped; `benchmarks/genome_writing_challenge/SUBMISSIONS.md` records external entries as they arrive.

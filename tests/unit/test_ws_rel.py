@@ -8,11 +8,29 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_6_0_0_everywhere():
-    assert pen_stack.__version__ == "6.0.0"
-    assert 'version = "6.0.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 6.0.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-6.0.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_6_1_0_everywhere():
+    assert pen_stack.__version__ == "6.1.0"
+    assert 'version = "6.1.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 6.1.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-6.1.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+
+
+def test_v6_1_artifacts():
+    # the v6.1 artifacts: the AI integration surface (manifests + endpoints + MCP resources + examples + preregs)
+    from examples.agent_tools import dispatch, tool_specs  # noqa: F401
+    from pen_stack.api import capability_manifest, scope_manifest
+    cap, sc = capability_manifest(), scope_manifest()
+    assert cap["tools"] and all(t["fabricates"] is False for t in cap["tools"])
+    assert sc["known_unknowns"] and sc["oracle_scope_cards"] and sc["policy"]
+    cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "[6.1.0] -" in cl and "WS-MANIFEST" in cl
+    r = (_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "What is new in v6.1" in r
+    for p in ("pen_stack/api/manifest.py", "examples/external_agent.py", "examples/mcp_client.py",
+              "examples/agent_tools.py", "prereg/ws_manifest.yaml", "prereg/SHA256_LOCK_ws_manifest.json",
+              "prereg/ws_openapi.yaml", "prereg/SHA256_LOCK_ws_openapi.json", "prereg/ws_mcp.yaml",
+              "prereg/SHA256_LOCK_ws_mcp.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v6_0_0_first_stable_graduation():

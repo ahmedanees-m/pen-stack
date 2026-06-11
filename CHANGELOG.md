@@ -3,6 +3,35 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.1.0] - 2026-06-11 - v6.1: The AI Integration Surface
+
+**Post-1.0 adoption surface for AI builders.** Not new capability — the *introspectable, documented, dependable*
+contract that lets an external agent discover what PEN-STACK offers **and what it refuses to answer**. MINOR
+release on the stable 6.0 API. Workstreams WS-{MANIFEST,OPENAPI,MCP} + examples, SHA-locked.
+
+### Added
+- **WS-MANIFEST** *(the differentiator)* — `pen_stack/api/manifest.py`: `capability_manifest()` (machine-readable:
+  the stable tools, inputs/outputs, all `fabricates=False`, guarantees, stability) and **`scope_manifest()`**
+  (machine-readable: the **known-unknowns** registry + every **oracle scope card** — what PEN-STACK *refuses* to
+  answer). Generated from the live registry/scope cards (never hand-written); internal matcher fields not leaked.
+- **WS-OPENAPI** — `pen_stack/server/api.py`: `GET /capabilities` + `GET /scope` + `POST /verify /safety /immune
+  /generate /predict /suggest /session`; FastAPI auto-generates the **OpenAPI 3.1** spec at `/openapi.json`.
+- **WS-MCP** — `pen_stack/agent/mcp_server.py`: the self-describing **resources** `pen-stack://capabilities` +
+  `pen-stack://scope`, plus the engine tools (`safety_screen`, `immune_profile`, `generate_designs`,
+  `predict_outcome`, `suggest_experiment`, `co_scientist_session`). A hazardous design returns a **structured
+  refusal** an agent branches on.
+- **WS-EXAMPLE** — runnable golden path: `examples/external_agent.py` (REST: discover scope → submit → branch on
+  safety/legality), `examples/mcp_client.py` (MCP), `examples/agent_tools.py` (framework-agnostic tool specs built
+  **from the live manifest** + an in-process dispatcher to the validated engine).
+- Docs: `docs/integrations.md` rewritten as "Integrate PEN-STACK in your AI" (the four guarantees + the scope
+  contract + REST/MCP/framework quickstarts); prereg `ws_{manifest,openapi,mcp}` + SHA locks; deposit `phase_6.1/`.
+
+### Notes
+- **Scope is data, not a disclaimer.** The scope manifest makes the honesty machinery itself an API — the thing
+  that makes trustworthy autonomy something another system can build on. This cycle lowers the barrier to
+  adoption; it does not, by itself, create it — outreach + a real result remain the standing bottleneck. No new
+  science or validation; contracts versioned + deprecation-policed under the 1.0 commitment.
+
 ## [6.0.0] - 2026-06-11 - 1.0 — First Stable (the graduation)
 
 **The Closed-Loop arc is complete (7/7), and PEN-STACK graduates to "1.0 — First Stable."** The public API

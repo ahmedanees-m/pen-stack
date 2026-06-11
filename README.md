@@ -15,9 +15,9 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-6.0.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-6.1.0-blue.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-1.0%20First%20Stable-success.svg)](docs/STABILITY.md)
-[![Tests](https://img.shields.io/badge/tests-354%20passing-success.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-360%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
@@ -72,6 +72,24 @@ demonstrated (v5.12) and the benchmark went public (v5.13).
 > "1.0 — First Stable" is a commitment to **API stability**, not a claim of solving genetic engineering. The
 > unknown funnel remains — made legible (scope flags, known-unknowns, honest baselines, no fabrication), not
 > hidden.
+
+## What is new in v6.1 — The AI Integration Surface
+
+Post-1.0, the adoption surface for **AI builders**: PEN-STACK is now **self-describing** — an external agent can
+ask, programmatically, *"what can you do, and what do you refuse to answer?"* and get a typed, honest answer it can
+route on.
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **MANIFEST** *(the differentiator)* | `pen_stack/api/manifest.py` | `capability_manifest()` (tools, all `fabricates=False`) + **`scope_manifest()`** — the known-unknowns + oracle scope cards as **machine-readable data** (what PEN-STACK *refuses* to answer) |
+| **OPENAPI** | `server/api.py` | `GET /capabilities` + `GET /scope` + tool routes (`/verify /safety /immune /generate /predict /suggest /session`); auto **OpenAPI 3.1** at `/openapi.json` |
+| **MCP** | `agent/mcp_server.py` | resources `pen-stack://capabilities` + `pen-stack://scope`; engine tools; a hazardous design returns a **structured refusal** |
+| **EXAMPLE** | `examples/` | golden-path `external_agent.py` (REST), `mcp_client.py` (MCP), `agent_tools.py` (framework specs built from the live manifest + dispatcher) |
+
+**Scope is data, not a disclaimer** — the honesty machinery becomes an API, the thing that makes trustworthy
+autonomy something another system can build on. See [Integrate PEN-STACK in your AI](docs/integrations.md) and
+`prereg/ws_{manifest,openapi,mcp}.yaml`. (Lowers the adoption barrier; outreach + a real result remain the
+standing bottleneck — no new science.)
 
 ## What is new in v5.13 — The Standard (Genome-Writing Challenge + Co-Scientist II)
 
@@ -686,12 +704,14 @@ pen-stack/
 │   │                                   v5.11 protocol_safety (build-interface hard-gate: cleared exports w/ immune metadata · hazard+illegal blocked · sim loop completes) /
 │   │                                   v5.12 closed_loop (loop-integrity hard-gate: gated end-to-end run · Level-3 human-in-control · drift detection · versioned/reversible continual learning)
 │   ├── data/                         ingestion (genome, chromatin, integration, TRIP, safety annotations)
-│   ├── server/api.py                 FastAPI REST (atlas, crosslink, writable, plan, bridge, ask)
+│   ├── api/                          v6.1 AI integration surface: manifest (capability_manifest + scope_manifest = machine-readable known-unknowns + oracle scope cards)
+│   ├── server/api.py                 FastAPI REST (atlas, crosslink, writable, plan, bridge, ask; v3.3 verify; v6.1 /capabilities /scope /safety /immune /generate /predict /suggest /session + openapi.json 3.1)
 │   ├── ui/app.py                     Streamlit web app (16 pages; v3.2 PEN-Agent shows confidence + epistemic status)
 │   └── cli.py                        unified CLI
 ├── benchmarks/genome_writing_bench/  Genome-Writing Bench v0.3.8 (T1-T16 + co_scientist + safety_screening + generative_design + outcome_prediction + experiment_design + protocol_safety + closed_loop; tasks / harness / solvers / LEADERBOARD / SHAs)
 ├── benchmarks/genome_writing_challenge/ v5.13 the public Genome-Writing Challenge (held-out rounds + immune-risk task + submission API; harness / run / README / SUBMISSIONS)
 ├── bench/run.py                      one-command bench entrypoint (--agent, --verify)
+├── examples/                         v6.1 runnable golden path: external_agent.py (REST) / mcp_client.py (MCP) / agent_tools.py (framework-agnostic tool specs from the live manifest + dispatcher)
 ├── scripts/                          reproducible pipeline drivers (p1_*, p2_*, p4_*, p52/p53 delivery-immunology oracle builds, ws_*_report)
 ├── configs/                          pinned datasets + thresholds + curation (YAML); v3.2 known_unknowns /
 │                                       target_sites / delivery_constraints; v5.1-5.6 delivery_vehicles immune_safety /
@@ -703,7 +723,8 @@ pen-stack/
 │                                       r,v,route,env,bench,cal,o,wv,atlas,graph,mon,ct,plan,crit,cite,immune,
 │                                       genotox,epitope,innate,seroprev,peg,calib,profile,screen,policy,redteam,
 │                                       gen,pareto,orch,vcell,mech,outcome,twincal,acq,aldesign,alvalidate,
-│                                       proto,ingest,simlab,loop,continual,drift,challenge,cosci2} + SHA256 locks)
+│                                       proto,ingest,simlab,loop,continual,drift,challenge,cosci2,
+│                                       manifest,openapi,mcp} + SHA256 locks)
 ├── data/curated/                     small committed tables (universe, gene coords, measured bridge profile,
 │                                       v3.2 bridge_offtarget_energetics.json)
 ├── data/llm_bench_cache/             28 cached ungrounded-LLM transcripts (T7, offline/CI replay)

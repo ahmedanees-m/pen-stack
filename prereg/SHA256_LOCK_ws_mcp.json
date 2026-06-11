@@ -1,0 +1,8 @@
+{
+  "cycle": "v6.1",
+  "workstream": "WS-MCP",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_mcp.yaml": "930c570764ab2e5f0d43716163d4a13f4d6c0ddaf68a655693e3b6629d7de0cc"
+  }
+}
