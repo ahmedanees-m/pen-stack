@@ -36,8 +36,24 @@ known_unknowns:
       cassette in a given epigenome) — it does NOT predict multi-year in-vivo persistence, immune clearance,
       or clonal dynamics in a patient"
     match_terms: ["long-term in-vivo", "long term in vivo", "years of expression", "clinical durability",
-                  "persist in the patient", "how long will it last in", "in-vivo persistence", "clonal"]
-    patterns: ["\\bhow long (will|would) (it|the cassette|expression) (last|persist) (in|in a)\\b"]
+                  "persist in the patient", "how long will it last in", "in-vivo persistence", "clonal",
+                  "how long will expression last", "how long will it last", "how long will the cassette",
+                  "expression duration", "half-life", "half life", "will it persist", "how durable",
+                  "durability magnitude", "how long does"]
+    patterns: ["\\bhow long\\b[^?]{0,60}\\b(last|persist|express|stay expressed|remain)\\b",
+               "\\bduration of (expression|the cassette|the transgene)\\b"]
+
+  - id: in_vivo_expression_magnitude
+    title: "absolute in-vivo expression magnitude / functional titer"
+    requires: "an in-vivo expression / pharmacokinetic measurement (functional titer, % of normal, ng/mL) in a
+      living organism"
+    why: "PEN-STACK computes a RELATIVE, dimensionless mechanistic expression proxy (promoter × copy ×
+      accessibility) and the immune context — it does NOT predict an absolute in-vivo functional titer, a
+      percent-of-normal level, or a protein concentration; that is a measured clinical endpoint, never predicted"
+    match_terms: ["titer", "titre", "percent of normal", "% of normal", "percent normal", "iu/ml", "ng/ml",
+                  "absolute expression", "expression level in vivo", "how much protein", "how much will it express",
+                  "what level of expression", "protein concentration", "serum level", "plasma level"]
+    patterns: ["\\bwhat (functional )?titer\\b", "\\b\\d+\\s*% of normal\\b"]
 
   - id: higher_order_epistasis
     title: "higher-order epistasis / multi-edit interaction beyond the translocation screen"

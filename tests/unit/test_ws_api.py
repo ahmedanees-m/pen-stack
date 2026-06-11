@@ -77,6 +77,16 @@ def test_dispatch_routes_to_the_validated_engine():
 
 # --- WS-OPENAPI / WS-MCP endpoints (VM / server extra) ---------------------------------
 
+def test_scope_defers_titer_and_durability_questions():
+    # acceptance T14/T15: the classic measured endpoints (functional titer, in-vivo durability) must be
+    # flagged out-of-scope by the matcher, not just left to the no-fabrication spine. In-scope stays in-scope.
+    from pen_stack.agent.scope import match_scope
+    assert match_scope("what functional titer (% of normal) will my design produce")["id"] == "in_vivo_expression_magnitude"
+    assert match_scope("how long will episomal AAV expression last in hepatocytes")["id"] == "long_term_clinical_durability"
+    assert match_scope("will it persist")["id"] == "long_term_clinical_durability"
+    assert match_scope("which writer integrates a 3 kb cassette at AAVS1") is None       # in-scope unchanged
+
+
 def test_safe_harbour_nickname_resolves_to_host_gene():
     # AAVS1 etc. are locus nicknames, NOT HGNC symbols -> map to the host gene so /plan + /writable answer.
     from pen_stack.planner.optimize import resolve_gene

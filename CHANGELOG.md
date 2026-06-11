@@ -3,6 +3,29 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.2.3] - 2026-06-12 - v6.2.3: scope matcher covers functional titer + durability (patch)
+
+**Honesty-coverage fix (from the 20-query acceptance suite, `phase_6.2/PEN-STACK_ACCEPTANCE_TESTS.md`).** The
+known-unknowns matcher (`configs/known_unknowns.yaml`) had no entry for *functional titer / absolute in-vivo
+expression magnitude* and its *durability* terms were too narrow ("how long will it last **in a patient**"), so
+common measured-endpoint questions ("what functional titer (% of normal)?", "how long will episomal AAV
+expression last?") were not explicitly deferred. The no-fabrication spine already held (no titer/half-life was
+ever emitted, and the immune profile lists `patient_specific_titer`), but the matcher should flag these
+proactively.
+
+### Added / Fixed
+- `configs/known_unknowns.yaml`: new known-unknown `in_vivo_expression_magnitude` (functional titer / % of normal
+  / absolute expression — a measured clinical endpoint, never predicted; PEN-STACK gives the relative mechanistic
+  proxy + immune context); broadened `long_term_clinical_durability` match-terms/patterns to catch "how long will
+  … last/persist", "durability", "half-life". Regression test
+  `tests/unit/test_ws_api.py::test_scope_defers_titer_and_durability_questions`.
+
+### Acceptance suite result
+- 20/20 behave as specified at the engine level: grounded where earned, refusing where unsafe (ricin/botulinum),
+  abstaining/deferring where honest (titer, durability, phenotype), no fabricated number. T10 (RNP↔AAV) and T12
+  (multiplex translocation) are enforced via `delivery.cargo_form_compatible` and `multiplex.translocation_risk`
+  on the structured design fields (`writer_output_form`, `edits`).
+
 ## [6.2.2] - 2026-06-12 - v6.2.2: safe-harbour locus-nickname resolution (patch)
 
 **Usability fix.** Site Finder / `/plan` / `/writable` returned 0 plans for `AAVS1` because it is a genomic
