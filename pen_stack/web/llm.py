@@ -134,15 +134,24 @@ def _ollama_base() -> str:
     return os.getenv("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
 
 
+def _llm_timeout() -> float:
+    # generous by default: a 7B model narrating a full dossier on a single GPU can take ~60-90s; too short a
+    # timeout would silently fall back to the deterministic narrator on every real query.
+    return float(os.getenv("PEN_STACK_LLM_TIMEOUT", "150"))
+
+
 def _call_ollama(prompt: str) -> str:
-    """Primary: local Ollama (free). Default model qwen2.5:7b-instruct (override via OLLAMA_MODEL)."""
+    """Primary: local Ollama (free). Default model qwen2.5:7b-instruct (override via OLLAMA_MODEL). Generation is
+    bounded (num_predict) so a reply returns promptly; the science is in the engine, the LLM only narrates."""
     import requests
 
     r = requests.post(
         f"{_ollama_base()}/api/generate",
         json={"model": os.getenv("OLLAMA_MODEL", "qwen2.5:7b-instruct"),
-              "prompt": prompt, "system": SYSTEM, "stream": False},
-        timeout=float(os.getenv("PEN_STACK_LLM_TIMEOUT", "60")))
+              "prompt": prompt, "system": SYSTEM, "stream": False,
+              "options": {"temperature": 0.2,
+                          "num_predict": int(os.getenv("OLLAMA_NUM_PREDICT", "450"))}},
+        timeout=_llm_timeout())
     r.raise_for_status()
     return r.json()["response"]
 
@@ -168,7 +177,7 @@ def _call_nemotron(prompt: str) -> str:
         json={"model": os.getenv("NEMOTRON_MODEL", "nvidia/llama-3.1-nemotron-70b-instruct"),
               "messages": [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}],
               "temperature": 0.2, "max_tokens": 900},
-        timeout=float(os.getenv("PEN_STACK_LLM_TIMEOUT", "60")))
+        timeout=_llm_timeout())
     r.raise_for_status()
     return r.json()["choices"][0]["message"]["content"]
 
@@ -181,9 +190,9 @@ def _prompt(message: str, tool_results: dict, history: list | None) -> str:
         role = turn.get("role", "user")
         convo += f"{role.upper()}: {turn.get('content', '')}\n"
     return (f"{SYSTEM}\n\nTOOL RESULTS (the ONLY source of numbers — cite nothing else):\n"
-            f"{json.dumps(tool_results, default=str, indent=2)}\n\n{convo}USER: {message}\n\n"
-            f"Compose a concise, friendly reply that explains the engine's findings, surfaces the uncertainty "
-            f"and the scope ledger, and uses ONLY numbers present in the tool results.")
+            f"{json.dumps(tool_results, default=str, separators=(',', ':'))}\n\n{convo}USER: {message}\n\n"
+            f"Compose a concise, friendly reply (a short paragraph) that explains the engine's findings, surfaces "
+            f"the uncertainty and the scope ledger, and uses ONLY numbers present in the tool results.")
 
 
 # --------------------------------------------------------------------------------------
