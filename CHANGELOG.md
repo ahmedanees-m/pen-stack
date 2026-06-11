@@ -3,6 +3,36 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [5.13.0] - 2026-06-11 - v5.13 release: The Standard (Genome-Writing Challenge + Co-Scientist II)
+
+**Closed-Loop arc, Cycle 7 of 7.** Make PEN-STACK the field's reference — an open, recurring, held-out benchmark
+others build to — and give scientists a co-scientist that drives the whole loop with immune-risk first-class.
+Workstreams WS-{CHALLENGE,COSCI2,ADOPT}, SHA-locked. (The v6.0.0 "1.0 — First Stable" graduation follows.)
+
+### Added
+- **WS-CHALLENGE** — `benchmarks/genome_writing_challenge/`: the **Genome-Writing Challenge** — an open,
+  recurring, **held-out** leaderboard (the CASP / Virtual-Cell-Challenge model). `evaluate(Submission, round_id)`
+  scores an external `predict_fn(public_input) -> answer` on a held-out round whose labels it never sees; labels
+  are computed by the validated PEN-STACK layers (rules / v5.7 Guardian / v5.6 immune profile) so **no task uses a
+  circular label**; a **no-fabrication** audit runs on every submission; task families include an **immune-risk**
+  task grounded in the v5.6 oracles. One-command runner (`run.py`); a reference submission anchors the leaderboard.
+- **WS-COSCI2** — `pen_stack/agent/co_scientist.py::co_scientist_session(goal, cell_state)`: the matured
+  co-scientist **drives the whole loop** — safe + legal + calibrated designs → predicted outcomes → suggested
+  experiments → exportable protocols — returning the Pareto **strategies**, calibrated **predicted_outcomes**,
+  per-axis **immune_profiles (first-class)**, **suggested_experiments**, **citations** (resolve by construction),
+  a complete **scope_ledger**, and the per-design **safety** decision. The scientist/lab decides; the co-scientist
+  drives. No number is fabricated; hazardous candidates are discarded.
+- **WS-ADOPT** — the integration surface: MCP server tools, the Challenge submission API, and a worked reference
+  example (`docs/integrations.md`). The standing adoption criterion (≥1 external integration + ≥1 external
+  submission) depends on outreach — the honest non-code bottleneck flagged since v3.1; the surface is shipped.
+- Docs: `docs/{challenge,co_scientist_loop,integrations}.md`; prereg `ws_{challenge,cosci2}` + SHA locks; deposit
+  `phase_5.13/`.
+
+### Notes
+- A standard requires a community: PEN-STACK provides the open, reproducible, held-out benchmark and the
+  integration surface; adoption depends on outreach. The co-scientist **drives and presents** (incl. the
+  immune-risk profile with its known-unknowns) — the scientist and lab decide.
+
 ## [5.12.0] - 2026-06-11 - v5.12 release: The Closed Loop (autonomy Level 3)
 
 **Closed-Loop arc, Cycle 6 of 7.** Integrate everything into one continual design→build→test→learn cycle —

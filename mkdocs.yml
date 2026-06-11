@@ -19,6 +19,9 @@ nav:
   - Build interface: build_interface.md
   - Closed loop: closed_loop.md
   - Autonomy levels: autonomy.md
+  - Genome-Writing Challenge: challenge.md
+  - Co-scientist over the loop: co_scientist_loop.md
+  - Integrations & adoption: integrations.md
   - Tutorials:
       - Where can I write X in cell type Y: tutorials/where-can-i-write.md
       - Which writer reaches locus Z: tutorials/which-writer-reaches-locus.md

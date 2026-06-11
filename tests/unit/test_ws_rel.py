@@ -8,23 +8,39 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_5_12_0_everywhere():
-    assert pen_stack.__version__ == "5.12.0"
-    assert 'version = "5.12.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 5.12.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-5.12.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_5_13_0_everywhere():
+    assert pen_stack.__version__ == "5.13.0"
+    assert 'version = "5.13.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 5.13.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-5.13.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def test_changelog_has_5_12_0_entry():
+def test_changelog_has_5_13_0_entry():
     cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "[5.12.0] -" in cl and "[5.11.0] -" in cl       # both kept
-    assert "WS-LOOP" in cl and "WS-CONTINUAL" in cl and "WS-DRIFT" in cl
+    assert "[5.13.0] -" in cl and "[5.12.0] -" in cl       # both kept
+    assert "WS-CHALLENGE" in cl and "WS-COSCI2" in cl and "WS-ADOPT" in cl
 
 
-def test_readme_has_v5_12_section():
+def test_readme_has_v5_13_section():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
-    assert "What is new in v5.12" in r
-    assert "closed loop" in r.lower() and "level 3" in r.lower()
+    assert "What is new in v5.13" in r
+    assert "challenge" in r.lower() and "co-scientist" in r.lower()
+
+
+def test_v5_13_artifacts():
+    # the v5.13 artifacts: the Genome-Writing Challenge + the co-scientist over the loop + integrations + preregs
+    from benchmarks.genome_writing_challenge.harness import (  # noqa: F401
+        Submission,
+        evaluate,
+        reference_submission,
+    )
+    from pen_stack.agent.co_scientist import co_scientist_session  # noqa: F401
+    for p in ("benchmarks/genome_writing_challenge/harness.py", "benchmarks/genome_writing_challenge/run.py",
+              "benchmarks/genome_writing_challenge/README.md", "benchmarks/genome_writing_challenge/SUBMISSIONS.md",
+              "docs/challenge.md", "docs/co_scientist_loop.md", "docs/integrations.md",
+              "prereg/ws_challenge.yaml", "prereg/SHA256_LOCK_ws_challenge.json", "prereg/ws_cosci2.yaml",
+              "prereg/SHA256_LOCK_ws_cosci2.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v5_12_artifacts():

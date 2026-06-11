@@ -15,8 +15,8 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-5.12.0-blue.svg)](CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-346%20passing-success.svg)](tests/)
+[![Version](https://img.shields.io/badge/version-5.13.0-blue.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-353%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
@@ -58,6 +58,24 @@ Two questions gate every genome-writing project, and before PEN-STACK no resourc
 
 Everything is built on bulk-downloadable public data, runs on a single GPU, and is validated **blind** against
 a pre-registered, honest baseline before release.
+
+## What is new in v5.13 — The Standard (Genome-Writing Challenge + Co-Scientist II)
+
+v5.13 (**Closed-Loop arc, Cycle 7 of 7**) makes PEN-STACK the field's reference and its most useful face: the
+accumulated bench tasks become the **Genome-Writing Challenge** — an open, recurring, held-out, reproducible
+benchmark others build *to* — while a **co-scientist drives the whole loop** for a working scientist, every output
+safe, legal, calibrated, cited, scope-ledgered, and immune-profiled.
+
+| Workstream | What it adds | Result |
+|---|---|---|
+| **CHALLENGE** | `benchmarks/genome_writing_challenge/` | held-out leaderboard; `evaluate(Submission, round)` scores an external `predict_fn` without label leakage; **no circular labels**; no-fabrication audit; **immune-risk task** (v5.6) |
+| **COSCI2** | `agent/co_scientist.py::co_scientist_session` | drives generate→predict→decide→protocols; returns Pareto strategies + calibrated outcomes + **immune profiles (first-class)** + experiments + citations + scope ledger + safety |
+| **ADOPT** | MCP + submission API + worked example (`docs/integrations.md`) | the integration surface is shipped; ≥1 external integration/submission depends on outreach (honest bottleneck) |
+
+`python benchmarks/genome_writing_challenge/run.py` scores the reference. See
+[`docs/challenge.md`](docs/challenge.md), [`docs/co_scientist_loop.md`](docs/co_scientist_loop.md),
+[`docs/integrations.md`](docs/integrations.md), and `prereg/ws_{challenge,cosci2}.yaml`. **(v6.0.0 "1.0 — First
+Stable" follows.)**
 
 ## What is new in v5.12 — The Closed Loop (autonomy Level 3)
 
@@ -592,7 +610,7 @@ pen-stack/
 │   │                                   + v5.6 immune_profile (unified per-axis immune-risk vector; never collapsed)
 │   ├── bridge/                       bridge off-target engine (Paper 4): offtarget / fold_qc / guide_qc / pipeline / cli
 │   │                                   + v3.2 offtarget_energetics (position x substitution; held-out 0.88, ships)
-│   ├── agent/                        agentic platform: tools / orchestrator / pen_agent / mcp_server / guardrails; v5.0 co_scientist + cite (multi-strategy, self-critique, cited rationale, scope ledger); v5.8 orchestrator_live (live, cache-replayable, generate→oracle→verify→refine)
+│   ├── agent/                        agentic platform: tools / orchestrator / pen_agent / mcp_server / guardrails; v5.0 co_scientist + cite (multi-strategy, self-critique, cited rationale, scope ledger); v5.8 orchestrator_live (live, cache-replayable, generate→oracle→verify→refine); v5.13 co_scientist_session (drives the full loop, immune-risk first-class)
 │   │                                   + v3.2 epistemic (3-tier status) / scope (known-unknowns matcher)
 │   ├── graph/                        v4.5 living world-model knowledge graph (schema/build/query/ingest/cell_types); typed provenanced edges; gated living loop (propose-only)
 │   ├── oracles/                      v4.0 L1 oracle mesh: OracleResult contract + adapters (genome/structure/protein_design/rna/energetics) over the foundation models; version-pinned cache; v5.2-5.6 delivery-immunology scope cards (delivery_genotoxicity/capsid_epitope/innate_sensing/seroprevalence/antipeg); v5.9 vcell (Arc STATE/scGPT, OOD-gated, output_kind=candidate)
@@ -625,6 +643,7 @@ pen-stack/
 │   ├── ui/app.py                     Streamlit web app (16 pages; v3.2 PEN-Agent shows confidence + epistemic status)
 │   └── cli.py                        unified CLI
 ├── benchmarks/genome_writing_bench/  Genome-Writing Bench v0.3.8 (T1-T16 + co_scientist + safety_screening + generative_design + outcome_prediction + experiment_design + protocol_safety + closed_loop; tasks / harness / solvers / LEADERBOARD / SHAs)
+├── benchmarks/genome_writing_challenge/ v5.13 the public Genome-Writing Challenge (held-out rounds + immune-risk task + submission API; harness / run / README / SUBMISSIONS)
 ├── bench/run.py                      one-command bench entrypoint (--agent, --verify)
 ├── scripts/                          reproducible pipeline drivers (p1_*, p2_*, p4_*, p52/p53 delivery-immunology oracle builds, ws_*_report)
 ├── configs/                          pinned datasets + thresholds + curation (YAML); v3.2 known_unknowns /
@@ -637,7 +656,7 @@ pen-stack/
 │                                       r,v,route,env,bench,cal,o,wv,atlas,graph,mon,ct,plan,crit,cite,immune,
 │                                       genotox,epitope,innate,seroprev,peg,calib,profile,screen,policy,redteam,
 │                                       gen,pareto,orch,vcell,mech,outcome,twincal,acq,aldesign,alvalidate,
-│                                       proto,ingest,simlab,loop,continual,drift} + SHA256 locks)
+│                                       proto,ingest,simlab,loop,continual,drift,challenge,cosci2} + SHA256 locks)
 ├── data/curated/                     small committed tables (universe, gene coords, measured bridge profile,
 │                                       v3.2 bridge_offtarget_energetics.json)
 ├── data/llm_bench_cache/             28 cached ungrounded-LLM transcripts (T7, offline/CI replay)

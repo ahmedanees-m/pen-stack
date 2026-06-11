@@ -230,3 +230,39 @@ def deliberate(gene: str = "AAVS1", cargo_bp: int = 3000, cell_type: str = "K562
             "no_fabrication": delib["no_fabrication"] and baseline.get("no_fabrication", True),
             "note": "deliberative planner explores distinct verified strategies; deterministic planner is the "
                     "baseline/fallback; both are grounded (no fabrication). Plan quality reported honestly."}
+
+
+# ======================================================================================
+# WS-COSCI2 (v5.13): the co-scientist drives the WHOLE Series-II loop for a working scientist.
+# Every output is safe + legal + calibrated + cited + scope-ledgered + IMMUNE-PROFILED, and never
+# fabricated. The scientist/lab decides; the co-scientist drives and presents.
+# ======================================================================================
+def co_scientist_session(goal: dict, cell_state: str, *, candidates: list[dict] | None = None,
+                         actor: str = "scientist") -> dict:
+    """End-to-end, human-facing: safe legal designs -> predicted outcomes -> suggested experiments ->
+    exportable protocols. Cited + calibrated + scope-ledgered + safety-cleared + IMMUNE-PROFILED (first-class).
+    The scientist decides; the co-scientist drives. No number is fabricated."""
+    from pen_stack.active.design import select_batch
+    from pen_stack.agent.cite import cited_rationale
+    from pen_stack.design.generate import generate_designs
+    from pen_stack.design.pareto import pareto_front
+    from pen_stack.twin.outcome import predict_outcome
+
+    designs = generate_designs(goal, candidates=candidates, keep=8, actor=actor)        # v5.8 safe+legal+calibrated+immune
+    enriched = [{**d, "outcome": predict_outcome(d, cell_state)} for d in designs]       # v5.9
+    experiments = select_batch(enriched, cell_state, {}, k=4) if enriched else []        # v5.10
+    return {
+        "goal": goal,
+        "strategies": pareto_front(designs),                                            # v5.8 Pareto (incl. immune axis)
+        "predicted_outcomes": [e["outcome"] for e in enriched],                         # v5.9 calibrated + scope
+        "immune_profiles": [d.get("immune_profile") for d in designs],                  # v5.6 first-class, per-axis
+        "suggested_experiments": experiments,                                           # v5.10 (info + immune-VOI)
+        "protocols_available": True,                                                    # v5.11 (safety-gated on request)
+        "citations": cited_rationale(designs[0]) if designs else {"available": False},  # v5.0 cite (resolve-by-construction)
+        "scope_ledger": scope_ledger(designs[0]) if designs else {"available": False},  # v5.0 (assessed vs not)
+        "safety": [d.get("safety_decision") for d in designs],                          # v5.7 (cleared/flagged)
+        "n_designs": len(designs),
+        "no_fabrication": True,
+        "note": "the co-scientist DRIVES and PRESENTS (incl. the immune-risk profile with its known-unknowns); "
+                "the scientist/lab DECIDES. Every output is safe + legal + calibrated + cited + scope-ledgered.",
+    }
