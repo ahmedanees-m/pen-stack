@@ -65,8 +65,15 @@ def _is_live(model: str, card: dict, probe: bool) -> tuple[bool, str]:
     if ex == "hosted_api":
         if not _net_on():
             return False, "set PEN_STACK_ORACLE_NET=1 to enable live calls"
-        if model == "alphagenome" and not _alphagenome_key():
-            return False, "add configs/alphagenome_api_key.txt"
+        if model == "alphagenome":
+            if not _alphagenome_key():
+                return False, "add configs/alphagenome_api_key.txt"
+            try:
+                from pen_stack.wgenome.providers import package_available
+                if not package_available():
+                    return False, "pip install alphagenome"
+            except Exception:  # noqa: BLE001
+                return False, "alphagenome package unavailable"
         if model == "evo2" and not _nvidia_key():
             return False, "add configs/nvidia_api_key.txt"
         return True, "hosted API ready"

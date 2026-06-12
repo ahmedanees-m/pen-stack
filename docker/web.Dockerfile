@@ -22,6 +22,9 @@ WORKDIR /work
 COPY pyproject.toml README.md ./
 COPY pen_stack/ ./pen_stack/
 RUN pip install ".[server]"
+# v6.4: the AlphaGenome client so the hosted variant-effect oracle is callable when keys + PEN_STACK_ORACLE_NET=1
+# are provided (Evo2 needs only `requests`, already present). Live execution stays opt-in at runtime.
+RUN pip install alphagenome
 # the rest of the repo (configs, benchmarks for the Challenge routes, examples) + the built frontend.
 COPY . /work
 COPY --from=frontend /web/dist /work/web/dist
