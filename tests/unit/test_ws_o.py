@@ -97,8 +97,12 @@ def test_hosted_oracle_goes_live_when_enabled(monkeypatch):
     monkeypatch.setenv("NVIDIA_API_KEY", "x")
     monkeypatch.setenv("ALPHAGENOME_API_KEY", "y")
     from pen_stack.oracles.status import oracle_status
+    from pen_stack.wgenome.providers import package_available
     st = oracle_status(probe=False)
-    assert st["evo2"]["live"] is True and st["alphagenome"]["live"] is True
+    assert st["evo2"]["live"] is True                              # Evo2 hosted: key + flag is enough
+    # AlphaGenome additionally requires its client package (v6.4 honest live check): live IFF the package is
+    # importable in this environment — True where `alphagenome` is installed, False in a bare CI runner.
+    assert st["alphagenome"]["live"] is package_available()
 
 
 def test_claim_scope_oracle_passes_as_claim():
