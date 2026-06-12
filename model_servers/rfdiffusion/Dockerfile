@@ -7,6 +7,12 @@ FROM rfdiffusion:base
 # numpy<2 is REQUIRED: torch 1.12 is built against the numpy 1.x ABI; numpy 2.x -> "Numpy is not available".
 RUN python3.9 -m pip install --no-cache-dir "numpy==1.23.5" "fastapi<0.100" "uvicorn" "pydantic<2"
 
+# The pip-installed package strips examples/; the default config references examples/input_pdbs/1qys.pdb as the
+# reference frame even for unconditional design. Restore that one small PDB to the path the config resolves.
+RUN mkdir -p /usr/local/lib/python3.9/dist-packages/examples/input_pdbs \
+ && wget -q -O /usr/local/lib/python3.9/dist-packages/examples/input_pdbs/1qys.pdb \
+      https://raw.githubusercontent.com/RosettaCommons/RFdiffusion/main/examples/input_pdbs/1qys.pdb
+
 ENV RFDIFFUSION_DIR=/app/RFdiffusion RFDIFFUSION_MODELS=/models PYTHONUNBUFFERED=1
 WORKDIR /opt/server
 COPY model_servers/rfdiffusion/server.py /opt/server/server.py
