@@ -4,7 +4,8 @@
 FROM rfdiffusion:base
 
 # py3.9-compatible FastAPI/uvicorn (the base is python3.9). pydantic<2 to match the older stack.
-RUN python3.9 -m pip install --no-cache-dir "fastapi<0.100" "uvicorn" "pydantic<2"
+# numpy<2 is REQUIRED: torch 1.12 is built against the numpy 1.x ABI; numpy 2.x -> "Numpy is not available".
+RUN python3.9 -m pip install --no-cache-dir "numpy==1.23.5" "fastapi<0.100" "uvicorn" "pydantic<2"
 
 ENV RFDIFFUSION_DIR=/app/RFdiffusion RFDIFFUSION_MODELS=/models PYTHONUNBUFFERED=1
 WORKDIR /opt/server
