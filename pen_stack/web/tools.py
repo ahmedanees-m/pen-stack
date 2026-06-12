@@ -28,6 +28,9 @@ _BP_RE = re.compile(r"(\d{3,6})\s*bp", re.I)
 # uppercase tokens that look like a gene but are not one (jargon / vehicle / form abbreviations)
 _GENE_STOP = {"DNA", "RNA", "MRNA", "AAV", "LNP", "HSV", "CAR", "RNP", "PCR", "WT", "KO", "KI", "ITR",
               "ORF", "UTR", "CDS", "GFP", "ID", "QC", "VG", "MOI", "HLA", "MHC", "CRISPR", "CAS", "TF"}
+# safe-harbour locus nicknames whose text collides with a vehicle keyword (AAVS1 ⊃ "aav") — stripped before
+# vehicle matching so the user's stated vehicle (e.g. lentivirus) is not overridden by the locus name.
+_SAFE_HARBOUR_RE = re.compile(r"\b(aavs1|h11|hipp11|rosa26)\b", re.I)
 
 
 def _first(text: str, table: dict, default):
@@ -59,9 +62,13 @@ def parse_goal(message: str) -> dict:
         cargo = int(m.group(1))
     genes = [g for g in _GENE_RE.findall(message) if g not in _GENE_STOP]
     gene = genes[0] if genes else "AAVS1"
+    # Vehicle matching is substring-based (so "lentivir" catches "lentiviral"); but the safe-harbour nickname
+    # "AAVS1" contains "aav", which would wrongly match the AAV vehicle even when the user said lentivirus/LNP.
+    # Strip those nicknames from the vehicle-search text first so the stated vehicle wins.
+    veh_text = _SAFE_HARBOUR_RE.sub(" ", message.lower())
     return {"write_type": "insertion", "gene": gene, "chrom": _resolve_chrom(gene) or "chr19",
             "edit_intent": _first(message, _INTENTS, "safe_harbour_insertion"),
-            "delivery_vehicle": _first(message, _VEHICLES, "AAV_single"), "cargo_bp": cargo,
+            "delivery_vehicle": _first(veh_text, _VEHICLES, "AAV_single"), "cargo_bp": cargo,
             "cell_type": _first(message, _CELLS, "k562"),
             # the user's plain-language goal IS the cargo-function description the Guardian must screen — so a
             # message like "express a ricin toxin" is biosecurity-screened, not silently passed as benign.

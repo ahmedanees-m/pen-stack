@@ -163,6 +163,14 @@ def test_parse_goal_resolves_the_real_chromosome_not_a_hardcoded_default():
     assert d["chrom"] == ("chr21" if _resolve_chrom("ITGB2") else "chr19")
 
 
+def test_vehicle_parse_is_not_hijacked_by_the_aavs1_nickname():
+    """A safe-harbour nickname (AAVS1 ⊃ 'aav') must NOT override the stated vehicle: 'lentivirus at AAVS1'
+    parses as lentivirus, not AAV — otherwise the immune profile shows the wrong (AAV) genotoxicity."""
+    assert parse_goal("insert a 4.5 kb cassette at AAVS1 with lentivirus")["delivery_vehicle"] == "lentivirus"
+    assert parse_goal("insert a cassette at AAVS1 with LNP mRNA")["delivery_vehicle"] == "lnp_mrna"
+    assert parse_goal("insert FIX at AAVS1 with AAV")["delivery_vehicle"] == "AAV_single"   # explicit AAV still wins
+
+
 def test_axis_meaning_is_self_explanatory_and_flags_proxies():
     from pen_stack.web.tools import axis_meaning
     m = axis_meaning("genotoxicity", 1.0, "genotoxicity: mechanistic proxy — NOT outcome-validated")

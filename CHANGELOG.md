@@ -3,6 +3,14 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.4.3] - 2026-06-12 - Chat vehicle-parse fix (AAVS1 no longer hijacks the vehicle)
+
+**PATCH.** `web/tools.py::parse_goal` matched the delivery vehicle by substring, so the safe-harbour nickname
+**AAVS1** (which contains "aav") wrongly selected the **AAV** vehicle even when the user said *lentivirus* or
+*LNP* — producing the wrong immune profile (e.g. genotoxicity 1.0 instead of lentivirus's 0.481). Fix: strip the
+safe-harbour nicknames (AAVS1/H11/HIPP11/ROSA26) from the vehicle-search text before matching, so the user's
+stated vehicle wins. Explicit "AAV" still selects AAV. New test locks all three cases.
+
 ## [6.4.2] - 2026-06-12 - Co-Scientist chat: real writer recommendations + self-explanatory values
 
 **PATCH — fixes a stale/confusing chat experience reported from the live app.** Three problems, three fixes:
