@@ -8,7 +8,9 @@ cached; absent → deferred / cache replay (the value may be None, never fabrica
 """
 from __future__ import annotations
 
-from pen_stack.oracles import build_result, cache_get
+import os
+
+from pen_stack.oracles import build_result, cache_get, cache_put
 from pen_stack.oracles.schema import OracleResult
 
 # documented in-distribution envelope (representative trained human cell contexts + perturbation kinds).
@@ -38,14 +40,35 @@ def predict_response(cell_state: str, perturbation: dict, *, model: str = "state
     `extrapolating`, never a confident claim. Cached/deferred when the backend is absent (replay is CI default)."""
     extrap = not in_distribution(cell_state, perturbation)
     inputs = {"cell_state": cell_state, "perturbation": perturbation, "live": bool(live)}
-    hit = cache_get(build_result("vcell", model, inputs=inputs).provenance.cache_key)
+    key_obj = build_result("vcell", model, inputs=inputs)
+    hit = cache_get(key_obj.provenance.cache_key)
     if hit is not None:
         return build_result("vcell", model, inputs=inputs, value=hit.get("value"),
                             native_uncertainty=hit.get("native_uncertainty"), available=True, cached=True,
                             source="cache", extrapolating=extrap, in_scope=not extrap,
                             note="replayed from committed oracle cache")
-    # backend not wired here -> deferred (value None), but the contract + OOD gate are real
+    # Live hook (uniform with the other oracles): a State *Transition* server can be stood up to predict a
+    # perturbation response; if PEN_STACK_VCELL_URL is set + up, use it. No such server ships by default —
+    # Arc STATE's SE-600M only EMBEDS cells (needs an scRNA AnnData), while a real perturbation OUTCOME needs
+    # the ST model + a reference cell population. So this path normally defers, and we DO NOT fabricate a number.
+    url = os.getenv("PEN_STACK_VCELL_URL")
+    if os.getenv("PEN_STACK_ORACLE_NET") == "1" and url:
+        try:
+            import requests
+            resp = requests.post(f"{url.rstrip('/')}/predict",
+                                 json={"cell_state": cell_state, "perturbation": perturbation},
+                                 timeout=float(os.getenv("PEN_STACK_MODEL_TIMEOUT", "300"))).json()
+            cache_put(key_obj.provenance.cache_key, {"value": resp})
+            return build_result("vcell", model, inputs=inputs, value=resp, available=True, source="local_gpu",
+                                extrapolating=extrap, in_scope=not extrap,
+                                note="Arc STATE transition server prediction (OOD-gated). Still a candidate hypothesis.")
+        except Exception:  # noqa: BLE001 - server absent/down → defer honestly
+            pass
+    # default: deferred (value None) — the contract + OOD gate are real; the OUTCOME is a known-unknown
     return build_result("vcell", model, inputs=inputs, value=None, available=False,
                         extrapolating=extrap, in_scope=not extrap,
-                        note=(f"{model} virtual-cell backend deferred; OOD={extrap}. "
-                              "Perturbation prediction does not yet consistently beat naive baselines (Arc VCC)."))
+                        note=(f"{model} perturbation-OUTCOME deferred; OOD={extrap}. The Arc STATE model is "
+                              "installable (`pip install arc-state`; SE-600M embeds cells), but a trustworthy "
+                              "perturbation response needs the State-Transition model + a reference scRNA "
+                              "population — and even SOTA does not yet consistently beat naive baselines (Arc VCC), "
+                              "so the magnitude stays a known-unknown rather than a fabricated number."))
