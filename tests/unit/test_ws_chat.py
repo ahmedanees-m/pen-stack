@@ -93,6 +93,11 @@ def test_router_classifies_the_four_lanes():
     assert classify("how many enzymes does it cover?", None) == "meta"
     assert classify("what is gene therapy?", None) == "general"
     assert classify("hi", None) == "general"
+    # a general-biology "how does it work" must NOT be captured by the meta lane (bare "it" is too broad):
+    assert classify("what is CRISPR-Cas9 and how does it cut DNA?", None) == "general"
+    assert classify("how does an AAV capsid enter a cell?", None) == "general"
+    # but "how do you compute X" / pen-stack-scoped questions stay meta:
+    assert classify("how do you compute the immune score?", None) == "meta"
 
 
 def test_general_lane_is_labelled_and_not_attributed_to_pen_stack(monkeypatch):

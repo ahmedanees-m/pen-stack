@@ -3,6 +3,30 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.3.1] - 2026-06-12 - v6.3.1: router fix — general "how does it work" no longer misrouted to the meta lane
+
+**Patch (routing correctness).** Found by a rigorous full-stack test pass (every oracle + every endpoint + the 4
+chat lanes + general/biological-intelligence questions). PATCH release on the stable 6.x API.
+
+### Fixed
+- **Router meta-lane over-capture.** A general-biology question phrased "…and how does **it** work / cut DNA?"
+  (e.g. *"what is CRISPR-Cas9 and how does it cut DNA?"*) matched the meta pattern `how (do|does) (you|it|this|pen)`
+  and was answered from PEN-STACK capability facts instead of general knowledge. Narrowed the bare-pronoun meta
+  trigger to `how (do|does) (you|pen)` so a general "how does it …" routes to the **general** lane (labelled,
+  with an engine pointer); pen-stack-scoped "how do you compute X" stays **meta** (the verb-qualified pattern is
+  unchanged). Regression cases added to `tests/unit/test_ws_chat.py::test_router_classifies_the_four_lanes`.
+
+### Verified (rigorous v6.3 test pass)
+- **Oracle mesh (42/42, engine-direct):** ViennaRNA computes a real MFE fold (−38.3 kcal/mol); AlphaGenome /
+  Evo2 / vcell (Arc-STATE) / AF3·Boltz·Chai·Protenix / RFdiffusion·ProteinMPNN·ESM3 either compute or **honestly
+  defer with the OOD gate + provenance intact** — never fabricate; the generative-candidate `as_claim()` guard
+  raises. Computed immune layers reproduce orderings FROM DATA: genotoxicity LV 0.481 < gammaretro 0.177
+  (LMO2/SCID-X1), capsid AAV 0.28 > Ad 0.18, CpG O/E rich > poor, seroprevalence AAV 0.55 / Ad5 0.35, anti-PEG
+  0.515; full `verify()` clears a clean design, rejects a 7 kb single-AAV (alt lentivirus legal), refuses ricin,
+  rejects an RNP-over-AAV, and flags multiplex translocation risk 0.95.
+- **App surface (live, LLM on):** every endpoint 200 + grounded shape; the 4 chat lanes route correctly with the
+  grounding guard clean on the grounded lanes (0 ungrounded numbers, Nemotron backend).
+
 ## [6.3.0] - 2026-06-12 - v6.3.0: The Hybrid Co-Scientist (grounded engine + general intelligence)
 
 **The chat gains general + biological intelligence WITHOUT loosening the no-fabrication core.** A 4-lane router

@@ -30,7 +30,7 @@ _EXPLAIN = re.compile(r"\b(what (do|does|is) (that|these|those|this|the)\b|what 
                       r"explain (that|this|the)|interpret|what does (it|that) mean|"
                       r"reference range|what range|is that (good|bad|high|low|safe)|how do i read)\b", re.I)
 
-_META = re.compile(r"\b(pen[\s-]?stack|how (do|does) (you|it|this|pen)|how is .* (computed|calculated|derived|scored)|"
+_META = re.compile(r"\b(pen[\s-]?stack|how (do|does) (you|pen)|how is .* (computed|calculated|derived|scored)|"
                    r"how many (enzyme|writer|vector|vehicle|axe|model|system|locus|loci|gene|cell|oracle)\w*|"
                    r"how accurate|accuracy|how reliable|validated|what (can|do) you (do|cover|offer|support)|"
                    r"your (coverage|capabilit|method|model|data|engine)|how (does|is) immunogenicity|"
