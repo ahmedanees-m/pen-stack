@@ -10,8 +10,7 @@ RUN python3.9 -m pip install --no-cache-dir "numpy==1.23.5" "fastapi<0.100" "uvi
 # The pip-installed package strips examples/; the default config references examples/input_pdbs/1qys.pdb as the
 # reference frame even for unconditional design. Restore that one small PDB to the path the config resolves.
 RUN mkdir -p /usr/local/lib/python3.9/dist-packages/examples/input_pdbs \
- && wget -q -O /usr/local/lib/python3.9/dist-packages/examples/input_pdbs/1qys.pdb \
-      https://raw.githubusercontent.com/RosettaCommons/RFdiffusion/main/examples/input_pdbs/1qys.pdb
+ && python3.9 -c "import urllib.request; urllib.request.urlretrieve('https://raw.githubusercontent.com/RosettaCommons/RFdiffusion/main/examples/input_pdbs/1qys.pdb', '/usr/local/lib/python3.9/dist-packages/examples/input_pdbs/1qys.pdb')"
 
 ENV RFDIFFUSION_DIR=/app/RFdiffusion RFDIFFUSION_MODELS=/models PYTHONUNBUFFERED=1
 WORKDIR /opt/server
