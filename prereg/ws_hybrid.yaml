@@ -1,0 +1,30 @@
+# PEN-STACK v6.3 - WS-HYBRID (the hybrid co-scientist: grounded engine + general intelligence). Directional.
+cycle: "v6.3"
+workstream: "WS-HYBRID"
+prepared: "2026-06-12"
+motivation: >
+  Make the chat genuinely useful AND keep the no-fabrication core: explain what the engine's numbers MEAN (scale,
+  reference range, how computed), answer questions about PEN-STACK itself, and answer general biology questions —
+  without ever letting a general-knowledge number be mistaken for a PEN-STACK result.
+deliverable: >
+  pen_stack/web/{router,guide}.py + a rewritten pen_stack/web/llm.py: a 4-lane router (design/explain/meta/general)
+  + configs/metric_guide.yaml (grounded interpretation cards) + live capability facts; conversation memory; a
+  per-lane provenance badge in the frontend.
+method: >
+  classify(message,history) -> lane. design/explain/meta are ENGINE-grounded (the grounding guard runs; numbers
+  come from tool results, the metric guide, or the live facts). general uses the LLM's trained knowledge but is
+  EXPLICITLY labelled 'general knowledge - not PEN-STACK-verified', attributes no number to PEN-STACK, and points
+  to the engine wherever PEN-STACK could compute a concrete answer. Bias to the engine when any design signal is
+  present. History (last turns) is passed so follow-ups ('what does that 0.55 mean?') resolve against the prior
+  dossier; the frontend keeps history in-session until refresh.
+acceptance: >
+  the router classifies the four lanes; the general lane is labelled + provenance=general + grounded=False + carries
+  engine pointers; the meta lane's numbers are all traceable to the live facts (no fabrication); the explain lane
+  interprets prior values from the metric guide without running a fresh default design; the metric guide covers
+  every immune axis + the verdict/twin fields; the design lane still grounds + now explains what each number means.
+honesty_invariant: >
+  a number presented as a PEN-STACK result is engine-grounded (guard ON on design/explain/meta); a number from
+  general knowledge is visibly labelled 'general - not PEN-STACK-verified' and, where PEN-STACK could compute it,
+  redirected to the engine. The general lane ADDS a capability; it does not loosen the grounded lane.
+gate: "G-HYBRID - four lanes routed + provenance-labelled; grounded lanes guarded; general lane labelled+unattributed+pointered; metric guide complete."
+locked_files: [prereg/ws_hybrid.yaml]

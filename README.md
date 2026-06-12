@@ -15,9 +15,9 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-6.2.4-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-6.3.0-blue.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-1.0%20First%20Stable-success.svg)](docs/STABILITY.md)
-[![Tests](https://img.shields.io/badge/tests-371%20passing-success.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-378%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Runtime: Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![Validation: pre-registered](https://img.shields.io/badge/validation-pre--registered-critical.svg)](prereg/)
@@ -72,6 +72,27 @@ demonstrated (v5.12) and the benchmark went public (v5.13).
 > "1.0 — First Stable" is a commitment to **API stability**, not a claim of solving genetic engineering. The
 > unknown funnel remains — made legible (scope flags, known-unknowns, honest baselines, no fabrication), not
 > hidden.
+
+## What is new in v6.3 — The Hybrid Co-Scientist (grounded engine + general intelligence)
+
+The chat now does three things at once without ever blurring them: it **runs the engine** for genome-writing
+requests, **explains what the numbers mean**, and answers **general biology** questions — each in its own lane with
+its own provenance, so a general-knowledge fact can never be mistaken for a PEN-STACK result.
+
+| Lane | Trigger | Source | Provenance |
+|---|---|---|---|
+| 🔬 **Design** | "insert FIX at AAVS1 with AAV in hepatocytes" | the engine (verify/safety/immune/twin) — guard ON | "PEN-STACK · grounded" |
+| 📖 **Explain** | "what does that 0.55 mean?" | the **metric guide** (scale, direction, reference range, how computed) + the prior dossier | "PEN-STACK · metric guide" |
+| ⚙️ **Meta** | "how many enzymes? how is immunogenicity computed? how accurate?" | the **live capability facts** (33,370 systems / 8 families / 5 immune axes …) — guard ON | "PEN-STACK · about the engine" |
+| 🧠 **General** | "hi", "what is AAV", "how does AAV work" | the LLM's trained knowledge | **"General knowledge — not PEN-STACK-verified"**, + a pointer to what PEN-STACK can compute |
+
+- **The one rule that keeps the core intact:** a number presented as a PEN-STACK result is engine-grounded (the
+  guard runs on the first three lanes); a number from general knowledge is **visibly labelled** and, wherever
+  PEN-STACK could compute it, **redirected to the engine**. We added a lane; we did not loosen the grounded one.
+- **Numbers now come with meaning** — every value is explained with its scale, what's good/bad, its reference
+  range, and how it was computed (`configs/metric_guide.yaml`).
+- **Conversation memory** — follow-ups resolve against the prior answer (in-session until you refresh).
+- Workstream **WS-HYBRID** (`pen_stack/web/{router,guide}.py` + the rewritten `llm.py`); `prereg/ws_hybrid.yaml`.
 
 ## What is new in v6.2 — The Web Platform (the human surface)
 
@@ -725,7 +746,7 @@ pen-stack/
 │   │                                   v5.12 closed_loop (loop-integrity hard-gate: gated end-to-end run · Level-3 human-in-control · drift detection · versioned/reversible continual learning)
 │   ├── data/                         ingestion (genome, chromatin, integration, TRIP, safety annotations)
 │   ├── api/                          v6.1 AI integration surface: manifest (capability_manifest + scope_manifest = machine-readable known-unknowns + oracle scope cards)
-│   ├── web/                          v6.2 Web Platform backend: tools (deterministic engine dossier) / llm (grounded co-scientist: Ollama→Nemotron→deterministic + grounding-guard hard gate) / server (FastAPI gateway mounting the v6.1 surface + /chat + SSE + static frontend)
+│   ├── web/                          v6.2 Web Platform backend: tools (deterministic engine dossier) / llm (grounded co-scientist + grounding-guard) / server (FastAPI gateway + /chat + SSE) + v6.3 hybrid: router (4-lane design/explain/meta/general classifier) / guide (metric-interpretation cards + live capability facts)
 │   ├── server/api.py                 FastAPI REST (atlas, crosslink, writable, plan, bridge, ask; v3.3 verify; v6.1 /capabilities /scope /safety /immune /generate /predict /suggest /session + openapi.json 3.1; v5.13 /challenge/{tasks,leaderboard})
 │   ├── ui/app.py                     Streamlit web app (16 pages; v3.2 PEN-Agent shows confidence + epistemic status)
 │   └── cli.py                        unified CLI
@@ -746,7 +767,7 @@ pen-stack/
 │                                       genotox,epitope,innate,seroprev,peg,calib,profile,screen,policy,redteam,
 │                                       gen,pareto,orch,vcell,mech,outcome,twincal,acq,aldesign,alvalidate,
 │                                       proto,ingest,simlab,loop,continual,drift,challenge,cosci2,
-│                                       manifest,openapi,mcp,chat,frontend} + SHA256 locks)
+│                                       manifest,openapi,mcp,chat,frontend,hybrid} + SHA256 locks)
 ├── data/curated/                     small committed tables (universe, gene coords, measured bridge profile,
 │                                       v3.2 bridge_offtarget_energetics.json)
 ├── data/llm_bench_cache/             28 cached ungrounded-LLM transcripts (T7, offline/CI replay)

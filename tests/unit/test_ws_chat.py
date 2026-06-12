@@ -84,6 +84,53 @@ def test_chat_screens_a_hazardous_goal():
     assert run_tools(_GOAL)["safety"]["decision"] == "clear"          # a benign goal still clears
 
 
+def test_router_classifies_the_four_lanes():
+    from pen_stack.web.router import classify
+    H = [{"role": "assistant", "content": "preexisting_nab 0.55"}]
+    assert classify("insert FIX at AAVS1 with AAV in hepatocytes", None) == "design"
+    assert classify("what does that 0.55 mean?", H) == "explain"
+    assert classify("how is immunogenicity calculated in pen-stack?", None) == "meta"
+    assert classify("how many enzymes does it cover?", None) == "meta"
+    assert classify("what is gene therapy?", None) == "general"
+    assert classify("hi", None) == "general"
+
+
+def test_general_lane_is_labelled_and_not_attributed_to_pen_stack(monkeypatch):
+    # general knowledge must be explicitly labelled, provenance=general, grounded=False, with engine pointers
+    monkeypatch.setenv("PEN_STACK_NO_LLM", "1")
+    out = grounded_reply("how many viral and non-viral vectors are there and which is best?")
+    assert out["mode"] == "general" and out["provenance"] == "general" and out["grounded"] is False
+    assert "not a PEN-STACK calculation" in out["reply"].replace("—", "-").replace("—", "-") or "General knowledge" in out["reply"]
+    assert out["angles"] and any(a["module"] for a in out["angles"])          # points to a PEN-STACK module
+
+
+def test_meta_lane_is_grounded_in_live_facts(monkeypatch):
+    monkeypatch.setenv("PEN_STACK_NO_LLM", "1")
+    out = grounded_reply("how many enzymes and vectors does pen-stack cover and how accurate is it?")
+    assert out["mode"] == "meta" and out["provenance"] == "pen-stack" and out["grounded"] is True
+    assert out["facts"]["writers"]["n_families"] == 8 and out["facts"]["immunogenicity"]["n_axes"] == 5
+    # the numbers in the meta reply are all traceable to the facts (no fabrication)
+    assert ungrounded_numbers(out["reply"], extract_grounded_numbers(out["facts"])) == []
+
+
+def test_explain_lane_uses_the_metric_guide_not_a_fresh_design(monkeypatch):
+    monkeypatch.setenv("PEN_STACK_NO_LLM", "1")
+    H = [{"role": "user", "content": "AAV insertion in liver"},
+         {"role": "assistant", "content": "preexisting_nab 0.55 +/-0.15"}]
+    out = grounded_reply("what does the 0.55 anti-NAb value mean and what is the reference range?", H)
+    assert out["mode"] == "explain" and out["tool_results"] is None         # did NOT run a fresh default design
+    assert "eligibility" in out["reply"].lower() or "seroprevalence" in out["reply"].lower()
+
+
+def test_metric_guide_covers_every_immune_axis():
+    from pen_stack.web.guide import metric_guide
+    mg = metric_guide()["metrics"]
+    assert {"genotoxicity", "cd8_epitope", "innate", "preexisting_nab", "anti_peg", "confidence",
+            "relative_expression"} <= set(mg)
+    for card in mg.values():
+        assert card.get("means") and card.get("computed") and card.get("validation")   # each card is complete
+
+
 def test_gateway_chat_requires_a_message():
     pytest.importorskip("fastapi")
     from fastapi.testclient import TestClient

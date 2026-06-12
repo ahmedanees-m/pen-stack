@@ -1,0 +1,102 @@
+# PEN-STACK v6.3 — Metric Interpretation Guide (the "what does this number mean" layer).
+# For every quantity the engine returns, a GROUNDED interpretation card: what it is, the scale + direction,
+# reference bands, how it is computed (the oracle + data source), its validation status, and the caveat. These
+# are curated facts ABOUT the metrics (not predictions), so the chat can explain a number without fabricating —
+# the value is still the engine's; this only adds the textbook reading of it. Bands are interpretive aids, not
+# thresholds for a decision.
+
+metrics:
+  genotoxicity:
+    label: "Genotoxicity safety score"
+    scale: "0–1 (dimensionless)"
+    direction: "higher = safer (1.0 = no insertional-mutagenesis mechanism)"
+    bands: { favorable: ">=0.7", moderate: "0.4–0.7", concern: "<0.4" }
+    means: "relative insertional-oncogenesis safety of the delivery/integration strategy. 1.0 = episomal/
+      non-integrating (no integration → no insertional mutagenesis); lower = an integrating vector whose insertion
+      sites fall nearer known proto-oncogenes."
+    computed: "for integrating vectors, from VISDB integration-site maps × COSMIC Cancer-Gene-Census oncogene
+      proximity (per-vector enrichment of integrations within 50 kb of an oncogene vs background)."
+    validation: "mechanistic proxy — NOT outcome-validated (the actual clonal-transformation rate is measured, not predicted)."
+    reference: "e.g. lentiviral ~0.48 (2.08× oncogene-proximity enrichment) vs episomal AAV 1.0."
+
+  cd8_epitope:
+    label: "CD8 T-cell capsid epitope-load score"
+    scale: "0–1 (dimensionless)"
+    direction: "higher = fewer strong CD8 epitopes presented (1.0 = none / non-viral)"
+    bands: { favorable: ">=0.6", moderate: "0.3–0.6", concern: "<0.3" }
+    means: "sequence-derived load of strong MHC-I (CD8) epitopes on the viral capsid/envelope across a common
+      HLA-I panel. Lower = more of the capsid is presentable to cytotoxic T cells."
+    computed: "MHCflurry binding prediction over the capsid/envelope sequence × a 12-allele HLA-I panel →
+      fraction of strong binders; score = 1 − strong-epitope-fraction."
+    validation: "mechanistic proxy — NOT outcome-validated; covers CD8/MHC-I only (CD4/MHC-II help is a known-unknown)."
+    reference: "e.g. AAV2 capsid ~0.28 (≈72% of windows are strong binders across the panel)."
+
+  innate:
+    label: "Innate-sensing safety score"
+    scale: "0–1 (dimensionless)"
+    direction: "higher = less innate-immune sensing of the cargo"
+    bands: { favorable: ">=0.7", moderate: "0.4–0.7", concern: "<0.4" }
+    means: "how strongly the cargo nucleic acid triggers innate pattern-recognition (DNA: CpG/TLR9; mRNA:
+      dsRNA/RIG-I). Higher = fewer immunostimulatory motifs."
+    computed: "CpG observed/expected for DNA cargo (TLR9), and U-content + ViennaRNA dsRNA structure for mRNA
+      (RIG-I/MDA5); RNP minimal. mRNA is partial (nucleoside modification is not sequence-derivable)."
+    validation: "mechanistic proxy (partial for mRNA) — the realized in-vivo magnitude is a known-unknown."
+    reference: "often 'n/a' when no cargo sequence is supplied (the engine abstains rather than guess)."
+
+  preexisting_nab:
+    label: "Pre-existing neutralizing-antibody eligibility score"
+    scale: "0–1 (dimensionless)"
+    direction: "higher = fewer patients excluded by pre-existing antibodies"
+    bands: { favorable: ">=0.7", moderate: "0.4–0.7", concern: "<0.4" }
+    means: "the fraction of the population NOT excluded by pre-existing neutralizing antibodies to the vector.
+      It predicts ELIGIBILITY (who can be dosed), NOT the response magnitude in an eligible patient."
+    computed: "1 − midpoint of published anti-vector NAb seroprevalence ranges (serosurveys, per serotype)."
+    validation: "population proxy — predicts eligibility, not response magnitude. The individual patient's titer is a known-unknown (a clinical test)."
+    reference: "e.g. AAV ~0.55 (≈30–60% seroprevalence), Ad5 ~0.35 (40–90%), VSV ~0.975 (0–5%)."
+
+  anti_peg:
+    label: "Anti-PEG (re-dosing) eligibility score"
+    scale: "0–1 (dimensionless)"
+    direction: "higher = lower pre-existing anti-PEG barrier to re-dosing"
+    bands: { favorable: ">=0.7", moderate: "0.4–0.7", concern: "<0.4" }
+    means: "pre-existing anti-PEG immunity that gates RE-DOSING of a PEGylated delivery (e.g. LNP). Activates
+      only for PEGylated vehicles; abstains for non-PEG vehicles."
+    computed: "1 − midpoint of published anti-PEG seroprevalence ranges (population serosurveys)."
+    validation: "population proxy — gates re-dosing eligibility, not calibrated to a re-dosing-failure rate. Patient-specific and post-dose-1 induced anti-PEG are known-unknowns."
+    reference: "e.g. PEGylated LNP ~0.515 (≈25–72% population anti-PEG prevalence); 'n/a' for non-PEG vehicles."
+
+  confidence:
+    label: "Calibrated confidence (soft components)"
+    scale: "0–1, with an interval [low–high]"
+    direction: "higher = more confident on the SOFT (scored) components — a SEPARATE axis from legality"
+    bands: { high: ">=0.7", moderate: "0.4–0.7", low: "<0.4" }
+    means: "calibrated confidence on the design's soft/scored components (durability, writer activity, etc.),
+      reported with an uncertainty interval. It is NOT legality (a legal design can still be low-confidence), and
+      it is NOT a success probability. 'None' = the engine ABSTAINED (no calibrated score for this design)."
+    computed: "L4 trust layer over the planner scores, calibrated with held-out conformal intervals."
+    validation: "calibrated where data supports it; abstains (None) rather than emit an uncalibrated number."
+    reference: "interval widens / status flips to 'extrapolating' for out-of-distribution contexts."
+
+  relative_expression:
+    label: "Relative expression estimate (digital twin)"
+    scale: "0–1 (relative, dimensionless), with an interval"
+    direction: "higher = stronger relative cassette expression — NOT an absolute titer"
+    bands: { strong: ">=0.6", moderate: "0.3–0.6", weak: "<0.3" }
+    means: "a RELATIVE, dimensionless expression estimate (promoter × copy number × accessibility). It is NOT a
+      phenotype, NOT a functional titer, and NOT a percent-of-normal — those are measured clinical endpoints."
+    computed: "closed-form mechanistic twin (steady-state; no silencing modeled; linear copy scaling), fused with
+      the immune context; interval is a heuristic band that WIDENS ~1.6× under out-of-distribution context."
+    validation: "honest heuristic band — NOT a trained conformal interval (no public perturbation-outcome calibration set)."
+    reference: "absolute titer / % of normal is explicitly out of scope (known-unknown in_vivo_expression_magnitude)."
+
+# how to read the safety decision (categorical, not a number)
+safety_decision:
+  clear: "no dual-use hazard signal — the design proceeds to scoring."
+  flag: "a low/medium dual-use signal — surfaced for human review."
+  escalate: "an ambiguous dual-use (e.g. gain-of-function) case — routed to oversight (P3CO/DURC)."
+  refuse: "a high-severity controlled-hazard match — the design is REFUSED and not scored further (reframing cannot flip it)."
+
+# the global caveat that rides every quantitative answer
+disclaimer: "Decision-support, not a clinical directive. Every number is a tool-computed proxy with a stated
+  scope; proxies are not outcome-validated, and patient-specific magnitudes (titer, response, durability) are
+  explicit known-unknowns — measured, never predicted."

@@ -8,11 +8,25 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_6_2_4_everywhere():
-    assert pen_stack.__version__ == "6.2.4"
-    assert 'version = "6.2.4"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 6.2.4" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-6.2.4" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_6_3_0_everywhere():
+    assert pen_stack.__version__ == "6.3.0"
+    assert 'version = "6.3.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 6.3.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-6.3.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+
+
+def test_v6_3_artifacts():
+    # the v6.3 artifacts: the hybrid co-scientist (4-lane router + metric guide + facts + hybrid llm + preregs)
+    from pen_stack.web.guide import metric_guide, pen_stack_facts  # noqa: F401
+    from pen_stack.web.llm import grounded_reply  # noqa: F401
+    from pen_stack.web.router import classify, pen_stack_angles  # noqa: F401
+    cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "[6.3.0] -" in cl and "WS-HYBRID" in cl
+    r = (_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "What is new in v6.3" in r and "general knowledge" in r.lower()
+    for p in ("pen_stack/web/router.py", "pen_stack/web/guide.py", "configs/metric_guide.yaml",
+              "prereg/ws_hybrid.yaml", "prereg/SHA256_LOCK_ws_hybrid.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v6_2_artifacts():

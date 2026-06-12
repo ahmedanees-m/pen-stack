@@ -79,8 +79,10 @@ def chat_stream_route(req: dict) -> StreamingResponse:
         for word in result["reply"].split(" "):
             yield f"data: {json.dumps({'token': word + ' '})}\n\n"
         yield ("event: done\ndata: " + json.dumps(
-            {"tool_results": result["tool_results"], "backend": result["backend"],
-             "grounded": result["grounded"]}, default=str) + "\n\n")
+            {"tool_results": result.get("tool_results"), "backend": result["backend"],
+             "grounded": result["grounded"], "mode": result.get("mode"),
+             "provenance": result.get("provenance"), "angles": result.get("angles"),
+             "facts": result.get("facts")}, default=str) + "\n\n")
 
     return StreamingResponse(_events(), media_type="text/event-stream")
 

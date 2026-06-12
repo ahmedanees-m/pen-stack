@@ -41,15 +41,14 @@ export default function CoScientist({ onBackend, allowLlm }) {
           setMsgs((m) => { const c = [...m]; c[c.length - 1] = { role: "assistant", content: acc, streaming: true }; return c; });
         },
       });
-      const dossier = done.tool_results || null;
       onBackend?.(done.backend);
-      setMsgs((m) => { const c = [...m]; c[c.length - 1] = { role: "assistant", content: acc, dossier, backend: done.backend }; return c; });
+      setMsgs((m) => { const c = [...m]; c[c.length - 1] = { role: "assistant", content: acc, dossier: done.tool_results || null, backend: done.backend, mode: done.mode, provenance: done.provenance, angles: done.angles }; return c; });
     } catch (e) {
       // network/stream failure → fall back to the non-streamed grounded endpoint
       try {
         const r = await api.chat(q, history, allowLlm);
         onBackend?.(r.backend);
-        setMsgs((m) => { const c = [...m]; c[c.length - 1] = { role: "assistant", content: r.reply, dossier: r.tool_results, backend: r.backend }; return c; });
+        setMsgs((m) => { const c = [...m]; c[c.length - 1] = { role: "assistant", content: r.reply, dossier: r.tool_results, backend: r.backend, mode: r.mode, provenance: r.provenance, angles: r.angles }; return c; });
       } catch (e2) {
         setMsgs((m) => { const c = [...m]; c[c.length - 1] = { role: "assistant", content: "", error: String(e2.message || e2) }; return c; });
       }
@@ -65,7 +64,7 @@ export default function CoScientist({ onBackend, allowLlm }) {
           <Welcome onPick={send} />
         ) : (
           <div className="flex-1 space-y-4">
-            {msgs.map((m, i) => <Message key={i} m={m} />)}
+            {msgs.map((m, i) => <Message key={i} m={m} onPick={send} />)}
             <div ref={endRef} />
           </div>
         )}
@@ -83,8 +82,8 @@ export default function CoScientist({ onBackend, allowLlm }) {
             <Button onClick={() => send()} disabled={busy || !input.trim()}>Send</Button>
           </div>
           <p className="mt-1.5 text-[11px] text-fg-faint">
-            The co-scientist may explain and compare, but every number comes from the engine — a guard strikes any
-            value it can&apos;t trace to a tool result.
+            Genome-writing questions are answered by the engine (🔬 every number tool-sourced, guarded). General
+            questions get a clearly-labelled 🧠 general-knowledge answer — and a pointer to what PEN-STACK can compute.
           </p>
         </div>
       </div>
@@ -119,7 +118,7 @@ function Welcome({ onPick }) {
   );
 }
 
-function Message({ m }) {
+function Message({ m, onPick }) {
   if (m.role === "user") {
     return (
       <div className="flex justify-end">
@@ -127,17 +126,50 @@ function Message({ m }) {
       </div>
     );
   }
+  const general = m.provenance === "general";
   return (
     <div className="flex justify-start">
       <div className="max-w-[92%] space-y-3">
-        <div className="rounded-2xl rounded-bl-sm border border-line bg-ink-850 px-4 py-3 text-sm leading-relaxed">
+        <div className={`rounded-2xl rounded-bl-sm border px-4 py-3 text-sm leading-relaxed ${general ? "border-warn/30 bg-warn/5" : "border-line bg-ink-850"}`}>
+          {m.provenance && !m.streaming && <ProvenanceBadge mode={m.mode} provenance={m.provenance} />}
           {m.error ? <span className="text-bad">Engine error: {m.error}</span> : <Markdownish text={m.content} />}
           {m.streaming && <span className="ml-1 inline-block h-3 w-1.5 animate-pulse bg-brand align-middle" />}
+          {m.angles?.length > 0 && <AnglePointers angles={m.angles} onPick={onPick} />}
           {m.backend && (
-            <div className="mt-2 text-[10.5px] text-fg-faint">narrated by <span className="font-mono">{m.backend}</span> · numbers from the engine</div>
+            <div className="mt-2 text-[10.5px] text-fg-faint">
+              {general ? "from general knowledge" : "numbers from the engine"} · narrated by <span className="font-mono">{m.backend}</span>
+            </div>
           )}
         </div>
         {m.dossier && <InlineDossier d={m.dossier} />}
+      </div>
+    </div>
+  );
+}
+
+const MODE_LABEL = {
+  design: "PEN-STACK · grounded design", explain: "PEN-STACK · metric guide",
+  meta: "PEN-STACK · about the engine", general: "General knowledge — not PEN-STACK-verified",
+};
+function ProvenanceBadge({ mode, provenance }) {
+  const general = provenance === "general";
+  return (
+    <div className="mb-2 inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10.5px] font-medium"
+         style={{ borderColor: general ? "var(--warn)55" : "var(--ok)55", color: general ? "var(--warn)" : "var(--ok)" }}>
+      <span>{general ? "🧠" : "🔬"}</span>{MODE_LABEL[mode] || (general ? "General knowledge" : "PEN-STACK")}
+    </div>
+  );
+}
+function AnglePointers({ angles, onPick }) {
+  return (
+    <div className="mt-3 rounded-lg border border-brand/25 bg-brand/5 p-2.5">
+      <div className="mb-1 text-[11px] font-semibold text-brand">💡 PEN-STACK can compute a grounded answer:</div>
+      <div className="flex flex-col gap-1">
+        {angles.map((a, i) => (
+          <button key={i} onClick={() => onPick?.(a.example)} className="text-left text-[11px] text-fg-dim hover:text-brand">
+            <span className="font-medium">{a.module}</span> — <em>“{a.example}”</em>
+          </button>
+        ))}
       </div>
     </div>
   );

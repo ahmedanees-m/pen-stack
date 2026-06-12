@@ -3,6 +3,39 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.3.0] - 2026-06-12 - v6.3.0: The Hybrid Co-Scientist (grounded engine + general intelligence)
+
+**The chat gains general + biological intelligence WITHOUT loosening the no-fabrication core.** A 4-lane router
+keeps grounded engine output and general trained-knowledge in separate, explicitly-labelled lanes, so a
+general-knowledge fact can never be mistaken for a PEN-STACK result. Numbers now come with their meaning,
+reference range, and how they were computed; the conversation has memory. MINOR feature release on the stable
+6.x API. Workstream WS-HYBRID, SHA-locked.
+
+### Added
+- **WS-HYBRID** — `pen_stack/web/router.py` (deterministic 4-lane classifier: `design` / `explain` / `meta` /
+  `general`, biased to the engine whenever a design signal is present) + `pen_stack/web/guide.py`
+  (`metric_guide()` interpretation cards + `pen_stack_facts()` assembled from LIVE engine data) + a rewritten
+  `pen_stack/web/llm.py::grounded_reply` that dispatches per lane and returns `{mode, provenance, grounded, …}`.
+- **`configs/metric_guide.yaml`** — grounded interpretation for every engine number (genotoxicity, CD8 epitope,
+  innate, pre-existing NAb, anti-PEG, confidence, relative expression + the safety decisions): what it means, the
+  scale + direction, reference bands, how it is computed, and its validation status. The chat now EXPLAINS a value
+  (scale / what's good-or-bad / reference range / method), not just prints it.
+- **Lanes & provenance:** `design`/`explain`/`meta` are engine-grounded (the grounding guard runs over the tool
+  results, the metric guide, or the live facts); `general` answers from the LLM's trained knowledge, is **labelled
+  "General knowledge — not PEN-STACK-verified"**, attributes no number to PEN-STACK, and **points to the engine**
+  wherever PEN-STACK could compute a concrete answer (`pen_stack_angles`).
+- **Conversation memory** — the last turns are passed to every lane so follow-ups ("what does that 0.55 mean?")
+  resolve against the prior dossier; the frontend keeps history in-session until refresh and renders a per-message
+  provenance badge (🔬 grounded vs 🧠 general) + the "PEN-STACK can compute this →" pointers.
+- Tests: `tests/unit/test_ws_chat.py` — the 4-lane router, the general lane labelled+unattributed+pointered, the
+  meta lane grounded in live facts, the explain lane interpreting prior values without a fresh design, the metric
+  guide complete. prereg `ws_hybrid` + SHA lock; deposit `phase_6.3/`.
+
+### Notes
+- **The core is untouched.** The guard still runs on every PEN-STACK-attributed number; we ADDED a general lane,
+  we did not loosen the grounded lane. The honest cost is that general-lane answers carry the LLM's fallibility —
+  made safe by the explicit label and by redirecting to the engine for anything computable.
+
 ## [6.2.4] - 2026-06-12 - v6.2.4: faster grounded narration (LLM backends) (patch)
 
 **Performance + a real fix, from benchmarking the narration backends on the deployment GPU (RTX A4000).** The

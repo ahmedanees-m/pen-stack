@@ -1,46 +1,58 @@
-"""Grounded co-scientist for the web chat (PEN-STACK v6.2, WS-CHAT).
+"""Hybrid grounded co-scientist (PEN-STACK v6.3).
 
-The conversational layer that is helpful **and** cannot fabricate. The flow is always:
+PEN-STACK's ENGINE is the brain: for anything it can compute, the number comes from the engine and the grounding
+guard strikes any value the model can't trace. On top of that the assistant has general + biological intelligence
+for greetings and textbook questions — but those are answered in a SEPARATE, explicitly-labelled lane so a
+general-knowledge fact can never be mistaken for a PEN-STACK result. Four lanes (see web.router.classify):
 
-    run_tools(message)  ->  the ENGINE computes every number (verify / safety / immune / scope)
-    extract_grounded_numbers(tool_results)  ->  the allow-list of values the model may cite
-    LLM narrates over the tool results  ->  Ollama (local, free) → Nemotron (hosted free tier) → deterministic
-    _enforce_grounding(text, allow_list)  ->  HARD GATE: any number not traceable to a tool result is struck
+  * design / explain → run the engine, narrate over the dossier + the metric guide (the guard runs; numbers are
+    the engine's, the guide explains what they MEAN — scale, direction, reference band).
+  * meta            → answer about PEN-STACK itself from the LIVE capability facts (the guard runs over the facts).
+  * general         → the LLM's trained knowledge, prefixed "general knowledge — not PEN-STACK-verified", with a
+    pointer to the engine wherever PEN-STACK could compute a concrete answer. No number is attributed to PEN-STACK.
 
-The LLM *routes, explains, and compares*; it never sources a number. If both LLMs are unavailable the
-deterministic narrator composes the reply directly from the tool results — so the science never depends on the
-model. The grounding guard is the invariant: a numeric claim absent from the tool results cannot survive into a
-reply (it is replaced with the marker ``[unverified]``). This is asserted by ``tests/unit/test_ws_chat.py``.
+Conversation memory: the last turns are passed in `history`, so follow-ups ("what does that 0.55 mean?") resolve
+against the prior dossier. (The frontend keeps history in-session until refresh.)
 """
 from __future__ import annotations
 
+import json
 import os
 import re
 from pathlib import Path
-from typing import Any
 
+from pen_stack.web.guide import enrich_axes, guide_for, metric_guide, pen_stack_facts
+from pen_stack.web.router import classify, pen_stack_angles
 from pen_stack.web.tools import extract_grounded_numbers, run_tools
 
-SYSTEM = (
-    "You are PEN-STACK's co-scientist for genome writing. You may explain, compare, and route between the "
-    "engine's tools, but you MUST NOT state any number, score, probability, titer, or confidence that is not "
-    "present verbatim in the TOOL RESULTS provided to you. If a value is not in the tool results, say it is "
-    "out of scope or unknown — never invent it. Never invent a citation. Always surface uncertainty and the "
-    "scope ledger ('what I can't tell you'). Be concise, friendly, and honest. This is decision-support, not a "
-    "clinical directive."
+# -------------------------------------------------------------------------------------- system prompts
+SYSTEM_GROUNDED = (
+    "You are PEN-STACK's co-scientist for genome writing. The PEN-STACK ENGINE computed the TOOL RESULTS; you "
+    "explain and route, but you MUST NOT state any number, score, or probability that is not present in the TOOL "
+    "RESULTS or the METRIC GUIDE provided. For every key number, also explain what it MEANS using the metric "
+    "guide — its scale, whether higher is better, the reference band, and how it was computed — so the user "
+    "understands the value, not just sees it. Surface uncertainty and the scope ledger ('what I can't tell you'). "
+    "Be concise, friendly, honest. Decision-support, not a clinical directive."
+)
+SYSTEM_META = (
+    "You are PEN-STACK's co-scientist explaining the SYSTEM ITSELF (coverage, methods, accuracy). Answer using "
+    "ONLY the FACTS provided (counts, families, axes, how each is computed, the honesty posture). Do not invent "
+    "capabilities, counts, or accuracy claims. Be concise and precise; cite the numbers from the FACTS."
+)
+SYSTEM_GENERAL = (
+    "You are PEN-STACK's assistant answering a GENERAL biology / genome-engineering question from your own trained "
+    "knowledge. Answer clearly and helpfully at a graduate level. This is NOT a PEN-STACK calculation, so do NOT "
+    "present any number as a PEN-STACK result or imply it is engine-verified. If PEN-STACK could compute a concrete, "
+    "grounded answer for the user's case, mention that briefly. Keep it focused."
 )
 
-# the number marker the guard substitutes for any ungrounded numeric token the model emits.
 _UNVERIFIED = "[unverified]"
-# a numeric token in model prose: optional sign, digits, optional decimal, optional %  (e.g. 0.28, 28%, 4500)
 _TOKEN_RE = re.compile(r"(?<![\w.])-?\d+(?:\.\d+)?%?")
+_GENERAL_LABEL = "🧠 *General knowledge (from my training — not a PEN-STACK calculation):*"
 
 
-# --------------------------------------------------------------------------------------
-# the grounding guard (the hard gate)
-# --------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------- the grounding guard
 def _is_grounded(token: str, grounded: set[str]) -> bool:
-    """A numeric token is grounded iff it (or a normalised form) appears in the engine's allow-list."""
     raw = token.strip()
     pct = raw.endswith("%")
     body = raw[:-1] if pct else raw
@@ -51,113 +63,140 @@ def _is_grounded(token: str, grounded: set[str]) -> bool:
     except ValueError:
         return False
     forms = {body, str(int(f)) if f.is_integer() else str(f), f"{f:.2f}"}
-    if pct:                                              # "28%" matches a grounded 0.28 score or a grounded 28
+    if pct:
         forms.add(str(f / 100))
         forms.add(f"{f / 100:.2f}")
     return bool(forms & grounded)
 
 
 def _enforce_grounding(text: str, grounded: set[str]) -> str:
-    """Strike every numeric token in `text` that is not traceable to the engine's tool results. The result is
-    a reply in which **no number is absent from the tool results** — the invariant the chat is built on."""
     return _TOKEN_RE.sub(lambda m: m.group(0) if _is_grounded(m.group(0), grounded) else _UNVERIFIED, text)
 
 
 def ungrounded_numbers(text: str, grounded: set[str]) -> list[str]:
-    """Diagnostic: the numeric tokens in `text` that are NOT in the allow-list (empty after enforcement)."""
     return [m.group(0) for m in _TOKEN_RE.finditer(text) if not _is_grounded(m.group(0), grounded)]
 
 
-# --------------------------------------------------------------------------------------
-# the deterministic narrator (no-LLM fallback; numbers grounded by construction)
-# --------------------------------------------------------------------------------------
-def _fmt(x: Any) -> str:
+# -------------------------------------------------------------------------------------- deterministic narrators
+def _fmt(x):
     if isinstance(x, float):
         return f"{x:.2f}".rstrip("0").rstrip(".") if x != int(x) else str(int(x))
     return str(x)
 
 
 def _deterministic_narrate(tr: dict) -> str:
-    """Compose a clear English reply directly from the engine's tool results. Every number here comes straight
-    from `tr`, so the reply is grounded by construction (this is the LLM-offline path)."""
     d = tr["parsed_design"]
     v = tr["verdict"]
-    lines: list[str] = []
-    lines.append(
-        f"I read your goal as: a **{d['edit_intent'].replace('_', ' ')}** of **{d['gene']}** "
-        f"(~{d['cargo_bp']} bp cargo) delivered by **{d['delivery_vehicle'].replace('_', ' ')}** "
-        f"in **{d['cell_type']}**. Here is what the engine computes — every number below is tool-sourced.")
-
+    lines = [f"I read your goal as a **{d['edit_intent'].replace('_', ' ')}** of **{d['gene']}** "
+             f"(~{d['cargo_bp']} bp) by **{d['delivery_vehicle'].replace('_', ' ')}** in **{d['cell_type']}**. "
+             f"Every number below is engine-computed."]
     legal = "legal" if v["legal"] else ("deferred" if v["legal"] is None else "ILLEGAL")
     line = f"**Verification.** The design is **{legal}** ({v['epistemic_status']})."
     if v["violations"]:
         line += " Violations: " + ", ".join(str(x) for x in v["violations"]) + "."
+    g = guide_for("confidence")
     if v["confidence"] is not None:
         band = f" [{v['interval'][0]:.2f}–{v['interval'][1]:.2f}]" if v.get("interval") else ""
-        line += f" Calibrated confidence on the soft components: **{v['confidence']:.2f}**{band}."
+        line += f" Calibrated confidence: **{v['confidence']:.2f}**{band} — {g['means'].split('.')[0]}."
     else:
-        line += " (Confidence abstained — no calibrated soft-component score for this design.)"
+        line += " (Confidence abstained — no calibrated score for this design.)"
     lines.append(line)
-
     s = tr["safety"]
     if s.get("decision"):
-        lines.append(f"**Safety (Guardian).** Decision: **{s['decision']}** — {s.get('reason', 'n/a')}.")
-
-    imm = tr["immune_profile"]
-    axes = imm.get("axes") or {}
+        sd = (metric_guide().get("safety_decision") or {}).get(s["decision"], "")
+        lines.append(f"**Safety (Guardian).** **{s['decision']}** — {s.get('reason', '')}. {sd}")
+    axes = (tr["immune_profile"].get("axes") or {})
     if axes:
-        lines.append("**Immune-risk profile** (per-axis — never collapsed into one number):")
+        lines.append("**Immune-risk profile** (per-axis — never collapsed). Each is 0–1, higher = safer:")
         for name, a in axes.items():
+            gd = guide_for(name) or {}
             val = _fmt(a["value"]) if a.get("value") is not None else "n/a"
-            unc = a.get("uncertainty")
-            unc_s = f" ±{_fmt(unc)}" if unc is not None else ""
-            lab = a.get("validation", "")
-            lines.append(f"  • {name.replace('_', ' ')}: **{val}**{unc_s} — {lab}")
-        if imm.get("collapsed_score") is None:
-            lines.append("  (No single fused immune score is asserted — that would overstate certainty.)")
-
-    sc = tr["scope"]
-    if sc.get("out_of_scope"):
-        lines.append(f"**Out of scope.** {sc.get('why') or sc.get('title')} PEN-STACK will not guess a value here.")
-    ku = imm.get("known_unknowns") or []
+            unc = f" ±{_fmt(a['uncertainty'])}" if a.get("uncertainty") is not None else ""
+            meaning = (gd.get("means", "").split(".")[0]) if gd else ""
+            lines.append(f"  • **{gd.get('label', name)}: {val}{unc}** — {meaning}. _{a.get('validation', '')}_")
+    ku = tr["immune_profile"].get("known_unknowns") or []
     if ku:
-        lines.append("**What I can't tell you** (known-unknowns): " + ", ".join(str(x) for x in ku) + ".")
-
+        lines.append("**What I can't tell you** (measured, never predicted): " + ", ".join(str(x) for x in ku) + ".")
     lines.append(f"_{tr['disclaimer']}_")
     return "\n".join(lines)
 
 
-# --------------------------------------------------------------------------------------
-# LLM backends (free-tier first; both optional)
-# --------------------------------------------------------------------------------------
-def _ollama_base() -> str:
+def _deterministic_meta(facts: dict) -> str:
+    w = facts.get("writers", {})
+    dv = facts.get("delivery", {})
+    im = facts.get("immunogenicity", {})
+    ac = facts.get("accuracy", {})
+    lines = ["**What PEN-STACK covers (from the live engine):**"]
+    if w.get("systems"):
+        lines.append(f"  • **Writers/enzymes:** {w['systems']} systems across {w['n_families']} families "
+                     f"({', '.join(w.get('families', []))}).")
+    if dv.get("n_vehicles"):
+        lines.append(f"  • **Delivery vehicles:** {dv['n_vehicles']} ({', '.join(dv.get('vehicles', []))}).")
+    if im.get("n_axes"):
+        lines.append(f"  • **Immune-risk axes:** {im['n_axes']} ({', '.join(im.get('axes', []))}), never collapsed.")
+    lines.append(f"  • **Accuracy posture:** {ac.get('posture', '')}")
+    lines.append(f"  • **Not predicted:** {ac.get('what_is_NOT_predicted', '')}")
+    return "\n".join(lines)
+
+
+_ALIASES = {"nab": "preexisting_nab", "antibod": "preexisting_nab", "seroprev": "preexisting_nab",
+            "peg": "anti_peg", "genotox": "genotoxicity", "oncogen": "genotoxicity", "epitope": "cd8_epitope",
+            "cd8": "cd8_epitope", "t-cell": "cd8_epitope", "t cell": "cd8_epitope", "innate": "innate",
+            "cpg": "innate", "confidence": "confidence", "interval": "confidence", "expression": "relative_expression",
+            "durab": "relative_expression"}
+
+
+def _explain_guides(message: str) -> dict:
+    """Which metric cards a follow-up is asking about (by metric name or a common alias); all of them if unsure."""
+    low = message.lower()
+    metrics = metric_guide().get("metrics", {})
+    named = [k for k in metrics if k.replace("_", " ") in low or k in low]
+    named += [k for w, k in _ALIASES.items() if w in low and k not in named]
+    return {k: guide_for(k) for k in (named or list(metrics)) if guide_for(k)}
+
+
+def _deterministic_explain(guides: dict) -> str:
+    lines = ["**How to read these PEN-STACK metrics** (the values themselves come from the engine):"]
+    for k, g in guides.items():
+        if not g:
+            continue
+        lines.append(f"  • **{g.get('label', k)}** — {g.get('scale', '')}, {g.get('direction', '')}. "
+                     f"{g.get('means', '')} _Computed: {g.get('computed', '')}_ "
+                     f"Bands: {g.get('bands', '')}. {g.get('reference', '')}")
+    lines.append(f"_{(metric_guide() or {}).get('disclaimer', '')}_")
+    return "\n".join(lines)
+
+
+def _angles_footer(message: str) -> str:
+    angles = pen_stack_angles(message)
+    if not angles:
+        return ""
+    tips = "  \n".join(f"• **{a['module']}** — try: _\"{a['example']}\"_" for a in angles)
+    return ("\n\n---\n💡 **PEN-STACK can compute a grounded answer for your case** (not just general knowledge):  \n"
+            + tips)
+
+
+# -------------------------------------------------------------------------------------- LLM backends
+def _ollama_base():
     return os.getenv("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
 
 
-def _llm_timeout() -> float:
-    # generous by default: a 7B model narrating a full dossier on a single GPU can take ~60-90s; too short a
-    # timeout would silently fall back to the deterministic narrator on every real query.
+def _llm_timeout():
     return float(os.getenv("PEN_STACK_LLM_TIMEOUT", "150"))
 
 
-def _call_ollama(prompt: str) -> str:
-    """Primary: local Ollama (free). Default model qwen2.5:7b-instruct (override via OLLAMA_MODEL). Generation is
-    bounded (num_predict) so a reply returns promptly; the science is in the engine, the LLM only narrates."""
+def _call_ollama(prompt, system):
     import requests
-
-    r = requests.post(
-        f"{_ollama_base()}/api/generate",
-        json={"model": os.getenv("OLLAMA_MODEL", "qwen2.5:3b-instruct"),       # 3B narrates ~2x faster than 7B
-              "prompt": prompt, "system": SYSTEM, "stream": False,
-              "keep_alive": os.getenv("OLLAMA_KEEP_ALIVE", "30m"),             # keep warm -> avoid the cold start
-              "options": {"temperature": 0.2,
-                          "num_predict": int(os.getenv("OLLAMA_NUM_PREDICT", "400"))}},
-        timeout=_llm_timeout())
+    r = requests.post(f"{_ollama_base()}/api/generate",
+                      json={"model": os.getenv("OLLAMA_MODEL", "qwen2.5:3b-instruct"), "prompt": prompt,
+                            "system": system, "stream": False, "keep_alive": os.getenv("OLLAMA_KEEP_ALIVE", "30m"),
+                            "options": {"temperature": 0.2, "num_predict": int(os.getenv("OLLAMA_NUM_PREDICT", "450"))}},
+                      timeout=_llm_timeout())
     r.raise_for_status()
     return r.json()["response"]
 
 
-def _nvidia_key() -> str | None:
+def _nvidia_key():
     key = os.getenv("NVIDIA_API_KEY")
     if key:
         return key.strip()
@@ -165,62 +204,118 @@ def _nvidia_key() -> str | None:
     return f.read_text(encoding="utf-8").strip() if f.exists() else None
 
 
-def _call_nemotron(prompt: str) -> str:
-    """Fallback: NVIDIA-hosted Nemotron (free tier). Needs NVIDIA_API_KEY (or configs/nvidia_api_key.txt)."""
+def _call_nemotron(prompt, system):
     import requests
-
     key = _nvidia_key()
     if not key:
         raise RuntimeError("no NVIDIA_API_KEY")
-    r = requests.post(
-        "https://integrate.api.nvidia.com/v1/chat/completions",
-        headers={"Authorization": f"Bearer {key}"},
-        json={"model": os.getenv("NEMOTRON_MODEL", "nvidia/llama-3.3-nemotron-super-49b-v1"),
-              "messages": [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}],
-              "temperature": 0.2, "max_tokens": 600},
-        timeout=_llm_timeout())
+    r = requests.post("https://integrate.api.nvidia.com/v1/chat/completions",
+                      headers={"Authorization": f"Bearer {key}"},
+                      json={"model": os.getenv("NEMOTRON_MODEL", "nvidia/llama-3.3-nemotron-super-49b-v1"),
+                            "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt}],
+                            "temperature": 0.2, "max_tokens": 700}, timeout=_llm_timeout())
     r.raise_for_status()
     return r.json()["choices"][0]["message"]["content"]
 
 
-def _prompt(message: str, tool_results: dict, history: list | None) -> str:
-    import json
+def _run_llm(prompt, system):
+    """Try the configured backends in order; return (text, backend) or (None, None)."""
+    if os.getenv("PEN_STACK_NO_LLM") == "1":
+        return None, None
+    backends = {"ollama": _call_ollama, "nemotron": _call_nemotron}
+    for name in [b.strip().lower() for b in os.getenv("PEN_STACK_LLM_ORDER", "ollama,nemotron").split(",")]:
+        fn = backends.get(name)
+        if fn is None:
+            continue
+        try:
+            return fn(prompt, system), name
+        except Exception:
+            continue
+    return None, None
 
-    convo = ""
-    for turn in (history or [])[-6:]:
+
+def _history_block(history):
+    out = ""
+    for turn in (history or [])[-8:]:
         role = turn.get("role", "user")
-        convo += f"{role.upper()}: {turn.get('content', '')}\n"
-    return (f"{SYSTEM}\n\nTOOL RESULTS (the ONLY source of numbers — cite nothing else):\n"
-            f"{json.dumps(tool_results, default=str, separators=(',', ':'))}\n\n{convo}USER: {message}\n\n"
-            f"Compose a concise, friendly reply (a short paragraph) that explains the engine's findings, surfaces "
-            f"the uncertainty and the scope ledger, and uses ONLY numbers present in the tool results.")
+        out += f"{role.upper()}: {turn.get('content', '')}\n"
+    return out
 
 
-# --------------------------------------------------------------------------------------
-# the public entry point
-# --------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------- the public entry point
 def grounded_reply(message: str, history: list | None = None, *, allow_llm: bool = True) -> dict:
-    """The grounded co-scientist. Runs the engine, then narrates over its results with the grounding guard
-    enforced. Returns {reply, tool_results, grounded, backend}. `grounded` is always True: the reply is either
-    composed deterministically from the tool results, or passed through `_enforce_grounding`."""
-    tool_results = run_tools(message, history)                 # ENGINE computes every number
-    grounded = extract_grounded_numbers(tool_results)          # the allow-list
-    prompt = _prompt(message, tool_results, history)
+    """Route the message to a lane and answer it. Returns {reply, mode, provenance, grounded, backend,
+    tool_results?, facts?, angles?}. The first three lanes are engine-grounded (guard ON); the 'general' lane is
+    explicitly labelled trained-knowledge and never attributes a number to PEN-STACK."""
+    mode = classify(message, history)
+    hist = _history_block(history)
 
-    if allow_llm and os.getenv("PEN_STACK_NO_LLM") != "1":
-        # configurable order: "ollama,nemotron" (privacy/local-first, the default) or "nemotron,ollama"
-        # (speed-first — the hosted 49B answers in ~5s vs ~25-50s on a workstation GPU). Either way the guard runs.
-        backends = {"ollama": _call_ollama, "nemotron": _call_nemotron}
-        order = [b.strip().lower() for b in os.getenv("PEN_STACK_LLM_ORDER", "ollama,nemotron").split(",")]
-        for name in order:
-            fn = backends.get(name)
-            if fn is None:
-                continue
-            try:
-                text = _enforce_grounding(fn(prompt), grounded)        # HARD GATE
-                return {"reply": text, "tool_results": tool_results, "grounded": True, "backend": name}
-            except Exception:                                  # any backend failure → next, then deterministic
-                continue
+    # ---- GENERAL: trained knowledge, labelled, with engine pointers (no grounding guard) ----
+    if mode == "general":
+        angles = pen_stack_angles(message)
+        base = {"mode": "general", "provenance": "general", "grounded": False, "angles": angles, "tool_results": None}
+        if allow_llm:
+            prompt = (f"{hist}USER: {message}\n\n"
+                      + (f"(PEN-STACK could concretely compute: {json.dumps(angles)})\n\n" if angles else "")
+                      + "Answer from general knowledge, clearly.")
+            text, backend = _run_llm(prompt, SYSTEM_GENERAL)
+            if text:
+                return {**base, "reply": _GENERAL_LABEL + "\n\n" + text.strip() + _angles_footer(message),
+                        "backend": backend}
+        # no LLM: be honest — general answers need the model; show what the engine CAN do
+        det = (_GENERAL_LABEL + "\n\nI can't answer general-knowledge questions without the language model right "
+               "now — but PEN-STACK's engine can compute grounded, specific answers." + _angles_footer(message))
+        return {**base, "reply": det, "backend": "deterministic"}
 
-    return {"reply": _deterministic_narrate(tool_results), "tool_results": tool_results,
-            "grounded": True, "backend": "deterministic"}
+    # ---- META: facts about PEN-STACK itself (grounded over the live facts) ----
+    if mode == "meta":
+        facts = pen_stack_facts()
+        allow = extract_grounded_numbers(facts)
+        base = {"mode": "meta", "provenance": "pen-stack", "grounded": True, "facts": facts, "tool_results": None}
+        if allow_llm:
+            prompt = (f"FACTS (the only source of numbers):\n{json.dumps(facts, default=str)}\n\n{hist}"
+                      f"USER: {message}\n\nAnswer about PEN-STACK using only the FACTS.")
+            text, backend = _run_llm(prompt, SYSTEM_META)
+            if text:
+                return {**base, "reply": _enforce_grounding(text, allow), "backend": backend}
+        return {**base, "reply": _deterministic_meta(facts), "backend": "deterministic"}
+
+    # ---- EXPLAIN: interpret a value already on the table (the prior dossier lives in `history`) ----
+    if mode == "explain":
+        guides = _explain_guides(message)
+        # grounded = the numbers already in the conversation (engine-computed earlier) + the metric-guide numbers
+        allow = extract_grounded_numbers({"prior": hist, "guides": guides})
+        base = {"mode": "explain", "provenance": "pen-stack", "grounded": True, "tool_results": None,
+                "angles": None, "facts": None}
+        if allow_llm:
+            prompt = (f"METRIC GUIDE (how to read PEN-STACK's numbers):\n{json.dumps(guides, default=str)}\n\n"
+                      f"CONVERSATION SO FAR (the numbers here were computed by the engine earlier):\n{hist}\n"
+                      f"USER: {message}\n\nExplain what the value(s) mean using the metric guide — the scale, "
+                      f"whether higher is better, the reference band, and how it was computed. Use ONLY numbers "
+                      f"already in the conversation or the metric guide; do not introduce new ones.")
+            text, backend = _run_llm(prompt, SYSTEM_GROUNDED)
+            if text:
+                return {**base, "reply": _enforce_grounding(text, allow), "backend": backend}
+        return {**base, "reply": _deterministic_explain(guides), "backend": "deterministic"}
+
+    # ---- DESIGN: run the engine, narrate + interpret over the dossier (guard ON) ----
+    tr = run_tools(message, history)
+    tr["immune_profile"]["axes"] = enrich_axes(tr["immune_profile"].get("axes") or {})
+    guides = {k: guide_for(k) for k in (list((tr["immune_profile"].get("axes") or {}).keys())
+                                        + ["confidence", "relative_expression"]) if guide_for(k)}
+    bands = metric_guide().get("safety_decision", {})
+    allow = extract_grounded_numbers(tr) | extract_grounded_numbers({"guides": guides})
+    base = {"mode": mode, "provenance": "pen-stack", "grounded": True, "tool_results": tr,
+            "angles": None, "facts": None}
+    if allow_llm:
+        prompt = (f"TOOL RESULTS (the only source of THIS design's numbers):\n{json.dumps(tr, default=str)}\n\n"
+                  f"METRIC GUIDE (use to EXPLAIN what each number means — scale, direction, reference band; you "
+                  f"may cite band thresholds):\n{json.dumps(guides, default=str)}\n"
+                  f"SAFETY DECISIONS:\n{json.dumps(bands)}\n\n{hist}USER: {message}\n\n"
+                  f"Reply with: (1) the engine's findings WITH the numbers, (2) what each key number MEANS using "
+                  f"the metric guide (scale, what's good/bad, reference range), (3) the uncertainty + scope ledger. "
+                  f"Use ONLY numbers in the tool results or the metric guide.")
+        text, backend = _run_llm(prompt, SYSTEM_GROUNDED)
+        if text:
+            return {**base, "reply": _enforce_grounding(text, allow), "backend": backend}
+    return {**base, "reply": _deterministic_narrate(tr), "backend": "deterministic"}
