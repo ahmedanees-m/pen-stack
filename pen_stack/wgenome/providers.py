@@ -185,6 +185,39 @@ class AlphaGenomeProvider:
         self._store(key, rec)
         return rec
 
+    def score_variant(self, chrom: str, position: int, ref: str, alt: str, ontology: str | None = None,
+                      output: str = "RNA_SEQ", offline: bool = False) -> dict:
+        """Variant-effect magnitude via AlphaGenome's `score_variant` (REF vs ALT, recommended scorer, cached).
+
+        Returns a scalar effect summary (max & mean |score| over the predicted tracks) for the requested output
+        type — a real regulatory variant-effect prediction, not a fabricated tier. Cached by (variant, output,
+        ontology). When the package/key is absent it reports `available=False` (the oracle then defers)."""
+        key = _cache_key("variant", self.assembly, MODEL_VERSION, chrom, position, ref, alt, output, ontology)
+        hit = self._load(key)
+        if hit is not None:
+            return hit
+        if offline:
+            return {"available": False, "reason": "offline: not in cache", "key": key}
+        if not self.available():
+            return {"available": False, "reason": "alphagenome package or key absent", "key": key}
+        import numpy as np
+        from alphagenome.data import genome
+        from alphagenome.models import dna_client, variant_scorers
+        variant = genome.Variant(chromosome=chrom, position=int(position),
+                                 reference_bases=ref, alternate_bases=alt)
+        interval = variant.reference_interval.resize(dna_client.SEQUENCE_LENGTH_1MB)
+        scorer = variant_scorers.RECOMMENDED_VARIANT_SCORERS[output]
+        scores = self._client().score_variant(interval=interval, variant=variant, variant_scorers=[scorer])
+        x = np.asarray(scores[0].X, dtype=float)            # (n_tracks/genes, ...) effect scores
+        finite = x[np.isfinite(x)]
+        rec = {"available": True, "output": output, "scorer": str(scorer),
+               "effect_max_abs": float(np.abs(finite).max()) if finite.size else 0.0,
+               "effect_mean_abs": float(np.abs(finite).mean()) if finite.size else 0.0,
+               "n_scores": int(finite.size), "chrom": chrom, "position": int(position),
+               "ref": ref, "alt": alt, "ontology": ontology, "model_version": MODEL_VERSION, "key": key}
+        self._store(key, rec)
+        return rec
+
     def contact_map_summary(self, chrom: str, start: int, end: int, ontology: str) -> dict:
         """3D structural-risk summary (WS-C2): variance + mean of the predicted contact map (cached)."""
         key = _cache_key("contact", self.assembly, chrom, start, end, ontology)

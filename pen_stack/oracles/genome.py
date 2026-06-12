@@ -10,6 +10,7 @@ committed cache entry) rather than fabricating a value.
 from __future__ import annotations
 
 import os
+import re
 
 from pen_stack.oracles import build_result, cache_get, cache_put
 from pen_stack.oracles.schema import OracleResult
@@ -62,19 +63,58 @@ def _deferred_or_cached(oracle: str, model: str, inputs: dict, *, extrapolating:
     return r
 
 
+_VAR_RE = re.compile(r"(?:(chr[\w]+)[:\s]*)?(\d+)?\s*([ACGT]+)\s*>\s*([ACGT]+)", re.I)
+_LOCUS_RE = re.compile(r"(chr[\w]+)[:\s]*(\d+)?", re.I)
+
+
+def _parse_variant(variant: str, locus: str):
+    """Parse a variant ('chr1:1000 A>T' / 'chr1:1A>T' / 'A>G' + locus 'chr19:1010000') -> (chrom,pos,ref,alt)."""
+    m = _VAR_RE.search(variant or "")
+    if not m:
+        return None
+    chrom, pos, ref, alt = m.group(1), m.group(2), m.group(3), m.group(4)
+    if not chrom or not pos:
+        lm = _LOCUS_RE.search(locus or "")
+        if lm:
+            chrom = chrom or lm.group(1)
+            pos = pos or lm.group(2)
+    if not (chrom and pos and ref and alt):
+        return None
+    return chrom, int(pos), ref.upper(), alt.upper()
+
+
 def variant_effect(variant: str, locus: str, in_distribution: bool = True) -> OracleResult:
-    """AlphaGenome variant-effect prediction, OOD-gated by `in_distribution`."""
+    """AlphaGenome variant-effect prediction, OOD-gated by `in_distribution`.
+
+    LIVE via the existing `wgenome.AlphaGenomeProvider` (real `score_variant`, REF vs ALT) when
+    `PEN_STACK_ORACLE_NET=1` and the alphagenome package + key are present; otherwise deferred / cache-replay
+    (value None, OOD gate intact, never fabricated). Reuses the v3.1 provider — no duplicate client."""
     inputs = {"variant": variant, "locus": locus}
-    try:
-        import alphagenome  # noqa: F401
-    except Exception:  # noqa: BLE001 - hosted/on-demand; absent in CI
-        return _deferred_or_cached("genome", "alphagenome", inputs, extrapolating=not in_distribution,
-                                   in_scope=in_distribution,
-                                   backend_note="AlphaGenome on-demand (hosted); deferred without access")
-    # (live path would call alphagenome here; structure3d.py already does for contact maps)
-    return build_result("genome", "alphagenome", inputs=inputs, value=None, available=False,
-                        extrapolating=not in_distribution, in_scope=in_distribution,
-                        note="AlphaGenome client present; wire predict_variant for the live value")
+    parsed = _parse_variant(variant, locus)
+    if _oracle_net_enabled() and parsed:
+        from pen_stack.wgenome.providers import AlphaGenomeProvider
+        prov = AlphaGenomeProvider()
+        if prov.available():
+            chrom, pos, ref, alt = parsed
+            try:
+                rec = prov.score_variant(chrom, pos, ref, alt)
+            except Exception as e:  # noqa: BLE001 - hosted/network; defer honestly, never fabricate
+                return _deferred_or_cached("genome", "alphagenome", inputs, extrapolating=not in_distribution,
+                                           in_scope=in_distribution,
+                                           backend_note=f"AlphaGenome score_variant failed ({type(e).__name__}); deferred")
+            if rec.get("available"):
+                return build_result(
+                    "genome", "alphagenome", inputs=inputs,
+                    value={"effect_max_abs": rec["effect_max_abs"], "effect_mean_abs": rec["effect_mean_abs"],
+                           "output": rec["output"], "n_scores": rec["n_scores"],
+                           "chrom": chrom, "position": pos, "ref": ref, "alt": alt},
+                    available=True, source="hosted_api", extrapolating=not in_distribution, in_scope=in_distribution,
+                    note=("AlphaGenome score_variant (REF vs ALT, recommended RNA_SEQ scorer): max|effect| over the "
+                          "predicted regulatory tracks. A regulatory-effect magnitude, not a claim the edit works."))
+    # deferred / cache-replay — package/key/flag absent or variant unparseable (OOD gate preserved, no fabrication)
+    return _deferred_or_cached("genome", "alphagenome", inputs, extrapolating=not in_distribution,
+                               in_scope=in_distribution,
+                               backend_note="AlphaGenome deferred (set PEN_STACK_ORACLE_NET=1 + package/key to score live)")
 
 
 def sequence_likelihood(seq: str) -> OracleResult:
