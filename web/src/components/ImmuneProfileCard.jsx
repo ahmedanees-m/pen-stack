@@ -43,8 +43,14 @@ export default function ImmuneProfileCard({ profile }) {
                 status={available ? st : "out_of_scope"}
                 label={name}
               />
-              <div className="mt-2 flex items-center justify-between gap-2">
-                <span className="text-[10.5px] leading-tight text-fg-faint">{a.validation || a.note || ""}</span>
+              {/* self-explanatory: what THIS value means, in plain words (engine-provided), not just the number */}
+              <p className="mt-2 text-[11px] leading-snug text-fg-dim">
+                {a.meaning || a.validation || a.note || ""}
+              </p>
+              <div className="mt-1 flex items-center justify-between gap-2">
+                <span className="text-[10px] leading-tight text-fg-faint">
+                  {a.guide?.computed ? `Computed: ${a.guide.computed}` : ""}
+                </span>
                 {a.scope_card && <ProvenanceChip source={a.scope_card} />}
               </div>
             </div>
@@ -52,8 +58,16 @@ export default function ImmuneProfileCard({ profile }) {
         })}
       </div>
 
+      {/* legend: explain the overloaded "extrapolating" badge in plain words, once, under the grid */}
+      <p className="mt-3 text-[11px] leading-snug text-fg-faint">
+        <span style={{ color: "var(--warn)" }}>⚠ extrapolating</span> means the axis is a{" "}
+        <span className="text-fg-dim">proxy</span> — a mechanistic or population estimate, <em>not</em> validated
+        against a measured clinical outcome. Read those values as directional, not guaranteed. Scale is 0–1, higher
+        is safer.
+      </p>
+
       {profile.collapsed_score === null && (
-        <p className="mt-3 text-[11px] text-fg-faint">
+        <p className="mt-2 text-[11px] text-fg-faint">
           No single fused immune score is asserted (<span className="font-mono">collapsed_score = None</span>) —
           the axes measure different mechanisms on different evidence; averaging them would manufacture certainty.
         </p>

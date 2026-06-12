@@ -3,6 +3,30 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.4.2] - 2026-06-12 - Co-Scientist chat: real writer recommendations + self-explanatory values
+
+**PATCH — fixes a stale/confusing chat experience reported from the live app.** Three problems, three fixes:
+
+1. **The chat dossier was generic and barely changed per query.** `web/tools.py::parse_goal` hardcoded
+   `chrom="chr19"` (so a goal about ITGB2 — chr21 — was mis-located) and `run_tools` never called the planner,
+   so a "which writer can integrate N kb in GENE" question got a vehicle-keyed immune profile but **no named
+   writer**. Fix: `parse_goal` now resolves the gene's REAL chromosome (`planner.gene_region`, atlas-gated,
+   falls back offline), and `run_tools` runs the planner and attaches a `plan` block — the recommended writer
+   family, top site, safety/durability/score, cargo-capacity fit, and delivery — all engine-computed. Honest
+   when the gene isn't in the atlas ("not found — check the HGNC symbol"); never fabricated.
+2. **The LLM narration produced `[unverified]` spam.** With no writer in the tool results, the model invented
+   one (`AAV9-CRISPR` + made-up numbers) and the grounding guard struck them all. Fix: the system prompt now
+   forbids inventing a writer/vehicle/table/number, and if the guard still strikes ≥2 numbers the reply falls
+   back to the fully-grounded deterministic narration — so the spam never reaches the user.
+3. **Values + the "⚠ extrapolating" badge weren't self-explanatory.** Each immune axis now carries a
+   plain-language `meaning` ("0.55 on a 0–1 scale — moderate; higher = fewer patients excluded …; this is a
+   proxy, not validated against a measured outcome"), the deterministic narration uses it, and
+   `ImmuneProfileCard` renders it plus a one-line legend explaining that "extrapolating" = a proxy estimate.
+
+### Added
+- `tests/unit/test_ws_chat.py` — chrom resolution, axis-meaning, real writer plan, and the no-`[unverified]`-spam
+  fallback are locked by new tests.
+
 ## [6.4.1] - 2026-06-12 - Defence-in-depth: pre-route safety screen
 
 **PATCH.** The grounded co-scientist chat ran the Guardian (biosecurity gate) only in the *design* lane (via

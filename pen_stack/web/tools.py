@@ -25,6 +25,9 @@ _CELLS = {"liver": "hepg2", "hepato": "hepg2", "hepg2": "hepg2", "hspc": "hspc",
 _GENE_RE = re.compile(r"\b([A-Z][A-Z0-9]{1,7})\b")             # crude gene-symbol token (AAVS1, TRAC, FIX, ...)
 _KB_RE = re.compile(r"(\d+(?:\.\d+)?)\s*kb", re.I)
 _BP_RE = re.compile(r"(\d{3,6})\s*bp", re.I)
+# uppercase tokens that look like a gene but are not one (jargon / vehicle / form abbreviations)
+_GENE_STOP = {"DNA", "RNA", "MRNA", "AAV", "LNP", "HSV", "CAR", "RNP", "PCR", "WT", "KO", "KI", "ITR",
+              "ORF", "UTR", "CDS", "GFP", "ID", "QC", "VG", "MOI", "HLA", "MHC", "CRISPR", "CAS", "TF"}
 
 
 def _first(text: str, table: dict, default):
@@ -35,6 +38,17 @@ def _first(text: str, table: dict, default):
     return default
 
 
+def _resolve_chrom(gene: str) -> str | None:
+    """The real chromosome for a gene symbol (or a safe-harbour nickname like AAVS1); None if not resolvable
+    offline. So a chat goal about ITGB2 carries chr21, not a hardcoded default. Atlas-gated — never fabricates."""
+    try:
+        from pen_stack.planner.optimize import gene_region, resolve_gene
+        reg = gene_region(resolve_gene(gene))
+        return reg[0] if reg else None
+    except Exception:  # noqa: BLE001 - data/atlas absent (CI/offline) -> caller falls back to the default
+        return None
+
+
 def parse_goal(message: str) -> dict:
     """Best-effort parse of a plain-language goal into a Design/Goal dict. The engine grounds everything; this
     just picks a starting point (with sensible defaults) so the tools can run."""
@@ -43,9 +57,9 @@ def parse_goal(message: str) -> dict:
         cargo = int(float(m.group(1)) * 1000)
     elif (m := _BP_RE.search(message)):
         cargo = int(m.group(1))
-    genes = [g for g in _GENE_RE.findall(message) if g not in {"DNA", "RNA", "AAV", "LNP", "HSV", "CAR"}]
+    genes = [g for g in _GENE_RE.findall(message) if g not in _GENE_STOP]
     gene = genes[0] if genes else "AAVS1"
-    return {"write_type": "insertion", "gene": gene, "chrom": "chr19",
+    return {"write_type": "insertion", "gene": gene, "chrom": _resolve_chrom(gene) or "chr19",
             "edit_intent": _first(message, _INTENTS, "safe_harbour_insertion"),
             "delivery_vehicle": _first(message, _VEHICLES, "AAV_single"), "cargo_bp": cargo,
             "cell_type": _first(message, _CELLS, "k562"),
@@ -54,9 +68,78 @@ def parse_goal(message: str) -> dict:
             "cargo_function": message.strip()}
 
 
+# the chat's free-text intents map onto the planner's EditIntent enum (landing-pad/regulatory have nearest valid).
+_INTENT_TO_ENUM = {"safe_harbour_insertion": "safe_harbour_insertion",
+                   "high_durability_insertion": "high_durability_insertion",
+                   "knock_in_with_disruption": "knock_in_with_disruption",
+                   "regulatory_element_excision": "regulatory_excision",
+                   "repeat_excision": "repeat_excision",
+                   "landing_pad_insertion": "safe_harbour_insertion"}
+
+# plain-language reading of each immune axis (0–1, higher = safer) — so a value is self-explanatory in the reply.
+_AXIS_DIRECTION = {
+    "genotoxicity": "higher = safer (less integration-site oncogene risk; 1.0 = episomal / non-integrating)",
+    "cd8_epitope": "higher = fewer strong CD8/MHC-I capsid epitopes (1.0 = non-viral / none)",
+    "innate": "higher = less innate (CpG/TLR9, RIG-I) sensing of the delivered cargo",
+    "preexisting_nab": "higher = fewer patients excluded by pre-existing neutralizing antibodies to the vector",
+    "anti_peg": "higher = lower pre-existing anti-PEG barrier to re-dosing (PEGylated vehicles only)",
+}
+
+
+def _band_word(v: float) -> str:
+    return "favourable" if v >= 0.7 else ("moderate" if v >= 0.4 else "a concern")
+
+
+def axis_meaning(name: str, value, validation: str | None) -> str:
+    """A self-explanatory, plain-language reading of one immune axis: what the number means + the proxy caveat."""
+    if value is None:
+        return "out of scope for this design — not predicted (no applicable mechanism)."
+    direction = _AXIS_DIRECTION.get(name, "0–1, higher = safer")
+    s = f"{float(value):.2f} on a 0–1 scale — {_band_word(float(value))}; {direction}."
+    if validation and ("proxy" in validation.lower() or "not outcome-validated" in validation.lower()):
+        s += (" This is a mechanistically/population-computed PROXY — it is not validated against a measured "
+              "clinical outcome, so read it as a directional estimate, not a guaranteed result.")
+    return s
+
+
+def _run_planner(design: dict) -> dict[str, Any]:
+    """The ACTUAL writer/site recommendation for the goal (atlas-gated). This is what makes a 'which writer can
+    integrate N kb in GENE' question real: a named writer family, the top site, cargo-capacity fit, delivery —
+    all engine-computed. Honest when the gene isn't in the atlas or the atlas isn't mounted; NEVER fabricates."""
+    try:
+        from pen_stack.planner.optimize import EditIntent
+        from pen_stack.planner.pipeline import plan_write
+    except Exception:  # noqa: BLE001
+        return {"available": False, "why": "planner unavailable in this environment"}
+    intent = _INTENT_TO_ENUM.get(design.get("edit_intent"), "safe_harbour_insertion")
+    try:
+        plans = plan_write(design["gene"], EditIntent(intent), int(design["cargo_bp"]),
+                           design.get("cell_type", "k562"), k=3)
+    except FileNotFoundError:
+        return {"available": False, "why": "writability atlas not mounted (planner runs on the live app only)"}
+    except Exception as e:  # noqa: BLE001 - never let a planner error break the chat dossier
+        return {"available": False, "why": f"planner error: {type(e).__name__}"}
+    if not plans:
+        return {"available": True, "found": False, "gene": design["gene"],
+                "why": (f"no writable plan for '{design['gene']}' — it is not in the writability atlas. Check it "
+                        "is an HGNC gene symbol or a known safe-harbour nickname (AAVS1, H11/HIPP11).")}
+    top = plans[0]
+    cargo = top.get("cargo") or {}
+    return {"available": True, "found": True, "n_plans": len(plans),
+            "recommended_writer": top.get("writer"), "site": top.get("site"),
+            "safety": top.get("safety"), "durability": top.get("durability"), "score": top.get("score"),
+            "writer_activity": top.get("writer_activity"), "reachability_tier": top.get("reachability_tier"),
+            "cargo_capacity_bp": cargo.get("cargo_capacity_bp"), "assembled_bp": cargo.get("assembled_bp"),
+            "cargo_fits_single_vector": cargo.get("size_ok"),
+            "delivery": (top.get("delivery") or {}).get("delivery"),
+            # distinct OTHER writer families (the top-k can repeat one family across sites — don't list it twice)
+            "alternative_writers": sorted({p.get("writer") for p in plans[1:]
+                                           if p.get("writer") and p.get("writer") != top.get("writer")})}
+
+
 def run_tools(message: str, history: list | None = None) -> dict[str, Any]:
     """Run the validated engine over a plain-language message and return a grounded dossier. EVERY number here
-    is computed by the engine (verify / scope) — no fabrication, no LLM."""
+    is computed by the engine (verify / planner / scope) — no fabrication, no LLM."""
     from pen_stack.agent.scope import match_scope
     from pen_stack.verify import verify
 
@@ -64,11 +147,13 @@ def run_tools(message: str, history: list | None = None) -> dict[str, Any]:
     v = verify(dict(design), question=message)
     imm = v.immune_profile or {}
     axes = {k: {"value": a.get("value"), "uncertainty": a.get("uncertainty"),
-                "validation": a.get("validation"), "in_scope": a.get("in_scope")}
+                "validation": a.get("validation"), "in_scope": a.get("in_scope"),
+                "meaning": axis_meaning(k, a.get("value"), a.get("validation"))}
             for k, a in (imm.get("axes") or {}).items()}
     oos = match_scope(message)                                # is the QUESTION out of scope (a known-unknown)?
     return {
         "parsed_design": design,
+        "plan": _run_planner(design),                         # the actual writer/site recommendation (atlas-gated)
         "verdict": {"legal": v.legal, "confidence": v.confidence, "interval": v.interval,
                     "epistemic_status": v.epistemic_status,
                     "violations": [x.get("rule_id") for x in v.violations]},

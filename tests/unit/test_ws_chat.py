@@ -153,6 +153,47 @@ def test_pre_route_safety_does_not_over_refuse_benign_questions(monkeypatch):
     assert grounded_reply("how do vaccines protect against pathogens?")["mode"] != "safety"
 
 
+def test_parse_goal_resolves_the_real_chromosome_not_a_hardcoded_default():
+    """parse_goal must carry the gene's REAL chromosome (atlas-gated), not a hardcoded chr19 — so a chat goal
+    about ITGB2 (chr21) is not silently mis-located. Offline (no atlas) it falls back to the default, never crashes."""
+    from pen_stack.web.tools import _resolve_chrom, parse_goal
+    d = parse_goal("which writer can integrate a 4.5 kb cassette in ITGB2 locus")
+    assert d["gene"] == "ITGB2" and d["cargo_bp"] == 4500
+    # if the atlas is present, the chromosome is resolved (chr21); offline it is the documented default.
+    assert d["chrom"] == ("chr21" if _resolve_chrom("ITGB2") else "chr19")
+
+
+def test_axis_meaning_is_self_explanatory_and_flags_proxies():
+    from pen_stack.web.tools import axis_meaning
+    m = axis_meaning("genotoxicity", 1.0, "genotoxicity: mechanistic proxy — NOT outcome-validated")
+    assert "0–1" in m and "higher = safer" in m and "PROXY" in m            # scale + direction + caveat in words
+    assert axis_meaning("anti_peg", None, None).startswith("out of scope")   # n/a axis explained, not blank
+
+
+def test_run_tools_attaches_a_real_writer_plan_and_axis_meanings():
+    """The design dossier carries the engine's ACTUAL writer recommendation (atlas-gated) + a plain-language
+    meaning per axis — so 'which writer' questions are answered with a named family, never a fabrication."""
+    tr = run_tools("which writer can integrate a 4.5 kb cassette in ITGB2 locus")
+    assert "plan" in tr and isinstance(tr["plan"], dict)
+    if tr["plan"].get("available") and tr["plan"].get("found"):            # live app / atlas present
+        assert tr["plan"]["recommended_writer"] and tr["plan"]["site"]["chrom"]
+    axes = tr["immune_profile"]["axes"]
+    assert axes and all("meaning" in a for a in axes.values())             # every axis is self-explanatory
+
+
+def test_design_reply_never_emits_unverified_spam(monkeypatch):
+    """If a model fabricates many numbers, the guard would litter the reply with [unverified]; the chat must
+    fall back to the fully-grounded deterministic narration instead of showing the spam."""
+    monkeypatch.delenv("PEN_STACK_NO_LLM", raising=False)
+    import pen_stack.web.llm as llm
+    # a model that invents a table of numbers not in the tool results
+    monkeypatch.setattr(llm, "_run_llm", lambda p, s: (
+        "Genotoxicity 0.91, CD8 0.42, titer 1000000 vg, AAV9-CRISPR at 73% efficiency.", "mock"))
+    out = grounded_reply("insert a 4.5 kb cassette at AAVS1 with AAV in hepatocytes")
+    assert out["reply"].count("[unverified]") < 2                          # no spam reaches the user
+    assert out["backend"].startswith("deterministic")                     # fell back to grounded narration
+
+
 def test_gateway_chat_requires_a_message():
     pytest.importorskip("fastapi")
     from fastapi.testclient import TestClient

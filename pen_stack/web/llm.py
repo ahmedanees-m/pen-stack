@@ -28,11 +28,13 @@ from pen_stack.web.tools import extract_grounded_numbers, run_tools
 # -------------------------------------------------------------------------------------- system prompts
 SYSTEM_GROUNDED = (
     "You are PEN-STACK's co-scientist for genome writing. The PEN-STACK ENGINE computed the TOOL RESULTS; you "
-    "explain and route, but you MUST NOT state any number, score, or probability that is not present in the TOOL "
-    "RESULTS or the METRIC GUIDE provided. For every key number, also explain what it MEANS using the metric "
-    "guide — its scale, whether higher is better, the reference band, and how it was computed — so the user "
-    "understands the value, not just sees it. Surface uncertainty and the scope ledger ('what I can't tell you'). "
-    "Be concise, friendly, honest. Decision-support, not a clinical directive."
+    "explain and route, but you MUST NOT state any number, score, probability, writer/enzyme name, or delivery "
+    "vehicle that is not present in the TOOL RESULTS or the METRIC GUIDE provided. NEVER invent a recommendation, "
+    "a markdown table of made-up values, or a 'hypothetical' result — if the engine did not compute something, "
+    "say so plainly. For every key number, explain what it MEANS in plain words — its scale, whether higher is "
+    "better, the reference band, how it was computed — so the user understands the value, not just sees it. "
+    "Surface uncertainty and the scope ledger ('what I can't tell you'). Be concise, friendly, honest. "
+    "Decision-support, not a clinical directive."
 )
 SYSTEM_META = (
     "You are PEN-STACK's co-scientist explaining the SYSTEM ITSELF (coverage, methods, accuracy). Answer using "
@@ -84,12 +86,46 @@ def _fmt(x):
     return str(x)
 
 
+def _narrate_plan(p: dict) -> str | None:
+    """The actual writer/site recommendation as a self-explanatory line (or an honest 'not found' note)."""
+    if not p or not p.get("available"):
+        return None
+    if not p.get("found"):
+        return f"**Recommended writer.** {p.get('why', 'no writable plan for this target.')}"
+    bits = [f"the top writer family is **{p['recommended_writer']}**"]
+    site = p.get("site") or {}
+    if site.get("chrom"):
+        bits.append(f"at **{site['chrom']}:bin{site.get('bin')}**")
+    nums = []
+    if p.get("safety") is not None:
+        nums.append(f"safety {_fmt(p['safety'])}")
+    if p.get("durability") is not None:
+        nums.append(f"durability {_fmt(p['durability'])}")
+    if p.get("score") is not None:
+        nums.append(f"plan score {_fmt(p['score'])}")
+    cap = p.get("cargo_capacity_bp")
+    fit = p.get("cargo_fits_single_vector")
+    cargo_note = ""
+    if cap is not None:
+        cargo_note = (f" Cargo capacity is **{cap} bp**; the assembled cassette "
+                      f"({p.get('assembled_bp', '?')} bp) "
+                      + ("fits a single vector" if fit else f"exceeds it → delivered as **{p.get('delivery', 'split/dual')}**")
+                      + ".")
+    alts = p.get("alternative_writers") or []
+    alt_note = f" Alternatives: {', '.join(alts)}." if alts else ""
+    return (f"**Recommended writer.** For this target {', '.join(bits)} "
+            f"({'; '.join(nums)}).{cargo_note}{alt_note} (0–1 scores, higher = better.)")
+
+
 def _deterministic_narrate(tr: dict) -> str:
     d = tr["parsed_design"]
     v = tr["verdict"]
     lines = [f"I read your goal as a **{d['edit_intent'].replace('_', ' ')}** of **{d['gene']}** "
-             f"(~{d['cargo_bp']} bp) by **{d['delivery_vehicle'].replace('_', ' ')}** in **{d['cell_type']}**. "
-             f"Every number below is engine-computed."]
+             f"({d['chrom']}, ~{d['cargo_bp']} bp) by **{d['delivery_vehicle'].replace('_', ' ')}** "
+             f"in **{d['cell_type']}**. Every number below is engine-computed."]
+    plan_line = _narrate_plan(tr.get("plan") or {})
+    if plan_line:
+        lines.append(plan_line)
     legal = "legal" if v["legal"] else ("deferred" if v["legal"] is None else "ILLEGAL")
     line = f"**Verification.** The design is **{legal}** ({v['epistemic_status']})."
     if v["violations"]:
@@ -107,13 +143,14 @@ def _deterministic_narrate(tr: dict) -> str:
         lines.append(f"**Safety (Guardian).** **{s['decision']}** — {s.get('reason', '')}. {sd}")
     axes = (tr["immune_profile"].get("axes") or {})
     if axes:
-        lines.append("**Immune-risk profile** (per-axis — never collapsed). Each is 0–1, higher = safer:")
+        lines.append("**Immune-risk profile** (per-axis — never collapsed; each is 0–1, higher = safer):")
         for name, a in axes.items():
             gd = guide_for(name) or {}
             val = _fmt(a["value"]) if a.get("value") is not None else "n/a"
             unc = f" ±{_fmt(a['uncertainty'])}" if a.get("uncertainty") is not None else ""
-            meaning = (gd.get("means", "").split(".")[0]) if gd else ""
-            lines.append(f"  • **{gd.get('label', name)}: {val}{unc}** — {meaning}. _{a.get('validation', '')}_")
+            # prefer the self-explanatory engine 'meaning' (says what the value means + the proxy caveat in words)
+            meaning = a.get("meaning") or ((gd.get("means", "").split(".")[0]) if gd else "")
+            lines.append(f"  • **{gd.get('label', name)}: {val}{unc}** — {meaning}")
     ku = tr["immune_profile"].get("known_unknowns") or []
     if ku:
         lines.append("**What I can't tell you** (measured, never predicted): " + ", ".join(str(x) for x in ku) + ".")
@@ -353,14 +390,24 @@ def grounded_reply(message: str, history: list | None = None, *, allow_llm: bool
     base = {"mode": mode, "provenance": "pen-stack", "grounded": True, "tool_results": tr,
             "angles": None, "facts": None}
     if allow_llm:
-        prompt = (f"TOOL RESULTS (the only source of THIS design's numbers):\n{json.dumps(tr, default=str)}\n\n"
+        prompt = (f"TOOL RESULTS (the only source of THIS design's numbers — including the recommended writer in "
+                  f"`plan`):\n{json.dumps(tr, default=str)}\n\n"
                   f"METRIC GUIDE (use to EXPLAIN what each number means — scale, direction, reference band; you "
                   f"may cite band thresholds):\n{json.dumps(guides, default=str)}\n"
                   f"SAFETY DECISIONS:\n{json.dumps(bands)}\n\n{hist}USER: {message}\n\n"
-                  f"Reply with: (1) the engine's findings WITH the numbers, (2) what each key number MEANS using "
-                  f"the metric guide (scale, what's good/bad, reference range), (3) the uncertainty + scope ledger. "
-                  f"Use ONLY numbers in the tool results or the metric guide.")
+                  f"Reply with: (1) the engine's findings WITH the numbers — if the user asked which writer, lead "
+                  f"with `plan.recommended_writer` and its site/scores (do NOT name any other writer or vehicle), "
+                  f"(2) what each key number MEANS in plain words (scale, what's good/bad, reference range), "
+                  f"(3) the uncertainty + scope ledger. STRICT: use ONLY numbers present in the tool results or the "
+                  f"metric guide; do NOT invent a writer name, a vehicle, a table, or any number. If something "
+                  f"isn't in the tool results, say it is not computed.")
         text, backend = _run_llm(prompt, SYSTEM_GROUNDED)
         if text:
-            return {**base, "reply": _enforce_grounding(text, allow), "backend": backend}
+            cleaned = _enforce_grounding(text, allow)
+            # Defence against fabrication-spam: if the model invented a lot of numbers (the guard struck many),
+            # the narrated reply is unreadable ([unverified] everywhere) — fall back to the deterministic,
+            # fully-grounded narration so the user always gets a clean, traceable answer.
+            if cleaned.count(_UNVERIFIED) >= 2:
+                return {**base, "reply": _deterministic_narrate(tr), "backend": f"deterministic (guard:{backend})"}
+            return {**base, "reply": cleaned, "backend": backend}
     return {**base, "reply": _deterministic_narrate(tr), "backend": "deterministic"}
