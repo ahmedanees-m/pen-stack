@@ -81,6 +81,31 @@ def design_sequence(backbone: dict, model: str = "proteinmpnn") -> OracleResult:
 
 
 def esm3_design(prompt: dict, model: str = "esm3") -> OracleResult:
-    """ESM3 generative protein design / representation — a CANDIDATE."""
-    return _candidate(model, {"prompt": prompt}, "esm",
+    """ESM3 generative protein design / representation — a CANDIDATE.
+
+    LIVE via the local ESM3-open model server (`PEN_STACK_ESM3_URL`, default localhost:9012) when
+    `PEN_STACK_ORACLE_NET=1`, the prompt gives a masked `sequence` or a `length`, and the service is up: ESM3
+    generates a real protein (still a CANDIDATE — verify fold/activity before any claim). Otherwise deferred."""
+    inputs = {"prompt": prompt}
+    seq = (prompt or {}).get("sequence") if isinstance(prompt, dict) else None
+    length = (prompt or {}).get("length") if isinstance(prompt, dict) else None
+    if _oracle_net_enabled() and (seq or length):
+        key_obj = build_result("protein_design", model, inputs=inputs, output_kind="candidate")
+        url = _model_server("PEN_STACK_ESM3_URL", "http://localhost:9012")
+        payload = {k: v for k, v in {"sequence": seq, "length": length,
+                                     "num_steps": prompt.get("num_steps"),
+                                     "temperature": prompt.get("temperature")}.items() if v is not None}
+        try:
+            resp = _post(f"{url}/generate", payload)
+        except Exception:  # noqa: BLE001 - service down → defer honestly
+            return _candidate(model, inputs, "esm",
+                              "ESM3 server unreachable; deferred CANDIDATE (start the model server to design)")
+        val = {"sequence": resp.get("sequence"), "length": resp.get("length"),
+               "num_steps": resp.get("num_steps"), "model": resp.get("backend")}
+        cache_put(key_obj.provenance.cache_key, {"value": val})
+        return build_result("protein_design", model, inputs=inputs, value=val, available=True,
+                            source="local_gpu", output_kind="candidate",
+                            note=("ESM3-open generated a protein sequence (local GPU). CANDIDATE — verify "
+                                  "fold/activity (writer-verification) before any claim."))
+    return _candidate(model, inputs, "esm",
                       "ESM3 design is a CANDIDATE; verify fold/activity before any claim")
