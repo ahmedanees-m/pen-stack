@@ -46,8 +46,33 @@ def _candidate(model: str, inputs: dict, backend: str, note: str) -> OracleResul
 
 
 def generate_backbone(spec: dict, model: str = "rfdiffusion") -> OracleResult:
-    """RFdiffusion / RFdiffusion-AA backbone generation — a CANDIDATE."""
-    return _candidate(model, {"spec": spec}, "rfdiffusion",
+    """RFdiffusion / RFdiffusion-AA backbone generation — a CANDIDATE.
+
+    LIVE via the local RFdiffusion model server (`PEN_STACK_RFDIFFUSION_URL`, default localhost:9013) when
+    `PEN_STACK_ORACLE_NET=1`, the spec gives a `length` or `contigs`, and the service is up: RFdiffusion
+    diffuses a real backbone PDB (still a CANDIDATE — verify before any claim). Otherwise deferred."""
+    inputs = {"spec": spec}
+    length = (spec or {}).get("length") if isinstance(spec, dict) else None
+    contigs = (spec or {}).get("contigs") if isinstance(spec, dict) else None
+    if _oracle_net_enabled() and (length or contigs):
+        key_obj = build_result("protein_design", model, inputs=inputs, output_kind="candidate")
+        url = _model_server("PEN_STACK_RFDIFFUSION_URL", "http://localhost:9013")
+        payload = {k: v for k, v in {"length": length, "contigs": contigs,
+                                     "num_designs": spec.get("num_designs", 1)}.items() if v is not None}
+        try:
+            resp = _post(f"{url}/generate", payload, default_timeout="1200")
+        except Exception:  # noqa: BLE001 - service down → defer honestly
+            return _candidate(model, inputs, "rfdiffusion",
+                              "RFdiffusion server unreachable; deferred CANDIDATE (start the model server)")
+        designs = resp.get("designs") or []
+        val = {"designs": designs, "n": len(designs), "contigs": resp.get("contigs"),
+               "n_residues": (designs[0].get("n_residues") if designs else None)}
+        cache_put(key_obj.provenance.cache_key, {"value": val})
+        return build_result("protein_design", model, inputs=inputs, value=val, available=True,
+                            source="local_gpu", output_kind="candidate",
+                            note=("RFdiffusion diffused a backbone (local GPU). CANDIDATE — design a sequence "
+                                  "(ProteinMPNN) + verify fold/activity before any claim."))
+    return _candidate(model, inputs, "rfdiffusion",
                       "RFdiffusion backbone is a CANDIDATE; verify before any claim")
 
 
