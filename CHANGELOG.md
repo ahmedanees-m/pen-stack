@@ -3,6 +3,20 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.4.1] - 2026-06-12 - Defence-in-depth: pre-route safety screen
+
+**PATCH.** The grounded co-scientist chat ran the Guardian (biosecurity gate) only in the *design* lane (via
+`run_tools`); a hazardous request with no design signal (no vehicle/locus) routed to `general`/`explain`/`meta`
+and was never screened. Fix: `pen_stack/web/llm.py::_pre_route_safety` runs the Guardian — framing-stripped, the
+authority on the decision — at the **top** of `grounded_reply()`, before lane routing. A `refuse`/`escalate`
+verdict short-circuits to a clear decline (`mode="safety"`, with the decision in `tool_results`). Benign
+hazard-adjacent biology (vaccines, generic pathogen questions) is **not** blocked — the Guardian clears it and
+routing continues. A broad regex only decides *whether* to invoke the Guardian; a false trigger is harmless.
+
+### Added
+- `tests/unit/test_ws_chat.py` — `test_pre_route_safety_screens_a_hazardous_general_query` and
+  `test_pre_route_safety_does_not_over_refuse_benign_questions` lock both sides of the screen.
+
 ## [6.4.0] - 2026-06-12 - v6.4.0: Live Oracles (the foundation models actually execute)
 
 **The oracle mesh goes live.** The foundation-model adapters that were deferred contracts now run real backends —
