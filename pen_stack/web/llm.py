@@ -242,11 +242,56 @@ def _history_block(history):
     return out
 
 
+# -------------------------------------------------------------------------------------- pre-route safety screen
+# Defence-in-depth: a hazard-adjacent message gets the Guardian (biosecurity gate) BEFORE lane routing, so a
+# hazardous request that would route to general/explain/meta (no design signal) is still screened — not only the
+# design lane. The Guardian is framing-stripped and is the AUTHORITY on the decision; this broad regex only
+# decides WHETHER to invoke it (benign chat skips it, and a false-positive trigger is harmless — the Guardian
+# clears generic biology). Aligned with configs/safety/hazard_registry.yaml.
+_HAZARD_RE = re.compile(
+    r"\b(toxin|ricin|abrin|botulin(?:um)?|bont|anthrax|protective[- ]antigen|lethal[- ]factor|edema[- ]factor|"
+    r"shiga|verotoxin|conotoxin|saxitoxin|tetrodotoxin|tetanus|diphtheria|cholera|enterotoxin|superantigen|"
+    r"ribosome[- ]?inactivating|clostridial|nerve[- ]agent|sarin|soman|tabun|vx|novichok|smallpox|variola|"
+    r"ebola|marburg|nipah|hendra|lassa|h[ae]?morrhagic[- ]fever|select[- ]agent|bioweapon|biological[- ]weapon|"
+    r"biothreat|gain[- ]of[- ]function|pathogen|virulence)\b", re.I)
+
+
+def _pre_route_safety(message: str):
+    """If the message is hazard-adjacent, run the Guardian (framing-stripped) on it BEFORE lane routing. Returns a
+    SafetyVerdict when the decision is refuse/escalate (the caller short-circuits to a decline), else None."""
+    if not _HAZARD_RE.search(message or ""):
+        return None
+    try:
+        from pen_stack.safety import safety_gate
+        verdict = safety_gate({"cargo_function": (message or "").strip()}, actor="chat")
+    except Exception:  # noqa: BLE001 - the screen must never crash the chat; design lane still screens via run_tools
+        return None
+    return verdict if getattr(verdict, "decision", None) in {"refuse", "escalate"} else None
+
+
+def _safety_decline(verdict) -> dict:
+    reason = (getattr(verdict, "reason", None) or "matched a biosecurity hazard signature").strip()
+    reply = (
+        f"⛔ **Declined by the biosecurity screen (Guardian).** This request was assessed as **{verdict.decision}** "
+        f"— {reason}\n\nPEN-STACK is a genome-writing co-scientist with a dual-use safety gate; it does not help "
+        "design, express, or enhance select-agent toxins or pathogens. If this was a general scientific question, "
+        "please rephrase it without a build/express intent.")
+    return {"mode": "safety", "provenance": "pen-stack", "grounded": True, "reply": reply, "backend": "guardian",
+            "tool_results": {"safety": {"decision": verdict.decision, "reason": verdict.reason}},
+            "angles": None, "facts": None}
+
+
 # -------------------------------------------------------------------------------------- the public entry point
 def grounded_reply(message: str, history: list | None = None, *, allow_llm: bool = True) -> dict:
     """Route the message to a lane and answer it. Returns {reply, mode, provenance, grounded, backend,
     tool_results?, facts?, angles?}. The first three lanes are engine-grounded (guard ON); the 'general' lane is
     explicitly labelled trained-knowledge and never attributes a number to PEN-STACK."""
+    # Defence-in-depth: screen hazard-adjacent messages with the Guardian BEFORE routing, so a hazardous request
+    # that would land in general/explain/meta (no design signal) is still refused — not only the design lane.
+    verdict = _pre_route_safety(message)
+    if verdict is not None:
+        return _safety_decline(verdict)
+
     mode = classify(message, history)
     hist = _history_block(history)
 
