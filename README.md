@@ -15,7 +15,7 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-6.3.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-6.4.0-blue.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-1.0%20First%20Stable-success.svg)](docs/STABILITY.md)
 [![Tests](https://img.shields.io/badge/tests-378%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)
@@ -72,6 +72,20 @@ demonstrated (v5.12) and the benchmark went public (v5.13).
 > "1.0 — First Stable" is a commitment to **API stability**, not a claim of solving genetic engineering. The
 > unknown funnel remains — made legible (scope flags, known-unknowns, honest baselines, no fabrication), not
 > hidden.
+
+## What is new in v6.4 — Live Oracles (the foundation models actually execute)
+
+The foundation-model oracles now **run for real**, not just defer: **ViennaRNA** (in-process), **AlphaGenome**
+(free DeepMind API — variant effect + regulatory tracks), **Evo2-40B** (NVIDIA hosted — DNA generation),
+**ProteinMPNN** / **ESM3-open** / **RFdiffusion** (local GPU model servers). Each is opt-in via
+`PEN_STACK_ORACLE_NET=1`; with the flag off, every oracle behaves exactly as before — and the no-fabrication
+invariant is untouched (generated outputs stay **candidates**, OOD inputs are flagged, a down backend **defers**).
+
+A new **execution + latency surface** (`GET /oracles`, `configs/oracles/execution.yaml`) tells you the cost up
+front: *instant* / *seconds* / *slow* (~1–2 min, warn) / *long_job*. The cloud-A100 structure models
+(AlphaFold3 · Boltz-2 · Chai-1 · Protenix) are **held on purpose** — they run **separately** on a rented A100,
+never on the 16 GB VM and never in the request path. Arc STATE's perturbation **outcome** stays honestly
+deferred (it needs the State-Transition model + a reference scRNA pipeline). See [docs/live_oracles.md](docs/live_oracles.md).
 
 ## What is new in v6.3 — The Hybrid Co-Scientist (grounded engine + general intelligence)
 

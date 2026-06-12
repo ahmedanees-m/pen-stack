@@ -8,11 +8,24 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_6_3_1_everywhere():
-    assert pen_stack.__version__ == "6.3.1"
-    assert 'version = "6.3.1"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 6.3.1" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "version-6.3.1" in (_ROOT / "README.md").read_text(encoding="utf-8")
+def test_version_is_6_4_0_everywhere():
+    assert pen_stack.__version__ == "6.4.0"
+    assert 'version = "6.4.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 6.4.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "version-6.4.0" in (_ROOT / "README.md").read_text(encoding="utf-8")
+
+
+def test_v6_4_artifacts():
+    # the v6.4 artifacts: live oracles (execution/latency map + status surface + model servers + docs)
+    from pen_stack.oracles.status import execution_map, oracle_status, summary  # noqa: F401
+    cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "[6.4.0] -" in cl and "WS-LIVE" in cl
+    r = (_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "What is new in v6.4" in r and "Live Oracles" in r
+    for p in ("configs/oracles/execution.yaml", "pen_stack/oracles/status.py", "docs/live_oracles.md",
+              "docker-compose.models.yml", "model_servers/proteinmpnn/server.py",
+              "model_servers/esm3/server.py", "model_servers/rfdiffusion/server.py"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v6_3_artifacts():

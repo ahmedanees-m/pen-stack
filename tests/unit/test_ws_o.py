@@ -73,6 +73,34 @@ def test_evo2_live_falls_back_to_deferred_when_hosted_call_fails(monkeypatch):
     assert r.is_candidate and r.value is None and r.available is False
 
 
+def test_live_oracle_status_surface_is_honest(monkeypatch):
+    # v6.4: the execution/latency map covers every wrapped model and the status reflects the live conditions
+    monkeypatch.delenv("PEN_STACK_ORACLE_NET", raising=False)
+    from pen_stack.oracles.status import execution_map, oracle_status, summary
+    em = execution_map()
+    assert {"viennarna", "alphagenome", "evo2", "proteinmpnn", "esm3", "rfdiffusion", "state",
+            "alphafold3", "boltz-2", "chai-1", "protenix"} <= set(em)
+    for card in em.values():
+        assert card.get("execution") and card.get("latency_class") in {"instant", "seconds", "slow", "long_job"}
+    st = oracle_status(probe=False)
+    assert st["viennarna"]["live"] is True                       # in-process, always live
+    assert st["alphagenome"]["live"] is False                    # needs PEN_STACK_ORACLE_NET=1 (off here)
+    assert st["alphafold3"]["execution"] == "cloud_a100" and st["alphafold3"]["live"] is False  # HELD
+    assert st["state"]["execution"] == "deferred" and st["state"]["live"] is False              # honest defer
+    s = summary()
+    assert "viennarna" in s["live"] and set(s["held_cloud"]) == {"alphafold3", "boltz-2", "chai-1", "protenix"}
+
+
+def test_hosted_oracle_goes_live_when_enabled(monkeypatch):
+    # with the flag on + a key present, the hosted oracles report live (config-level, no network call)
+    monkeypatch.setenv("PEN_STACK_ORACLE_NET", "1")
+    monkeypatch.setenv("NVIDIA_API_KEY", "x")
+    monkeypatch.setenv("ALPHAGENOME_API_KEY", "y")
+    from pen_stack.oracles.status import oracle_status
+    st = oracle_status(probe=False)
+    assert st["evo2"]["live"] is True and st["alphagenome"]["live"] is True
+
+
 def test_claim_scope_oracle_passes_as_claim():
     r = build_result("genome", "alphagenome", value=0.5)          # claim-scope by its card
     assert r.as_claim() is r

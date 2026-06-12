@@ -185,6 +185,15 @@ def scope_endpoint():
     return scope_manifest()
 
 
+@app.get("/oracles", tags=["v6.4 live oracles"])
+def oracles_endpoint(probe: bool = False):
+    """v6.4: per-foundation-model EXECUTION + LATENCY CLASS + live status (the 'tell the user the cost up front'
+    surface). `?probe=true` pings the local GPU model servers. Live oracles answer in seconds–~2 min; held cloud
+    jobs (AF3/Boltz/Chai/Protenix) run separately and never block; deferred outcomes are never fabricated."""
+    from pen_stack.oracles.status import oracle_status, summary
+    return {"summary": summary(), "oracles": oracle_status(probe=bool(probe))}
+
+
 @app.post("/safety", tags=["v6.1 AI surface"])
 def safety_endpoint(design: dict):
     """v5.7 Guardian: biosecurity / dual-use screen -> SafetyVerdict (clear/flag/escalate/refuse) + reason."""

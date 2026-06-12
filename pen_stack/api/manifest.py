@@ -57,10 +57,17 @@ def capability_manifest() -> dict[str, Any]:
         "guarantees": ["rule-grounded legality", "calibrated confidence", "explicit scope / known-unknowns",
                        "biosecurity safety gate", "no fabrication"],
         "tools": _TOOLS,
-        "surfaces": {"rest": "/capabilities, /scope, /verify, /generate, /predict, /immune, /safety, /suggest, "
-                             "/session, /openapi.json", "mcp": "pen_stack.agent.mcp_server",
+        "oracles": _oracle_summary(),
+        "surfaces": {"rest": "/capabilities, /scope, /oracles, /verify, /generate, /predict, /immune, /safety, "
+                             "/suggest, /session, /openapi.json", "mcp": "pen_stack.agent.mcp_server",
                      "challenge": "benchmarks/genome_writing_challenge"},
     }
+
+
+def _oracle_summary() -> dict:
+    """Live-oracle roll-up (v6.4): which foundation models execute live, their latency class, what is held/deferred."""
+    from pen_stack.oracles.status import summary
+    return summary()
 
 
 def _known_unknowns() -> list[dict]:

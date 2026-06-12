@@ -3,6 +3,41 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.4.0] - 2026-06-12 - v6.4.0: Live Oracles (the foundation models actually execute)
+
+**The oracle mesh goes live.** The foundation-model adapters that were deferred contracts now run real backends —
+without touching the no-fabrication invariant (generated outputs stay candidates, OOD inputs are flagged, a down
+backend defers). Live execution is opt-in via `PEN_STACK_ORACLE_NET=1`; with the flag unset (CI/offline) every
+oracle behaves exactly as before. MINOR feature release on the stable 6.x API. Workstream WS-LIVE.
+
+### Added — live oracles
+- **Evo2-40B (hosted)** — `oracles/genome.py::generate_dna` calls NVIDIA's hosted Evo2-40B (real generated DNA +
+  per-token probability). ~1–3 s.
+- **AlphaGenome (hosted)** — `oracles/genome.py::variant_effect` **connected to the existing v3.1
+  `wgenome.AlphaGenomeProvider`** (added `score_variant`; no duplicate client) — a real regulatory variant-effect
+  magnitude. ~2–10 s. (AlphaGenome already ran live in v3.1 for expression/tracks/contact — 416 cached predictions.)
+- **ProteinMPNN / ESM3-open / RFdiffusion (local GPU)** — `model_servers/{proteinmpnn,esm3,rfdiffusion}` small
+  FastAPI servers on the VM GPU (reuse `penstack:phase1.5` / `rfdiffusion:base`); `oracles/protein_design.py`
+  HTTP-calls them. ProteinMPNN ~1–9 s, ESM3 ~1–2 s warm, RFdiffusion ~1–2 min. `docker-compose.models.yml` starts
+  them on demand.
+- **Execution + latency surface** — `configs/oracles/execution.yaml` + `oracles/status.py` (`oracle_status`,
+  `summary`) + `GET /oracles` + the chat meta facts: per-oracle execution, **latency class**
+  (instant/seconds/slow/long_job), and live status, so the assistant states the cost before running anything.
+
+### Held / honestly deferred
+- **AlphaFold3 · Boltz-2 · Chai-1 · Protenix** — HELD: need a rented A100/H100 (24–80 GB; AF3 also ~1 TB
+  databases). Run **separately** on cloud, never on the 16 GB VM and never in the request path.
+- **Arc STATE / scGPT** — package verified installable (`pip install arc-state`; SE-600M embeds cells), but a
+  trustworthy perturbation **outcome** needs the State-Transition model + a reference scRNA pipeline, and even
+  SOTA doesn't beat naive baselines (Arc VCC) — so the magnitude stays a known-unknown, honestly deferred
+  (uniform gated hook added via `PEN_STACK_VCELL_URL` for when an ST server is stood up).
+
+### Verified on the VM (RTX A4000)
+Evo2-40B generation ~1.2 s; AlphaGenome variant score `chr22:36201698 A>C` max|effect| 3.15 over 14,652 tracks
+in 3.6 s; ProteinMPNN designed real ubiquitin-fold sequences (global_score ~0.80) in ~9 s; ESM3-open completed the
+ubiquitin sequence from a partial prompt in 1.4 s warm; RFdiffusion diffused a real 60-residue backbone in ~105 s.
+All generated outputs remain candidates (`as_claim()` raises).
+
 ## [6.3.1] - 2026-06-12 - v6.3.1: router fix — general "how does it work" no longer misrouted to the meta lane
 
 **Patch (routing correctness).** Found by a rigorous full-stack test pass (every oracle + every endpoint + the 4

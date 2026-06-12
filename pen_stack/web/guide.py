@@ -100,4 +100,11 @@ def pen_stack_facts() -> dict:
         "what_is_NOT_predicted": "functional titer / % of normal, in-vivo response magnitude, long-term clinical "
                                  "durability, phenotype — these are measured clinical endpoints, never predicted.",
     }
+
+    # v6.4 — live foundation-model oracles (which execute live + their latency class)
+    try:
+        from pen_stack.oracles.status import summary as _orsum
+        facts["foundation_models"] = _orsum()
+    except Exception:
+        facts["foundation_models"] = {"note": "oracle execution map in configs/oracles/execution.yaml"}
     return facts
