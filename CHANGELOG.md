@@ -3,6 +3,23 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/) and the program's phase structure.
 
+## [6.2.4] - 2026-06-12 - v6.2.4: faster grounded narration (LLM backends) (patch)
+
+**Performance + a real fix, from benchmarking the narration backends on the deployment GPU (RTX A4000).** The
+LLM only narrates over engine tool results (the grounding guard runs regardless), so latency is the thing to
+tune. Measured (real grounded prompt): Ollama qwen2.5:**7b** = ~50s warm / 120s cold (3.4 tok/s — a workstation
+GPU is slow for LLM); qwen2.5:**3b** = ~27s; llama3.2:3b = ~17s; hosted **Nemotron‑49B = ~5s**. All keep the
+grounding guard clean (0 ungrounded). The old Nemotron fallback model (`llama-3.1-nemotron-70b-instruct`) now
+**404s** — i.e. the fallback was silently broken.
+
+### Fixed / changed (`pen_stack/web/llm.py`)
+- **Nemotron model corrected** to `nvidia/llama-3.3-nemotron-super-49b-v1` (the 70B name was retired → the
+  fallback 404'd). Restores a working, ~5s hosted backend.
+- **Default local model qwen2.5:7b → qwen2.5:3b‑instruct** (~2× faster narration, grounding unchanged).
+- **`keep_alive` (default 30m)** so the model stays resident on the GPU and idle calls don't pay the cold start.
+- **Configurable backend order** `PEN_STACK_LLM_ORDER` (default `ollama,nemotron` = local/private‑first;
+  `nemotron,ollama` = speed‑first ~5s). `web/.env.example` documents all knobs.
+
 ## [6.2.3] - 2026-06-12 - v6.2.3: scope matcher covers functional titer + durability (patch)
 
 **Honesty-coverage fix (from the 20-query acceptance suite, `phase_6.2/PEN-STACK_ACCEPTANCE_TESTS.md`).** The

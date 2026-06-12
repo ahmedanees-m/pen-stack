@@ -15,7 +15,7 @@ every design against rule-grounded mechanism, reports calibrated confidence, cit
 [![codecov](https://codecov.io/gh/ahmedanees-m/pen-stack/branch/main/graph/badge.svg)](https://codecov.io/gh/ahmedanees-m/pen-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-6.2.3-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-6.2.4-blue.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-1.0%20First%20Stable-success.svg)](docs/STABILITY.md)
 [![Tests](https://img.shields.io/badge/tests-371%20passing-success.svg)](tests/)
 [![Lint: ruff](https://img.shields.io/badge/lint-ruff-purple.svg)](https://github.com/astral-sh/ruff)

@@ -147,10 +147,11 @@ def _call_ollama(prompt: str) -> str:
 
     r = requests.post(
         f"{_ollama_base()}/api/generate",
-        json={"model": os.getenv("OLLAMA_MODEL", "qwen2.5:7b-instruct"),
+        json={"model": os.getenv("OLLAMA_MODEL", "qwen2.5:3b-instruct"),       # 3B narrates ~2x faster than 7B
               "prompt": prompt, "system": SYSTEM, "stream": False,
+              "keep_alive": os.getenv("OLLAMA_KEEP_ALIVE", "30m"),             # keep warm -> avoid the cold start
               "options": {"temperature": 0.2,
-                          "num_predict": int(os.getenv("OLLAMA_NUM_PREDICT", "450"))}},
+                          "num_predict": int(os.getenv("OLLAMA_NUM_PREDICT", "400"))}},
         timeout=_llm_timeout())
     r.raise_for_status()
     return r.json()["response"]
@@ -174,9 +175,9 @@ def _call_nemotron(prompt: str) -> str:
     r = requests.post(
         "https://integrate.api.nvidia.com/v1/chat/completions",
         headers={"Authorization": f"Bearer {key}"},
-        json={"model": os.getenv("NEMOTRON_MODEL", "nvidia/llama-3.1-nemotron-70b-instruct"),
+        json={"model": os.getenv("NEMOTRON_MODEL", "nvidia/llama-3.3-nemotron-super-49b-v1"),
               "messages": [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}],
-              "temperature": 0.2, "max_tokens": 900},
+              "temperature": 0.2, "max_tokens": 600},
         timeout=_llm_timeout())
     r.raise_for_status()
     return r.json()["choices"][0]["message"]["content"]
@@ -207,11 +208,17 @@ def grounded_reply(message: str, history: list | None = None, *, allow_llm: bool
     prompt = _prompt(message, tool_results, history)
 
     if allow_llm and os.getenv("PEN_STACK_NO_LLM") != "1":
-        for backend in (_call_ollama, _call_nemotron):
+        # configurable order: "ollama,nemotron" (privacy/local-first, the default) or "nemotron,ollama"
+        # (speed-first — the hosted 49B answers in ~5s vs ~25-50s on a workstation GPU). Either way the guard runs.
+        backends = {"ollama": _call_ollama, "nemotron": _call_nemotron}
+        order = [b.strip().lower() for b in os.getenv("PEN_STACK_LLM_ORDER", "ollama,nemotron").split(",")]
+        for name in order:
+            fn = backends.get(name)
+            if fn is None:
+                continue
             try:
-                text = _enforce_grounding(backend(prompt), grounded)   # HARD GATE
-                return {"reply": text, "tool_results": tool_results, "grounded": True,
-                        "backend": backend.__name__.removeprefix("_call_")}
+                text = _enforce_grounding(fn(prompt), grounded)        # HARD GATE
+                return {"reply": text, "tool_results": tool_results, "grounded": True, "backend": name}
             except Exception:                                  # any backend failure → next, then deterministic
                 continue
 
