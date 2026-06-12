@@ -37,6 +37,42 @@ def test_generative_output_is_candidate_and_cannot_become_a_claim():
             r.as_claim()
 
 
+def test_evo2_generate_is_deferred_offline_and_never_fabricates(monkeypatch):
+    # with the live oracle network OFF (CI default), Evo2 generation defers: a CANDIDATE with no fabricated value
+    monkeypatch.delenv("PEN_STACK_ORACLE_NET", raising=False)
+    r = genome.generate_dna("ACGTACGTACGT", n=8)
+    assert r.is_candidate and r.value is None and r.available is False
+
+
+def test_evo2_live_path_parses_hosted_response_into_a_candidate(monkeypatch, tmp_path):
+    # the LIVE wiring (PEN_STACK_ORACLE_NET=1): a hosted Evo2-40B response is parsed into a CANDIDATE with the
+    # generated DNA + per-token-probability-derived uncertainty, cached, and STILL guarded (as_claim raises).
+    monkeypatch.setenv("PEN_STACK_ORACLE_NET", "1")
+    monkeypatch.setenv("NVIDIA_API_KEY", "test-key")
+    monkeypatch.setattr(genome, "cache_put", lambda *a, **k: None)      # don't touch disk in CI
+    monkeypatch.setattr(genome, "_call_evo2_generate",
+                        lambda seed, n: {"sequence": "CAGGCAT", "sampled_probs": [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3],
+                                         "elapsed_ms": 42})
+    r = genome.generate_dna("ATGGCG", n=7)
+    assert r.available and r.provenance.source == "hosted_api" and r.provenance.model == "evo2"
+    assert r.is_candidate and r.value["generated"] == "CAGGCAT" and r.value["seed"] == "ATGGCG"
+    assert r.value["full"] == "ATGGCGCAGGCAT" and r.value["n_tokens"] == 7
+    assert abs(r.native_uncertainty - (1 - 0.6)) < 1e-6        # 1 - mean(per-token prob)
+    with pytest.raises(ValueError):
+        r.as_claim()                                          # a generated sequence is a candidate, not a claim
+
+
+def test_evo2_live_falls_back_to_deferred_when_hosted_call_fails(monkeypatch):
+    # a hosted failure must degrade to an honest deferred CANDIDATE, never a fabricated sequence
+    monkeypatch.setenv("PEN_STACK_ORACLE_NET", "1")
+    monkeypatch.setenv("NVIDIA_API_KEY", "test-key")
+    def _boom(seed, n):
+        raise RuntimeError("hosted 503")
+    monkeypatch.setattr(genome, "_call_evo2_generate", _boom)
+    r = genome.generate_dna("ATGGCG", n=7)
+    assert r.is_candidate and r.value is None and r.available is False
+
+
 def test_claim_scope_oracle_passes_as_claim():
     r = build_result("genome", "alphagenome", value=0.5)          # claim-scope by its card
     assert r.as_claim() is r
