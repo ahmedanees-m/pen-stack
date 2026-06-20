@@ -1,0 +1,57 @@
+# PEN-STACK v3.1 - WS-A (de-circularize the planning benchmark) pre-registered acceptance.
+# Locked criteria; results reported verbatim including negative outcomes. The headline is the BLIND
+# discovery (A3), never the targeted-intent gene-level recovery (which is definitional - see
+# docs/benchmark_circularity.md).
+cycle: "v3.1"
+workstream: "WS-A"
+prepared: "2026-06-04"
+
+A1_document_circularity:
+  deliverable: "docs/benchmark_circularity.md"
+  acceptance: "a second reader reproduces the argument from the doc + code alone"
+
+A2_intent_specification:
+  deliverable: "pen_stack/validate/intent_specification.py -> out/intent_specification.json"
+  reframed_as: "behavioral specification-compliance (exact-match correctness table)"
+  acceptance: "NO recovery@k / p-value / CI language attached to targeted-intent gene-level results anywhere
+    (code, docstrings, README, manuscript). Report a correctness table only."
+
+A3_blind_gsh_discovery:   # THE HEADLINE
+  deliverable: "pen_stack/validate/blind_gsh_discovery.py -> out/blind_gsh_discovery.json;
+    frozen data/gsh_matched_controls.parquet (SHA-locked)"
+  heldout_set: "configs/gsh_validated_heldout.yaml - SCALED in v3.1.1 to 51 loci across 3 tiers: 8
+    functionally validated + 8 eLife candidate (= 16 CURATED, the acceptance basis) + 35 Pellenz/Sadelain
+    2019 candidates (lifted hg19->hg38, reported SEPARATELY; near chance). Gene/coordinate-anchored to hg38."
+  controls: "matched on dist_tss, dist_oncogene, accessibility quantile buckets; frozen before scoring"
+  acceptance:   # honest, CI-based (v3.1.1) - NOT a bare point-estimate threshold
+    PRIMARY: "report the AUROC WITH its bootstrap 95% CI and N, for both the validated tier and all loci;
+      the all-loci CI lower bound is above chance (>0.5) AND writability beats the safety-only baseline."
+    honesty: "the validated-only tier (N=8) is underpowered (CI includes 0.5) and reported as such; the
+      earlier 0.92-on-5 was a fragile over-estimate. The discovery claim is bounded to 'weak discrimination'."
+    downgrade: "never cite the point AUROC without its CI and N; do not tune to the test. Scaling the
+      validated gold set further is the route to a precise estimate."
+  note: "recovery@k is confounded by safety saturation (~1.0 across safe regions); AUROC (+CI) is primary."
+
+A4_writer_recovery:
+  deliverable: "data/writer_panel.csv (DOI-sourced); pen_stack/validate/writer_recovery.py -> out/writer_recovery.json"
+  acceptance: "writer-family recovery@1 exceeds the prevalence baseline by a clear margin on >= 8 entries
+    spanning >= 3 families; reported per family"
+  rule: "recommend the smallest-capacity DSB-free family that fits the cargo (cargo size load-bearing)"
+
+A5_within_locus:
+  deliverable: "pen_stack/validate/within_locus_ranking.py -> out/within_locus_ranking.json"
+  acceptance: "documented bin in the top quartile for a pre-registered fraction of loci; reported per locus
+    (descriptive; few qualifying loci)"
+
+A6_consolidated_report:
+  deliverable: "scripts/p3_benchmark_report.py -> out/ws_a_report.md"
+  headline: "the BLIND GSH discovery AUROC, not the targeted-intent recovery"
+
+gate_G_A: "WS-E (benchmark) cannot start until A1-A6 are complete, the blind AUROC is reported (whatever its
+  value), and no circular claims remain in the repo."
+
+locked_files:
+  - prereg/ws_a.yaml
+  - configs/gsh_validated_heldout.yaml
+  - data/writer_panel.csv
+  - data/gsh_matched_controls.parquet

@@ -1,0 +1,59 @@
+# PEN-STACK, expression-MODIFIER priors (v6.5, WS-EXPRESS). Multiplicative cis-elements that shift relative
+# cassette expression. CRITICAL HONESTY: every fold-effect below is STRONGLY transgene-, cell-, and construct-
+# dependent (the canonical warning: the chimeric intron is ~20× for CAT but ~3× for luciferase in the SAME assay).
+# These are PRIORS/RANGES with citations, NOT deterministic multipliers. The model applies them with WIDE
+# uncertainty and NEVER asserts an absolute fold; the in-vivo expression MAGNITUDE stays a known-unknown.
+version: "1.0"
+
+modifiers:
+  wpre:
+    present_fold: [2.0, 5.0] # AAV8 in vivo: ~5× mRNA liver, ~4× brain, ~2× muscle; lenti ~2-5×
+    default: 2.5
+    direction: increase
+    confidence: high
+    note: "woodchuck post-transcriptional regulatory element; most effective 3' of transgene, proximal to polyA"
+    citation: ["10.7150/ijms.14152", "Zufferey 1999 J Virol 73:2886"]
+  intron:
+    present_fold: [1.5, 5.0] # SV40 intron ~4.39× eGFP (CHO); chimeric 3-20× (transgene-dependent)
+    default: 2.0
+    direction: increase
+    confidence: medium
+    note: "chimeric/SV40/MVM intron; STRONGLY transgene-dependent (20× CAT vs 3× luciferase); some transgenes none"
+    citation: ["10.1111/jcmm.13504", "Promega pCI bulletin"]
+  polya_strength: # relative, bGH as the strong reference (≈3× SV40 early polyA)
+    bgh: 1.0
+    synthetic_spa: 0.85
+    sv40: 0.6
+    default: 0.8
+    confidence: high
+    note: "bGH ≈ 3× SV40 early polyA; synthetic/SV40 give lower variance + better nuclease resistance"
+    citation: ["10.1089/dna.1986.5.115", "PMC8819543"]
+  kozak_strength: # translation-initiation context (GCCRCCaugG optimal)
+    optimal: 1.0
+    moderate: 0.7
+    weak: 0.4
+    default: 0.85
+    confidence: medium
+    note: "-3 purine + +4G dominant; weak context can cut expression up to ~95%; restoring optimal ~3× (RUNX3)"
+    citation: ["10.1038/s41598-018-22330-9"]
+  codon_optimization: # CAI-driven; NON-MONOTONIC, higher CAI usually but not always higher
+    optimized_fold: [1.0, 10.0] # typical 2-10×; documented 6-9× and ~10×; can also fail/backfire
+    default: 2.0
+    direction: increase_usually
+    confidence: medium
+    note: "CAI correlates with expression IMPERFECTLY (GC%, mRNA structure, hidden motifs also matter); not guaranteed"
+    citation: ["10.3389/fbioe.2024.1371596", "Sharp & Li 1987 NAR 15:1281"]
+  cpg_silencing: # high CpG density in the transcribed region -> repression/silencing
+    direction: decrease
+    magnitude: "context/locus-dependent, NO single sourced fold"
+    confidence: high_direction_low_magnitude
+    note: "high CpG promotes transcriptional repression + de-novo methylation + immunogenicity; CpG-depletion can escape silencing"
+    citation: ["10.1186/gb-2003-4-9-r53"]
+
+# composition policy (honesty): modifiers are applied as a BOUNDED relative shift with WIDE uncertainty, NOT a
+# naive product of independent folds (no source supports multiplicativity). The output stays a relative,
+# dimensionless estimate; absolute titer / % of normal remains a known-unknown.
+composition:
+  policy: "bounded_relative_shift"
+  max_total_uplift: 4.0 # cap the combined modifier uplift (avoid runaway products)
+  uncertainty: "wide, modifier effects are transgene/context-dependent priors, not measured for this construct"

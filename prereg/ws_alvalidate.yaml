@@ -1,0 +1,19 @@
+# PEN-STACK v5.10 - WS-VALIDATE (retrospective active-learning falsifiability). Directional.
+# Deposited as ws_alvalidate (active-learning validate) - the falsifiability gate for the experiment designer.
+cycle: "v5.10"
+workstream: "WS-VALIDATE"
+prepared: "2026-06-11"
+motivation: >
+  Prove on held-out data that 'active' (uncertainty sampling) reaches a target model quality in FEWER rounds
+  than random/greedy - or report honestly that it does not (not-yet-useful is a valid, published outcome).
+deliverable: "pen_stack/active/validate.py: retrospective_active_learning(dataset, strategies, ...)."
+method: >
+  simulate campaigns per strategy (active=uncertainty sampling, random, greedy) on a held-out split; record the
+  held-out MAE learning curve per round; over reps, report mean+CI curves and a bootstrap CI on the curve-AREA
+  gap (random_area - active_area); active_beats_random iff the CI excludes zero.
+acceptance: >
+  the learning-curve gap (active vs random) is reported with reps + bootstrap CI; active beats random/greedy OR
+  is reported not-yet-useful - either way, the falsifiable result is reported.
+honesty_invariant: "retrospective + dataset-dependent; advantage validated with CIs, reported honestly when absent; prospective benefit awaits a lab."
+gate: "G-VALIDATE - gap reported with reps + CI; falsifiable outcome reported (positive or not-yet-useful)."
+locked_files: [prereg/ws_alvalidate.yaml]

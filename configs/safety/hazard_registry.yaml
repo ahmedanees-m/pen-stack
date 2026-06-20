@@ -1,0 +1,147 @@
+# PEN-STACK v5.7, Hazard Registry (the Guardian / WS-SCREEN)
+# ---------------------------------------------------------------------------
+# DEFENSIVE biosecurity screen. This file lists, at the FUNCTION / FAMILY / TAXON
+# level only, the controlled-hazard categories a genome-writing design is screened
+# AGAINST so it can be flagged, escalated, or refused. It is a *safeguard, not a
+# guarantee*, and deliberately contains:
+# * NO nucleotide / amino-acid hazard sequences,
+# * NO synthesis routes, assembly methods, or enhancement instructions,
+# * ONLY public function annotations (Pfam/InterPro accessions), public control-list
+# references, and the keyword/alias tokens needed to match a DECLARED annotation.
+# Signatures are versioned; the registry reduces, does not eliminate, dual-use risk
+# and is not a substitute for institutional biosafety / IBC review.
+#
+# Provenance for the control lists (public):
+# - HHS/USDA Select Agents & Toxins: 42 CFR 73, 7 CFR 331, 9 CFR 121.
+# - Australia Group "List of Human and Animal Pathogens and Toxins for Export Control".
+# - Pfam/InterPro: public protein-family signatures (the same function targets used by
+# the IBBIS Common Mechanism and the IGSC Harmonized Screening Protocol).
+# ---------------------------------------------------------------------------
+registry_version: "2026.06-v1"
+note: "function/family/taxon-level signatures only; exploit detail intentionally omitted"
+
+# --- Controlled-toxin protein FUNCTIONS (caught by the function screen even at low
+# sequence identity, this is what catches an AI-designed homolog). ------------
+toxin_functions:
+  - id: TOX-RIP
+    name: "ricin / ribosome-inactivating protein (type II RIP)"
+    pfam: ["PF00161", "PF00652"] # RIP catalytic + ricin-B lectin (public)
+    keywords: ["ricin", "ribosome_inactivating_protein", "ribosome inactivating", "rip", "abrin"]
+    control_ref: "Select Agent (ricin); Australia Group toxin"
+    severity: high
+  - id: TOX-BoNT
+    name: "botulinum / clostridial neurotoxin"
+    pfam: ["PF01742", "PF07951", "PF07952", "PF07953"] # peptidase M27 + BoNT domains
+    keywords: ["botulinum", "clostridial_neurotoxin", "clostridial neurotoxin", "bont", "tetanus neurotoxin"]
+    control_ref: "Select Agent (botulinum neurotoxin); Australia Group toxin"
+    severity: high
+  - id: TOX-DT
+    name: "diphtheria toxin / ADP-ribosyltransferase exotoxin"
+    pfam: ["PF01324", "PF02763"]
+    keywords: ["diphtheria toxin", "diphtheria_toxin"]
+    control_ref: "Australia Group toxin"
+    severity: high
+  - id: TOX-ANTHRAX
+    # Verified 2026-06 against InterPro: LF subunit PF03497; PA families PF03495 (Ca-binding),
+    # PF20835 (PA Ig-like), PF17475/PF17476 (PA domains 2/3, shared with clostridial binary toxin).
+    # (Earlier draft wrongly listed PF01375, that is heat-labile/cholera enterotoxin; relocated below.)
+    name: "anthrax lethal factor / protective antigen / edema factor"
+    pfam: ["PF03497", "PF03495", "PF20835", "PF17475", "PF17476"]
+    keywords: ["anthrax", "lethal factor", "protective antigen", "edema factor"]
+    control_ref: "Select Agent (Bacillus anthracis toxins); Australia Group"
+    severity: high
+  - id: TOX-CHOLERA-LT
+    # Surfaced during PF-ID verification: PF01375 is the heat-labile enterotoxin / cholera toxin
+    # A subunit (ADP-ribosyltransferase), an Australia-Group-controlled toxin, kept, correctly labelled.
+    name: "cholera toxin / heat-labile enterotoxin A subunit (ADP-ribosyltransferase)"
+    pfam: ["PF01375"]
+    keywords: ["cholera toxin", "cholera_toxin", "heat-labile enterotoxin", "heat labile enterotoxin"]
+    control_ref: "Australia Group toxin (cholera toxin / heat-labile enterotoxin)"
+    severity: medium
+  - id: TOX-SHIGA
+    name: "Shiga / Shiga-like toxin"
+    pfam: ["PF00161"] # RIP-family catalytic (shared with TOX-RIP)
+    keywords: ["shiga", "shiga-like", "shiga_toxin", "verotoxin"]
+    control_ref: "Select Agent (Shiga toxin); Australia Group toxin"
+    severity: high
+  - id: TOX-STAPH-ENT
+    name: "staphylococcal enterotoxin / superantigen"
+    pfam: ["PF01123", "PF02876"]
+    keywords: ["staphylococcal enterotoxin", "enterotoxin", "superantigen"]
+    control_ref: "Select Agent (staphylococcal enterotoxins); Australia Group"
+    severity: high
+  - id: TOX-CONO
+    name: "conotoxin / ion-channel-blocking peptide toxin (high potency)"
+    pfam: ["PF02950"]
+    keywords: ["conotoxin", "ion_channel_toxin"]
+    control_ref: "Australia Group toxin (selected)"
+    severity: medium
+
+# --- Regulated PATHOGEN taxa / pandemic-potential agents. Screened by declared source
+# taxon or characteristic essential-gene FAMILY name, taxon-level membership only,
+# never a genome. A match is a dual-use signal that ESCALATES (human review). ------
+regulated_taxa:
+  - id: PATH-VARIOLA
+    name: "Variola virus (smallpox) and related orthopoxvirus eradicated agents"
+    aliases: ["variola", "smallpox", "orthopoxvirus eradicated"]
+    control_ref: "Select Agent; WHO-restricted"
+    severity: high
+  - id: PATH-1918-FLU
+    name: "reconstructed 1918 influenza / pandemic-potential influenza reassortants"
+    aliases: ["1918 influenza", "reconstructed influenza"]
+    control_ref: "Select Agent (1918 H1N1); HHS P3CO oversight"
+    severity: high
+  - id: PATH-EBOLA-MARBURG
+    name: "Ebola / Marburg filoviruses"
+    aliases: ["ebola", "marburg", "filovirus"]
+    control_ref: "Select Agent; Australia Group"
+    severity: high
+  - id: PATH-NIPAH-HENDRA
+    name: "Nipah / Hendra henipaviruses"
+    aliases: ["nipah", "hendra", "henipavirus"]
+    control_ref: "Select Agent; Australia Group"
+    severity: high
+  - id: PATH-SARS-MERS
+    name: "SARS-CoV / MERS-CoV pandemic-potential coronaviruses (gain-of-function context)"
+    aliases: ["sars-cov", "mers-cov", "sars coronavirus"]
+    control_ref: "HHS P3CO oversight; Australia Group"
+    severity: medium
+  - id: PATH-YERSINIA
+    name: "Yersinia pestis (plague)"
+    aliases: ["yersinia pestis", "plague"]
+    control_ref: "Select Agent; Australia Group"
+    severity: high
+
+# --- Controlled FUNCTIONS that are dual-use in a writing context (escalate; not always
+# refuse, these have legitimate research uses and need human judgement). -----------
+controlled_functions:
+  - id: FUNC-ENHANCE-TRANSMIT
+    # ESCALATE (not auto-refuse): gain-of-function / enhanced transmissibility has a legitimate human
+    # oversight pathway (HHS P3CO / DURC committee review). Plan philosophy: ambiguous dual-use -> human
+    # review. A regulated TAXON (e.g. variola) still dominates to high/refuse via the taxon screen.
+    name: "engineered enhancement of transmissibility / host-range of a regulated pathogen"
+    keywords: ["enhance_transmissibility", "increase transmissibility", "airborne transmissibility", "host_range_expansion"]
+    control_ref: "HHS P3CO / DURC policy"
+    severity: medium
+  - id: FUNC-IMMUNE-EVASION
+    name: "engineered evasion of established immunity / vaccine resistance in a pathogen"
+    keywords: ["immune_evasion", "vaccine_resistance", "antibody_escape"]
+    control_ref: "DURC policy (category of concern)"
+    severity: medium
+  - id: FUNC-PATHO-ESSENTIAL
+    name: "pathogen-essential virulence factor delivered in a replication-competent context"
+    keywords: ["pathogen_essential", "virulence_factor", "pathogen essential"]
+    control_ref: "DURC policy"
+    severity: medium
+
+# --- Chimera / context rules: hazardous ASSEMBLY of individually-benign parts. ---------
+chimera_rules:
+  - id: CHIM-TOXIN-PAYLOAD
+    detail: "toxin payload + broad-tropism/systemic delivery = weaponizable context"
+    severity: high
+  - id: CHIM-PATHO-REPLICATION
+    detail: "pathogen-essential / virulence function in a replication-competent (self-propagating) vector"
+    severity: high
+  - id: CHIM-SPLIT-HAZARD
+    detail: "a hazardous function split across >=2 sub-designs in one plan (assembly-evasion of a per-design screen)"
+    severity: medium

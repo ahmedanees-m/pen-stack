@@ -1,0 +1,22 @@
+{
+  "experiment": "Does chromatin accessibility predict off-target activity? (v6.10.2 cross-cell + v6.10.3 cell-type-matched)",
+  "hypothesis": "Lazzarotto et al. 2020 (CHANGE-seq, 10.1038/s41587-020-0555-7): CELL-BASED off-target activity is enriched in open chromatin; IN-VITRO (cell-free) activity is not (no chromatin in vitro).",
+  "method": "Off-target protospacers mapped to hg38 (GRCh38.fa) by exact match on both strands (grep -F). AUROC of accessibility for active-vs-inactive off-targets per assay; 500x bootstrap 95% CI; in-vitro assays as NEGATIVE control. Phase 1 (v6.10.2): Stage B K562 ATAC/DNase (CROSS-CELL proxy), 1 kb bins. Phase 2 (v6.10.3): CELL-TYPE-MATCHED ENCODE HEK293T DNase-seq (ENCFF529BOG) queried at each off-target's 1 kb bin (pyBigWig mean) — HEK293T matches GUIDE-seq (HEK293) and TTISS (HEK293T).",
+  "phase1_k562_cross_cell": {
+    "guideseq":  {"modality": "cell-based", "auroc": 0.58,  "ci95": [0.550, 0.613]},
+    "ttiss":     {"modality": "cell-based", "auroc": 0.346, "ci95": [0.322, 0.368]},
+    "changeseq": {"modality": "in_vitro_control", "auroc": 0.496, "ci95": [0.480, 0.513]},
+    "circleseq": {"modality": "in_vitro_control", "auroc": 0.519, "ci95": [0.501, 0.535]},
+    "siteseq":   {"modality": "in_vitro_control", "auroc": 0.469, "ci95": [0.452, 0.489]}
+  },
+  "phase2_hek293t_matched": {
+    "track": "ENCODE HEK293T DNase-seq (ENCFF529BOG, read-depth normalized signal, GRCh38)",
+    "guideseq": {"modality": "cell-based (WT Cas9; HEK293T = matched)", "auroc": 0.671, "k562_auroc": 0.58, "ci95": [0.642, 0.701], "actives": 427, "inactives": 1497},
+    "ttiss":    {"modality": "cell-based (Cas9 VARIANTS; HEK293T = matched)", "auroc": 0.383, "k562_auroc": 0.346, "ci95": [0.362, 0.405], "actives": 925, "inactives": 1496},
+    "siteseq":  {"modality": "in_vitro control", "auroc": 0.494, "k562_auroc": 0.469, "ci95": [0.475, 0.514], "actives": 2059, "inactives": 1495}
+  },
+  "verdict": "VALIDATED (moderate, cell-type-matched) for WT-Cas9 cell-based off-target activity.",
+  "interpretation": "Cell-type-MATCHED accessibility (HEK293T DNase) predicts WT-Cas9 cell-based off-target activity: GUIDE-seq AUROC rises 0.58 (cross-cell K562 proxy) -> 0.671 (matched, CI [0.642, 0.701]), confirming the cross-cell proxy was dampening the real effect (Lazzarotto 2020). The in-vitro negative control stays null (0.494) -> the method has no spurious signal. The effect is MODERATE (accessibility alone is one factor; the sequence/CRISOT score dominates) and CELL-TYPE-SPECIFIC (the cross-cell proxy underperforms). It does NOT transfer to TTISS (0.383 even matched) — but TTISS is a Cas9-VARIANT specificity assay (engineered high-fidelity variants), whose off-target landscape is driven by variant fidelity, not WT chromatin sensitivity, so it is the expected outlier.",
+  "decision": "Chromatin is now a VALIDATED (moderate, cell-type-matched) qualitative modifier, surfaced as an annotation with the direction + evidence. It still does NOT silently change the numeric off-target risk score — a calibrated CRISOT+accessibility combination (incremental-over-sequence value) is the remaining refinement and is not yet built. The deployed app abstains (no raw track mounted).",
+  "remaining_refinement": "quantify the INCREMENTAL value of accessibility ON TOP OF the CRISOT sequence score (AUPRC of CRISOT+accessibility vs CRISOT alone) before letting it re-rank; deferred."
+}

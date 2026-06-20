@@ -1,0 +1,15 @@
+# PEN-STACK v5.10 - WS-DESIGN (diverse batch experiment selection). Directional.
+# Deposited as ws_aldesign (active-learning design) to stay distinct from the generic ws_d lock.
+cycle: "v5.10"
+workstream: "WS-DESIGN"
+prepared: "2026-06-11"
+motivation: >
+  Assemble the BATCH of experiments to run next - diverse, not k copies of the single most-uncertain point.
+deliverable: "pen_stack/active/design.py: select_batch(candidates, cell_state, k) + batch_diversity()."
+method: >
+  greedy: at each step pick the candidate maximising acquisition minus a redundancy penalty (fraction of shared
+  design facets) against the already-chosen set; each chosen experiment carries its expected information gain.
+acceptance: "batches are diverse (a diversity metric beats pure top-k-by-score); each carries its expected info gain."
+honesty_invariant: "diversity spreads the batch across design space; selection is as good as the v5.9 twin, no better."
+gate: "G-DESIGN - batch diversity >= top-k-by-score; each experiment carries expected info gain."
+locked_files: [prereg/ws_aldesign.yaml]

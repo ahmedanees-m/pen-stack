@@ -1,0 +1,161 @@
+{
+  "guideseq": {
+    "n_candidates": 159155,
+    "n_active": 346,
+    "by_mismatch": {
+      "0": {
+        "n": 9,
+        "n_active": 9,
+        "active_fraction": 1.0
+      },
+      "1": {
+        "n": 2,
+        "n_active": 2,
+        "active_fraction": 1.0
+      },
+      "2": {
+        "n": 34,
+        "n_active": 26,
+        "active_fraction": 0.76471
+      },
+      "3": {
+        "n": 441,
+        "n_active": 102,
+        "active_fraction": 0.23129
+      },
+      "4": {
+        "n": 3727,
+        "n_active": 123,
+        "active_fraction": 0.033
+      },
+      "5": {
+        "n": 23932,
+        "n_active": 66,
+        "active_fraction": 0.00276
+      },
+      "6": {
+        "n": 131010,
+        "n_active": 18,
+        "active_fraction": 0.00014
+      }
+    }
+  },
+  "circleseq": {
+    "n_candidates": 142386,
+    "n_active": 3673,
+    "by_mismatch": {
+      "0": {
+        "n": 8,
+        "n_active": 8,
+        "active_fraction": 1.0
+      },
+      "1": {
+        "n": 2,
+        "n_active": 2,
+        "active_fraction": 1.0
+      },
+      "2": {
+        "n": 32,
+        "n_active": 32,
+        "active_fraction": 1.0
+      },
+      "3": {
+        "n": 417,
+        "n_active": 280,
+        "active_fraction": 0.67146
+      },
+      "4": {
+        "n": 3448,
+        "n_active": 916,
+        "active_fraction": 0.26566
+      },
+      "5": {
+        "n": 21693,
+        "n_active": 1285,
+        "active_fraction": 0.05924
+      },
+      "6": {
+        "n": 116786,
+        "n_active": 1150,
+        "active_fraction": 0.00985
+      }
+    }
+  },
+  "changeseq": {
+    "n_candidates": 299501,
+    "n_active": 5888,
+    "by_mismatch": {
+      "0": {
+        "n": 20,
+        "n_active": 19,
+        "active_fraction": 0.95
+      },
+      "2": {
+        "n": 47,
+        "n_active": 38,
+        "active_fraction": 0.80851
+      },
+      "3": {
+        "n": 634,
+        "n_active": 359,
+        "active_fraction": 0.56625
+      },
+      "4": {
+        "n": 5580,
+        "n_active": 1289,
+        "active_fraction": 0.231
+      },
+      "5": {
+        "n": 41656,
+        "n_active": 2293,
+        "active_fraction": 0.05505
+      },
+      "6": {
+        "n": 251564,
+        "n_active": 1890,
+        "active_fraction": 0.00751
+      }
+    }
+  },
+  "siteseq": {
+    "n_candidates": 146593,
+    "n_active": 2057,
+    "by_mismatch": {
+      "0": {
+        "n": 12,
+        "n_active": 12,
+        "active_fraction": 1.0
+      },
+      "1": {
+        "n": 2,
+        "n_active": 2,
+        "active_fraction": 1.0
+      },
+      "2": {
+        "n": 11,
+        "n_active": 11,
+        "active_fraction": 1.0
+      },
+      "3": {
+        "n": 192,
+        "n_active": 129,
+        "active_fraction": 0.67188
+      },
+      "4": {
+        "n": 2232,
+        "n_active": 556,
+        "active_fraction": 0.2491
+      },
+      "5": {
+        "n": 21383,
+        "n_active": 760,
+        "active_fraction": 0.03554
+      },
+      "6": {
+        "n": 122761,
+        "n_active": 587,
+        "active_fraction": 0.00478
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.1",
+  "workstream": "WS-IMMUNE",
+  "prepared": "2026-06-10",
+  "sha256": {
+    "prereg/ws_immune.yaml": "9e6f487a8d59257af2b580dea21e4406d2879a5c5fa5a8145b276f995041d6b2"
+  }
+}

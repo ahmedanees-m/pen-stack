@@ -1,0 +1,37 @@
+# PEN-STACK v3.1 - WS-G (deferred features, narrow versions only) pre-registered acceptance.
+# Both are SCREENS / RANKERS, not calibrated predictors or validated novel design.
+cycle: "v3.1"
+workstream: "WS-G"
+prepared: "2026-06-04"
+
+G1_multiplex_translocation_risk:
+  deliverables:
+    - "pen_stack/planner/multiplex.py (translocation_risk; exact pairwise DSB-join for 2-5 edits)"
+    - "surfaced in PEN-Agent (agent/tools.py multiplex_translocation_risk + mcp_server registration)"
+  design: "gather each edit's DSB sites (on-target + off-targets, each with a cut probability); enumerate all
+    site pairs exactly; pairwise join prob = p_cut_i * p_cut_j * join_factor (1.0 inter-chromosomal, distance
+    -decayed intra); aggregate risk = 1 - prod(1 - pairwise). DSB-free recombinase writers contribute NO cut
+    sites -> ~zero risk by construction."
+  acceptance:
+    - "the risk is MONOTONIC (more sites / higher cut prob / closer pairs -> higher) and interpretable (top
+       contributing pairs reported)."
+    - "NO advantage framing (no claim it beats any method); it is a screen, not a calibrated predictor."
+    - "any QUBO path is a documented OPTIONAL baseline, OFF by default."
+
+G2_guide_ranking_qc:
+  deliverables:
+    - "pen_stack/bridge/guide_qc.py (qc_flags, qc_score, rank_variants, screen_and_rank)"
+    - "pen_stack/validate/guide_qc_demo.py -> out/guide_qc_demo.json (SYNTHETIC positive-control panel)"
+  design: "reuse the validated fold-QC (bridge/fold_qc.py: cross-loop self/TBL-DBL complementarity, ViennaRNA
+    MFE) + off-target counts; when a default design trips a flag, RANK caller-supplied variants by QC score."
+  acceptance:
+    - "SYNTHETIC positive-control UNIT TEST of the ranking logic (NOT retrospective validation against real
+       guide outcomes): the panel guides are HAND-CONSTRUCTED, each 'bad' guide tripping one documented failure
+       mode by construction (self-complementary palindrome, cross-loop = revcomp(target), off-target-stamped).
+       The clean control ranks first; every constructed-bad guide ranks below it and is flagged."
+    - "the failure MECHANISMS are real/documented; the specific SEQUENCES are illustrative constructions."
+    - "NO claim of generating superior novel guides; this is ranking logic, not validated design, and not a
+       benchmark against measured guide performance."
+
+locked_files:
+  - prereg/ws_g.yaml

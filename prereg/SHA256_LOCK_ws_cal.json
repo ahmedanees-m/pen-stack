@@ -1,0 +1,8 @@
+{
+  "cycle": "v3.4",
+  "workstream": "WS-CAL",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_cal.yaml": "aaacb7785a111165254154f1734029464fe1a0b5ef25093b3620a057d962ae05"
+  }
+}

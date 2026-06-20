@@ -1,0 +1,185 @@
+# PEN-STACK v3.3, Delivery vehicle palette (WS-D / North-Star §4). The substrate must score and constrain
+# the WHOLE delivery palette, not just dual-AAV. Each row: cargo capacity, integration, division dependence,
+# immunogenicity PRIOR (qualitative; MAGNITUDE is a known-unknown, never predicted), re-dosability, tropism,
+# ex/in-vivo, compatible cargo form {DNA, mRNA, RNP}, and >=1 DOI. Values cited to 2026 sources.
+# `constraint_key` maps to configs/delivery_constraints.yaml for the sequence-level scan.
+#
+# v5.1, `immune_safety`: a DOCUMENTED, CITED, QUALITATIVE (low/moderate/high) immune + safety + efficacy
+# profile per vehicle, for the safety<->efficacy balance (planner/delivery_immunology.py). These are ordinal
+# DOCUMENTED PRIORS from the literature, NOT a predicted, patient- or construct-specific immune magnitude
+# (that stays a known-unknown / scope flag, `in_vivo_immunogenicity`, never predicted). `genotoxicity` = the
+# integration / insertional-mutagenesis risk; `efficacy` = transduction/integration efficiency.
+
+version: "1.1"
+
+vehicles:
+  AAV_single:
+    cargo_capacity_bp: 4700
+    integrating: false # episomal
+    division_dependent: false
+    immunogenicity_prior: "moderate-high; pre-existing NAbs exclude 30-60% of patients"
+    re_dosable: false
+    tropism: "serotype-dependent (liver, muscle, CNS, retina)"
+    in_vivo: true
+    compatible_cargo_form: [DNA]
+    constraint_key: AAV
+    dois: ["10.1038/s41573-019-0012-9"]
+    immune_safety:
+      preexisting_immunity: high # serotype-dependent; seroprevalence ~30-60% of patients
+      neutralizing_antibody: high # pre-existing + vector-elicited NAbs; exclude/relapse risk
+      innate_immune: low
+      adaptive_immune: moderate # capsid-directed CD8 T-cell responses
+      genotoxicity: low # episomal, non-integrating
+      efficacy: high # efficient in-vivo transduction (cargo-limited ~4.7 kb)
+      tradeoff: "safe vector (non-integrating, low genotoxicity) BUT pre-existing/elicited NAbs limit eligibility and prevent re-dosing"
+      immune_dois: ["10.1182/blood-2013-01-306647", "10.1089/hum.2009.182", "10.1016/j.ymthe.2019.12.010"]
+
+  AAV_dual:
+    cargo_capacity_bp: 9000 # split across 2 capsids (~9 kb); efficiency drops sharply
+    integrating: false
+    division_dependent: false
+    immunogenicity_prior: "as AAV; split lowers efficiency"
+    re_dosable: false
+    tropism: "serotype-dependent"
+    in_vivo: true
+    compatible_cargo_form: [DNA]
+    constraint_key: AAV
+    dois: ["10.1128/JVI.79.15.9933-9944.2005"] # Grieger & Samulski 2005, AAV packaging capacity
+    immune_safety:
+      preexisting_immunity: high # same AAV capsid immunology as single
+      neutralizing_antibody: high
+      innate_immune: low
+      adaptive_immune: moderate
+      genotoxicity: low # episomal
+      efficacy: moderate # split across 2 capsids -> co-transduction needed, efficiency drops
+      tradeoff: "as AAV (non-integrating, NAb-limited) AND split-capsid co-transduction lowers efficiency"
+      immune_dois: ["10.1182/blood-2013-01-306647", "10.1089/hum.2009.182"]
+
+  lentivirus:
+    cargo_capacity_bp: 8000
+    integrating: true # semi-random integration
+    division_dependent: false # integrates in non-dividing too; strong in dividing
+    immunogenicity_prior: "moderate"
+    re_dosable: false
+    tropism: "broad (VSV-G pseudotyped)"
+    ex_vivo: true
+    compatible_cargo_form: [DNA]
+    constraint_key: lentiviral
+    dois: ["10.1126/science.1233151"]
+    immune_safety:
+      preexisting_immunity: low # pseudotyped, typically ex-vivo (no host pre-immunity to the vector)
+      neutralizing_antibody: low # ex-vivo use avoids humoral neutralisation
+      innate_immune: low # ex-vivo
+      adaptive_immune: low # ex-vivo
+      genotoxicity: moderate # INTEGRATING: insertional-mutagenesis risk; SIN-LTR + gene-body bias reduce but do not eliminate it (gamma-retro LMO2 precedent)
+      efficacy: high # efficient, STABLE integration; large-ish cargo (~8 kb); transduces non-dividing cells
+      tradeoff: "highly efficacious STABLE integration BUT insertional-mutagenesis / genotoxicity is the dominant safety concern (mitigated by SIN design, not eliminated)"
+      immune_dois: ["10.1038/s41375-018-0106-0", "10.1038/nbt1216", "10.1126/science.1088547"]
+
+  helper_dependent_adenovirus:
+    cargo_capacity_bp: 35000 # "gutless" HDAd, up to ~35 kb
+    integrating: false
+    division_dependent: false
+    immunogenicity_prior: "high (innate + adaptive)"
+    re_dosable: false
+    tropism: "liver and others"
+    in_vivo: true
+    compatible_cargo_form: [DNA]
+    constraint_key: plasmid
+    dois: ["10.1128/JVI.72.2.926-933.1998"] # multiply-deleted (gutless-class) adenovirus vectors
+    immune_safety:
+      preexisting_immunity: high # widespread prior adenovirus exposure in the population
+      neutralizing_antibody: high # anti-Ad NAbs common; limit systemic in-vivo dosing
+      innate_immune: high # potent acute innate/inflammatory response to the capsid
+      adaptive_immune: high # strong anti-vector adaptive response
+      genotoxicity: low # non-integrating, episomal "gutless" genome
+      efficacy: high # very large cargo (~35 kb), efficient hepatic transduction
+      tradeoff: "huge cargo + non-integrating BUT strong innate+adaptive anti-Ad immunity and pre-existing NAbs are the dominant safety limit for systemic use"
+      immune_dois: ["10.1089/hum.2004.15.1157"]
+
+  hsv_amplicon:
+    cargo_capacity_bp: 100000 # >100 kb
+    integrating: false
+    division_dependent: false
+    immunogenicity_prior: "high; neurotropic"
+    re_dosable: false
+    tropism: "neurotropic (CNS)"
+    in_vivo: true
+    compatible_cargo_form: [DNA]
+    constraint_key: plasmid
+    dois: ["10.1038/nbt1101-1067"] # Wade-Martins 2001, HSV-1 amplicon (iBAC) large genomic-DNA transfer
+    immune_safety:
+      preexisting_immunity: moderate # prior HSV exposure common, but helper-free amplicon is gene-free of HSV ORFs
+      neutralizing_antibody: moderate # anti-HSV humoral immunity in seropositive hosts
+      innate_immune: high # immunogenic / inflammatory in CNS
+      adaptive_immune: high
+      genotoxicity: low # non-integrating, episomal
+      efficacy: moderate # massive cargo (>100 kb) + neurotropism, but transient/variable expression
+      tradeoff: "unmatched cargo (>100 kb) and CNS tropism BUT immunogenic/inflammatory and expression is transient"
+      immune_dois: ["10.1089/hum.2004.15.1157"]
+
+  lnp_mrna:
+    cargo_capacity_bp: 15000 # large RNA payload (mRNA encoding the writer/RNP)
+    integrating: false # transient
+    division_dependent: false
+    immunogenicity_prior: "low/transient"
+    re_dosable: true
+    tropism: "liver-tropic by default"
+    in_vivo: true
+    compatible_cargo_form: [mRNA, RNP]
+    constraint_key: lnp_mrna
+    dois: ["10.1038/s41578-021-00358-0"]
+    immune_safety:
+      preexisting_immunity: low # no widespread pre-existing immunity to the LNP (anti-PEG is an emerging exception)
+      neutralizing_antibody: low # anti-PEG antibodies emerging; can accelerate clearance on repeat dosing
+      innate_immune: moderate # transient innate sensing of mRNA / ionizable lipid (mitigated by mod-nucleosides)
+      adaptive_immune: low # no anti-vector adaptive memory to a protein capsid
+      genotoxicity: low # NON-integrating, transient (no insertional risk)
+      efficacy: moderate # transient expression; potent for hepatic RNP/mRNA but durability is short
+      re_dosable: yes # repeatable dosing is the key advantage
+      tradeoff: "SAFEST profile (non-integrating, transient, re-dosable, low pre-existing immunity) BUT expression is transient and anti-PEG immunity can blunt repeat doses"
+      immune_dois: ["10.1016/j.addr.2020.07.024"]
+
+  evlp:
+    cargo_capacity_bp: null # RNP payload (not a DNA packaging limit)
+    integrating: false
+    division_dependent: false
+    immunogenicity_prior: "low (transient, no DNA)"
+    re_dosable: true
+    tropism: "engineerable (T cells, retina)"
+    in_vivo: true
+    ex_vivo: true
+    compatible_cargo_form: [RNP]
+    constraint_key: evlp
+    dois: ["10.1016/j.cell.2022.03.045"]
+    immune_safety:
+      preexisting_immunity: low # protein/RNP payload, no viral capsid; transient
+      neutralizing_antibody: low
+      innate_immune: low # no DNA, transient delivery
+      adaptive_immune: low
+      genotoxicity: low # non-integrating RNP, transient nuclease exposure
+      efficacy: moderate # engineerable tropism; emerging modality, in-vivo efficiency still maturing
+      re_dosable: yes
+      tradeoff: "low-immunogenicity transient RNP delivery with engineerable tropism BUT an emerging modality with still-maturing in-vivo efficiency"
+      immune_dois: ["10.1016/j.ymthe.2019.12.010"]
+
+  electroporation:
+    cargo_capacity_bp: null # physical; no packaging limit
+    integrating: false # depends on cargo
+    division_dependent: false
+    immunogenicity_prior: "n/a (ex vivo)"
+    re_dosable: false
+    tropism: "n/a (ex vivo)"
+    ex_vivo: true
+    compatible_cargo_form: [DNA, mRNA, RNP]
+    constraint_key: electroporation
+    dois: ["10.1038/nprot.2014.157"]
+    immune_safety:
+      preexisting_immunity: low # ex-vivo, physical method; no vector immunology
+      neutralizing_antibody: low # ex-vivo (n/a in host)
+      innate_immune: low # ex-vivo
+      adaptive_immune: low # ex-vivo
+      genotoxicity: low # cargo-dependent; RNP/transient cargo carries no insertional risk
+      efficacy: high # high ex-vivo delivery efficiency across DNA/mRNA/RNP
+      tradeoff: "no vector immunology and high ex-vivo efficiency BUT EX-VIVO ONLY (cell harvest/manufacture required) and cytotoxic at high field strength"
+      immune_dois: ["10.1016/j.ymthe.2019.12.010"]

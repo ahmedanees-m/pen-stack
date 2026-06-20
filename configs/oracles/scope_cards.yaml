@@ -1,0 +1,237 @@
+# PEN-STACK v4.0, oracle scope cards (WS-O0). What each wrapped foundation model is VALID for, and what it
+# is NOT, so the substrate can gate and label outputs (the field's evidence that these models do not
+# generalize to unseen loci is made legible here, not hidden). `output_kind`: claim (a checkable prediction),
+# candidate (a generative proposal that must pass writer-verification), baseline (an honest comparator).
+version: "1.0"
+
+oracles:
+  alphagenome:
+    family: genome
+    version: "2025.1"
+    output_kind: claim
+    valid_for: "regulatory-track + variant-effect prediction at IN-DISTRIBUTION loci (trained tracks/tissues)"
+    not_valid_for: "unseen loci / cell types outside training; does NOT generalize to novel regulatory contexts"
+    generalizes_to_unseen_loci: false
+    license: "non-commercial (Google DeepMind terms)"
+
+  evo2:
+    family: genome
+    version: "40b-2025"
+    output_kind: candidate # generative DNA + likelihood; sequences are proposals, never claims
+    valid_for: "genomic sequence likelihood / zero-shot variant scoring; generative DNA candidates"
+    not_valid_for: "accessibility/expression QTLs; quantitative regulatory tracks; asserting a sequence WORKS"
+    generalizes_to_unseen_loci: false
+    license: "Apache-2.0 (Arc Institute)"
+
+  chrombpnet_borzoi:
+    family: genome
+    version: "borzoi-2024"
+    output_kind: baseline # kept as an honest comparator to AlphaGenome
+    valid_for: "accessibility / expression baseline tracks (honest comparator)"
+    not_valid_for: "variant effects beyond trained assays"
+    generalizes_to_unseen_loci: false
+    license: "open"
+
+  alphafold3:
+    family: structure
+    version: "3.0-2024"
+    output_kind: claim
+    valid_for: "protein / protein-NA complex structure at confidence (pLDDT/PAE) within trained fold space"
+    not_valid_for: "absolute binding free energies; novel folds far from the PDB; in-vivo behaviour"
+    generalizes_to_unseen_loci: true # structure prediction is not locus-bound
+    license: "non-commercial weights (DeepMind terms)"
+
+  boltz-2:
+    family: structure
+    version: "2.0-2025"
+    output_kind: claim
+    valid_for: "structure + binding-affinity prediction (open weights); cross-oracle consistency comparator"
+    not_valid_for: "guaranteed affinities; designs outside trained chemical space"
+    generalizes_to_unseen_loci: true
+    license: "MIT"
+
+  chai-1:
+    family: structure
+    version: "1.0-2024"
+    output_kind: claim
+    valid_for: "structure prediction; cross-oracle self-consistency"
+    not_valid_for: "absolute affinities; far-OOD complexes"
+    generalizes_to_unseen_loci: true
+    license: "Apache-2.0"
+
+  protenix:
+    family: structure
+    version: "0.5-2025"
+    output_kind: claim
+    valid_for: "AF3-style structure prediction (open); cross-oracle self-consistency"
+    not_valid_for: "absolute affinities; far-OOD complexes"
+    generalizes_to_unseen_loci: true
+    license: "Apache-2.0"
+
+  esm3:
+    family: protein_design
+    version: "sm-2024"
+    output_kind: candidate
+    valid_for: "protein representation + generative protein design CANDIDATES; variant likelihoods"
+    not_valid_for: "asserting a designed protein FOLDS or is ACTIVE without verification"
+    generalizes_to_unseen_loci: true
+    license: "non-commercial / community"
+
+  rfdiffusion:
+    family: protein_design
+    version: "aa-2024"
+    output_kind: candidate
+    valid_for: "backbone generation CANDIDATES (RFdiffusion / RFdiffusion-AA)"
+    not_valid_for: "asserting function; a backbone is a proposal, not a working enzyme"
+    generalizes_to_unseen_loci: true
+    license: "open (BSD-style)"
+
+  proteinmpnn:
+    family: protein_design
+    version: "ligandmpnn-2024"
+    output_kind: candidate
+    valid_for: "sequence design for a fixed backbone CANDIDATES (ProteinMPNN / LigandMPNN)"
+    not_valid_for: "asserting activity/specificity; must be scored against measured data"
+    generalizes_to_unseen_loci: true
+    license: "MIT"
+
+  viennarna:
+    family: rna
+    version: "2.6"
+    output_kind: claim
+    valid_for: "RNA secondary-structure MFE fold (a HARD legality input for bridge-RNA QC)"
+    not_valid_for: "tertiary structure; in-cell folding kinetics"
+    generalizes_to_unseen_loci: true
+    license: "open"
+
+  bridge_energetics:
+    family: energetics
+    version: "v3.2-mc3"
+    output_kind: claim
+    valid_for: "bridge IS110/ISCro4 off-target relative-risk ranking (beats the 0.77 position-weight baseline)"
+    not_valid_for: "absolute off-target rates; non-bridge writers; a non-recombining background"
+    generalizes_to_unseen_loci: false
+    license: "open (this work)"
+
+  delivery_genotoxicity: # v5.2 WS-GENOTOX: computed integration-site oncogene-proximity
+    family: genome
+    version: "visdb+cancermine-2026"
+    output_kind: baseline # an observed-data comparator (integration catalogues), not generative
+    valid_for: "RELATIVE genotoxicity ordering of INTEGRATING vector classes via the observed enrichment of
+      integration sites near CancerMine (CC0) oncogenes (lentiviral vs gammaretroviral, from VISDB x CancerMine);
+      reproduces the integrating-vector-enriched-near-oncogenes signal from data"
+    not_valid_for: "the IN-VIVO clonal-expansion / leukemogenesis OUTCOME in a patient (a known-unknown); an
+      absolute per-insertion oncogenesis probability; non-integrating vectors (no insertional mechanism);
+      classes with too few catalogued sites (flagged extrapolating)"
+    generalizes_to_unseen_loci: false
+    license: "open / CC0 (this work; VISDB 10.1093/nar/gkz867, CancerMine 10.1038/s41592-019-0422-y)"
+
+  capsid_epitope: # v5.3 WS-EPITOPE: computed capsid/envelope CD8 T-cell epitope load
+    family: protein_design
+    version: "mhcflurry2.0-2026"
+    output_kind: baseline # sequence-intrinsic presentation comparator, not generative
+    valid_for: "RELATIVE adaptive (CD8 / MHC-I) immunogenicity ordering of VIRAL vector capsids/envelopes via
+      the fraction of the antigen presentable across a frequent HLA-I panel (MHCflurry %rank<=0.5), from
+      UniProt-sourced sequences; population-level, sequence-intrinsic"
+    not_valid_for: "the realized in-vivo / PATIENT-HLA-specific T-cell response (a known-unknown); antibody /
+      neutralizing-antibody (B-cell) immunity (this is CD8/MHC-I only); non-viral vehicles (no capsid protein);
+      a viral vehicle whose antigen sequence is not committed (abstains)"
+    generalizes_to_unseen_loci: false
+    license: "open (this work; MHCflurry 10.1016/j.cels.2020.06.010, HLA-I supertypes 10.1186/1471-2172-9-1)"
+
+  capsid_fitness: # v6.11 WS-DELIVERY: learned AAV capsid packaging-fitness + serotype tropism priors
+    family: protein_design
+    version: "flip-aav-gbr-2026"
+    output_kind: baseline # scores/ranks capsid variants + tissue priors, not generative
+    valid_for: "RELATIVE AAV capsid PACKAGING-FITNESS prediction for VP1 variants (learned on FLIP-AAV / Bryant
+      2021; beats a mutation-burden baseline on held-out splits incl. mutant->designed); and GROUNDED serotype->
+      tissue tropism PRIORS from approved AAV gene therapies (AAV9->CNS, AAVrh74->skeletal muscle, AAV5->liver,
+      AAV2->retina/putamen via local injection)"
+    not_valid_for: "IN-VIVO HUMAN TROPISM of a capsid (the measured axis is packaging viability/assembly, not in-vivo
+      tissue targeting, a known-unknown except the approved-therapy priors); a NOVEL/engineered capsid's tissue
+      (abstains, never fabricated); manufacturing/CMC; immunogenicity magnitude (Stage G; a known-unknown);
+      VLP/LNP capsid-fitness (no equivalent learned model, thinner data)"
+    generalizes_to_unseen_loci: false
+    license: "open (this work; FLIP-AAV 10.1101/2021.11.09.467890, Bryant 2021 10.1038/s41587-020-00793-4,
+      Ogden 2019 10.1126/science.aaw2900; serotype priors from approved-therapy FDA approvals)"
+
+  offtarget_nomination: # v6.10 WS-OFFTARGET: cross-family off-target NOMINATION (not clearance)
+    family: genome
+    version: "crisot+homology-2026"
+    output_kind: baseline # ranks/risk-bands CANDIDATE sites, not generative
+    valid_for: "RELATIVE off-target NOMINATION for a writer: rank candidate sites so validated off-targets
+      surface first, with a mismatch-CALIBRATED empirical risk band (real GUIDE-seq/CIRCLE-seq active fractions).
+      Nucleases use the real CRISOT-Score (beats a homology baseline on held-out guides, CI excludes 0); serine
+      integrases use a documented pseudo-attB cryptic scan; bridge recombinases delegate to the Perry-DMS engine"
+    not_valid_for: "a safety CLEARANCE (nomination != validation; every result ships with the empirical assay
+      that would confirm it); genome-wide candidate ENUMERATION (needs the on-VM Cas-OFFinder/genome scan; this
+      engine SCORES supplied candidates); a per-site cleavage/recombination PROBABILITY; bridge-recombinase
+      off-target magnitude (NO published genome-wide unbiased assay/predictor exists -> extrapolative/abstains);
+      structural variants/translocations beyond nominated sites"
+    generalizes_to_unseen_loci: false
+    license: "open (this work; GUIDE-seq 10.1038/nbt.3117, CIRCLE-seq 10.1038/nmeth.4278, CHANGE-seq
+      10.1038/s41587-020-0555-7, CRISOT 10.1038/s41467-023-42695-4 CC-BY-NC run on the VM only)"
+
+  innate_sensing: # v5.4 WS-INNATE: computed nucleic-acid innate-sensing motif load
+    family: genome
+    version: "cpg-oe+dsrna-2026"
+    output_kind: baseline # deterministic sequence statistic, not generative
+    valid_for: "sequence-intrinsic innate-sensing LOAD of a cargo sequence: CpG observed/expected (DNA ->
+      TLR9/cGAS; CpG-depleted DNA is tolerated, non-depleted is stimulatory) and U-richness + dsRNA pairing
+      (mRNA -> TLR7/8 + RIG-I/MDA5/PKR); a relative, computable proxy"
+    not_valid_for: "the realized IN-VIVO innate RESPONSE magnitude in a patient (a known-unknown); RNA
+      NUCLEOSIDE MODIFICATION (m1-pseudouridine), the dominant mRNA evasion lever - NOT sequence-derivable
+      (the mRNA score is PARTIAL / extrapolating); DNA methylation state of the delivered cargo"
+    generalizes_to_unseen_loci: false
+    license: "open (this work; CpG-TLR9 10.1073/pnas.161293498, CpG-depleted AAV 10.1172/JCI68205,
+      RNA modification 10.1016/j.immuni.2005.06.008)"
+
+  seroprevalence: # v5.5 WS-SEROPREV: anti-vector NAb seroprevalence from serosurvey data
+    family: genome
+    version: "serosurvey-2026"
+    output_kind: baseline # curated empirical population data, not a model
+    valid_for: "POPULATION pre-existing neutralizing-antibody seroprevalence per capsid serotype, from published
+      serosurveys (AAV Calcedo/Boutin, Ad5 Mast, HSV-1 Looker); preexisting_score = 1 - midpoint/100. The one
+      immune axis that is empirical, not sequence-computable"
+    not_valid_for: "a given PATIENT's NAb titer / sero-status (a clinical test, patient-specific -> a
+      known-unknown); precise region/age/assay-specific values (a range, not a point); functional-NAb vs
+      IgG-binding distinctions; T-cell immunity (that is the capsid_epitope oracle); anti-PEG immunity"
+    generalizes_to_unseen_loci: false
+    license: "open (this work; Calcedo 10.1086/595830, Boutin 10.1089/hum.2009.182, Mast
+      10.1016/j.vaccine.2009.10.145, Looker 10.1371/journal.pone.0140765)"
+
+  antipeg: # v5.6 WS-PEG: anti-PEG antibody prevalence (gates LNP re-dosing)
+    family: genome
+    version: "serosurvey-2026"
+    output_kind: baseline # curated empirical population data, not a model
+    valid_for: "POPULATION pre-existing anti-PEG antibody prevalence for PEGylated LNP (a property of the PEG
+      chemistry, not an encoded sequence); preexisting_antipeg_score = 1 - midpoint/100; gates RE-DOSING"
+    not_valid_for: "a given PATIENT's anti-PEG titer / sero-status (a clinical test, patient-specific -> a
+      known-unknown); INDUCED anti-PEG after dose 1 (a separate, larger dynamic, esp. post mRNA-LNP); precise
+      region/age/assay values (a range, not a point); non-PEGylated vehicles (abstains)"
+    generalizes_to_unseen_loci: false
+    license: "open (this work; Chen 10.1021/acs.analchem.6b03109, Yang&Lai 10.1002/wnan.1339,
+      Armstrong 10.1002/cncr.22739, Kozma 10.1016/j.addr.2020.07.024)"
+
+  state: # v5.9 WS-VCELL: Arc STATE virtual-cell perturbation-response model
+    family: vcell
+    version: "state-2025"
+    output_kind: candidate # a perturbation-response PREDICTION is a candidate/hypothesis, never a claim
+    valid_for: "IN-DISTRIBUTION single-gene / chemical / cytokine perturbation transcriptional-response estimates
+      in TRAINED human cell contexts (Arc STATE; ~70 contexts, 167M+100M cells)"
+    not_valid_for: "OUT-OF-DISTRIBUTION cell types / perturbations (Arc's own Virtual Cell Challenge result:
+      perturbation models do NOT yet consistently beat naive baselines -> OOD sets extrapolating=True); phenotype;
+      in-vivo behaviour; clinical endpoints"
+    generalizes_to_unseen_loci: false
+    license: "Arc Institute (github.com/ArcInstitute/state)"
+
+  scgpt: # v5.9 WS-VCELL: scGPT single-cell foundation model (perturbation prediction)
+    family: vcell
+    version: "scgpt-2024"
+    output_kind: candidate
+    valid_for: "IN-DISTRIBUTION genetic-perturbation transcriptional-response estimates within trained single-cell
+      contexts (scGPT; >33M cells)"
+    not_valid_for: "OOD cell types / perturbations (does not consistently beat naive baselines); phenotype; in-vivo;
+      absolute expression"
+    generalizes_to_unseen_loci: false
+    license: "MIT (github.com/bowang-lab/scGPT; Nature Methods 10.1038/s41592-024-02201-0)"

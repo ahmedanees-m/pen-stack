@@ -1,0 +1,42 @@
+# PEN-STACK v3.0 - Write Planner edit_intent weights (Phase 3, Step 3.1).
+# The objective is a documented, intent-dependent weighting over the Writable-Genome components
+# (safety, durability) + writer activity. `on_target` = candidate overlaps the named target gene/element.
+# `target_gene_sign` decides whether hitting the target gene is PENALISED (+1 -> safe-harbour: avoid it)
+# or REWARDED (-1 -> knock-in/excision: hitting it is the goal). This sign is what makes edit_intent
+# load-bearing: half the discriminating benchmark cases only score correctly when the goal is given.
+# Components are always retained on the row; the score is a transparent linear combination.
+
+intents:
+  safe_harbour_insertion: # maximise safety + durability at any reachable safe locus
+    safety: 0.5
+    durability: 0.4
+    activity: 0.1
+    target_gene_sign: 1 # avoid disrupting genes -> on-target penalised
+    genome_wide: true # search a safe-harbour candidate pool, not a named gene
+  knock_in_with_disruption: # target INSIDE a specific gene (e.g. TRAC for CAR-T)
+    safety: 0.2
+    durability: 0.3
+    activity: 0.5
+    target_gene_sign: -1 # disruption is the goal -> on-target REWARDED
+    genome_wide: false
+  high_durability_insertion: # durability dominates (e.g. albumin locus)
+    safety: 0.3
+    durability: 0.6
+    activity: 0.1
+    target_gene_sign: -1 # the durable target locus is intended, even if intragenic
+    genome_wide: false
+  regulatory_excision: # target a functional element (e.g. BCL11A +58 enhancer)
+    safety: 0.2
+    durability: 0.0
+    activity: 0.8
+    target_gene_sign: -1 # hitting the functional element is intended
+    genome_wide: false
+  repeat_excision: # target a repeat in a disease gene (e.g. FXN GAA)
+    safety: 0.2
+    durability: 0.0
+    activity: 0.8
+    target_gene_sign: -1
+    genome_wide: false
+
+# strength of the on-target term (added/subtracted when a candidate overlaps the target gene/element)
+on_target_magnitude: 1.0

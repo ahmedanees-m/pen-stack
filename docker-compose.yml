@@ -1,0 +1,71 @@
+# PEN-STACK v3.0 - one-command self-hostable platform (Phase 3, Step 3.11).
+# Brings up the local LLM (Ollama/Qwen2.5, the fallback), the REST API, the Streamlit UI (with the Agent
+# chat page), and the MCP server. First run: `docker compose exec ollama ollama pull qwen2.5:7b-instruct`.
+# Hybrid LLM: services prefer the hosted model in configs/llm.yaml (NVIDIA Nemotron) and fall back to
+# Ollama. To use the hosted model set NVIDIA_API_KEY in your shell (passed through below); else fully local.
+services:
+  ollama:
+    image: ollama/ollama:latest
+    command: serve
+    ports: ["11434:11434"]
+    volumes: ["ollama:/root/.ollama"]
+    deploy:
+      resources:
+        reservations:
+          devices: [{capabilities: ["gpu"]}]
+
+  api:
+    build: {context: ., dockerfile: docker/Dockerfile}
+    command: uvicorn pen_stack.server.api:app --host 0.0.0.0 --port 8000
+    environment: {PYTHONPATH: /work, NVIDIA_API_KEY: "${NVIDIA_API_KEY:-}"}
+    working_dir: /work
+    volumes: ["./:/work", "./data:/work/data"]
+    ports: ["8000:8000"]
+    depends_on: [ollama]
+
+  ui:
+    build: {context: ., dockerfile: docker/ui.Dockerfile}
+    command: streamlit run pen_stack/ui/app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+    environment: {PYTHONPATH: /work, PEN_API: "http://api:8000", PEN_OLLAMA: "http://ollama:11434", NVIDIA_API_KEY: "${NVIDIA_API_KEY:-}"}
+    volumes: ["./:/work"]
+    ports: ["8501:8501"]
+    depends_on: [api, ollama]
+
+  mcp:
+    build: {context: ., dockerfile: docker/Dockerfile}
+    command: python -m pen_stack.agent.mcp_server
+    environment: {PYTHONPATH: /work, NVIDIA_API_KEY: "${NVIDIA_API_KEY:-}"}
+    working_dir: /work
+    volumes: ["./:/work"]
+    ports: ["8765:8765"]
+    depends_on: [ollama]
+
+  # v6.2 The Web Platform: the grounded co-scientist + every engine feature behind one gateway (port 8000).
+  # `docker compose up web ollama` builds the React frontend (node:20 stage) and serves dist/ + the API from
+  # one origin. Open http://localhost:8000. The LLM is optional, Ollama primary, Nemotron fallback, then the
+  # deterministic narrator, so the app is useful even with no model running.
+  web:
+    build: {context: ., dockerfile: docker/web.Dockerfile}
+    environment:
+      PYTHONPATH: /work
+      OLLAMA_HOST: "http://ollama:11434"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-qwen2.5:7b-instruct}"
+      NVIDIA_API_KEY: "${NVIDIA_API_KEY:-}"
+    working_dir: /work
+    volumes: ["./data:/work/data"]
+    ports: ["8000:8000"]
+    depends_on: [ollama]
+
+  # Genome-Writing Bench (WS-E): one-command reproducible run on the clean image.
+  # docker compose run --rm bench # leaderboard from the deterministic solvers
+  # docker compose run --rm bench python bench/run.py --agent # + the real LLM-agent baseline (Ollama)
+  bench:
+    build: {context: ., dockerfile: docker/Dockerfile}
+    command: python bench/run.py
+    environment: {PYTHONPATH: /work, NVIDIA_API_KEY: "${NVIDIA_API_KEY:-}"}
+    working_dir: /work
+    volumes: ["./:/work"]
+    depends_on: [ollama]
+
+volumes:
+  ollama: {}

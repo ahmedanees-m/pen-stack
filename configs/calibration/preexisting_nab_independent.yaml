@@ -1,0 +1,25 @@
+# PEN-STACK, INDEPENDENT calibration data for the pre-existing-NAb axis (proxy → outcome validation).
+#
+# The preexisting_nab PROXY (configs/seroprevalence.yaml) is curated from Calcedo 2009 (10.1086/595830) and
+# Boutin 2010 (10.1089/hum.2009.182). To test it WITHOUT circularity, the "observed" column below is from an
+# INDEPENDENT serosurvey that did not feed the proxy:
+#
+# Navarro-Oliveros M, et al. "Seroprevalence of adeno-associated virus types 1, 2, 3, 4, 5, 6, 8, and 9 in a
+# Basque cohort of healthy donors." Scientific Reports 2024;14:15941. doi:10.1038/s41598-024-66546-4 (N=100)
+#
+# Per-serotype NEUTRALIZING-antibody seroprevalence (%) as reported. eligibility = 1 − prevalence/100, to match
+# the proxy's direction (higher score = fewer patients excluded). Fed to validate.immune_calibration.calibrate_axis.
+source:
+  citation: "Navarro-Oliveros et al., Sci Rep 2024;14:15941"
+  doi: "10.1038/s41598-024-66546-4"
+  cohort: "100 healthy Basque-Country donors"
+  measure: "neutralizing-antibody seroprevalence (%)"
+  independence: "does NOT feed the proxy (proxy = Calcedo 2009 + Boutin 2010); a genuine out-of-sample test"
+observed_nab_prevalence_pct:
+  AAV1: 42
+  AAV2: 54
+  AAV5: 42
+  AAV6: 39
+  AAV8: 52
+  AAV9: 17
+# (AAV3 64%, AAV4 21% also reported but not scored by PEN-STACK → excluded from the paired test.)

@@ -1,0 +1,36 @@
+# PEN-STACK v3.0 - universe crosswalk (Phase 0, Step 0.4).
+# Maps each natural editor (entity_id) to a WT-KB writer family + its measured targeting modality.
+# The ONE documented place the universe-assembly path reads so classifier/scorer/scorecard share
+# identical metadata. cargo_capacity_bp + reachability_tier come from the WT-KB (joined by family).
+# Designs inherit their parent_editor's row. modality anchors are defined in configs/score_axes.yaml.
+
+entity_to_family:
+  ISCro4: {family: bridge_IS110, targeting_modality: RNA-guided}
+  IS621: {family: bridge_IS110, targeting_modality: RNA-guided}
+  IS621_2: {family: bridge_IS110, targeting_modality: RNA-guided}
+  CAST_VK: {family: CAST_VK, targeting_modality: RNA-guided}
+  CAST_IF: {family: CAST_VK, targeting_modality: RNA-guided}
+  evoCAST: {family: CAST_VK, targeting_modality: RNA-guided}
+  Bxb1: {family: serine_integrase, targeting_modality: fixed-att}
+  phiC31: {family: serine_integrase, targeting_modality: fixed-att}
+  eePASSIGE: {family: serine_integrase, targeting_modality: fixed-att}
+  eePASSIGE_v2: {family: serine_integrase, targeting_modality: fixed-att}
+  Cre: {family: serine_integrase, targeting_modality: fixed-att}
+  Lambda_Int: {family: serine_integrase, targeting_modality: fixed-att}
+  PE2: {family: PE_integrase, targeting_modality: PE-installable}
+  PE5max: {family: PE_integrase, targeting_modality: PE-installable}
+  TwinPE: {family: PE_integrase, targeting_modality: PE-installable}
+  SpCas9: {family: Cas9, targeting_modality: RNA-guided}
+  ABE7_10: {family: Cas9, targeting_modality: RNA-guided}
+  BE3: {family: Cas9, targeting_modality: RNA-guided}
+  Cas12a: {family: Cas12a, targeting_modality: RNA-guided}
+  Cas12f: {family: Cas12a, targeting_modality: RNA-guided}
+  IscB: {family: TnpB_Fanzor, targeting_modality: RNA-guided}
+  SpuFz1: {family: TnpB_Fanzor, targeting_modality: RNA-guided}
+  SpuFz1_V4: {family: TnpB_Fanzor, targeting_modality: RNA-guided}
+  NlovFz2: {family: TnpB_Fanzor, targeting_modality: RNA-guided}
+  enNlovFz2: {family: TnpB_Fanzor, targeting_modality: RNA-guided}
+  MmeFz2: {family: TnpB_Fanzor, targeting_modality: RNA-guided}
+  Tn5: {family: DDE_transposase, targeting_modality: DDE-spacing}
+  SleepingBeauty: {family: DDE_transposase, targeting_modality: DDE-spacing}
+  PiggyBac: {family: DDE_transposase, targeting_modality: DDE-spacing}

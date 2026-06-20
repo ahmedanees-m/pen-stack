@@ -1,0 +1,11 @@
+# PEN-STACK v3.3 - WS-D (delivery palette) pre-registered acceptance.
+cycle: "v3.3"
+workstream: "WS-D"
+prepared: "2026-06-09"
+D1_vehicle_table:
+  deliverable: "configs/delivery_vehicles.yaml (>=6 vehicles) + pen_stack/planner/delivery_vehicles.py loader"
+  acceptance: "each vehicle row has cargo_capacity + integrating + compatible_cargo_form + >=1 DOI; values match cited 2026 sources. Palette: AAV single/dual, lentivirus, helper-dependent adenovirus, HSV amplicon, LNP-mRNA, eVLP, electroporation."
+D2_delivery_rules:
+  deliverable: "configs/rules/delivery.yaml (folds into WS-R); evaluators in pen_stack/rules/evaluators.py"
+  acceptance: "hard rejects (cargo>capacity; writer output-form not in vehicle.compatible_cargo_form; no-integration goal + integrating vehicle); soft penalties (split-AAV, sequence constraints); scope flag (immunogenicity magnitude). Controls: 35kb illegal in AAV but legal in HDAd; RNP-only writer rejected from DNA-only AAV; immunogenicity magnitude declared out-of-scope."
+locked_files: [prereg/ws_d.yaml, configs/delivery_vehicles.yaml, configs/rules/delivery.yaml]

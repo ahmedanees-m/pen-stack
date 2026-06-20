@@ -1,0 +1,33 @@
+{
+  "alpha": 0.1,
+  "nominal_coverage": 0.9,
+  "qhat": 5.502093228617222,
+  "qhat_by_group": {
+    "0": 5.408688904878957,
+    "1": 5.2846142628267385,
+    "2": 5.712257182935206,
+    "3": 5.076654179792296,
+    "4": 5.193010980804474,
+    "5": 5.17027976978199,
+    "6": 5.499151591737203,
+    "7": 5.63357144738354,
+    "8": 5.544956650698951,
+    "9": 5.7638612607586515,
+    "10": 5.632813781432908,
+    "11": 5.683682001592844,
+    "12": 5.539534052776547,
+    "13": 5.968559758070802,
+    "14": 5.6299168791150676,
+    "15": 5.36432492287659,
+    "16": 5.511000825129999,
+    "17": 5.650127888312417,
+    "18": 5.4387184627167535,
+    "19": 5.08286171517417,
+    "20": Infinity
+  },
+  "n_cal": 11433,
+  "heldout_coverage": 0.8851674641148325,
+  "mean_width": 10.736144086389379,
+  "within_tol": true,
+  "note": "trained split-conformal on chromosome-blocked OOF residuals of the position-effect model (TRIP supervision). qhat is calibrated on all OOF residuals; heldout_coverage is the honest half-chromosome held-out validation. Ships the calibration, not the calibration data."
+}

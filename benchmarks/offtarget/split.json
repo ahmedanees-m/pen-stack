@@ -1,0 +1,27 @@
+{
+  "benchmark": "Off-Target-Bench",
+  "version": "v6.10.1",
+  "description": "Cross-family off-target NOMINATION benchmark over FOUR unbiased genome-wide assays. Task: rank a guide's candidate sites so the experimentally validated off-targets surface first. Labels = validated-active off-targets from published assays (NON-circular: the label is the wet-lab assay call, not a predictor).",
+  "ground_truth_assays": {
+    "guideseq": {"name": "GUIDE-seq", "setting": "cell-based", "doi": "10.1038/nbt.3117", "guide_panel": "canonical"},
+    "circleseq": {"name": "CIRCLE-seq", "setting": "in vitro", "doi": "10.1038/nmeth.4278", "guide_panel": "canonical"},
+    "changeseq": {"name": "CHANGE-seq", "setting": "in vitro", "doi": "10.1038/s41587-020-0555-7", "guide_panel": "independent_broad (20 guides)"},
+    "siteseq": {"name": "SITE-seq", "setting": "in vitro biochemical", "doi": "10.1038/nmeth.4284", "guide_panel": "independent_broad (11 guides)"}
+  },
+  "fixture": "benchmarks/offtarget/offtarget_bench_fixture.csv",
+  "full_data_metrics": "benchmarks/offtarget/offtarget_bench_metrics.json",
+  "risk_calibration": "benchmarks/offtarget/offtarget_calibration.json",
+  "label": "active (1 = experimentally validated off-target, 0 = candidate not detected)",
+  "split": "held-out-guide (a guide's candidates never straddle train/test)",
+  "leakage_control": "CRISOT-Score is the MD-physics, assay-AGNOSTIC scorer (not fit on these labels); GUIDE/CIRCLE-seq use canonical guides, CHANGE/SITE-seq use INDEPENDENT broad guide panels -> cross-assay generalization. A genomic-coordinate locus split is not available (the harmonized data ships sequences, not coordinates); held-out-guide + cross-assay is the implemented leakage-clean evaluation.",
+  "baseline": "sequence-homology nomination (ascending mismatch count over the 20-nt protospacer)",
+  "learned": "CRISOT-Score (Chen et al., Nat Commun 2023, 10.1038/s41467-023-42695-4; MD-physics RNA-DNA fingerprint; CC-BY-NC, run on the VM, only derived scores cached)",
+  "metric": "per-guide AUPRC; held-out-guide bootstrap (1000) CI on mean(CRISOT - homology) AUPRC excludes 0 on ALL FOUR assays",
+  "headline_full_data": {
+    "guideseq": {"crisot_auprc": 0.6458, "homology_auprc": 0.4668, "auprc_gap": 0.179, "gap_ci95": [0.0136, 0.3292]},
+    "circleseq": {"crisot_auprc": 0.5197, "homology_auprc": 0.2664, "auprc_gap": 0.2533, "gap_ci95": [0.1463, 0.3704]},
+    "changeseq": {"crisot_auprc": 0.541, "homology_auprc": 0.2486, "auprc_gap": 0.2924, "gap_ci95": [0.2349, 0.3477]},
+    "siteseq": {"crisot_auprc": 0.5207, "homology_auprc": 0.2332, "auprc_gap": 0.2874, "gap_ci95": [0.2388, 0.3354]}
+  },
+  "honesty": "nomination is NOT a clearance; fixture actives/inactives are downsampled for a CI-safe committed file, the authoritative numbers are the full-data metrics computed on the VM."
+}

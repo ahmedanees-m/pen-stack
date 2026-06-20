@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.11",
+  "workstream": "WS-SIMLAB",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_simlab.yaml": "d9caad2df477605dca1dee1f4a30b0da297c0033cb7c89230fea8e5cf603edf7"
+  }
+}

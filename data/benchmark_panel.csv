@@ -1,0 +1,11 @@
+name,gene,intent,ct,writer_used,stratum,citation_doi,note
+AAVS1,PPP1R12C,safe_harbour_insertion,k562,ZFN/Cas9,control,10.1101/gr.106773.110,validated safe harbour (PPP1R12C intron 1)
+CCR5,CCR5,safe_harbour_insertion,k562,ZFN,control,10.1038/nbt1353,validated safe harbour / disruption locus
+CLYBL,CLYBL,safe_harbour_insertion,k562,TALEN/Cas9,control,10.1371/journal.pone.0116032,validated safe harbour (CLYBL intron)
+TRAC,TRAC,knock_in_with_disruption,k562,Cas9-HDR,discriminating,10.1038/nature21405,CAR knock-in disrupting the TCR alpha constant gene (CAR-T)
+ALB,ALB,high_durability_insertion,hepg2,ZFN/Cas9,discriminating,10.1182/blood-2014-12-615492,protein-factory insertion into the highly expressed albumin locus
+BCL11A,BCL11A,regulatory_excision,k562,Cas9,discriminating,10.1038/nature15521,disrupt the +58 erythroid enhancer to de-repress HbF (exa-cel target)
+FXN,FXN,repeat_excision,k562,Cas9,discriminating,10.1038/mt.2015.41,excise the expanded GAA repeat in FXN intron 1 (Friedreich ataxia)
+PDCD1,PDCD1,knock_in_with_disruption,k562,Cas9,discriminating,10.1038/s41598-017-00462-8,disrupt PD-1 to enhance anti-tumour T-cell function
+B2M,B2M,knock_in_with_disruption,k562,Cas9,discriminating,10.1158/1078-0432.ccr-16-1300,disrupt B2M for allogeneic (universal) CAR-T
+HBG1,HBG1,regulatory_excision,k562,Cas9,discriminating,10.1038/ncomms8085,edit the HBG promoter to reactivate fetal haemoglobin

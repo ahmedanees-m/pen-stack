@@ -1,0 +1,15 @@
+# PEN-STACK v4.5 - WS-CT (cell-type expansion + coverage cards) pre-registered. Needs WS-G.
+cycle: "v4.5"
+workstream: "WS-CT"
+prepared: "2026-06-09"
+
+CT1_tier_a:
+  deliverable: "configs/cell_types.yaml Tier-A nodes (iPSC/ESC, primary T cells, hepatocytes) with coverage cards; pen_stack/graph/cell_types.py (coverage_card, degrade, cross_cell_type_ood)"
+  acceptance: "added cell types appear as graph nodes carrying coverage cards (tracks + coverage level); a partial-coverage cell type DEGRADES GRACEFULLY (its confidence is capped, never inflated; v3.2 honesty); cross-cell-type queries are OOD-LABELLED (extrapolating, weak heuristic - the v3.2 finding that chromatin marks are conserved); degradation is quantified + reported, not hidden."
+
+CT2_tier_b_roadmap:
+  deliverable: "configs/cell_types.yaml tier_b_roadmap (HSPC subsets, neurons, muscle, retina) with the data blocker per type"
+  acceptance: "Tier-B types are DOCUMENTED as a roadmap gated by data availability; they are NOT added as scored graph nodes (no silent extrapolation) until their tracks exist."
+
+gate: "coverage cards per node; cross-type scores OOD-labelled; graceful degradation quantified; no silent extrapolation."
+locked_files: [prereg/ws_ct.yaml]

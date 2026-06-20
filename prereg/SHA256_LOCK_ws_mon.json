@@ -1,0 +1,8 @@
+{
+  "cycle": "v4.5",
+  "workstream": "WS-MON",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_mon.yaml": "08b7b1cb87fc1559e3235ff3b6ca79727c89281df2bce8b2b89b45bbe6f772e5"
+  }
+}

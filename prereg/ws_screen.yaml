@@ -1,0 +1,32 @@
+# PEN-STACK v5.7 - WS-SCREEN (biosecurity / dual-use sequence+function screening). Directional.
+cycle: "v5.7"
+workstream: "WS-SCREEN"
+prepared: "2026-06-11"
+
+motivation: >
+  Before PEN-STACK moves toward "build", a design that matches a select-agent / pandemic-pathogen /
+  controlled-toxin signature must be refused or escalated BY CONSTRUCTION - including AI-designed homolog and
+  chimera evasions that sequence homology alone would miss.
+
+deliverable: >
+  pen_stack/safety/{registry,screen}.py + configs/safety/hazard_registry.yaml; a curated, version-pinned
+  HazardRegistry; three+ screens (function_flag, taxon_flag, chimera_context; sequence_homology delegated to a
+  wrappable external screener); each hit typed + provenanced.
+
+method: >
+  function/family/taxon-level signatures ONLY (public Pfam accessions + public control-list references:
+  42 CFR 73 / 7 CFR 331 / 9 CFR 121 / Australia Group / HHS P3CO/DURC) - no hazard sequences, no synthesis or
+  enhancement detail. The FUNCTION screen catches AI-homologs (low identity + hazardous function annotation);
+  the CHIMERA screen catches hazardous assembly of benign parts and split-hazard multiplex plans. Flags come
+  ONLY from the registry / wrapped screeners (no fabrication). All Pfam accessions independently verified
+  against EBI InterPro (1 error - PF01375 - caught and corrected pre-reliance).
+
+acceptance: >
+  frozen hazard probes refused/flagged at correct severity; frozen benign therapeutics (FIX/FVIII/CAR-T/
+  sickle-cell) pass with ZERO false refusals; >=1 AI-homolog evasion (low identity, hazardous function) caught
+  by the function screen. Screening reduces, not eliminates, risk; signatures versioned; exploit detail not
+  published.
+
+honesty_invariant: "a defensive safeguard, NOT a guarantee, and not a substitute for institutional biosafety/IBC review; signatures are function/family/taxon-level only; the artifact decides, never the framing."
+gate: "G-SAFE - probe refused + benign zero-false-refusal + >=1 evasion caught; downstream WS depend on it."
+locked_files: [prereg/ws_screen.yaml, configs/safety/hazard_registry.yaml, configs/safety/probes.yaml]

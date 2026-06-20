@@ -1,0 +1,296 @@
+version: 6.9.2
+method:
+  mhc2: NetMHCIIpan-4.0 EL %Rank<=2, residue coverage
+  hla2_panel:
+  - DRB1_0101
+  - DRB1_0301
+  - DRB1_0401
+  - DRB1_0701
+  - DRB1_1101
+  - DRB1_1301
+  - DRB1_1501
+  mhc1: NetMHCpan-4.1 %Rank_EL<=0.5, residue coverage
+  hla1_panel:
+  - HLA-A01:01
+  - HLA-A02:01
+  - HLA-A03:01
+  - HLA-A11:01
+  - HLA-A24:02
+  - HLA-A26:01
+  - HLA-B07:02
+  - HLA-B08:01
+  - HLA-B15:01
+  - HLA-B40:01
+  - HLA-B44:03
+  - HLA-B58:01
+  metric: residue coverage by strong binders, union over panel (matches v5.3 MHCflurry)
+provenance_dois:
+- 10.1093/nar/gkac1029
+- 10.1093/nar/gkaa379
+note: population-level epitope load (frequent-HLA panel; NOT patient-HLA-specific).
+  Licensed NetMHC binaries run locally; only derived fractions cached.
+mhc2:
+  SpCas9:
+    epitope_fraction_strong: 0.636
+    immune_score: 0.364
+    metric: residue coverage by strong 15-mers (%Rank<=2.0), union over 7 alleles
+    length: 1368
+    n_covered: 870
+    alleles_used:
+    - DRB1_0101
+    - DRB1_0301
+    - DRB1_0401
+    - DRB1_0701
+    - DRB1_1101
+    - DRB1_1301
+    - DRB1_1501
+  ISCro4:
+    epitope_fraction_strong: 0.5644
+    immune_score: 0.4356
+    metric: residue coverage by strong 15-mers (%Rank<=2.0), union over 7 alleles
+    length: 326
+    n_covered: 184
+    alleles_used:
+    - DRB1_0101
+    - DRB1_0301
+    - DRB1_0401
+    - DRB1_0701
+    - DRB1_1101
+    - DRB1_1301
+    - DRB1_1501
+  Bxb1:
+    epitope_fraction_strong: 0.6467
+    immune_score: 0.3533
+    metric: residue coverage by strong 15-mers (%Rank<=2.0), union over 7 alleles
+    length: 501
+    n_covered: 324
+    alleles_used:
+    - DRB1_0101
+    - DRB1_0301
+    - DRB1_0401
+    - DRB1_0701
+    - DRB1_1101
+    - DRB1_1301
+    - DRB1_1501
+  HumanAlbumin:
+    epitope_fraction_strong: 0.3186
+    immune_score: 0.6814
+    metric: residue coverage by strong 15-mers (%Rank<=2.0), union over 7 alleles
+    length: 609
+    n_covered: 194
+    alleles_used:
+    - DRB1_0101
+    - DRB1_0301
+    - DRB1_0401
+    - DRB1_0701
+    - DRB1_1101
+    - DRB1_1301
+    - DRB1_1501
+  AAV2_VP1:
+    epitope_fraction_strong: 0.5592
+    immune_score: 0.4408
+    metric: residue coverage by strong 15-mers (%Rank<=2.0), union over 7 alleles
+    length: 735
+    n_covered: 411
+    alleles_used:
+    - DRB1_0101
+    - DRB1_0301
+    - DRB1_0401
+    - DRB1_0701
+    - DRB1_1101
+    - DRB1_1301
+    - DRB1_1501
+  Ad5_hexon:
+    epitope_fraction_strong: 0.6229
+    immune_score: 0.3771
+    metric: residue coverage by strong 15-mers (%Rank<=2.0), union over 7 alleles
+    length: 952
+    n_covered: 593
+    alleles_used:
+    - DRB1_0101
+    - DRB1_0301
+    - DRB1_0401
+    - DRB1_0701
+    - DRB1_1101
+    - DRB1_1301
+    - DRB1_1501
+  VSVg_Indiana:
+    epitope_fraction_strong: 0.3914
+    immune_score: 0.6086
+    metric: residue coverage by strong 15-mers (%Rank<=2.0), union over 7 alleles
+    length: 511
+    n_covered: 200
+    alleles_used:
+    - DRB1_0101
+    - DRB1_0301
+    - DRB1_0401
+    - DRB1_0701
+    - DRB1_1101
+    - DRB1_1301
+    - DRB1_1501
+  HSV1_gD:
+    epitope_fraction_strong: 0.5355
+    immune_score: 0.4645
+    metric: residue coverage by strong 15-mers (%Rank<=2.0), union over 7 alleles
+    length: 394
+    n_covered: 211
+    alleles_used:
+    - DRB1_0101
+    - DRB1_0301
+    - DRB1_0401
+    - DRB1_0701
+    - DRB1_1101
+    - DRB1_1301
+    - DRB1_1501
+  HSV1_gB:
+    epitope_fraction_strong: 0.4746
+    immune_score: 0.5254
+    metric: residue coverage by strong 15-mers (%Rank<=2.0), union over 7 alleles
+    length: 904
+    n_covered: 429
+    alleles_used:
+    - DRB1_0101
+    - DRB1_0301
+    - DRB1_0401
+    - DRB1_0701
+    - DRB1_1101
+    - DRB1_1301
+    - DRB1_1501
+mhc1:
+  AAV2_VP1:
+    epitope_fraction_strong: 0.5415
+    immune_score: 0.4585
+    metric: residue coverage by strong 9-mers (%Rank<=0.5), union over 12 alleles
+    length: 735
+    n_covered: 398
+    alleles_used:
+    - HLA-A01:01
+    - HLA-A02:01
+    - HLA-A03:01
+    - HLA-A11:01
+    - HLA-A24:02
+    - HLA-A26:01
+    - HLA-B07:02
+    - HLA-B08:01
+    - HLA-B15:01
+    - HLA-B40:01
+    - HLA-B44:03
+    - HLA-B58:01
+  Ad5_hexon:
+    epitope_fraction_strong: 0.7216
+    immune_score: 0.2784
+    metric: residue coverage by strong 9-mers (%Rank<=0.5), union over 12 alleles
+    length: 952
+    n_covered: 687
+    alleles_used:
+    - HLA-A01:01
+    - HLA-A02:01
+    - HLA-A03:01
+    - HLA-A11:01
+    - HLA-A24:02
+    - HLA-A26:01
+    - HLA-B07:02
+    - HLA-B08:01
+    - HLA-B15:01
+    - HLA-B40:01
+    - HLA-B44:03
+    - HLA-B58:01
+  VSVg_Indiana:
+    epitope_fraction_strong: 0.6223
+    immune_score: 0.3777
+    metric: residue coverage by strong 9-mers (%Rank<=0.5), union over 12 alleles
+    length: 511
+    n_covered: 318
+    alleles_used:
+    - HLA-A01:01
+    - HLA-A02:01
+    - HLA-A03:01
+    - HLA-A11:01
+    - HLA-A24:02
+    - HLA-A26:01
+    - HLA-B07:02
+    - HLA-B08:01
+    - HLA-B15:01
+    - HLA-B40:01
+    - HLA-B44:03
+    - HLA-B58:01
+  HSV1_gD:
+    epitope_fraction_strong: 0.6853
+    immune_score: 0.3147
+    metric: residue coverage by strong 9-mers (%Rank<=0.5), union over 12 alleles
+    length: 394
+    n_covered: 270
+    alleles_used:
+    - HLA-A01:01
+    - HLA-A02:01
+    - HLA-A03:01
+    - HLA-A11:01
+    - HLA-A24:02
+    - HLA-A26:01
+    - HLA-B07:02
+    - HLA-B08:01
+    - HLA-B15:01
+    - HLA-B40:01
+    - HLA-B44:03
+    - HLA-B58:01
+  HSV1_gB:
+    epitope_fraction_strong: 0.5962
+    immune_score: 0.4038
+    metric: residue coverage by strong 9-mers (%Rank<=0.5), union over 12 alleles
+    length: 904
+    n_covered: 539
+    alleles_used:
+    - HLA-A01:01
+    - HLA-A02:01
+    - HLA-A03:01
+    - HLA-A11:01
+    - HLA-A24:02
+    - HLA-A26:01
+    - HLA-B07:02
+    - HLA-B08:01
+    - HLA-B15:01
+    - HLA-B40:01
+    - HLA-B44:03
+    - HLA-B58:01
+self_match:
+  SpCas9:
+    fraction: 0.0
+    n: 1360
+    n_matched: 0
+  ISCro4:
+    fraction: 0.0
+    n: 318
+    n_matched: 0
+  Bxb1:
+    fraction: 0.0
+    n: 493
+    n_matched: 0
+  HumanAlbumin:
+    fraction: 1.0
+    n: 601
+    n_matched: 601
+  AAV2_VP1:
+    fraction: 0.0
+    n: 727
+    n_matched: 0
+  Ad5_hexon:
+    fraction: 0.0
+    n: 944
+    n_matched: 0
+  VSVg_Indiana:
+    fraction: 0.0
+    n: 503
+    n_matched: 0
+  HSV1_gD:
+    fraction: 0.0
+    n: 386
+    n_matched: 0
+  HSV1_gB:
+    fraction: 0.0
+    n: 896
+    n_matched: 0
+self_match_meta:
+  reference: UniProt reviewed human reference proteome UP000005640 (20431 proteins)
+  k: 9
+  tool: exact 9-mer identity vs full human proteome (JanusMatrix-style self-similarity
+    cross-check)

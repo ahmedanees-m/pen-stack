@@ -1,0 +1,23 @@
+{
+  "benchmark": "Writer-Efficiency Bench",
+  "version": "v6.8.0",
+  "description": "First curated, leakage-controlled benchmark for cross-family genome-writer integration efficiency. Label = measured published efficiency (% integration), NON-circular (DOI + verbatim quote per row).",
+  "dataset": "data/writer_efficiency.parquet",
+  "strict_source": false,
+  "label": "efficiency_pct (measured % integration in the stated cell type)",
+  "axes": {
+    "held_out_family": {
+      "method": "leave-one-family-out (train on 3 families, predict the 4th)",
+      "families": ["PE_integrase", "serine_integrase", "bridge_IS110", "CAST_VK"],
+      "rationale": "cross-family transfer — the hard generalisation axis; 4 families is the binding statistical limit (reported honestly)."
+    },
+    "held_out_locus": {
+      "method": "leave-one-specific-locus-out (excludes aggregate/genome-wide pseudo-loci)",
+      "rationale": "locus-context generalisation within the curated panel."
+    }
+  },
+  "baselines": ["KB_family_mean", "PEN_WRITER_learned"],
+  "metrics": ["mae", "spearman", "paired_bootstrap_mae_reduction_ci"],
+  "seed": 20260620,
+  "honest_limit": "small curated dataset (~42 human-cell records across 4 families); the dataset + bench are the contribution, and a non-both-axes win retains the KB ranking (the pre-registered, no-fabrication outcome)."
+}

@@ -1,0 +1,50 @@
+# PEN-STACK v3.2, Delivery-vehicle sequence constraints (WS-MC / MC2).
+# SOFT penalties + flags (with a concrete fix each) for vehicle-specific sequence problems in the construct.
+# Unlike the MC1 target-site filter (a hard reject), these are LABELED HEURISTIC penalties validated only
+# directionally: a construct carrying a known problematic element scores higher than a clean one. They are
+# screens, not predictors of titre/yield.
+#
+# Each vehicle lists the checks that apply to it. Penalties are summed into delivery_constraint_risk in [0,1].
+
+bands: { low: 0.2, moderate: 0.5 }
+
+checks:
+  internal_polyA:
+    pattern: "A[AT]TAAA" # canonical poly(A) signal inside the payload truncates the genomic RNA
+    risk_per_hit: 0.2
+    cap: 0.4
+    suggestion: "remove/weaken internal poly(A) signals (AATAAA/ATTAAA) in the payload, they truncate the
+      lentiviral genomic RNA and lower titre; use a single 3' poly(A) only."
+
+  homopolymer_run:
+    min_len: 20 # runs >= 20 nt cause AAV replication slippage / sequencing+packaging issues
+    risk_per_run: 0.15
+    cap: 0.3
+    suggestion: "break up homopolymer runs (>=20 nt), they cause AAV replication slippage and recombination;
+      introduce synonymous variation."
+
+  direct_repeat:
+    unit_len: 20 # a >=20 nt direct repeat is recombinogenic during packaging/replication
+    risk: 0.25
+    suggestion: "remove long (>=20 nt) direct repeats, they are recombinogenic during vector
+      production/packaging; recode one copy or shorten."
+
+  inverted_repeat:
+    arm_len: 16 # >=16 nt inverted repeat forms a hairpin / ITR-like structure
+    risk: 0.2
+    suggestion: "remove long inverted repeats (>=16 nt arms), they form hairpins that interfere with AAV ITR
+      resolution and lower packaging; recode one arm."
+
+  gc_extreme:
+    gc_low: 0.30
+    gc_high: 0.75
+    risk: 0.15
+    suggestion: "moderate extreme GC content (<30% or >75%), it impairs AAV packaging and reverse
+      transcription; rebalance codon usage."
+
+vehicles:
+  AAV: [homopolymer_run, inverted_repeat, gc_extreme]
+  lentiviral: [internal_polyA, direct_repeat, gc_extreme]
+  plasmid: [direct_repeat]
+  # mRNA-RNP and LNP-mRNA deliver the effector as RNA/protein, not a packaged DNA payload -> no DNA-vector
+  # packaging constraints apply to the cargo here (handled by Cargo Polish instead).

@@ -1,0 +1,20 @@
+# PEN-STACK v4.0 - WS-WV (writer-verification branch) pre-registered. Needs gate G-O. The honest "better pen".
+cycle: "v4.0"
+workstream: "WS-WV"
+prepared: "2026-06-09"
+
+principle: "we SCORE and CRITIQUE proposed/variant writer enzymes against measured data; we NEVER invent or assert novel function (the pen-assemble lesson: 0 validatable de-novo writers). A generated candidate is scored, never returned as a working pen."
+
+WV1_variant_scoring:
+  deliverable: "pen_stack/atlas/writer_verify.py: score_variants() + blind_recovery() + real_dms_recovery()"
+  method: "combine the MEASURED DMS effect (Perry-2025 ISCro4 scan via atlas.variant_propose) with structural plausibility (structure oracle uncertainty) into a CALIBRATED activity score in [0,1] + interval + out-of-DMS scope flag. A frozen documented panel (published enhancers N322P/H50K/R278M + measured-neutral + measured-worse controls) makes the criterion deterministic when Perry is absent."
+  acceptance: "blind_recovery recovers ALL known enhancers in the top-k AND ranks them above the measured-worse controls; measured variants are claimable with a finite interval; a variant OUT of the DMS distribution is flagged extrapolating and is NOT claimable (no activity asserted) - asserted."
+  scope: "deep DMS exists for few enzymes (bridge recombinases); elsewhere this is a labelled plausibility screen; de-novo designs are scored, never asserted active."
+
+WV2_critique_not_invention:
+  deliverable: "writer_verify.critique_candidate() + integration into verify() (Verdict.writer_critique) "
+  method: "a generated candidate writer is critiqued - folds? (structure oracle) plausible active site? (conserved core residues) deliverable form? reachable target? (rule-grounded verifier) - returning pass/flag + reasons."
+  acceptance: "a candidate failing fold/active-site/deliverability/reachability is correctly flagged (pass=False); the critique ALWAYS carries no_claim=True and claimable=False (never 'a working new pen'); no-fabrication holds; legality of the surrounding write plan and the writer-activity claim are DISTINCT (a legal plan does not make an unverified candidate claimable)."
+
+gate: "generative-is-candidate guard holds (a candidate cannot be claimed without scoring); no activity claim for unsupported variants; no-fabrication intact."
+locked_files: [prereg/ws_wv.yaml]

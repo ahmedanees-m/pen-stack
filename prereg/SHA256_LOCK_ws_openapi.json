@@ -1,0 +1,8 @@
+{
+  "cycle": "v6.1",
+  "workstream": "WS-OPENAPI",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_openapi.yaml": "142f148bec9b143420918159dd81fed7fe4868ac1118ef05a1603da6f941e5f8"
+  }
+}

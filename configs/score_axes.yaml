@@ -1,0 +1,68 @@
+# PEN-STACK v3.0 - re-grounded scoring axes (Phase 0, Step 0.3).
+# The prior prog/cargo axes failed every editor at the gate thresholds without hand-set overrides
+# (e.g. the ISCro4 s_prog=1.0 / s_cargo=1.0 patch). Here every axis is a documented, continuous
+# function of a MEASURED input. NO per-enzyme override constants exist anywhere in the code.
+
+cargo:
+  # S_Cargo = log1p(measured_cargo_bp) / log1p(cap_bp), clipped to [0, cap_bp]. Monotone in measured bp.
+  cap_bp: 40000
+  source: "measured cargo capacity (bp) from WT-KB cargo_capacity_bp; falls back to upstream s_cargo if bp unknown"
+
+programmability:
+  # S_Prog from the MEASURED targeting modality (how the target is specified), not a 0/1 flag.
+  # Anchored gradient (documented), replacing the uniform s_prog=1.0 flag:
+  modality_anchor:
+    RNA-guided: 0.95 # both/loop-reprogrammable bipartite (bridge/seek) or sgRNA-programmable
+    PE-installable: 0.80 # programmable but requires installing an att landing site first
+    DDE-spacing: 0.20 # transposase spacing; weak target programmability
+    fixed-att: 0.10 # native att only; not target-reprogrammable without an install step
+  # families whose guide reprograms BOTH ends independently get the full bipartite credit:
+  bipartite_reprogrammable_families: [bridge_IS110, seek_IS1111]
+  bipartite_bonus_to: 1.00
+  note: "values are programmability of TARGET SELECTION; an installed att collapses PE-installable to deterministic"
+
+length_aa_backfill:
+  # The upstream universe has length_aa = None for all 29 editors (breaks gate-4 size). Backfill from
+  # independently verified UniProt lengths (see configs/datasets.yaml verified_ids). No guesses.
+  ISCro4: 326
+  IS621: 342
+  IS621_2: 342
+  SpCas9: 1368
+  Cas12a: 1307 # AsCas12a
+  Cas12f: 433 # Un1Cas12f1 class (compact)
+  Bxb1: 500
+  phiC31: 605
+  Cre: 343
+  Lambda_Int: 356
+  PE2: 1535 # nCas9-RT fusion (approx, fusion construct)
+  Tn5: 476
+  IscB: 496
+
+deliverability:
+  # S_Deliv from total effector size: AAV single <= ~4.7 kb payload; protein length proxy in aa.
+  aav_single_max_aa: 730 # ~ single-AAV packageable effector
+  split_aav_max_aa: 1500
+  classes: { AAV: 1.0, "split-AAV": 0.6, "mRNA-RNP": 0.4 }
+
+retained_axes_passthrough:
+  # These upstream axes are reused as-is (measured/curated); documented, not recomputed in Phase 0:
+  - s_dsb # DSB-freeness (1.0 = DSB-free recombinase; 0.0 = nuclease)
+  - s_immuno
+  - s_deliv
+  - s_mature
+  - s_spec
+  - s_energy
+
+# v3.0 descriptive-scorecard gate thresholds, defined ON THE RE-GROUNDED AXIS SCALES so they are
+# internally consistent (the legacy gates_v3.yaml 0.85 cargo threshold was on the old s_cargo scale).
+# Cargo threshold 0.65 on the log-bp scale corresponds to ~1 kb intrinsic cargo:
+# log1p(1000)/log1p(40000) ~= 0.65 ; bridge 5 kb -> 0.80 (pass); CAST 10 kb -> 0.87; serine 50 kb -> 1.0.
+gates_v3_0:
+  g1_dsb_min: 0.95 # necessary (DSB-free)
+  g2_prog_min: 0.95 # programmability (bipartite bridge/seek = 1.0; fixed-att = 0.10 -> fails, correctly)
+  g3_cargo_min: 0.65 # on the recalibrated log-bp scale; AND requires intrinsic_cargo_mechanism
+  g4_max_length_aa: 900
+  g5_min_evidence: 2
+
+policy:
+  no_handset_overrides: true # enforced by tests/unit/test_no_overrides.py

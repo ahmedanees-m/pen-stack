@@ -1,0 +1,36 @@
+# PEN-STACK v3.1 - WS-E (Genome-Writing Bench + PEN-Agent, M2) pre-registered acceptance.
+# Requires Gate G-A (de-circularization) - inherited: NO task is scored against a circular label.
+cycle: "v3.1"
+workstream: "WS-E"
+prepared: "2026-06-04"
+
+E1_genome_writing_bench:
+  deliverables:
+    - "benchmarks/genome_writing_bench/ (tasks.yaml, harness.py, solvers.py, README.md, LEADERBOARD.md, SHA256SUMS)"
+    - "bench/run.py (one-command entrypoint)"
+  taxonomy: "T1 site selection, T2 writer selection, T3 within-locus, T4 off-target, T5 intent, T6 no-fabrication"
+  acceptance:
+    - "one-command reproducible run (bench/run.py) that succeeds on a clean image (tasks needing the atlas /
+       Perry tables / an LLM report available:false rather than failing)"
+    - "every task has a DETERMINISTIC scorer and a documented ground-truth source"
+    - "NO task scored against a circular label (inherits Gate G-A; circular:false asserted per task)"
+    - ">= 1 external/LLM-agent baseline path on the leaderboard (PEN-Agent via the MCP registry)"
+    - "frozen reference inputs SHA-locked (SHA256SUMS, LF newlines for sha256sum -c)"
+
+E2_pen_agent:
+  deliverables:
+    - "pen_stack/agent/pen_agent.py (grounded write-planning state machine: goal -> site -> writer ->
+       cargo(+Cargo Polish) -> off-target -> 3D structural risk -> report; guided/automatic/qa modes)"
+  acceptance:
+    - "runs end-to-end and is scored on the bench (T6)"
+    - "ZERO fabricated facts: every reported number is copied from a tool result and tagged with provenance;
+       a step that cannot ground a value is degraded/refused, never invented (HARD GATE)"
+    - "every recommendation carries provenance (tool/model/DOI)"
+    - "functions in degraded mode when AlphaGenome / the bridge engine is unavailable"
+  gate_G_E: "PEN-Agent does not ship if it fabricates (T6 must pass)."
+  scope: "a grounded orchestration layer over the validated core, not a new model. The contribution is the
+    grounding and the benchmark."
+
+locked_files:
+  - prereg/ws_e.yaml
+  - benchmarks/genome_writing_bench/tasks.yaml

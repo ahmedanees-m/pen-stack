@@ -1,0 +1,7 @@
+{
+  "alpha": 0.1,
+  "qhat": 25.56117196063137,
+  "n_cal": 42,
+  "units": "percent_integration",
+  "note": "family-blocked LOO OOF split-conformal on the curated writer-efficiency dataset; candidate-flagged interval."
+}

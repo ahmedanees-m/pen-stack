@@ -1,0 +1,13 @@
+# PEN-STACK v3.4 - WS-CAL (plan-confidence outcome-calibration) pre-registered acceptance. Feeds M-UQ.
+cycle: "v3.4"
+workstream: "WS-CAL"
+prepared: "2026-06-09"
+
+CAL1_outcome_calibration:
+  deliverable: "pen_stack/validate/outcome_calibration.py: plan-level reliability diagram + ECE + selective-prediction on documented writes (data/writer_panel.csv)"
+  method: "for each DOI-documented write (family, cargo), score every panel writer family as a candidate plan; a family asked to exceed its DOCUMENTED capacity envelope is extrapolation -> confidence deflated (v3.2 OOD machinery). 'correct' = candidate family == the family documented for that write (writer recovery; the label is the DOI panel, NOT the verifier's own output -> non-circular). Bin plans by predicted plan-confidence; report accuracy per bin (reliability), ECE, and high- vs low-confidence selective-prediction accuracy with a bootstrap CI."
+  acceptance: "the plan-level reliability curve shows recovery accuracy INCREASING with confidence (monotone high>low) OR it is reported that it does not (negative result, not hidden); ECE reported with N + a bootstrap CI on the high-minus-low gap. Whatever the shape, it is reported verbatim."
+  scope: "'outcome' = match to a documented real-world choice (survivorship-biased, small N); NOT a clinical endpoint. Confidence is calibrated but marginal and N-limited (inherits v3.2); wide CIs are honest. High ECE with a significant selective gap = useful-for-ranking but not an absolute probability (reported, not hidden)."
+
+gate: "calibration honesty - the reliability curve + ECE + CI are reported whatever their shape; no-fabrication holds."
+locked_files: [prereg/ws_cal.yaml]

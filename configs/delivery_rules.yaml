@@ -1,0 +1,15 @@
+# PEN-STACK v3.0 - delivery recommendation rules (Phase 3, Step 3.3).
+# Choose a delivery modality from the TOTAL payload (writer effector + cargo, in bp) and the target cell
+# type. AAV single ~4.7 kb packaging limit; dual-AAV ~9 kb via split/recombination; larger or ex-vivo
+# contexts use LNP-mRNA/RNP or electroporation.
+thresholds_bp:
+  aav_single_max: 4700
+  dual_aav_max: 9000
+ex_vivo_cell_types: [hspc, ipsc, tcell, k562] # amenable to electroporation / ex-vivo RNP
+rules:
+  - max_total_bp: 4700
+    delivery: "AAV (single)"
+  - max_total_bp: 9000
+    delivery: "dual-AAV"
+ex_vivo_fallback: "LNP-mRNA/RNP or electroporation (ex vivo)"
+in_vivo_fallback: "LNP-mRNA (in vivo, tissue-dependent)"

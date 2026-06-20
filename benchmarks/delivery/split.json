@@ -1,0 +1,22 @@
+{
+  "benchmark": "Delivery-Bench (AAV capsid-fitness)",
+  "version": "v6.11.0",
+  "description": "AAV capsid packaging-fitness regression on the FLIP-AAV benchmark. Task: predict the fitness of held-out capsid VP1 variants. NON-circular (label = the wet-lab packaging-fitness measurement, not a predictor).",
+  "ground_truth": {
+    "benchmark": "FLIP-AAV",
+    "citation": "Dallago et al. 2021 (NeurIPS Datasets & Benchmarks); built on Bryant et al. 2021 Nat Biotechnol",
+    "dois": ["10.1101/2021.11.09.467890", "10.1038/s41587-020-00793-4"],
+    "foundational_landscape": "Ogden et al. 2019 Science (10.1126/science.aaw2900)",
+    "source": "github.com/J-SNACKKB/FLIP splits/aav (full data 217 MB/split, stays on the VM)"
+  },
+  "model": "models/capsid_fitness.pkl (windowed one-hot VP1 555-595 HistGradientBoostingRegressor; gitignored + VM-mounted + regenerated via scripts/build_capsid_fitness.py, like position_effect.pkl)",
+  "baseline": "mutation burden (negative Hamming from the train-set consensus window)",
+  "splits": ["sampled (random 80/20, in-distribution)", "mut_des (mutant->designed, hard generalization)"],
+  "metric": "Spearman correlation on held-out test; bootstrap (300) CI on learned-minus-baseline gap",
+  "headline": {
+    "sampled": {"learned_spearman": 0.9201, "baseline_spearman": 0.5216, "gap_ci95": [0.3871, 0.411]},
+    "mut_des": {"learned_spearman": 0.8143, "baseline_spearman": 0.7517, "gap_ci95": [0.0613, 0.064]}
+  },
+  "gate": "D-G1: learned beats the mutation-burden baseline on held-out FLIP-AAV (CI excludes 0) on >=1 split -> PASSED on both.",
+  "honesty": "predicted capsid-fitness is a CANDIDATE for the MEASURED packaging axis; in-vivo human tropism is a known-unknown (the serotype->tissue priors come from approved therapies, not this model)."
+}

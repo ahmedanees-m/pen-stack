@@ -1,0 +1,29 @@
+# PEN-STACK v5.8 - WS-GEN (generative inverse design; verifier-as-discriminator). Directional.
+cycle: "v5.8"
+workstream: "WS-GEN"
+prepared: "2026-06-11"
+
+motivation: >
+  Move from scoring a given design to GENERATING candidate end-to-end writing systems - keeping only those
+  that pass safety + legality + calibration, so nothing unvalidated is ever asserted.
+
+deliverable: >
+  pen_stack/design/{space,generate}.py: candidate_space(goal) (writer x site x cargo x delivery, planner-backed)
+  + generate_designs(goal|candidates) that DISCRIMINATES every candidate with verify() (v5.7 safety + v3.3
+  legality + v3.2 calibration + v5.6 immune profile) and discards hazardous/illegal proposals.
+
+method: >
+  generation proposes; verify() disposes. A candidate survives iff it is legal AND its safety decision is
+  clear/flag (refuse/escalate discarded). Survivors carry calibrated confidence (or explicit abstention), the
+  v5.6 immune profile, the safety decision, scope flags, and output_kind="candidate" - never a claim that it
+  works (the as_claim() guard generalised to whole designs). Atlas-independent on an explicit candidate pool;
+  planner-backed candidate_space is the data/VM path.
+
+acceptance: >
+  survivors are all legal + safe; a hazardous (toxin) or illegal proposal NEVER survives (asserted); each
+  survivor carries a calibrated confidence + an immune profile; nothing is asserted active; generated novel
+  writers route to v4.0 writer-verification, never asserted.
+
+honesty_invariant: "a generated output is a CANDIDATE, never a claim; novelty bounded by oracle validity + the rules; no fabrication across generation."
+gate: "G-GEN - hazardous/illegal never survive (asserted); survivors calibrated + immune-profiled + output_kind=candidate."
+locked_files: [prereg/ws_gen.yaml]

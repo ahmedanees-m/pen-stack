@@ -1,0 +1,111 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pen-stack"
+version = "6.11.0"
+description = "Open infrastructure for genome writing: the Writable Genome atlas, the Writer Atlas, and the Write Planner."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Anees Ahmed Mahaboob Ali", email = "ahmedaneesm@gmail.com" }]
+keywords = [
+  "genome-writing", "genome-editing", "bridge-recombinase", "safe-harbor",
+  "writable-genome", "writer-atlas", "write-planner", "bioinformatics",
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.2",
+  "pyarrow>=16",
+  "scipy>=1.13",
+  "scikit-learn>=1.5",
+  "lightgbm>=4.5",
+  "pydantic>=2.8",
+  "pyyaml>=6.0",
+  "click>=8.1",
+  "requests>=2.32",
+  "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+models = ["xgboost>=2.1", "torch>=2.3", "statsmodels>=0.14"]
+bio = ["biopython>=1.84", "pysam>=0.22", "pyBigWig>=0.3", "pybedtools>=0.10", "ViennaRNA>=2.6"]
+bridge = ["bridgernadesigner>=0.1.1", "ViennaRNA>=2.6", "pysam>=0.22"]
+server = ["fastapi>=0.111", "uvicorn>=0.30"]
+services = ["litellm>=1.44", "paper-qa>=5.10", "streamlit>=1.37", "fastmcp>=2.3", "beautifulsoup4>=4.12"]
+orchestrate = ["paramiko>=3.4", "scp>=0.15", "rich>=13.7", "python-dotenv>=1.0"]
+docs = ["mkdocs>=1.6", "mkdocs-material>=9.5"]
+env = ["gymnasium>=0.29"] # WS-OPT1 - optional Gymnasium interface (pen_stack/env/); interface only
+dev = ["pytest>=8", "ruff>=0.5", "pytest-cov>=5"]
+
+[project.scripts]
+pen-stack = "pen_stack.cli:main"
+pen-bridge = "pen_stack.bridge.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/ahmedanees-m/pen-stack"
+Repository = "https://github.com/ahmedanees-m/pen-stack"
+Documentation = "https://github.com/ahmedanees-m/pen-stack/tree/main/docs"
+Changelog = "https://github.com/ahmedanees-m/pen-stack/blob/main/CHANGELOG.md"
+Issues = "https://github.com/ahmedanees-m/pen-stack/issues"
+Benchmark = "https://github.com/ahmedanees-m/pen-stack/tree/main/benchmarks/genome_writing_bench"
+
+[tool.setuptools.packages.find]
+include = ["pen_stack*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.coverage.run]
+source = ["pen_stack"]
+# exclude code that REQUIRES external resources (GPU/VM/network/LLM/browser) and so cannot be unit-tested
+# in CI; it is integration-tested on the VM instead. Coverage reflects the unit-tested core logic.
+omit = [
+    "pen_stack/data/*", # dataset ingestion (network, bedtools, VM)
+    "pen_stack/wgenome/*", # genotoxicity/durability model training (GPU/VM)
+    "pen_stack/ui/*", # Streamlit app (tested headless via AppTest on the VM)
+    "pen_stack/server/*", # FastAPI service (integration)
+    "pen_stack/monitor/*", # Europe PMC polling (network)
+    "pen_stack/rag/llm.py", # Ollama LLM client (needs a model server)
+    "pen_stack/agent/orchestrator.py", # LLM tool-calling loop (needs a model server)
+    "pen_stack/agent/mcp_server.py", # MCP server (fastmcp runtime)
+    "pen_stack/cli.py", # thin CLI wrappers
+    "pen_stack/__init__.py",
+    # modules whose tests REQUIRE the large Phase-1 writability atlas (Zenodo, not committed) or the
+    # copyrighted Perry 2025 tables (local only); they run in the VM/local integration suite, and their
+    # tests auto-skip in CI, so measuring them in CI would unfairly report 0%.
+    "pen_stack/atlas/crosslink.py", # needs the Phase-1 atlas
+    "pen_stack/planner/pipeline.py", # needs the Phase-1 atlas
+    "pen_stack/validate/paper3_benchmark.py", # needs the Phase-1 atlas
+    "pen_stack/validate/forward_hypotheses.py",# needs the Phase-1 atlas
+    "pen_stack/validate/agent_eval.py", # needs the Phase-1 atlas
+    "pen_stack/validate/paper4_real_validation.py", # needs the Perry 2025 tables
+    "pen_stack/validate/durability_baselines.py", # needs the Phase-1 TRIP data + AlphaGenome (WS-B)
+    "pen_stack/validate/uncertainty_eval.py", # needs the Phase-1 TRIP data (WS-UQ real coverage run)
+    "pen_stack/validate/offtarget_energetics_eval.py", # needs the Perry 2025 tables (WS-MC/MC3 gate)
+    "pen_stack/validate/seq_vs_measured.py", # needs Phase-1 measured tracks + AlphaGenome (WS-C2)
+    "pen_stack/bridge/ortholog_screen.py", # needs the Perry 2025 Table S1
+    "pen_stack/bridge/pipeline.py", # needs hg38 + the wrapped designer (integration)
+    "pen_stack/bridge/cli.py", # thin CLI wrapper
+]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if __name__ == .__main__.:", "raise NotImplementedError"]
+precision = 0
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

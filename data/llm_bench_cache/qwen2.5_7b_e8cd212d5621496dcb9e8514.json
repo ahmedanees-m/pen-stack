@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_7b",
+  "condition": "naive",
+  "goal": "plan|TRAC|knock a CAR into TRAC, disrupting the TCR",
+  "content": "{\n  \"max_writability\": 85,\n  \"safety_score\": 70,\n  \"p_durable\": 92,\n  \"predicted_offtarget_count\": 3,\n  \"structural_risk_score\": 65,\n  \"target_bin_coordinate\": \"chr14:1000000-1050000\",\n  \"recommended_writer_family\": \"SpCas9\"\n}"
+}

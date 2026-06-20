@@ -1,0 +1,66 @@
+# PEN-STACK v3.2, Target-site / PAM / att-site availability per writer family (WS-MC / MC1).
+# A SEQUENCE-COMPUTABLE hard filter: for each writer family, does the candidate site carry the *required
+# targeting element* the mechanism needs? No usable element -> the writer is physically unreachable there
+# (reject). This extends the WT-KB reachability tier with a sequence-level mechanistic check.
+#
+# Each family declares a `requirement` the scanner enforces:
+# pam : a PAM motif (IUPAC) must occur in the window (RNA-guided nucleases / CAST).
+# core_dinuc : a programmable bipartite recombinase needs its central core dinucleotide present (bridge/seek).
+# att_site : a serine integrase needs an attB/attP (or pseudo-att) core present, usually ABSENT in a
+# naive genomic window, so this is the key mechanistic REJECT (needs a pre-installed landing pad).
+# pe_installable : a PE-integrase installs its own att beacon, so the site is broadly reachable (no native
+# motif required), reported as available with a note.
+#
+# Motifs are IUPAC; the scanner expands them. These are SCREENS (approximate, esp. for relaxed-PAM engineered
+# variants), reported with a confidence, never a guarantee of activity. DOIs in the WT-KB (wtkb_curated.yaml).
+
+families:
+  bridge_IS110:
+    requirement: core_dinuc
+    core_dinuc: "CT" # ISCro4 central core (Perry 2025); loops reprogrammable, core must be present
+    note: "bipartite ~14 nt target; both loops reprogrammable, but the central CT core must be present at the
+      recombination point. Near-universal but motif-absent windows (e.g. core-free homopolymer) reject."
+    confidence: measured
+
+  seek_IS1111:
+    requirement: core_dinuc
+    core_dinuc: "CT"
+    note: "IS1111 subfamily of the IS110 superfamily; same bipartite seekRNA mechanism, central core required."
+    confidence: inferred
+
+  CAST_VK:
+    requirement: pam
+    pam: "GTN" # ShCAST Cas12k PAM (5'-GTN); spacer programmable, PAM must be present
+    insertion_offset_bp: [60, 66] # insertion ~60-66 bp downstream of the protospacer (fixed distance)
+    note: "Cas12k sgRNA protospacer (programmable) + a 5'-GTN PAM; no PAM in the window -> unreachable. Insert
+      lands +60-66 bp downstream. Engineered relaxed-PAM variants make this approximate."
+    confidence: measured
+
+  serine_integrase:
+    requirement: att_site
+    att_core: "GT" # crossover dinucleotide; full att arms flank it (attB/attP)
+    att_motifs: ["TGTCGACGACGGCG", "GGTTTGTCTGGTCAACCACCGCG"] # real Bxb1 attB / attP core substrings
+    note: "serine integrase needs an attB x attP recombination; a NAIVE genomic window has no usable att, so
+      it REJECTS unless a landing pad (att) was pre-installed (e.g. via PE). This is the key mechanistic
+      reject, a serine integrase cannot write at an arbitrary site."
+    confidence: measured
+
+  PE_integrase:
+    requirement: pe_installable
+    note: "PASTE / PASSIGE-class: prime editing installs the att beacon at the chosen site, so the site is
+      broadly reachable WITHOUT a native motif (the install step is PE-bounded, handled by reachability tier).
+      Reported available with a note, not a hard native-motif check."
+    confidence: measured
+
+  Cas9:
+    requirement: pam
+    pam: "NGG" # SpCas9 canonical PAM; spacer programmable
+    note: "SpCas9 NGG PAM occurs roughly every ~8 bp, so almost any window is reachable; a PAM-free window
+      (rare) rejects. Used for HDR/PE-style installs, not a standalone large-cargo writer."
+    confidence: measured
+
+  Cas12a:
+    requirement: pam
+    pam: "TTTV" # AsCas12a/LbCas12a T-rich PAM
+    note: "Cas12a T-rich TTTV PAM favours AT-rich windows; GC-rich windows may lack a PAM and reject."
+    confidence: measured

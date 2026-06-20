@@ -1,0 +1,71 @@
+# PEN-STACK v3.0 - Paper 4 (Bridge-recombinase off-target engine) pre-registered success criteria.
+# SHA-locked. Paper 4 is the beachhead: "a CRISPOR for bridge recombinases."
+paper: 4
+title: "A screening tool to nominate genome-wide off-target locations for RNA-guided bridge recombinases"
+prepared: "2026-06-02"
+tier: "Application-Note (NAR Bioinformatics / Bioinformatics). First-of-its-kind for an unoccupied gap; not Nature-tier."
+
+framing:   # hold this framing; do not let the milestone inflate the claim
+  what_it_is: "the first measured-data-validated tool that NOMINATES and RANKS candidate off-target LOCATIONS for bridge recombinases"
+  what_it_is_not: "NOT a quantitative safety calculator. It does not quantify HOW MUCH recombination occurs at each site."
+  single_most_important_limitation: "predicted sequence-risk does not rank recombination MAGNITUDE among observed off-targets (rho ~0.30). Among intact-core sites, which actually become off-targets is where sequence alone is weak. Screening tool, not a per-site risk calculator."
+  auroc_caveat: "the 0.77 discrimination uses a FAVOURABLE negative set (core-disrupted decoys) that mostly tests core integrity, the axis the model already encodes. 0.77 is moderate. The idealised 1.00 is the mechanism in pure form, not a performance claim."
+  program_role: "the Writable Genome (Paper 1) is the flagship novelty; this off-target engine is the beachhead. Neither overclaims."
+
+data:
+  offtarget_profile: "configs/bridge_offtarget_profile.yaml (literature) + data/curated/bridge_offtarget_profile_measured.parquet (MEASURED, derived from Perry 2025 Table S2)"
+  measured_data: "Perry 2025 supplementary (Science adz0276) Tables S1-S3 - OBTAINED (local, copyrighted; only derived products committed)"
+  genome: "hg38 (UCSC) - pysam FastaFile, per-chromosome (memory-bounded)"
+
+measured_validation:   # added once the Perry 2025 supplementary was obtained
+  measured_profile_confirms_mechanism: true   # 6,856 real off-targets: positions 7-9 (esp. 8) most conserved
+  discrimination_beats_hamming_on_REAL_offtargets: true   # AUROC 0.77 vs 0.62 (real off-target vs core-disrupted decoy)
+  dms_recovers_enhancers: true                # Perry Table S3 recovers top activity-enhancing mutants (N322P, H50K, ...)
+  honest_limit: "predicted sequence-risk does NOT rank recombination MAGNITUDE among observed off-targets (rho~0.30) - magnitude is genomic-context-driven"
+
+offtarget_engine:
+  method: "CT-core-seeded pseudosite scan + position-weight risk model"
+  success_HEADLINE:
+    beats_naive_hamming: true            # position model distinguishes core-disrupting from distal
+                                         # 2-mismatch sites; Hamming scores them identically
+    core_mismatch_abolishes: true        # a mismatch at the central CT core -> risk 0 (recombination off)
+    genome_scan_runs_on_hg38: true       # real per-chromosome scan (verified on chr22)
+  validated_on_measured_data:   # supplementary OBTAINED - see measured_validation above
+    blind_discrimination_of_real_offtargets: "DONE - real Perry off-targets (core-preserving) vs
+      core-disrupted decoys: position-weight model AUROC 0.77 vs Hamming 0.62. Measured profile also
+      confirms the central core (positions 7-9) is the specificity determinant."
+
+fold_qc:
+  success:
+    vienna_fold_in_image: true           # ViennaRNA folds the bridge_sequence (verified, MFE computed)
+    cross_loop_separates_complementary: true
+
+variant_effect:   # secondary; retrospective; recovers KNOWN enhancers, not a novel method
+  status: "Perry 2025 Table S3 DMS ingested; ranking recovers the top KNOWN activity-enhancing mutants
+    (N322P rank 1, H50K rank 2, R278M; 502/6158 enhancing). Completes the Phase-2 Section 2.4 DMS variant
+    feature. This RECOVERS KNOWN ENHANCERS (a useful catalogue feature); it is NOT a novel variant-design
+    method. For GENERATING new variants the established engine is EVOLVEpro - wrap it, do not rebuild."
+  ortholog_screen_72: "DESCRIPTIVE ONLY. Table S1 has 72 ortholog sequences but NO per-system activity
+    label, so a supervised activity predictor cannot be trained from the public tables. We provide a
+    sequence-similarity organisation relative to the validated standout ISCro4 (IS621 ranks most similar,
+    a sanity check). N=72 is small; exploratory secondary result, explicitly not leaned on."
+
+ship:
+  success:
+    designer_wrapped_not_reimplemented: true   # wraps bridgernadesigner (Arc) - verified design + 190nt bRNA
+    pen_bridge_cli: true
+    api_route: true
+
+locked_files:
+  - prereg/paper4.yaml
+  - configs/bridge_offtarget_profile.yaml
+
+notes: >
+  Lead with off-target/specificity (robust, the clinical gatekeeper); activity is exploratory. Positioned
+  as "the first instrument of PEN-STACK," not the product. The Perry 2025 supplementary (Tables S1-S3) has
+  now been OBTAINED: the MEASURED per-position profile (data/curated/bridge_offtarget_profile_measured.parquet)
+  is derived from 6,856 real off-targets and confirms the central core (positions 7-9) as the specificity
+  determinant; the engine prefers the measured weights when present. KEY measured finding: real off-targets
+  carry a MEDIAN of 5 mismatches (not <=2) - tolerance is core-driven, validating the position-weight model
+  over a mismatch-count cap. Raw Perry tables are copyrighted and kept local (PEN_PERRY_DIR), never
+  committed/redistributed; only derived products are released. See pen_stack/validate/paper4_real_validation.py.

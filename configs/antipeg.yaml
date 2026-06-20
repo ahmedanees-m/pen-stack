@@ -1,0 +1,28 @@
+# PEN-STACK v5.6, anti-PEG antibody prevalence (WS-PEG).
+#
+# Pre-existing / induced anti-PEG antibodies gate RE-DOSING of PEGylated LNP. Anti-PEG is a property of the
+# PEGylation chemistry, NOT of any encoded sequence, so, like the v5.5 anti-vector seroprevalence, the only
+# honest grounding is published serosurvey DATA. Curated as a population prevalence RANGE (wide assay/region
+# variation), with serosurvey DOIs.
+#
+# preexisting_antipeg_score = 1 - midpoint(anti_PEG_prevalence_pct) / 100 (1 = fewest patients excluded).
+#
+# HONESTY (scope card `antipeg`): a POPULATION prevalence, NOT a given patient's anti-PEG titer (a clinical
+# test, patient-specific -> a known-unknown); region/age/assay-dependent (a range, surfaced as uncertainty);
+# applies ONLY to PEGylated vehicles (abstains otherwise). INDUCED anti-PEG after dose 1 (boosted markedly by
+# mRNA-LNP vaccination) is a separate, larger dynamic, NOTED here, not modelled (a known-unknown).
+
+version: "1.0"
+
+prevalence:
+  anti_peg_prevalence_pct: [25, 72]
+  note: "pre-existing anti-PEG IgG/IgM in healthy adults; wide assay/region variation (Chen 2016 ~72% had
+    detectable anti-PEG; high-TITER prevalence is lower). Induced anti-PEG post-dose-1 is separate + larger."
+  dois:
+    - "10.1021/acs.analchem.6b03109" # Chen 2016, pre-existing IgG/IgM anti-PEG in healthy individuals
+    - "10.1002/wnan.1339" # Yang & Lai 2015, anti-PEG immunity review
+    - "10.1002/cncr.22739" # Armstrong 2007, anti-PEG antibodies adversely affect PEG-asparaginase
+    - "10.1016/j.addr.2020.07.024" # Kozma 2020, anti-PEG antibodies (properties/formation/testing)
+
+# which palette vehicles are PEGylated (LNP-mRNA uses a PEG-lipid). All others abstain.
+pegylated_vehicles: [lnp_mrna]

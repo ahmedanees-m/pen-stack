@@ -1,0 +1,13 @@
+# PEN-STACK v4.5 - WS-BA (graph-grounded multi-hop reasoning bench) pre-registered. Needs WS-G.
+# NOTE: filename ws_ba_v45.yaml (distinct from the earlier prereg/ws_ba.yaml / ws_ba_v33.yaml).
+cycle: "v4.5"
+workstream: "WS-BA (graph reasoning)"
+prepared: "2026-06-09"
+
+BA_graph_reasoning:
+  deliverable: "pen_stack/validate/bench_graph_tasks.py + task graph_multihop_reasoning in tasks.yaml; bump bench -> 0.3.1; agent answers multi-hop design questions over the graph (REST/MCP graph_query)."
+  method: "frozen panel of (locus x cargo-form) multi-hop questions; the graph returns writers that REACH the locus AND are DELIVERABLE carrying the cargo form, each answer carrying its provenanced edge path."
+  acceptance: "graph_reasoning_accuracy = 1.0 on the panel; every answer carries a provenanced multi-hop path (grounded); the expected sets are defined by the documented mechanism (tier-1 reach intersect output-form), NOT the graph's own output (non-circular); an ungrounded agent scores 0 (no graph -> no provenanced path); no-fabrication holds."
+
+gate: "graph reasoning fully grounded (answer IS the path); non-circular ground truth; no-fabrication."
+locked_files: [prereg/ws_ba_v45.yaml]

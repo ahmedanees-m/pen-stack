@@ -1,0 +1,59 @@
+# PEN-STACK v3.1 - the single LLM switch every service (RAG, PEN-MONITOR, agent) reads.
+#
+# HYBRID pattern: a LOCAL model (Ollama) as the default on the compute tier, with a strong HOSTED model
+# (NVIDIA Nemotron) as the automatic fallback. The LLM is NON-load-bearing: every number and citation comes
+# from validated tools, so the model choice never affects scientific reproducibility - only orchestration /
+# prose quality. The core scientific compute uses no LLM at all.
+#
+# THREE-TIER reality (where each runs):
+# * VM (production: sjt418scope025, 62 GB RAM, RTX A4000 16 GB) - runs everything. Ollama service is up and
+# `qwen2.5:7b-instruct` is pulled; verified ~8 s cold / ~1-2 s warm with working tool-calling. The local
+# 7B is the default here: fast, private, free, no rate limits.
+# * Laptop (dev only: ~8 GB RAM, no GPU, no Ollama) - too small for a 7B. It hits the Nemotron FALLBACK
+# automatically; the cooldown cache (see llm.py) skips the dead Ollama after one quick failed attempt, so
+# there is no hang. Used only for code/small tests, not real runs.
+# * If you want a private OFFLINE model on a low-RAM box, use the TINY `ollama_small` (~1 GB), not the 7B.
+# Switching is a one-line change to `provider`. Secrets are read from an env var or a gitignored file;
+# keys are NEVER committed.
+
+provider: ollama # active provider: ollama | nvidia | ollama_small | openai (VM default = local 7B)
+fallback: nvidia # hosted Nemotron - used when Ollama is unreachable (laptop dev / VM Ollama down)
+temperature: 0.1
+embedding: ollama/nomic-embed-text # local embeddings for the RAG (Apache-2.0)
+
+# Robustness (prevents the multi-minute hangs seen when a provider is slow/absent):
+health_timeout: 30 # reachability-probe timeout. MUST exceed Nemotron's ~15-20 s first token, else the
+                          # probe false-negatives. Paid at most once per health_ttl (then cached). Ollama
+                          # answers in <1 s when present, so this only bites the hosted-fallback path.
+health_ttl: 120 # seconds to cache provider-unreachable state, so we do not re-probe every call
+call_timeout: 60 # default per-call timeout (Ollama warm ~1-2 s; Nemotron first-token ~15-20 s)
+agent_call_timeout: 60 # per-step timeout inside the agent loop (was 180 -> caused long stalls)
+
+providers:
+  ollama: # local/VM, free, private; default on the compute tier. Needs the model pulled +
+    style: ollama # ~6 GB free VRAM/RAM. On the VM: RTX A4000 16 GB, model present, tool-calling OK.
+    api_base: http://localhost:11434
+    model: qwen2.5:7b-instruct # Apache-2.0, native tool-calling, 4.68 GB (fits the A4000)
+
+  nvidia: # NVIDIA NIM, OpenAI-compatible. Strong reasoning + tool-use; free, ~40 RPM. Hosted
+    style: openai # -> no local resources. The fallback (and the dev-laptop path). ~15-20 s cold.
+    api_base: https://integrate.api.nvidia.com/v1
+    model: nvidia/nemotron-3-super-120b-a12b
+    api_key_env: NVIDIA_API_KEY # checked first
+    api_key_file: configs/nvidia_api_key.txt # gitignored fallback (never committed)
+    max_tokens: 1024
+
+  ollama_small: # tiny LOCAL model for a private/offline path on a low-RAM box (~1 GB). Weaker
+    style: ollama # tool-use; fine because the LLM is non-load-bearing. `ollama pull qwen2.5:1.5b`.
+    api_base: http://localhost:11434
+    model: qwen2.5:1.5b-instruct # Apache-2.0, ~1 GB - fits 8 GB RAM CPU-only
+
+  openai: # optional, paid, opt-in only
+    style: openai
+    api_base: https://api.openai.com/v1
+    model: gpt-4o-mini
+    api_key_env: OPENAI_API_KEY
+
+# NOTE: Qwen2.5 3B and 72B are NOT Apache-2.0 (Qwen Research Licence) - use 0.5B/1.5B/7B/14B for local.
+# If every provider is unreachable, services degrade DETERMINISTICALLY (the agent uses its tool-only
+# fallback and never fabricates); nothing blocks.

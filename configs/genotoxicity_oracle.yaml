@@ -1,0 +1,48 @@
+version: '1.0'
+built: '2026-06-16'
+description: 'computed integration-site genotoxicity oracle: per vector class, the
+  observed enrichment of integration sites within window_bp of a CancerMine (CC0)
+  oncogene vs genome background. genotox_score = min(1, 1/enrichment). In-vivo clonal
+  outcome is NOT modelled (stays a known-unknown).'
+window_bp: 50000
+genome_background_frac_oncogene_50kb: 0.11538
+inputs:
+  visdb: VISDB per-virus hg38 catalogues
+  oncogenes: CancerMine (CC0) via safety_annot
+provenance_dois:
+- 10.1093/nar/gkz867
+- 10.1038/s41592-019-0422-y
+- 10.1016/S0092-8674(02)00864-4
+- 10.1126/science.1083413
+robust_min_n: 1000
+classes:
+  lentiviral:
+    virus: HIV
+    n_sites: 88743
+    frac_oncogene_50kb: 0.2244
+    ci95: 0.00274
+    enrichment: 1.945
+    frac_genotoxic_cis: 0.000293
+    median_dist_oncogene: 256384
+    robust: true
+  deltaretroviral:
+    virus: HTLV
+    n_sites: 51508
+    frac_oncogene_50kb: 0.14472
+    ci95: 0.00304
+    enrichment: 1.254
+    frac_genotoxic_cis: 0.000369
+    median_dist_oncogene: 547160
+    robust: true
+  gammaretroviral:
+    virus: MLV
+    n_sites: 32
+    frac_oncogene_50kb: 0.21875
+    ci95: 0.14324
+    enrichment: 1.896
+    frac_genotoxic_cis: 0.0
+    median_dist_oncogene: 145675
+    robust: false
+vehicle_class:
+  lentiviral:
+  - lentivirus

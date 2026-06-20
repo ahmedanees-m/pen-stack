@@ -1,0 +1,81 @@
+# PEN-STACK v3.0 - Writer Atlas family ingestion config (Phase 2, Step 2.1).
+# Drives pen_stack/atlas/expand.py. One block per writer family: the UniProt query that defines the
+# ortholog set, the WT-KB family key it rolls up to (so it inherits targeting modality + reachability
+# tier + measured cargo from the Phase-0 WT-KB), and a default confidence for sequence-only homologs.
+#
+# Provenance rule (mirrors the WT-KB sourcing rule): every family block names the Pfam signature and the
+# discovery DOI that justifies the query. Sequence-only orthologs get confidence=predicted (homology
+# only, no measured activity); named/characterised systems are upgraded to measured/inferred in
+# curated_representatives below, each with its own DOI.
+#
+# UniProt counts (probed 2026-06-02): IS110 superfamily (PF01548 & PF02371) = 31,883;
+# serine integrase (PF07508 + "serine integrase") = 1,034; TnsC/CAST (PF11426) = 263;
+# Cas12a (PF18516) = 155; TnpB/Fanzor OrfB (PF07282) = 41,122 (capped).
+
+defaults:
+  uniprot_fields: "accession,id,protein_name,organism_name,length,xref_pfam,reviewed,lineage"
+  page_size: 500
+
+families:
+  bridge_IS110:
+    wtkb_family: bridge_IS110 # inherits modality/tier/cargo from WT-KB
+    query: "(xref:pfam-PF01548) AND (xref:pfam-PF02371)"
+    pfam_signature: [PF01548, PF02371]
+    default_confidence: predicted
+    cap: 32000 # full IS110 superfamily (~31,883)
+    discovery_doi: "10.1038/s41586-024-07552-4" # Durrant 2024 - bridge RNA / IS110 superfamily
+
+  CAST_VK:
+    wtkb_family: CAST_VK
+    query: "(xref:pfam-PF11426)" # TnsC; CAST V-K detected via TnsB/TnsC + Cas12k context
+    pfam_signature: [PF11426]
+    default_confidence: predicted
+    cap: 300
+    discovery_doi: "10.1126/science.aax9181" # Strecker 2019 - RNA-guided CAST
+
+  serine_integrase:
+    wtkb_family: serine_integrase
+    query: "(xref:pfam-PF07508) AND (serine integrase)"
+    pfam_signature: [PF07508]
+    default_confidence: predicted
+    cap: 1100 # large serine integrase class (~1,034)
+    discovery_doi: "10.1128/microbiolspec.MDNA3-0046-2014"
+
+  Cas12a:
+    wtkb_family: Cas12a
+    query: "(xref:pfam-PF18516)"
+    pfam_signature: [PF18516]
+    default_confidence: predicted
+    cap: 200
+    discovery_doi: "10.1016/j.cell.2015.09.038"
+
+  TnpB_Fanzor:
+    wtkb_family: TnpB_Fanzor
+    query: "(xref:pfam-PF07282) AND reviewed:true" # reviewed only - OrfB/TnpB family is huge (~41k)
+    pfam_signature: [PF07282]
+    default_confidence: predicted
+    cap: 2000
+    discovery_doi: "10.1126/science.abj6856"
+
+# Named, experimentally characterised systems - upgraded above sequence-only homology. These overlay
+# the ortholog sets with measured human-cell activity / cargo and a per-system DOI. seek_IS1111 and
+# PE_integrase have no clean single Pfam query, so they live here as curated representatives.
+curated_representatives:
+  - representative_system: IS621
+    family: bridge_IS110
+    uniprot: A0A2X3M8B0 # IS621 transposase (E. coli); was A0A0F6B5L8 (a glycine-betaine transporter - wrong)
+    confidence: measured
+    human_cell_activity: "model bridge recombinase; recombination characterised (Durrant 2024)"
+    key_dois: ["10.1038/s41586-024-07552-4"]
+  - representative_system: ISPpu10
+    family: bridge_IS110
+    uniprot: null
+    confidence: inferred
+    human_cell_activity: "IS110 bridge recombinase, P. putida KT2440; structure-gated (bioRxiv 2026-03-19)"
+    key_dois: ["10.64898/2026.03.19.712850"] # bioRxiv ISPpu10 (Europe PMC PPR1218813; resolved via PEN-MONITOR)
+  - representative_system: phiC31
+    family: serine_integrase
+    uniprot: Q9T221 # phiC31 integrase (Streptomyces phage phiC31, gene int); was Q9T2A6 (a plant NAD(P)H oxidoreductase - wrong)
+    confidence: measured
+    human_cell_activity: "large serine integrase; attB x attP; used in human cell landing pads"
+    key_dois: ["10.1128/microbiolspec.MDNA3-0046-2014"]

@@ -1,0 +1,8 @@
+{
+  "cycle": "v3.3",
+  "workstream": "WS-V",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_v.yaml": "d90cbb28f8da4e39ed6fb93f9d7cd41bf7e6a374cb47bf78d45f7884a8864642"
+  }
+}

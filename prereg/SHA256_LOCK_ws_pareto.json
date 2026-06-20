@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.8",
+  "workstream": "WS-PARETO",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_pareto.yaml": "dbff0572f0217d86eb2e267d76589a037222c3ac89e5438f078824c765899e25"
+  }
+}

@@ -1,0 +1,38 @@
+# PEN-STACK v3.1 - WS-F (local recalibration / private-data adaptation) pre-registered acceptance.
+# A practical adaptability feature + methods component: released models recalibrate/fine-tune locally on a
+# user's assays, in-container, behind a validation gate so quality cannot silently regress.
+cycle: "v3.1"
+workstream: "WS-F"
+prepared: "2026-06-04"
+
+F1_ingestion:
+  deliverables:
+    - "pen_stack/adapt/ingest.py (load_user_labels + normalize + attach_features -> standardized schema)"
+    - "docs/private_data_formats.md (tabular schema + the FASTQ/BAM -> per-site label pipelines)"
+  schema: "chrom, bin|pos, label (0/1 or [0,1]); optional ct, score, feature columns"
+  acceptance: "a user table validates to the model's per-site schema; the FASTQ/BAM derivation is documented
+    and produces exactly that schema (runs in the Docker image)."
+
+F2_recalibration_finetune_gated:
+  deliverables:
+    - "pen_stack/adapt/recalibrate.py (isotonic, JSON-serialized, ranking-preserving)"
+    - "pen_stack/adapt/finetune.py (optional small regularized LightGBM head / continue-training)"
+    - "pen_stack/adapt/report.py (Brier/ECE/AUROC, the gate, the model card)"
+    - "pen_stack/adapt/pipeline.py (adapt(): split -> fit -> held-out eval -> gate -> version)"
+    - "pen_stack/validate/adapt_demo.py -> out/adapt_demo.json; models/local_<id>/ (git-ignored)"
+  gate: "the adapted model ACTIVATES only if it beats BOTH the released model AND a no-skill constant
+    base-rate predictor on the held-out split (the no-skill guard is essential - isotonic can trivially
+    lower Brier by regressing to the base rate). Otherwise REJECTED and the released model is kept;
+    no active artifact is left behind."
+  versioning: "artifacts under models/local_<id>/ only; the released model is NEVER overwritten and its
+    fingerprint (sha256 of the released score modules) is recorded + re-checked to prove it."
+  acceptance:
+    - "on a held-out dataset, adaptation IMPROVES held-out calibration/discrimination OR is REJECTED by the
+       gate (demonstrated both ways: informative labels -> ACTIVATED; random labels -> REJECTED)."
+    - "the released model is provably unchanged (fingerprint identical before/after)."
+    - "a before/after report + model card are produced per adaptation."
+  scope: "recalibration + light fine-tuning with small-data overfitting mitigated (not eliminated) by the
+    gate; not unsupervised learning from raw reads."
+
+locked_files:
+  - prereg/ws_f.yaml

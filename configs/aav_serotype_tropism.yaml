@@ -1,0 +1,81 @@
+# PEN-STACK v6.11, AAV serotype -> tissue tropism PRIORS, grounded in APPROVED gene therapies (D-WS1).
+# Each prior is a DOCUMENTED, real serotype->tissue mapping evidenced by an FDA/EMA-approved product (the
+# authoritative source for "this capsid delivers to this tissue in humans"). Independently verified 2026-06-20.
+#
+# HONEST SCOPE: these are population-level PRIORS for the listed serotypes, strongest for the approved route.
+# - AAV2 tropism is ROUTE-DEPENDENT (retina via subretinal; CNS-putamen via intraputaminal), local injection, not
+# intrinsic systemic tropism. `route` is a covariate, not ignorable.
+# - AAVrh74 (Elevidys, skeletal muscle) and AAVRh74var (Beqvez, liver) are DIFFERENT capsids with DIFFERENT tropism,
+# never collapsed into one "Rh74" prior.
+# - Ex-vivo cell therapies (Casgevy = non-viral CRISPR RNP; Lyfgenia = lentiviral) are NOT AAV and carry NO
+# serotype->tissue prior (listed only as not-AAV controls).
+# - For a NOVEL / engineered capsid with no approved precedent, in-vivo human tropism is a known-unknown, the
+# recommender abstains on the tropism prior and never fabricates a tissue.
+
+version: "1.0"
+
+serotypes:
+  AAV9:
+    tissue: ["CNS", "motor_neuron"]
+    route: "systemic IV (blood-brain-barrier-crossing)"
+    example_product: "Zolgensma (onasemnogene abeparvovec)"
+    indication: "spinal muscular atrophy"
+    approval: "FDA 2019"
+    source: "FDA/Novartis PI; DailyMed setid 68cd4f06-70e1-40d8-bedb-609ec0afa471"
+    doi: "10.1056/NEJMoa1706198" # Mendell et al. NEJM 2017 (AVXS-101 phase 1)
+    confidence: grounded
+  AAVrh74:
+    tissue: ["skeletal_muscle", "cardiac_muscle"]
+    route: "systemic IV"
+    note: "capsid serotype rh74; AAV2-derived ITRs"
+    example_product: "Elevidys (delandistrogene moxeparvovec)"
+    indication: "Duchenne muscular dystrophy"
+    approval: "FDA 2023"
+    source: "FDA PI; DailyMed setid 3525abcd-fbd2-46c5-9706-cffdf2e8a361"
+    confidence: grounded
+  AAV5:
+    tissue: ["liver"]
+    route: "systemic IV"
+    example_product: "Hemgenix (etranacogene dezaparvovec); Roctavian (valoctocogene roxaparvovec)"
+    indication: "hemophilia B; hemophilia A"
+    approval: "FDA 2022 / 2023"
+    source: "FDA Hemgenix + Roctavian product pages"
+    doi: "10.1056/NEJMoa2211644" # Pipe et al. NEJM 2023 (HOPE-B, etranacogene)
+    confidence: grounded
+  AAVRh74var:
+    tissue: ["liver"]
+    route: "systemic IV"
+    note: "an ENGINEERED Rh74 VARIANT capsid, distinct from wild-type AAVrh74 (which is muscle-tropic)"
+    example_product: "Beqvez (fidanacogene elaparvovec)"
+    indication: "hemophilia B"
+    approval: "FDA 2024"
+    source: "FDA Beqvez PI"
+    confidence: grounded
+  AAV2:
+    tissue: ["retina", "CNS_putamen"]
+    route: "LOCAL injection only (subretinal for retina; intraputaminal for CNS), route-dependent, NOT systemic"
+    example_product: "Luxturna (voretigene neparvovec, retina); Upstaza/Kebilidi (eladocagene exuparvovec, putamen)"
+    indication: "RPE65 inherited retinal dystrophy; AADC deficiency"
+    approval: "FDA 2017 (Luxturna); EMA 2022 / FDA 2024 (Upstaza/Kebilidi)"
+    source: "FDA Luxturna; EMA Upstaza EPAR"
+    doi: "10.1016/S0140-6736(17)31868-8" # Russell et al. Lancet 2017 (voretigene phase 3)
+    confidence: grounded
+
+# NOT AAV, no serotype->tissue prior (ex-vivo cell therapies; tissue targeting comes from HSC selection +
+# autologous transplant + conditioning, NOT capsid tropism). Listed only as not-AAV controls.
+not_aav_controls:
+  Casgevy:
+    modality: "ex-vivo CRISPR/Cas9 RNP, non-viral electroporation of CD34+ HSCs"
+    serotype_prior: none
+    approval: "FDA 2023"
+  Lyfgenia:
+    modality: "ex-vivo lentiviral (BB305 LVV) modified CD34+ HSCs"
+    serotype_prior: none
+    approval: "FDA 2023"
+
+modeling_notes:
+  - "route is a covariate: AAV2's retina/putamen tropism is via LOCAL injection, not systemic IV"
+  - "AAVrh74 (muscle) vs AAVRh74var (liver) are separate capsids, never merge"
+  - "AAV5 -> liver is the strongest systemic-IV prior (two independent approved products)"
+  - "novel/engineered capsid with no approved precedent -> in-vivo human tropism is a known-unknown (abstain)"
+provenance_dois: ["10.1056/NEJMoa1706198", "10.1056/NEJMoa2211644", "10.1016/S0140-6736(17)31868-8"]

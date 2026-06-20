@@ -1,0 +1,52 @@
+# PEN-STACK, comprehensive relative-promoter-strength palette (v6.5, WS-EXPRESS).
+#
+# A RELATIVE, ordinal, dimensionless strength per named promoter (0-1, EF1a/CAG ≈ 1.0 as the reference top tier).
+# CRITICAL HONESTY: promoter strength has NO universal scalar, it depends on cell type, vector backbone, and
+# readout (peak intensity vs long-term durability give DIFFERENT orderings; Qin 2010 vs Norrman 2010). So each
+# entry carries its `context`, `assay`, a `citation`, and a `confidence`. The `strength` is an ordinal PRIOR
+# anchored to the cited head-to-head studies, it is a proxy, not a measured absolute. Values marked
+# `confidence: low` had no directly-sourced number (qualitative tier only). NEVER treat these as exact.
+#
+# Anchors: Qin 2010 PLoS ONE 5(5):e10611 (SV40/CMV/UBC/EF1A/PGK/CAGG × 8 cell types, peak GFP);
+# Norrman 2010 PLoS ONE 5(8):e12413 (durability in hESC); Damdindorj 2014 PLoS ONE 9(8):e106472 (AAV context);
+# plus the per-tissue citations below.
+version: "1.0"
+reference: "EF1a (full) / CAG ≈ 1.0 (top constitutive tier, Qin 2010)"
+
+constitutive:
+  ef1a: { strength: 1.00, context: ubiquitous, assay: "peak GFP, 8 cell types", confidence: high, note: "full ~1.2 kb with intron 1; top tier (Qin 2010); durable", citation: "10.1371/journal.pone.0010611" }
+  cag: { strength: 1.00, context: ubiquitous, assay: "peak GFP, 8 cell types", confidence: high, note: "CMVe+chicken β-actin+rabbit β-globin; co-strongest (Qin 2010)", citation: "10.1371/journal.pone.0010611" }
+  cba: { strength: 0.95, context: ubiquitous, assay: "AAV/brain", confidence: medium, note: "CAG-class, ~1.6 kb (large for AAV)", citation: "10.1089/hum.2010.245" }
+  cbh: { strength: 0.90, context: ubiquitous, assay: "neurons/AAV", confidence: medium, note: "~0.8 kb hybrid; ≈CBA at half size; serotype-dependent", citation: "10.1089/hum.2010.245" }
+  cmv: { strength: 0.90, context: "variable!", assay: "peak GFP", confidence: high, note: "very strong transiently (293T) but SILENCES over time + in stem cells (6.7% eGFP+ d50 hESC)", citation: "10.1371/journal.pone.0012413" }
+  rsv: { strength: 0.85, context: ubiquitous, assay: "muscle/various", confidence: medium, note: "≈CMV-class historically", citation: "10.1038/sj.mt.6300027" }
+  sffv: { strength: 0.95, context: hematopoietic,assay: "human HSPC/blood", confidence: medium, note: "much stronger than CAG/EF1/PGK in blood lineage; silences in stem cells", citation: "10.1089/10430340252898984" }
+  mnd: { strength: 0.90, context: "t_cell/lenti",assay: "lentiviral CAR-T", confidence: medium, note: "≈EF1a in T cells (MND U3 / MoMuLV)", citation: "10.1016/j.omtm.2022.05.005" }
+  mscv: { strength: 0.80, context: "hsc/retro", assay: "gammaretro backbone", confidence: medium, note: "strong in gammaretro; underperforms in lentiviral backbone", citation: "PMC7380635" }
+  sv40: { strength: 0.70, context: ubiquitous, assay: "peak GFP", confidence: high, note: "mid tier; generally weaker than EF1a/CAG (Qin 2010)", citation: "10.1371/journal.pone.0010611" }
+  efs: { strength: 0.70, context: ubiquitous, assay: "lenti/size-limited", confidence: low, note: "EF1a core (intronless ~0.2 kb); weaker than full EF1a, fold not directly sourced", citation: null }
+  jet: { strength: 0.55, context: ubiquitous, assay: synthetic, confidence: low, note: "compact synthetic minimal; relative number not sourced", citation: "10.1016/S0378-1119(02)00878-8" }
+  casi: { strength: 0.90, context: hematopoietic,assay: synthetic, confidence: low, note: "CAG-derived synthetic (CMVe+β-actin+UBC enh); head-to-head fold not sourced", citation: null }
+  actb: { strength: 0.80, context: ubiquitous, assay: "durability hESC", confidence: high, note: "human β-actin promoter; top long-term durability (74% eGFP+ d50 hESC, Norrman 2010)", citation: "10.1371/journal.pone.0012413" }
+  hsv_tk: { strength: 0.30, context: ubiquitous, assay: "AAV", confidence: medium, note: "HSV thymidine-kinase promoter; weak constitutive reference (Damdindorj 2014)", citation: "10.1371/journal.pone.0106472" }
+  pgk: { strength: 0.50, context: ubiquitous, assay: "peak GFP", confidence: high, note: "weak peak but DURABLE/low-silencing (74% eGFP+ d50 hESC)", citation: "10.1371/journal.pone.0010611" }
+  ubc: { strength: 0.40, context: ubiquitous, assay: "peak GFP", confidence: high, note: "weakest of the common constitutive set (Qin 2010)", citation: "10.1371/journal.pone.0010611" }
+
+tissue_specific:
+  tbg: { strength: 1.00, context: liver, confidence: medium, note: "top liver promoter (> LP1 > HLP); clean liver restriction; compact", citation: "10.1016/j.gene.2012.07.009" }
+  apoe_haat: { strength: 0.85, context: liver, confidence: medium, note: "ApoE-HCR enhancer + hAAT; first hemophilia-B FIX trials", citation: "10.1182/blood-2005-10-4035" }
+  lp1: { strength: 0.85, context: liver, confidence: medium, note: "HCR1 enhancer + hAAT core; clinical FIX from single AAV (2nd after TBG)", citation: "10.1182/blood-2005-10-4035" }
+  haat: { strength: 0.80, context: liver, confidence: medium, note: "human α1-antitrypsin; base of ApoE-hAAT/LP1 hybrids", citation: "10.1182/blood-2005-10-4035" }
+  hlp: { strength: 0.70, context: liver, confidence: medium, note: "HCR+hAAT+ApoE ~800 bp; below TBG/LP1; therapeutic at compact size", citation: "10.1016/j.gene.2012.07.009" }
+  camkiia: { strength: 0.90, context: neuron, confidence: medium, note: "excitatory neurons; greater overall expression than hSyn1", citation: "10.1016/j.neulet.2021.135889" }
+  hsyn: { strength: 0.70, context: neuron, confidence: medium, note: "pan-neuronal ~460 bp; robust but slower kinetics (CAG-level only by ~3 mo)", citation: "10.1016/j.neulet.2021.135889" }
+  mecp2: { strength: 0.50, context: neuron, confidence: low, note: "neuron-restricted compact; weaker, relative fold not sourced", citation: null }
+  gfaabc1d: { strength: 0.80, context: astrocyte,confidence: high, note: "~681 bp; ~2× stronger than full gfa2; astrocyte-restricted", citation: "10.1002/glia.20622" }
+  gfap: { strength: 0.60, context: astrocyte,confidence: medium,note: "gfa2 ~2.2 kb astrocyte-selective", citation: "10.1002/glia.20622" }
+  mhck7: { strength: 1.00, context: muscle, confidence: medium, note: "MCK enh + α-MHC ~770 bp; highest of muscle panel; DMD clinical", citation: "10.1038/sj.mt.6300027" }
+  mck: { strength: 0.90, context: muscle, confidence: medium, note: "truncated MCK; more active than CMV in muscle", citation: "10.1038/gt.2008.104" }
+  ck8: { strength: 0.85, context: muscle, confidence: low, note: "compact muscle promoter; DMD clinical vectors", citation: "10.32607/actanaturae.11063" }
+  desmin: { strength: 0.70, context: muscle, confidence: medium, note: "mid muscle tier; ≈CMV in myotubes", citation: "10.1038/sj.mt.6300027" }
+
+# default for an unrecognised / unspecified promoter (the prior mean; honest abstention to mid-strength).
+default_strength: 0.5

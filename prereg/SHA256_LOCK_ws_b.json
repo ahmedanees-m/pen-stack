@@ -1,0 +1,11 @@
+{
+  "cycle": "v3.1",
+  "workstream": "WS-B",
+  "prepared": "2026-06-04",
+  "sha256": {
+    "prereg/ws_b.yaml": "d7a4f275360e4e53e3ebdc805270f76438d20e09202ef3cc556c9bd5840810cc",
+    "prereg/ws_a.yaml": "b88d4bf4f8a4bcc438728bca72310f8f21bdff956746c13376610b3f1cd98d3d",
+    "data/gsh_matched_controls.parquet": "865b18ff23d140c3df6f3b5f25398581ebdfe3534e1cecf6f512afb540ab5ede",
+    "configs/gsh_validated_heldout.yaml": "51a1f8acfd49c243f545588f62c48720b1438758ae17b09e097aa7a5c2156cf0"
+  }
+}

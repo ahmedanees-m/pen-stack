@@ -1,0 +1,20 @@
+# PEN-STACK v5.13 - WS-COSCI2 (the co-scientist drives the full loop; immune-risk first-class). Directional.
+cycle: "v5.13"
+workstream: "WS-COSCI2"
+prepared: "2026-06-11"
+motivation: >
+  Mature the v5.0 co-scientist to orchestrate the whole Series-II loop for a working scientist - every output
+  safe + legal + calibrated + cited + scope-ledgered + IMMUNE-PROFILED, and never fabricated.
+deliverable: "pen_stack/agent/co_scientist.py: co_scientist_session(goal, cell_state, candidates, actor)."
+method: >
+  generate_designs (v5.8 safe+legal+calibrated+immune) -> predict_outcome (v5.9) -> select_batch (v5.10) ->
+  pareto_front (v5.8) + cited_rationale (v5.0) + scope_ledger (v5.0); returns strategies + predicted_outcomes +
+  immune_profiles (first-class) + suggested_experiments + protocols_available + citations + scope_ledger + safety.
+  The scientist/lab decides; the co-scientist drives. No number fabricated.
+acceptance: >
+  for a documented goal, returns safe+legal+calibrated strategies with predicted outcomes, per-axis immune
+  profiles, suggested experiments, citations that resolve, and a complete scope ledger; no-fabrication end-to-end
+  (asserted); hazardous candidates discarded.
+honesty_invariant: "drives + presents (incl. immune-risk profile with its known-unknowns); the scientist/lab decides; safety + no-fabrication + calibration hold throughout."
+gate: "G-COSCI2 - full-loop session with immune-profiles first-class + citations resolve + scope ledger + no fabrication."
+locked_files: [prereg/ws_cosci2.yaml]
