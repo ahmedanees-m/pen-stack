@@ -21,11 +21,11 @@ async function req(path, { method = "GET", body, signal } = {}) {
 }
 
 export const api = {
-  health: => req("/health"),
+  health: () => req("/health"),
 
   // v6.1 AI surface (mounted at /api)
-  capabilities: => req("/api/capabilities"),
-  scope: => req("/api/scope"),
+  capabilities: () => req("/api/capabilities"),
+  scope: () => req("/api/scope"),
   verify: (design) => req("/api/verify", { method: "POST", body: design }),
   safety: (design) => req("/api/safety", { method: "POST", body: design }),
   immune: (design) => req("/api/immune", { method: "POST", body: design }),
@@ -41,7 +41,7 @@ export const api = {
   // atlas + site finder
   atlas: (family, limit = 200) =>
     req(`/api/atlas?${new URLSearchParams({ ...(family ? { family } : {}), limit })}`),
-  atlasCoverage: => req("/api/atlas/coverage"),
+  atlasCoverage: () => req("/api/atlas/coverage"),
   writable: (gene, ct = "k562", top = 20) =>
     req(`/api/writable?${new URLSearchParams({ gene, ct, top })}`),
   plan: (gene, intent, cargo_bp = 2000, ct = "k562", k = 6) =>
