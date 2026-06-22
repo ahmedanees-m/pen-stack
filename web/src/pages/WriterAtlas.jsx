@@ -14,7 +14,7 @@ export default function WriterAtlas() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    (async => {
+    (async () => {
       setBusy(true); setError(null);
       try {
         const [cov, atlas] = await Promise.all([api.atlasCoverage(), api.atlas("", 300)]);

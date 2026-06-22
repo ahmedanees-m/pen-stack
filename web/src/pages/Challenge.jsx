@@ -13,7 +13,7 @@ export default function Challenge() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    (async => {
+    (async () => {
       try {
         const [l, t] = await Promise.all([api.challengeLeaderboard(), api.challengeTasks()]);
         setLb(l); setTasks(t.tasks || []);

@@ -14,7 +14,7 @@ export default function Scope() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    (async => {
+    (async () => {
       try {
         const [s, c] = await Promise.all([api.scope(), api.capabilities()]);
         setScope(s); setCaps(c);
