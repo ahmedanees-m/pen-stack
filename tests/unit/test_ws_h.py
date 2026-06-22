@@ -11,7 +11,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 def test_version_consistent_everywhere():
     # consistency, not a pinned value (the version bumps per cycle): __init__ == pyproject == CITATION
     v = pen_stack.__version__
-    assert v.split(".")[0] in {"3", "4", "5", "6"}
+    assert v.split(".")[0] in {"3", "4", "5", "6", "7"}
     assert f'version = "{v}"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert f"version: {v}" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
 
