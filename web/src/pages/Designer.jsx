@@ -46,7 +46,7 @@ export default function Designer() {
           <p className="text-sm text-fg-faint">Generate to see the surviving strategies.</p>
         ) : res.length === 0 ? (
           <p className="text-sm text-fg-dim">No candidates survived the discriminator, every variant was illegal or
-            hazardous. That is an honest empty set, not a fallback.</p>
+            hazardous. That is an empty set by design, not a fallback.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

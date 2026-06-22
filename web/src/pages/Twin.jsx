@@ -1,4 +1,4 @@
-// Digital Twin, a calibrated, OOD-gated, phenotype-bounded outcome prediction. The honesty here is structural:
+// Digital Twin, a calibrated, OOD-gated, phenotype-bounded outcome prediction. The scope discipline here is structural:
 // the band is a heuristic interval that WIDENS under OOD (not a trained conformal interval, no public
 // perturbation-outcome calibration set), and the structure→phenotype boundary is never crossed.
 import React, { useState } from "react";

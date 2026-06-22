@@ -1,4 +1,4 @@
-// ScopeLedger, "What I can't tell you." The known-unknowns for the current question: the honesty boundary the
+// ScopeLedger, "What I can't tell you." The known-unknowns for the current question: the scope boundary the
 // engine refuses to cross. It is present on EVERY answer (a small note when nothing is flagged, the list when
 // something is). Accepts either the immune profile's known_unknowns (strings) or the /scope manifest entries.
 import React from "react";

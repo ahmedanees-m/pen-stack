@@ -27,6 +27,7 @@ export const api = {
   capabilities: () => req("/api/capabilities"),
   scope: () => req("/api/scope"),
   verify: (design) => req("/api/verify", { method: "POST", body: design }),
+  verifyProof: (design) => req("/api/verify/proof", { method: "POST", body: design }),
   safety: (design) => req("/api/safety", { method: "POST", body: design }),
   immune: (design) => req("/api/immune", { method: "POST", body: design }),
   generate: (reqbody) => req("/api/generate", { method: "POST", body: reqbody }),

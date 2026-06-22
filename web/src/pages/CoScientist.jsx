@@ -1,6 +1,6 @@
 // The front door: a grounded co-scientist chat. The LLM narrates and routes; the ENGINE sources every number,
 // and each answer carries its dossier, the verdict, safety, the per-axis immune profile, and the scope ledger,
-// rendered through the honest-UX components. With LLM narration off, the deterministic narrator answers instead.
+// rendered through the provenance-UX components. With LLM narration off, the deterministic narrator answers instead.
 import React, { useEffect, useRef, useState } from "react";
 import { api, chatStream } from "../api.js";
 import { Card, Button, Spinner } from "../components/ui.jsx";

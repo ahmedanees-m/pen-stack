@@ -74,7 +74,7 @@ export function ErrorNote({ error }) {
     <div className="rounded-lg border border-bad/40 bg-bad/10 px-3 py-2 text-sm text-bad">
       <strong className="font-semibold">Engine error.</strong> {String(error.message || error)}
       <div className="mt-1 text-xs text-fg-dim">If a data file is missing, that endpoint needs the full data
-        mount (VM); the honesty layer never invents a value to fill the gap.</div>
+        mount (VM); the system never invents a value to fill the gap.</div>
     </div>
   );
 }

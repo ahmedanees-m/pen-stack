@@ -1,4 +1,4 @@
-// Scope & About, the honesty contract, made browsable. The known-unknowns (what PEN-STACK refuses to answer),
+// Scope & About, the scope contract, made browsable. The known-unknowns (what PEN-STACK refuses to answer),
 // the oracle scope cards (what each model is and is NOT valid for), and the capability manifest (every tool,
 // every one fabricates=False). This is the page that makes depending on PEN-STACK safe.
 import React, { useEffect, useState } from "react";
@@ -22,12 +22,12 @@ export default function Scope() {
     })();
   }, []);
 
-  if (busy) return <Card><Spinner label="Loading the honesty contract…" /></Card>;
+  if (busy) return <Card><Spinner label="Loading the scope contract…" /></Card>;
   if (error) return <Card title="Scope"><ErrorNote error={error} /></Card>;
 
   return (
     <div className="space-y-4">
-      <Card title="The honesty contract" subtitle="Decision-support, not a clinical directive. Every number is tool-sourced; what can't be computed is listed, never guessed.">
+      <Card title="The scope contract" subtitle="Decision-support, not a clinical directive. Every number is tool-sourced; what can't be computed is listed, never guessed.">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Stat label="Tools" value={caps?.tools?.length} />
           <Stat label="All fabricate?" value={caps?.tools?.every((t) => t.fabricates === false) ? "none" : "some"} color="var(--ok)" />

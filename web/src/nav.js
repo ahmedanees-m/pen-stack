@@ -23,7 +23,7 @@ export const NAV = [
   { path: "/challenge", id: "challenge", label: "Challenge", group: "Learn",
     tip: "The open, held-out Genome-Writing Challenge: public tasks + the reference leaderboard." },
   { path: "/scope", id: "scope", label: "Scope & About", group: "Trust",
-    tip: "The honesty contract: the known-unknowns, the capability manifest, decision-support not a clinical directive." },
+    tip: "The scope contract: the known-unknowns, the capability manifest, decision-support not a clinical directive." },
 ];
 
 export const GROUPS = ["Ask", "Design", "Assess", "Learn", "Trust"];

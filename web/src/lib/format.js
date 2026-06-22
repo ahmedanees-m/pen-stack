@@ -1,4 +1,4 @@
-// Small formatting helpers shared by the honest-UX components. None of these invent a value, they only render
+// Small formatting helpers shared by the provenance-UX components. None of these invent a value, they only render
 // what the engine returns (and explicitly show "n/a" when the engine abstained, never a guessed placeholder).
 
 export const num = (x, dp = 2) =>
@@ -12,7 +12,7 @@ export const titleCase = (s) =>
 
 export const humanize = (s) => String(s || "").replace(/[_-]+/g, " ");
 
-// Map a verdict/axis epistemic state to one of the three honest-UX statuses the ConfidenceBand colours by.
+// Map a verdict/axis epistemic state to one of the three provenance-UX statuses the ConfidenceBand colours by.
 export function statusOf({ in_scope, validation, epistemic_status } = {}) {
   if (in_scope === false) return "out_of_scope";
   if (epistemic_status && /out.?of.?scope|not.?computable|deferred/i.test(epistemic_status)) return "out_of_scope";

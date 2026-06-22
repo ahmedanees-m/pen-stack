@@ -1,6 +1,6 @@
 // Off-Target, cross-writer-family off-target NOMINATION. Rank candidate sites by a real-data, mismatch-calibrated
-// risk band (+ the real CRISOT learned score when cached) and ship the assay that would confirm them. Honest by
-// construction: a nomination is a CANDIDATE, never a clearance; the engine abstains without inputs.
+// risk band (+ the real CRISOT learned score when cached) and ship the assay that would confirm them.
+// Conservative by construction: a nomination is a CANDIDATE, never a clearance; the engine abstains without inputs.
 import React, { useState } from "react";
 import { api } from "../api.js";
 import { Card, Button, Spinner, ErrorNote, Field, Select } from "../components/ui.jsx";

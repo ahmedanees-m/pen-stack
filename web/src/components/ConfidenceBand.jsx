@@ -1,4 +1,4 @@
-// ConfidenceBand, an interval [low,, ●,, high] coloured by honesty status, with an OOD chevron. The single
+// ConfidenceBand, an interval [low ● high] coloured by confidence status, with an OOD chevron. The single
 // rule the whole UI rests on: a number is NEVER shown without this band (or a ProvenanceChip). When the engine
 // abstains (no interval / out of scope), the band says so rather than drawing a fake point.
 import React from "react";

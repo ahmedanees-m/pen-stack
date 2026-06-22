@@ -24,7 +24,8 @@ biosecurity gate is mapped to the community synthesis-screening standards.
   SecureDNA's pass/deny outcome, with a concordance report (8/8 concordant on the labelled probe set).
   References: Common Mechanism (Wheeler et al. 2024, `10.1089/apb.2023.0034`); SecureDNA (`arXiv:2403.14023`).
 - **Verify-Bench** (`benchmarks/verify/`) reporting the three gates, and surfaces: REST `POST /api/verify/proof`,
-  MCP `verify_proof`, manifest tool `verify_proof`, and `docs/verify_service.md`.
+  MCP `verify_proof`, manifest tool `verify_proof`, the web Verify page (per-axis green/amber/red with the
+  violated rule, its citation, and the suggested fix), and `docs/verify_service.md`.
 
 ### Notes
 - The verdict covers legality, feasibility and biosecurity, not efficacy (efficacy stays a downstream
