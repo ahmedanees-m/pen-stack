@@ -235,3 +235,16 @@ oracles:
       absolute expression"
     generalizes_to_unseen_loci: false
     license: "MIT (github.com/bowang-lab/scGPT; Nature Methods 10.1038/s41592-024-02201-0)"
+
+  boltz-2-affinity: # v6.13 WS-ORACLE: the Boltz-2 protein-ligand binding-affinity head
+    family: affinity
+    version: "2.2.1"
+    output_kind: claim # a checkable prediction (predicted, not a measured Kd); carries native uncertainty
+    valid_for: "protein + SMALL-MOLECULE ligand binding-affinity prediction (Boltz-2 affinity head): a binder
+      probability and a predicted affinity value, for ligands near the trained chemical space (e.g. a
+      small-molecule inducer that switches a writer, a capsid-binding small molecule, an effector drug)"
+    not_valid_for: "protein-protein or protein-DNA affinity (the head is protein-LIGAND only; those are
+      out-of-scope and flagged extrapolating); an absolute measured Kd/IC50; ligands far outside the trained
+      chemical space; asserting a binder WORKS in cells (every output is a hypothesis, not a measurement)"
+    generalizes_to_unseen_loci: true
+    license: "MIT (Boltz-2, 10.1101/2025.06.14.659707)"

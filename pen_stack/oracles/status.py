@@ -87,14 +87,20 @@ def _is_live(model: str, card: dict, probe: bool) -> tuple[bool, str]:
 
 
 def oracle_status(probe: bool = False) -> dict:
-    """Per-oracle execution + latency_class + live status. `probe=True` pings the local model servers (adds a
-    short network check); default is config-level only. The assistant uses this to warn the user about cost."""
+    """Per-oracle execution + latency_class + live status + published reliability. `probe=True` pings the local
+    model servers (adds a short network check); default is config-level only. Reliability is the wrapped model's
+    PUBLISHED benchmark accuracy, reported verbatim with citation, never a claim about this stack's accuracy."""
+    try:
+        from pen_stack.oracles.reliability import all_reliability
+        rel = all_reliability()
+    except Exception: # noqa: BLE001
+        rel = {}
     out = {}
     for model, card in execution_map().items():
         live, why = _is_live(model, card, probe)
         out[model] = {"execution": card.get("execution"), "latency_class": card.get("latency_class"),
                       "live": live, "status": why, "note": card.get("note", ""),
-                      "server": card.get("server")}
+                      "server": card.get("server"), "reliability": rel.get(model)}
     return out
 
 
@@ -104,7 +110,14 @@ def summary() -> dict:
     live = sorted(m for m, s in st.items() if s["live"])
     held = sorted(m for m, s in st.items() if s["execution"] == "cloud_a100")
     deferred = sorted(m for m, s in st.items() if s["execution"] == "deferred")
-    return {"live": live, "held_cloud": held, "deferred": deferred,
-            "latency_classes": {m: s["latency_class"] for m, s in st.items()},
-            "note": ("Live oracles answer in seconds, ~2 min; held cloud jobs (AF3/Boltz/Chai/Protenix) are run "
-                     "separately and never block; deferred outcomes are known-unknowns, never fabricated.")}
+    out = {"live": live, "held_cloud": held, "deferred": deferred,
+           "latency_classes": {m: s["latency_class"] for m, s in st.items()},
+           "note": ("Live oracles answer in seconds, ~2 min; held cloud jobs (AF3/Boltz/Chai/Protenix) are run "
+                    "separately and never block; deferred outcomes are known-unknowns, never fabricated.")}
+    try:
+        from pen_stack.oracles.reliability import disagreement_widens_monotonically, disclaimer
+        out["reliability_note"] = disclaimer()
+        out["disagreement_to_interval"] = disagreement_widens_monotonically()
+    except Exception: # noqa: BLE001
+        pass
+    return out

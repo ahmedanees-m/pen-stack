@@ -61,6 +61,26 @@ def verify_proof(design: dict) -> dict:
 
 
 @mcp.tool()
+def oracle_query(oracle: str | None = None, protein_seq: str | None = None, ligand_smiles: str | None = None,
+                 pair_type: str = "ligand", ligand_name: str | None = None) -> dict:
+    """v6.13 PEN-ORACLE: query the oracle mesh under one contract. With no arguments, returns every oracle's
+    execution + latency + live status + PUBLISHED reliability (reported verbatim from public benchmarks, with
+    citation; not a claim about this stack's accuracy) and the disagreement-to-interval check. With `oracle` set,
+    returns that oracle's status + reliability. With `protein_seq` + `ligand_smiles`, returns a CANDIDATE
+    binding-affinity prediction (Boltz-2 head): a binder probability + a predicted value with native uncertainty,
+    cache-or-abstain; protein-protein/protein-DNA pair types are flagged extrapolating (the head is
+    protein-ligand only). The long GPU job never runs on the request path."""
+    from pen_stack.oracles.status import oracle_status, summary
+    if protein_seq and ligand_smiles:
+        from pen_stack.oracles.affinity import predict_affinity
+        return predict_affinity(protein_seq, ligand_smiles, pair_type=pair_type, ligand_name=ligand_name).model_dump()
+    st = oracle_status()
+    if oracle:
+        return {"oracle": oracle, "status": st.get(oracle), "found": oracle in st}
+    return {"summary": summary(), "oracles": st}
+
+
+@mcp.tool()
 def graph_query(locus: str, cargo_form: str | None = None) -> dict:
     """v4.5 world-model graph (WS-G): a multi-hop query. Returns the writer families that REACH `locus` AND
     are DELIVERABLE by a vehicle carrying `cargo_form` (optional), each answer with its provenanced edge path

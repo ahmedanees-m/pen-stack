@@ -39,6 +39,10 @@ export const api = {
   offtarget: (reqbody) => req("/api/offtarget", { method: "POST", body: reqbody }),
   offtargetAssay: (family) => req(`/api/offtarget/assay?${new URLSearchParams({ writer_family: family })}`),
 
+  // v6.13 oracle mesh: status + published reliability, and protein-ligand binding affinity (Boltz-2)
+  oracles: (probe = false) => req(`/api/oracles${probe ? "?probe=true" : ""}`),
+  oracleAffinity: (reqbody) => req("/api/oracle/affinity", { method: "POST", body: reqbody }),
+
   // atlas + site finder
   atlas: (family, limit = 200) =>
     req(`/api/atlas?${new URLSearchParams({ ...(family ? { family } : {}), limit })}`),

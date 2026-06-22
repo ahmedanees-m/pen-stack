@@ -85,3 +85,11 @@ oracles:
     latency_class: long_job
     live: false
     note: "HELD, run SEPARATELY on a cloud A100. ~1-10 min. Not active now."
+
+  boltz-2-affinity: # v6.13 WS-ORACLE: the Boltz-2 affinity head (protein-ligand binding affinity)
+    execution: local_gpu
+    latency_class: long_job
+    live: false
+    note: "Boltz-2 affinity head (MIT weights). Run OFF-REQUEST as a batch on the GPU (~10-30 min incl. MSA) and
+      cached; the request path is cache-or-abstain and never blocks the chat. Predicts a binder probability +
+      affinity value for a protein + small-molecule ligand."

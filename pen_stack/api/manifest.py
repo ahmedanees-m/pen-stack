@@ -67,6 +67,13 @@ _TOOLS = [
      "NOT an in-vivo tropism claim (v6.11 PEN-DELIVER)",
      "input": "AAV VP1 capsid amino-acid sequence", "output": "predicted packaging-fitness (candidate) or abstain",
      "entrypoint": "pen_stack.planner.delivery_predict.capsid_fitness", "fabricates": False},
+    {"name": "oracle_query", "summary": "query the oracle mesh under one contract: per-oracle execution + latency "
+     "+ live status + PUBLISHED reliability (verbatim from public benchmarks, cited) + disagreement-to-interval; "
+     "or a CANDIDATE protein-ligand binding affinity (Boltz-2 head) with native uncertainty, cache-or-abstain "
+     "(v6.13 PEN-ORACLE)",
+     "input": "oracle name, or {protein_seq, ligand_smiles, pair_type}", "output": "oracle status + reliability, "
+     "or a candidate affinity (binder probability + value) or abstain; protein-protein/protein-DNA flagged OOD",
+     "entrypoint": "pen_stack.oracles.affinity.predict_affinity", "fabricates": False},
 ]
 
 _POLICY = ("outputs outside scope are returned as `out_of_scope` (known-unknown) or `extrapolating` (OOD) and are "

@@ -238,6 +238,18 @@ def offtarget_assay_endpoint(writer_family: str):
     return recommend_assay(writer_family)
 
 
+@app.post("/oracle/affinity", tags=["v6.13 oracle"])
+def oracle_affinity_endpoint(req: dict):
+    """v6.13 PEN-ORACLE protein-ligand binding-affinity (Boltz-2 head) under the oracle contract. Body:
+    {protein_seq, ligand_smiles, pair_type?, ligand_name?}. Returns a CANDIDATE affinity (binder probability +
+    predicted value) with native uncertainty, cache-or-abstain; protein-protein/protein-DNA pair types are
+    flagged extrapolating (the head is protein-ligand only). Never runs the long job on the request path."""
+    from pen_stack.oracles.affinity import predict_affinity
+    r = predict_affinity(req.get("protein_seq", ""), req.get("ligand_smiles", ""),
+                         pair_type=req.get("pair_type", "ligand"), ligand_name=req.get("ligand_name"))
+    return r.model_dump()
+
+
 @app.post("/delivery", tags=["v6.11 delivery"])
 def delivery_endpoint(req: dict):
     """v6.11 PEN-DELIVER cross-modality delivery recommender. Body: {cargo_form, cargo_bp?, target_tissue?,

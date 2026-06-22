@@ -1,0 +1,8 @@
+{
+  "cycle": "v6.13",
+  "workstream": "WS-ORACLE",
+  "prepared": "2026-06-21",
+  "sha256": {
+    "prereg/ws_oracle.yaml": "5dec46ba0649bc4a8470ca06ca7cd2df7ce3c4c6998d16a4aef8256d4feeabfb"
+  }
+}

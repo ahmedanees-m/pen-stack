@@ -16,6 +16,8 @@ export const NAV = [
     tip: "Calibrated, OOD-gated outcome prediction bounded by the structure→phenotype boundary." },
   { path: "/offtarget", id: "offtarget", label: "Off-Target", group: "Assess",
     tip: "Cross-family off-target nomination: rank candidate sites with a real-data calibrated risk band + the assay that would confirm them. Nomination is NOT a clearance." },
+  { path: "/oracles", id: "oracles", label: "Oracle Mesh", group: "Trust",
+    tip: "The foundation-model oracle mesh under one contract: per-oracle execution, latency, live status and PUBLISHED reliability (verbatim from public benchmarks, cited), plus a protein-ligand binding-affinity query. Every output is a candidate, never ground truth." },
   { path: "/guardian", id: "guardian", label: "Guardian", group: "Assess",
     tip: "The biosecurity / dual-use screen: clear / flag / escalate / refuse, with an audit note." },
   { path: "/experiments", id: "experiments", label: "Experiments", group: "Learn",

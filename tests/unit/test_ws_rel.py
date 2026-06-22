@@ -8,10 +8,28 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_6_12_0_everywhere():
-    assert pen_stack.__version__ == "6.12.0"
-    assert 'version = "6.12.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 6.12.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+def test_version_is_6_13_0_everywhere():
+    assert pen_stack.__version__ == "6.13.0"
+    assert 'version = "6.13.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 6.13.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+
+
+def test_v6_13_artifacts():
+    # the v6.13 artifacts: the oracle mesh (affinity dimension + per-oracle reliability + disagreement-to-interval)
+    from pen_stack.oracles.affinity import predict_affinity # noqa: F401
+    from pen_stack.oracles.reliability import all_reliability, disagreement_widens_monotonically # noqa: F401
+    from pen_stack.oracles.structure_run import complexes # noqa: F401
+    cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "[6.13.0]" in cl
+    # the three Oracle-Bench gates pass: reliability verbatim, disagreement monotonic, affinity contract
+    from benchmarks.oracle.harness import run
+    assert run()["all_gates_pass"] is True
+    for p in ("pen_stack/oracles/affinity.py", "pen_stack/oracles/reliability.py",
+              "pen_stack/oracles/structure_run.py", "configs/oracles/reliability.yaml",
+              "benchmarks/oracle/harness.py", "benchmarks/oracle/oracle_bench_metrics.json",
+              "benchmarks/oracle/SHA256SUMS", "docs/oracle_mesh.md",
+              "prereg/ws_oracle.yaml", "prereg/SHA256_LOCK_ws_oracle.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v6_12_artifacts():

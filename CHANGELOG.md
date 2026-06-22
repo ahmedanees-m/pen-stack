@@ -3,6 +3,40 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [6.13.0] - 2026-06-22 - Oracle mesh: binding-affinity dimension, per-oracle reliability, disagreement-to-uncertainty
+
+Hardens the foundation-model oracle mesh under one result contract. Adds a binding-affinity dimension
+(Boltz-2), surfaces each oracle's published reliability reported verbatim from public benchmarks, and makes
+cross-oracle disagreement widen the reported interval. Every oracle output stays a candidate, never ground
+truth.
+
+### Added
+- **Binding-affinity oracle** (`pen_stack/oracles/affinity.py`). Wraps the Boltz-2 protein-ligand affinity head
+  (MIT, `10.1101/2025.06.14.659707`): a binder probability and a predicted affinity value with native
+  uncertainty taken from the model's own outputs. The head is protein-small-molecule only, so protein-protein
+  and protein-DNA pairs are returned as out-of-scope (extrapolating). The backend runs off the request path and
+  is cached; an uncached request defers (cache-or-abstain) rather than blocking or fabricating. A grounded,
+  in-domain example is committed: 4-hydroxytamoxifen binding the ERT2 ligand-binding domain (the inducible-writer
+  switch), predicted as a high-confidence binder (binder probability 0.99, complex pLDDT 0.94).
+- **Per-oracle reliability registry** (`pen_stack/oracles/reliability.py`, `configs/oracles/reliability.yaml`).
+  Each oracle's published benchmark accuracy, reported verbatim with citation: the Boltz-2 affinity head's
+  FEP+ Pearson r of about 0.62 (paper-reported) is the verified anchor. These are the wrapped models' published
+  numbers, not a claim about this stack's accuracy and not re-computed; where a verbatim score was not verified
+  the value is left null with the cited benchmark as the pointer.
+- **Disagreement to uncertainty.** Cross-oracle disagreement widens the reported interval (native uncertainty
+  plus half the cross-oracle spread); a check confirms the widening is monotonic in the spread.
+- **Held-oracle runner** (`pen_stack/oracles/structure_run.py`) for the structure oracles over writer-substrate
+  and att-site complexes: off the request path, cache-or-abstain.
+- **Oracle-Bench** (`benchmarks/oracle/`) reporting the three gates, and surfaces: `GET /api/oracles` extended
+  with reliability and the disagreement check, `POST /api/oracle/affinity`, MCP `oracle_query`, the manifest
+  `oracle_query` tool, the web Oracle Mesh page, and `docs/oracle_mesh.md`.
+
+### Notes
+- Affinity predictions are candidates with native uncertainty, not measured binding constants; reliability is
+  surfaced so a confident-looking value is not over-trusted.
+- The structure oracles over full complexes (AlphaFold3 / Boltz-2 / Chai-1 / Protenix) remain held: run
+  separately on GPU or cloud and cached, never inline on the request path.
+
 ## [6.12.0] - 2026-06-21 - Verification service: published rule spec, proof object, standards-aligned biosecurity
 
 Hardens `verify(design)` into a formal verification service. The rule base becomes a published, citable spec;
