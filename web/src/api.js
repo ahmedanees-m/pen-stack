@@ -46,6 +46,11 @@ export const api = {
   // v6.14 WriteSpec: prose -> typed, ontology-backed write request + clarifications + feasibility
   writespec: (prose) => req("/api/writespec", { method: "POST", body: { prose } }),
 
+  // v7.0 closed loop: the validation campaign, the SDL-brain benchmark, and safety-gated cloud-lab submission
+  campaign: () => req("/api/campaign"),
+  brains: () => req("/api/brains"),
+  cloudlab: (design, experiment) => req("/api/cloudlab", { method: "POST", body: { design, experiment } }),
+
   // atlas + site finder
   atlas: (family, limit = 200) =>
     req(`/api/atlas?${new URLSearchParams({ ...(family ? { family } : {}), limit })}`),

@@ -1,0 +1,52 @@
+# PEN-STACK v7.0 - WS-CLOSEDLOOP (Stage J, the self-driving-lab engine). Pre-registered. Capstone.
+# (the v5.12 prereg ws_loop.yaml already locked the DBTL orchestrator; this is the Stage J cloud-lab / SDL layer.)
+cycle: "v7.0"
+workstream: "WS-CLOSEDLOOP"
+prepared: "2026-06-22"
+motivation: >
+  The in-silico closed loop is already at the self-driving-lab frontier (a generative designer, an EIG/VOI
+  experiment designer that beats random, a Level-3 DBTL loop, safety-gated export, a world-model graph). Stage J
+  turns it into the first genome-writing-specific, biosecurity-gated, autonomy-honest (Level 3) self-driving-lab
+  loop: a cloud-lab connector (safety-gated export -> run -> gated ingest), an SDL-brain benchmark of the EIG/VOI
+  designer against the public optimizers, and a validation-campaign engine that points active learning at the
+  measurements which would earn the program's first outcome-validated axis. It iterates the Stage A WriteSpec and
+  pairs with the Stage F biosecurity gate. Full autonomy is not claimed; the wet run is the named bottleneck.
+deliverable: >
+  pen_stack/build/cloudlab.py (a cloud-lab connector: safety-gated export -> a cloud-lab API submission, mock /
+  dry-run, with the biosecurity gate short-circuiting any flagged export and a gated ingest of the returned
+  readout), pen_stack/active/brains.py (wrap/benchmark the EIG/VOI designer against the public SDL optimizers
+  BayBE / Atlas on a shared task; report the result verbatim either way and cite them), pen_stack/active/
+  campaign.py (the validation-campaign engine: point the designer's first campaign at the PEN-EXPRESS
+  expression-validation spec, show EIG beats random, and emit out/expression_validation_campaign.md, the
+  executable spec that targets the calibrate_axis gate), benchmarks/loop/ (the acquisition + cloud-lab + campaign
+  report), and surfaces (MCP experiment_design + REST + the web Experiments page).
+method: >
+  Wrap, do not rebuild. The cloud-lab connector reuses build.protocol.export_protocol (the v5.7 safety gate that
+  refuses a flagged or illegal design) and submits the cleared protocol to a cloud-lab API in mock / dry-run mode;
+  a flagged design never reaches submission (the gate raises). The brain benchmark reuses active.acquire (EIG) and
+  active.validate.retrospective_active_learning (active vs random / greedy with reps + CI) on a shared task and
+  reports EIG/VOI versus a BayBE / Atlas comparator; where BayBE is installed it runs a real head-to-head, else
+  the comparison is a self-contained acquisition contrast (EIG vs random vs a simple Bayesian baseline) with
+  BayBE / Atlas cited as the public references and the gap reported. The campaign engine reuses
+  active.design.select_batch and the validate.calibrate_axis gate to define the (cassette x locus x cell type)
+  expression measurements whose acquisition order EIG improves over random, and writes them as an executable,
+  cloud-lab-submittable spec.
+acceptance: >
+  J-G (loop): (1) a SAFETY-CLEARED protocol round-trips to a cloud-lab API (mock acceptable), and the biosecurity
+  gate BLOCKS the export of anything flagged (the refusal is intact, no protocol is emitted). (2) the EIG/VOI
+  designer is benchmarked against BayBE / Atlas on a shared task and the result is reported verbatim (>= or the
+  gap), with both cited. (3) the validation campaign is cloud-lab-executable, targets the calibrate_axis gate, and
+  EIG beats random on the acquisition order (bootstrap CI excludes 0, or the negative is reported). (4) 0
+  fabricated experiments; the biosecurity gate runs before every export; the loop stays Level 3 (human in
+  control), with no Level-4 claim.
+honesty_invariant: >
+  A designed / optimized experiment is a CANDIDATE, never a claim. The loop is Level 3 (human-in-control), and
+  says so; full autonomy (Level 4-5) is explicitly NOT claimed. The biosecurity gate runs before any export and a
+  flagged design is non-exportable (the gate is necessary, not sufficient; the full sequence screen is
+  BioFirewall downstream). Cloud-lab execution is a connector plus an executable spec; the actual wet run, and
+  thus the program's first outcome-validated axis, needs a real partner and budget, the standing bottleneck,
+  surfaced not hidden. Acquisition performance is bounded by the consumed models and reported verbatim including
+  negatives (not-yet-useful is a valid outcome). The campaign targets independent MEASURED data, never the
+  in-silico model's own outputs.
+gate: "J-LOOP - a safety-cleared protocol round-trips to a cloud lab (mock) and the biosecurity gate blocks flagged exports; the EIG/VOI designer is benchmarked vs BayBE/Atlas (reported verbatim, both cited); the validation campaign is cloud-lab-executable, targets calibrate_axis, and EIG beats random (CI) or the negative is reported; 0 fabricated experiments; Level-3 framing maintained."
+locked_files: [prereg/ws_closedloop.yaml]

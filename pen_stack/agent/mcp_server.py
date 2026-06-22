@@ -61,6 +61,26 @@ def verify_proof(design: dict) -> dict:
 
 
 @mcp.tool()
+def validation_campaign() -> dict:
+    """v7.0 Stage J: the validation-campaign engine. Returns the PEN-EXPRESS expression-validation campaign: the
+    next batch of (cassette x locus x cell type) measurements ordered by expected information gain, the
+    calibrate_axis gate it targets (the path to the program's first outcome-validated axis), and the
+    active-vs-random result reported verbatim. Cloud-lab-executable; Level 3, human in control; the experiments
+    are candidates and the wet run is the standing bottleneck."""
+    from pen_stack.active.campaign import design_campaign
+    return design_campaign()
+
+
+@mcp.tool()
+def cloudlab_submit(design: dict, experiment: dict | None = None, provider: str = "mock") -> dict:
+    """v7.0 Stage J: safety-gated cloud-lab submission. The biosecurity gate runs BEFORE submission; a flagged
+    design returns a structured refusal (blocked=True) and NO protocol is emitted. A cleared design returns a
+    mock / dry-run job receipt (a real run needs a cloud-lab partner + budget). Level 3, human in control."""
+    from pen_stack.build.cloudlab import submit_gated
+    return submit_gated(design, experiment or {}, provider=provider, actor="mcp")
+
+
+@mcp.tool()
 def writespec_parse(prose: str, check_feasibility: bool = True) -> dict:
     """v6.14 Stage A: parse a plain-language genome-writing request into a typed, ontology-backed WriteSpec (an
     SBOL3 profile). Returns the typed spec with per-field provenance (explicit / inferred / user / unresolved),

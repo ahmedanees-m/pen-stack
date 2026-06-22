@@ -52,3 +52,28 @@ The loop is **Level 3**: closed, but with humans/lab in control at every gate, *
 silico via the sim-lab (a real lab attaches at the same interface); continual learning recalibrates rather than
 retrains; drift detection covers calibration/residual shift, not all failures; immune-proxy graduation requires an
 admitted measurement with a CI. See [Autonomy levels](autonomy.md).
+
+## The self-driving-lab engine (v7.0, Stage J)
+
+v7.0 extends the loop into a genome-writing-specific, biosecurity-gated self-driving-lab engine: a cloud-lab
+connector, an SDL-brain benchmark, and a validation-campaign engine. It consumes the WriteSpec (Stage A) and pairs
+with the Stage F biosecurity gate.
+
+- **Cloud-lab connector** (`pen_stack/build/cloudlab.py`). `submit_gated` bridges the build interface to a cloud
+  lab. The biosecurity gate runs BEFORE submission: a flagged or illegal design makes `export_protocol` raise, so
+  no protocol is emitted (a ricin design is refused), and `submit_gated` returns a structured refusal. A cleared
+  design returns a mock / dry-run job receipt (a real wet run needs a partner + budget). `ingest_readout` admits a
+  returned readout only through an explicit human-in-control gate (Level 3).
+- **SDL-brain benchmark** (`pen_stack/active/brains.py`). Benchmarks the EIG/VOI designer against the public SDL
+  optimizers BayBE (Apache-2.0) and Atlas on a shared retrospective acquisition task, reported verbatim with both
+  cited. The designer shows a positive mean information-gain advantage over random whose bootstrap CI is
+  rep-sensitive (it includes 0 at higher rep counts), reported as not-CI-significant rather than hidden; where
+  BayBE is installed a real head-to-head runs.
+- **Validation-campaign engine** (`pen_stack/active/campaign.py`). Points active learning at the PEN-EXPRESS
+  expression axis (Stage H): it orders the candidate (cassette x locus x cell type) measurements by expected
+  information gain, names the `validate.calibrate_axis` gate they would flip, and emits an executable,
+  cloud-lab-submittable spec (`out/expression_validation_campaign.md`). The campaign measures independent data,
+  never the model's own outputs; the experiments are candidates and the wet run is the standing bottleneck.
+
+Surfaces: REST `GET /api/campaign`, `POST /api/cloudlab`, `GET /api/brains`; MCP `validation_campaign`,
+`cloudlab_submit`. Reported by `benchmarks/loop/`.

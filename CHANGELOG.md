@@ -3,6 +3,36 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.0.0] - 2026-06-22 - Closed loop: a biosecurity-gated, Level-3 self-driving-lab engine
+
+The capstone. Turns the in-silico closed loop into a genome-writing-specific, biosecurity-gated, autonomy-honest
+(Level 3) self-driving-lab engine: a cloud-lab connector, a benchmark of the experiment designer against the
+public optimizers, and a validation-campaign engine that points active learning at the measurements which would
+earn the program's first outcome-validated axis. It consumes the WriteSpec and pairs with the biosecurity gate.
+Full autonomy is not claimed; the wet run is the named bottleneck.
+
+### Added
+- **Cloud-lab connector** (`pen_stack/build/cloudlab.py`). `submit_gated` bridges the build interface to a cloud
+  lab. The biosecurity gate runs BEFORE any submission: a flagged or illegal design raises and emits no protocol
+  (a ricin design is refused), returning a structured refusal an agent can branch on; a cleared design returns a
+  mock / dry-run job receipt. A returned readout is admitted only through an explicit human-in-control gate.
+- **SDL-brain benchmark** (`pen_stack/active/brains.py`). Benchmarks the EIG/VOI experiment designer against the
+  public self-driving-lab optimizers BayBE (Apache-2.0) and Atlas on a shared acquisition task, reported verbatim
+  with both cited. The designer shows a positive mean information-gain advantage over random whose bootstrap CI is
+  rep-sensitive and includes 0 at higher rep counts; reported as not-CI-significant, not hidden.
+- **Validation-campaign engine** (`pen_stack/active/campaign.py`). Orders the candidate
+  (cassette x locus x cell type) expression measurements by expected information gain, names the
+  `validate.calibrate_axis` gate they would flip, and emits an executable, cloud-lab-submittable campaign spec.
+  The campaign measures independent data, never the model's own outputs.
+- **Loop-Bench** (`benchmarks/loop/`) reporting the three gates, and surfaces: REST `GET /api/campaign`,
+  `POST /api/cloudlab`, `GET /api/brains`; MCP `validation_campaign`, `cloudlab_submit`; `docs/closed_loop.md`.
+
+### Notes
+- The loop is Level 3 (human in control); Level 4-5 is not claimed. The biosecurity gate is necessary, not
+  sufficient (the full sequence screen is the downstream BioFirewall).
+- A real wet run, and thus the first outcome-validated axis, needs a cloud-lab partner and budget; the connector
+  and the executable campaign are the mechanism, the partner is the bottleneck, surfaced not hidden.
+
 ## [6.14.0] - 2026-06-22 - WriteSpec: a typed, ontology-backed intent layer with a grounded extractor and a feasibility check
 
 Replaces the keyword parser with a typed, machine-checkable genome-writing request (an SBOL3 profile), a grounded

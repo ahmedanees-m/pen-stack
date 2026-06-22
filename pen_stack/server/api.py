@@ -238,6 +238,34 @@ def offtarget_assay_endpoint(writer_family: str):
     return recommend_assay(writer_family)
 
 
+@app.get("/campaign", tags=["v7.0 closed-loop"])
+def campaign_endpoint():
+    """v7.0 Stage J: the validation-campaign engine. Returns the expression-validation campaign: the next batch of
+    (cassette x locus x cell type) measurements ordered by expected information gain, the calibrate_axis gate it
+    targets, and the active-vs-random result (reported verbatim). Cloud-lab-executable; Level 3, human in control;
+    the experiments are candidates, the wet run is the standing bottleneck."""
+    from pen_stack.active.campaign import design_campaign
+    return design_campaign()
+
+
+@app.post("/cloudlab", tags=["v7.0 closed-loop"])
+def cloudlab_endpoint(req: dict):
+    """v7.0 Stage J: safety-gated cloud-lab submission. Body: {design, experiment?, provider?, actor?}. The
+    biosecurity gate runs BEFORE submission; a flagged design returns a structured refusal (blocked=True) and NO
+    protocol is emitted. A cleared design returns a mock / dry-run job receipt (a real run needs a partner)."""
+    from pen_stack.build.cloudlab import submit_gated
+    return submit_gated(req.get("design", {}), req.get("experiment", {}),
+                        provider=req.get("provider", "mock"), actor=str(req.get("actor", "api")))
+
+
+@app.get("/brains", tags=["v7.0 closed-loop"])
+def brains_endpoint():
+    """v7.0 Stage J: benchmark the EIG/VOI experiment designer against the public SDL optimizers (BayBE / Atlas),
+    reported verbatim with both cited (a win is not required; the result is falsifiable)."""
+    from pen_stack.active.brains import benchmark
+    return benchmark()
+
+
 @app.post("/writespec", tags=["v6.14 writespec"])
 def writespec_endpoint(req: dict):
     """v6.14 Stage A: parse a plain-language genome-writing request into a typed, ontology-backed WriteSpec.

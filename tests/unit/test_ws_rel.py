@@ -8,10 +8,28 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_6_14_0_everywhere():
-    assert pen_stack.__version__ == "6.14.0"
-    assert 'version = "6.14.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 6.14.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+def test_version_is_7_0_0_everywhere():
+    assert pen_stack.__version__ == "7.0.0"
+    assert 'version = "7.0.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 7.0.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+
+
+def test_v7_0_artifacts():
+    # the v7.0 capstone: Stage J closed loop (cloud-lab connector + SDL-brain benchmark + validation campaign)
+    from pen_stack.active.brains import benchmark # noqa: F401
+    from pen_stack.active.campaign import design_campaign # noqa: F401
+    from pen_stack.build.cloudlab import submit_gated # noqa: F401
+    cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "[7.0.0]" in cl
+    from benchmarks.loop.harness import run
+    r = run()
+    assert r["all_gates_pass"] is True
+    assert r["cloudlab_biosecurity"]["hazard_blocked"] is True  # the biosecurity gate blocks a flagged export
+    for p in ("pen_stack/build/cloudlab.py", "pen_stack/active/brains.py", "pen_stack/active/campaign.py",
+              "benchmarks/loop/harness.py", "benchmarks/loop/loop_bench_metrics.json",
+              "benchmarks/loop/SHA256SUMS", "docs/closed_loop.md",
+              "prereg/ws_closedloop.yaml", "prereg/SHA256_LOCK_ws_closedloop.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v6_14_artifacts():

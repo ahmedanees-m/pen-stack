@@ -34,7 +34,15 @@ export default function Experiments() {
 
   const maxEig = res?.length ? Math.max(...res.map((d) => d.expected_info_gain || 0)) : 1;
 
+  const [camp, setCamp] = useState(null);
+  const [campBusy, setCampBusy] = useState(false);
+  async function loadCampaign() {
+    setCampBusy(true);
+    try { setCamp(await api.campaign()); } catch { setCamp(null); } finally { setCampBusy(false); }
+  }
+
   return (
+    <div className="space-y-4">
     <div className="grid gap-4 lg:grid-cols-2">
       <Card title="Candidate pool" subtitle="A grid of vehicles × cargo; the engine picks the most informative batch.">
         <DesignForm design={design} onChange={setDesign} showCargoFunction={false} />
@@ -64,6 +72,36 @@ export default function Experiments() {
               </li>
             ))}
           </ol>
+        )}
+      </Card>
+    </div>
+
+      <Card title="Validation campaign (v7.0)" subtitle="The first campaign that points active learning at the measurements which would earn the program's first outcome-validated axis. A candidate plan, not a result; the wet run is the standing bottleneck.">
+        <Button onClick={loadCampaign} disabled={campBusy}>Load expression-validation campaign</Button>
+        {campBusy && <div className="mt-3"><Spinner label="Designing the campaign…" /></div>}
+        {camp && (
+          <div className="mt-3 space-y-3 text-sm">
+            <p className="text-fg-dim">Targets <code>{camp.target_gate?.gate}</code> for the <b>{camp.target_gate?.axis}</b> axis ({camp.target_gate?.current}). {camp.n_candidates} candidate measurements; Level {camp.autonomy_level}, human in control.</p>
+            <p className="text-[11px] text-fg-faint">EIG beats random on the acquisition order: <b>{String(camp.eig_beats_random)}</b> (curve-area gap {JSON.stringify(camp.active_vs_random?.ci)}), reported either way.</p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">
+                  <th className="py-2 pr-3">#</th><th className="py-2 pr-3">Cassette</th><th className="py-2 pr-3">Locus</th><th className="py-2 pr-3">Cell</th><th className="py-2">EIG</th></tr></thead>
+                <tbody>
+                  {(camp.batch || []).map((b, i) => (
+                    <tr key={i} className="border-b border-line/50">
+                      <td className="py-1.5 pr-3 tabular-nums">{i + 1}</td>
+                      <td className="py-1.5 pr-3 font-mono text-xs">{b.cassette}</td>
+                      <td className="py-1.5 pr-3">{b.locus}</td>
+                      <td className="py-1.5 pr-3">{b.cell}</td>
+                      <td className="py-1.5 tabular-nums text-brand">{num(b.expected_info_gain, 3)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-[11px] text-amber-300/80">{camp.note}</p>
+          </div>
         )}
       </Card>
     </div>

@@ -67,6 +67,17 @@ _TOOLS = [
      "NOT an in-vivo tropism claim (v6.11 PEN-DELIVER)",
      "input": "AAV VP1 capsid amino-acid sequence", "output": "predicted packaging-fitness (candidate) or abstain",
      "entrypoint": "pen_stack.planner.delivery_predict.capsid_fitness", "fabricates": False},
+    {"name": "validation_campaign", "summary": "the validation-campaign engine: the next batch of (cassette x "
+     "locus x cell type) expression measurements ordered by expected information gain, the calibrate_axis gate it "
+     "targets (the path to the program's first outcome-validated axis), and the active-vs-random result reported "
+     "verbatim; cloud-lab-executable, Level 3, experiments are candidates (v7.0 Stage J PEN-LOOP)",
+     "input": "none", "output": "the expression-validation campaign (batch + target gate + acquisition result)",
+     "entrypoint": "pen_stack.active.campaign.design_campaign", "fabricates": False},
+    {"name": "cloudlab_submit", "summary": "safety-gated cloud-lab submission: the biosecurity gate runs BEFORE "
+     "submission, a flagged design returns a structured refusal (no protocol emitted), a cleared design returns a "
+     "mock/dry-run job receipt; Level 3, human in control (v7.0 Stage J PEN-LOOP)",
+     "input": "a design (+ optional experiment)", "output": "a mock job receipt or a structured biosecurity "
+     "refusal", "entrypoint": "pen_stack.build.cloudlab.submit_gated", "fabricates": False},
     {"name": "writespec_parse", "summary": "parse a plain-language genome-writing request into a typed, "
      "ontology-backed WriteSpec (an SBOL3 profile): per-field provenance (explicit/inferred/user/unresolved), "
      "assumptions, clarifying questions on underspecification, and a feasibility verdict (reachability + "
