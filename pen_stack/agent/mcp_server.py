@@ -61,6 +61,18 @@ def verify_proof(design: dict) -> dict:
 
 
 @mcp.tool()
+def writespec_parse(prose: str, check_feasibility: bool = True) -> dict:
+    """v6.14 Stage A: parse a plain-language genome-writing request into a typed, ontology-backed WriteSpec (an
+    SBOL3 profile). Returns the typed spec with per-field provenance (explicit / inferred / user / unresolved),
+    the assumptions behind every inferred field, clarifying questions for anything underspecified or ambiguous,
+    the unresolved terms (kept null, never invented), the downstream design adapter, and a feasibility verdict
+    (reachability + deliverability + legality, with named blocking constraints + repair hints). A WriteSpec is a
+    REQUEST, not a claim; the extractor never fabricates intent."""
+    from pen_stack.spec.service import parse_request
+    return parse_request(prose, check_feasibility=check_feasibility)
+
+
+@mcp.tool()
 def oracle_query(oracle: str | None = None, protein_seq: str | None = None, ligand_smiles: str | None = None,
                  pair_type: str = "ligand", ligand_name: str | None = None) -> dict:
     """v6.13 PEN-ORACLE: query the oracle mesh under one contract. With no arguments, returns every oracle's

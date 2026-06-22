@@ -4,8 +4,10 @@ One interface over nucleases, serine integrases, and bridge recombinases. By con
 
   * **nuclease** (Cas9): rank candidate off-target sites by the GROUNDED empirical risk (the real-data fraction
     of candidates at k mismatches that were validated-active, `offtarget_data.MISMATCH_ACTIVE_FRACTION`), surface
-    the REAL CRISOT-Score when the (guide, site) is in the cached bench, and apply a documented **chromatin-
-    accessibility modifier** (open chromatin raises realized off-target activity; Lazzarotto 2020). The modifier
+    the REAL CRISOT-Score when the (guide, site) is in the cached bench, and annotate with a documented
+    **chromatin-accessibility signal** (a validated annotation, NOT a re-ranker: open chromatin raises realized
+    off-target activity, Lazzarotto 2020, but it added no held-out ranking gain over CRISOT in the v6.10.4
+    incremental analysis, so it is not folded into the risk score). The annotation
     reads the **Stage B accessibility track** (`phase_1/features/chromatin_{ct}.parquet`) when a candidate's
     genomic locus + cell type are supplied AND the feature store is present, or accepts a caller-supplied
     accessibility value; it **abstains** otherwise (the bare wheel / current deployed atlas do not ship the raw

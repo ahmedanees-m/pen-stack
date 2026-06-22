@@ -8,10 +8,32 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_6_13_0_everywhere():
-    assert pen_stack.__version__ == "6.13.0"
-    assert 'version = "6.13.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 6.13.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+def test_version_is_6_14_0_everywhere():
+    assert pen_stack.__version__ == "6.14.0"
+    assert 'version = "6.14.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 6.14.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+
+
+def test_v6_14_artifacts():
+    # the v6.14 artifacts: Stage A WriteSpec (typed SBOL3-profile intent layer + grounded extractor + bench + SAT)
+    from pen_stack.spec import WriteRequest # noqa: F401
+    from pen_stack.spec.extract import extract_writespec # noqa: F401
+    from pen_stack.spec.satisfy import check_satisfiable # noqa: F401
+    from pen_stack.spec.service import parse_request # noqa: F401
+    cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "[6.14.0]" in cl
+    from benchmarks.writespec.harness import run
+    assert run()["all_gates_pass"] is True
+    for p in ("pen_stack/spec/writespec.py", "pen_stack/spec/extract.py", "pen_stack/spec/clarify.py",
+              "pen_stack/spec/satisfy.py", "pen_stack/spec/service.py",
+              "pen_stack/spec/resolvers/gene.py", "pen_stack/spec/resolvers/cell.py",
+              "pen_stack/spec/resolvers/feature.py", "pen_stack/spec/resolvers/phenotype.py",
+              "pen_stack/spec/resolvers/chem.py", "pen_stack/spec/resolvers/locus.py",
+              "benchmarks/writespec/corpus.json", "benchmarks/writespec/harness.py",
+              "benchmarks/writespec/writespec_bench_metrics.json", "benchmarks/writespec/SHA256SUMS",
+              "schemas/writespec.json", "docs/writespec_profile.md", "docs/writespec_bench.md",
+              "prereg/ws_writespec.yaml", "prereg/SHA256_LOCK_ws_writespec.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v6_13_artifacts():

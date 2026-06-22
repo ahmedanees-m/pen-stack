@@ -67,6 +67,12 @@ _TOOLS = [
      "NOT an in-vivo tropism claim (v6.11 PEN-DELIVER)",
      "input": "AAV VP1 capsid amino-acid sequence", "output": "predicted packaging-fitness (candidate) or abstain",
      "entrypoint": "pen_stack.planner.delivery_predict.capsid_fitness", "fabricates": False},
+    {"name": "writespec_parse", "summary": "parse a plain-language genome-writing request into a typed, "
+     "ontology-backed WriteSpec (an SBOL3 profile): per-field provenance (explicit/inferred/user/unresolved), "
+     "assumptions, clarifying questions on underspecification, and a feasibility verdict (reachability + "
+     "deliverability + legality); a REQUEST not a claim, never fabricates intent (v6.14 Stage A WriteSpec)",
+     "input": "prose request (+ optional structured overrides)", "output": "typed WriteSpec + clarifications + "
+     "feasibility; unresolved stays null", "entrypoint": "pen_stack.spec.service.parse_request", "fabricates": False},
     {"name": "oracle_query", "summary": "query the oracle mesh under one contract: per-oracle execution + latency "
      "+ live status + PUBLISHED reliability (verbatim from public benchmarks, cited) + disagreement-to-interval; "
      "or a CANDIDATE protein-ligand binding affinity (Boltz-2 head) with native uncertainty, cache-or-abstain "

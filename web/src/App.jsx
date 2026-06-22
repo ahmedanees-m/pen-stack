@@ -9,6 +9,7 @@ import Delivery from "./pages/Delivery.jsx";
 import Twin from "./pages/Twin.jsx";
 import OffTarget from "./pages/OffTarget.jsx";
 import Oracles from "./pages/Oracles.jsx";
+import WriteSpec from "./pages/WriteSpec.jsx";
 import Experiments from "./pages/Experiments.jsx";
 import Designer from "./pages/Designer.jsx";
 import Guardian from "./pages/Guardian.jsx";
@@ -23,6 +24,7 @@ export default function App() {
     <Layout backend={backend} allowLlm={allowLlm} setAllowLlm={setAllowLlm}>
       <Routes>
         <Route path="/" element={<CoScientist onBackend={setBackend} allowLlm={allowLlm} />} />
+        <Route path="/writespec" element={<WriteSpec />} />
         <Route path="/site-finder" element={<SiteFinder />} />
         <Route path="/atlas" element={<WriterAtlas />} />
         <Route path="/verify" element={<Verify />} />

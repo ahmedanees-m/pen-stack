@@ -3,6 +3,40 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [6.14.0] - 2026-06-22 - WriteSpec: a typed, ontology-backed intent layer with a grounded extractor and a feasibility check
+
+Replaces the keyword parser with a typed, machine-checkable genome-writing request (an SBOL3 profile), a grounded
+prose-to-spec extractor that labels every inference and never fabricates intent, and a feasibility check. This is
+the agentic front-end: one contract the whole stack consumes. A WriteSpec is a request, not a claim.
+
+### Added
+- **The WriteRequest type** (`pen_stack/spec/writespec.py`, `schemas/writespec.json`). A typed model carrying the
+  write semantics (write-type, cargo with Sequence-Ontology roles, target gene/locus/att-site/phenotype, cell
+  type, constraints) plus a per-field provenance map (explicit / inferred / user / unresolved). Lossless JSON
+  round-trip; SBOL3 round-trip via the real `sbol3` library (the `[spec]` extra; native Components + SO roles for
+  interoperability); GenBank export for a cargo with a sequence; and `to_legacy_design`, the adapter that lets
+  every existing stage consume a WriteRequest without a rewrite.
+- **Vocabulary resolvers** (`pen_stack/spec/resolvers/`). Free text to canonical id: HGNC genes (atlas-grounded),
+  Cellosaurus / Cell Ontology cell types, Sequence Ontology feature roles, MONDO phenotypes, ChEBI molecules,
+  GRCh38 coordinates. Every curated id was verified against the live ontology services before commit; an
+  unresolved term stays null, never invented.
+- **Grounded extractor + clarifying-question planner** (`pen_stack/spec/extract.py`, `clarify.py`). A
+  deterministic backbone (so the benchmark is reproducible) that labels every inferred field, asks a clarifying
+  question for anything underspecified or ambiguous, and keeps unresolved terms null.
+- **Feasibility check** (`pen_stack/spec/satisfy.py`). Wraps reachability (the atlas), deliverability (the
+  delivery recommender), and legality (the verification proof object) into feasible / infeasible plus named
+  blocking constraints and repair hints; feasibility is necessary, not sufficient (not efficacy).
+- **WriteSpec-Bench** (`benchmarks/writespec/`). The first prose-to-write-spec corpus, grounded in real
+  experiments, with an ambiguity subset and a sealed held-out. Reported verbatim: sealed-test structural fidelity
+  1.0 and value accuracy 0.96 versus a 0.46 keyword-dict baseline; inferred-field labelling recall 1.0.
+- **Surfaces**: REST `POST /api/writespec`, MCP `writespec_parse`, the manifest tool, the web "Describe a Write"
+  builder page, and `docs/writespec_profile.md` + `docs/writespec_bench.md`.
+
+### Notes
+- Feasibility rules out unreachable / undeliverable / illegal, not whether the write will work.
+- The extractor backbone is deterministic; an LLM pass is optional and adds no ground truth (it may only propose
+  values that still pass the resolvers).
+
 ## [6.13.0] - 2026-06-22 - Oracle mesh: binding-affinity dimension, per-oracle reliability, disagreement-to-uncertainty
 
 Hardens the foundation-model oracle mesh under one result contract. Adds a binding-affinity dimension

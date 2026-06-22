@@ -2,6 +2,8 @@
 export const NAV = [
   { path: "/", id: "coscientist", label: "Co-Scientist", group: "Ask",
     tip: "Ask a genome-writing question in plain language; the grounded co-scientist routes the engine and narrates, never a number it invented." },
+  { path: "/writespec", id: "writespec", label: "Describe a Write", group: "Design",
+    tip: "Turn a plain-language goal into a typed, ontology-backed WriteSpec: every field shows its provenance, inferred fields are labelled, ambiguous ones are asked, and a feasibility check names any blocking constraint. A request, not a claim." },
   { path: "/site-finder", id: "sitefinder", label: "Site Finder", group: "Design",
     tip: "Score loci by safety × durability × reachability for an edit intent." },
   { path: "/atlas", id: "atlas", label: "Writer Atlas", group: "Design",

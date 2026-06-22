@@ -43,6 +43,9 @@ export const api = {
   oracles: (probe = false) => req(`/api/oracles${probe ? "?probe=true" : ""}`),
   oracleAffinity: (reqbody) => req("/api/oracle/affinity", { method: "POST", body: reqbody }),
 
+  // v6.14 WriteSpec: prose -> typed, ontology-backed write request + clarifications + feasibility
+  writespec: (prose) => req("/api/writespec", { method: "POST", body: { prose } }),
+
   // atlas + site finder
   atlas: (family, limit = 200) =>
     req(`/api/atlas?${new URLSearchParams({ ...(family ? { family } : {}), limit })}`),

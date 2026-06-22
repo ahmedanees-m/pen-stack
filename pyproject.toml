@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pen-stack"
-version = "6.13.0"
+version = "6.14.0"
 description = "Open infrastructure for genome writing: the Writable Genome atlas, the Writer Atlas, and the Write Planner."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -48,6 +48,7 @@ services = ["litellm>=1.44", "paper-qa>=5.10", "streamlit>=1.37", "fastmcp>=2.3"
 orchestrate = ["paramiko>=3.4", "scp>=0.15", "rich>=13.7", "python-dotenv>=1.0"]
 docs = ["mkdocs>=1.6", "mkdocs-material>=9.5"]
 env = ["gymnasium>=0.29"] # WS-OPT1 - optional Gymnasium interface (pen_stack/env/); interface only
+spec = ["sbol3>=1.1"] # Stage A WriteSpec - optional SBOL3 round-trip (the JSON round-trip is always available)
 dev = ["pytest>=8", "ruff>=0.5", "pytest-cov>=5"]
 
 [project.scripts]

@@ -1,0 +1,393 @@
+{
+  "$defs": {
+    "CargoComponent": {
+      "description": "A component to be written (CDS, promoter, insulator, attB, polyA, ...), with its SO/SBO role.",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Resolved"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sequence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sequence"
+        },
+        "length_bp": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Length Bp"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "CargoComponent",
+      "type": "object"
+    },
+    "Constraints": {
+      "description": "The request's constraints (efficiency floor, scarless, safety switch, copy number, guardrails, delivery).",
+      "properties": {
+        "efficiency_floor": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Efficiency Floor"
+        },
+        "scarless": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scarless"
+        },
+        "safety_switch_required": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Safety Switch Required"
+        },
+        "copy_number": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Copy Number"
+        },
+        "germline": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Germline"
+        },
+        "max_cargo_bp": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Cargo Bp"
+        },
+        "delivery_limit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Delivery Limit"
+        },
+        "inducer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Resolved"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "Constraints",
+      "type": "object"
+    },
+    "Resolved": {
+      "description": "A free-text term resolved to a canonical ontology id, with confidence and the candidate set when ambiguous.",
+      "properties": {
+        "text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Text"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        },
+        "ontology": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ontology"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "candidates": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Candidates",
+          "type": "array"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "title": "Resolved",
+      "type": "object"
+    },
+    "Target": {
+      "description": "Where the write goes: a locus, a gene, an att/landing site, or a phenotype goal.",
+      "properties": {
+        "kind": {
+          "default": "unspecified",
+          "enum": [
+            "locus",
+            "gene",
+            "att_site",
+            "phenotype",
+            "unspecified"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "gene": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Resolved"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "locus": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Resolved"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "att_site": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Att Site"
+        },
+        "phenotype": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Resolved"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "Target",
+      "type": "object"
+    }
+  },
+  "description": "A typed, ontology-backed, machine-checkable genome-writing request (an SBOL3 profile). A REQUEST, not a claim.\n\nEvery field that was not explicit in the source prose is recorded in ``provenance`` as ``inferred`` (with the\nrationale in ``assumptions``); a required field that is unspecified or ambiguous yields a ``clarifications``\nquestion rather than a guess; a term that could not be resolved is listed in ``unresolved`` and kept null.",
+  "properties": {
+    "write_type": {
+      "title": "Write Type",
+      "type": "string"
+    },
+    "cargo": {
+      "items": {
+        "$ref": "#/$defs/CargoComponent"
+      },
+      "title": "Cargo",
+      "type": "array"
+    },
+    "target": {
+      "$ref": "#/$defs/Target"
+    },
+    "cell_type": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Resolved"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "constraints": {
+      "$ref": "#/$defs/Constraints"
+    },
+    "provenance": {
+      "additionalProperties": {
+        "enum": [
+          "explicit",
+          "inferred",
+          "user",
+          "unresolved"
+        ],
+        "type": "string"
+      },
+      "title": "Provenance",
+      "type": "object"
+    },
+    "assumptions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Assumptions",
+      "type": "array"
+    },
+    "clarifications": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Clarifications",
+      "type": "array"
+    },
+    "unresolved": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unresolved",
+      "type": "array"
+    },
+    "free_text_note": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Free Text Note"
+    },
+    "extensions": {
+      "additionalProperties": true,
+      "title": "Extensions",
+      "type": "object"
+    }
+  },
+  "required": [
+    "write_type"
+  ],
+  "title": "WriteRequest",
+  "type": "object"
+}

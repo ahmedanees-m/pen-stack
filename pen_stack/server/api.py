@@ -238,6 +238,18 @@ def offtarget_assay_endpoint(writer_family: str):
     return recommend_assay(writer_family)
 
 
+@app.post("/writespec", tags=["v6.14 writespec"])
+def writespec_endpoint(req: dict):
+    """v6.14 Stage A: parse a plain-language genome-writing request into a typed, ontology-backed WriteSpec.
+    Body: {prose, overrides?, check_feasibility?}. Returns the typed spec (with per-field provenance), the
+    assumptions behind every inferred field, clarifying questions for anything underspecified, the unresolved
+    terms (kept null, never invented), the downstream design adapter, and the feasibility verdict. A WriteSpec is
+    a REQUEST, not a claim; the extractor never fabricates intent."""
+    from pen_stack.spec.service import parse_request
+    return parse_request(req.get("prose", ""), overrides=req.get("overrides"),
+                         check_feasibility=bool(req.get("check_feasibility", True)))
+
+
 @app.post("/oracle/affinity", tags=["v6.13 oracle"])
 def oracle_affinity_endpoint(req: dict):
     """v6.13 PEN-ORACLE protein-ligand binding-affinity (Boltz-2 head) under the oracle contract. Body:

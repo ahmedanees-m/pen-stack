@@ -20,8 +20,10 @@ A nominated off-target is a candidate, and every result ships with the empirical
   controls) found that with a **cell-type-matched** track (ENCODE HEK293T DNase, v6.10.3) accessibility predicts
   WT-Cas9 cell-based off-target activity: **GUIDE-seq AUROC 0.58 (cross-cell K562) → 0.671 (matched), CI
   [0.642, 0.701]**, in-vitro control null. **VALIDATED (moderate, cell-type-matched)**; it is surfaced as an
-  annotation and does **not yet change the numeric risk score** (sequence/CRISOT dominates; TTISS, a Cas9-variant
-  assay, is the expected outlier). Full result: `benchmarks/offtarget/chromatin_validation.json`.
+  annotation and is **intentionally not folded into the numeric risk score** (the v6.10.4 incremental analysis
+  found no held-out ranking improvement over CRISOT, so the score stays sequence/CRISOT-driven; TTISS, a
+  Cas9-variant assay, is the expected outlier). Full results:
+  `benchmarks/offtarget/chromatin_{validation,incremental}.json`.
 - **Serine integrase (Bxb1):** a cryptic **pseudo-attB** scan that seeds on the *real documented* Bxb1 attB core
   (`GCGGTCTC`, central GT; FlyBase FBto0000359, Ghosh 2003) and reports candidate cryptic sites by arm mismatches.
 - **Bridge recombinase:** delegates to the existing Perry-DMS pseudosite engine (`pen_stack.bridge.offtarget`).

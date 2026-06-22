@@ -1,0 +1,36 @@
+{
+  "train": [
+    "ws01",
+    "ws02",
+    "ws03",
+    "ws04",
+    "ws05",
+    "ws06",
+    "ws07",
+    "ws08",
+    "ws09",
+    "ws10",
+    "ws11",
+    "ws12",
+    "ws13",
+    "ws14",
+    "ws15",
+    "ws16",
+    "ws17",
+    "ws18"
+  ],
+  "test": [
+    "ws19",
+    "ws20",
+    "ws21",
+    "ws22",
+    "ws23",
+    "ws24"
+  ],
+  "ambiguity_subset": [
+    "ws17",
+    "ws18",
+    "ws24"
+  ],
+  "leakage_control": "test ids are sealed and disjoint from train; prose paraphrases do not co-occur across splits"
+}
