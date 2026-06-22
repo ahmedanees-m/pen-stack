@@ -1,0 +1,8 @@
+{
+  "cycle": "v6.12",
+  "workstream": "WS-VERIFY",
+  "prepared": "2026-06-21",
+  "sha256": {
+    "prereg/ws_verify.yaml": "6ea46ecf1c5ef7fbd9072fc7ebfc17b419c8ce9f1bbb846ea37bbbfbbd395294"
+  }
+}

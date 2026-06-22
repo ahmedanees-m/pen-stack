@@ -1,0 +1,255 @@
+{
+  "spec": "PEN-STACK genome-writing rule base",
+  "version": "1.0",
+  "n_rules": 10,
+  "categories": [
+    "delivery",
+    "fold",
+    "multiplex",
+    "payload",
+    "reachability"
+  ],
+  "kinds": [
+    "hard_reject",
+    "scope_flag",
+    "soft_penalty"
+  ],
+  "note": "A rule is data, not code: each record names the evaluator that executes it against a Design. Relocating the rules into this spec changes no decision (proven by the parity tests).",
+  "rules": [
+    {
+      "id": "reachability.target_element_available",
+      "kind": "hard_reject",
+      "category": "reachability",
+      "mechanism": "the writer family's required targeting element must be present at the site (Cas NGG/TTTV PAM; CAST GTN PAM + fixed insertion distance; serine integrase attB/attP; bridge/seek central CT core; PE-installable), else the writer physically cannot engage the locus",
+      "evaluator": "reachability_target_site",
+      "param": {
+        "config": "configs/target_sites.yaml"
+      },
+      "provenance": {
+        "doi": [
+          "10.1126/science.adz0276",
+          "10.1038/s41586-024-07552-4",
+          "10.1126/science.aax9181",
+          "10.1038/s41587-022-01527-4"
+        ],
+        "note": "v3.2 MC1 hard filter; per-family motifs in configs/target_sites.yaml"
+      },
+      "citation": [
+        "10.1126/science.adz0276",
+        "10.1038/s41586-024-07552-4",
+        "10.1126/science.aax9181",
+        "10.1038/s41587-022-01527-4"
+      ],
+      "note": "v3.2 MC1 hard filter; per-family motifs in configs/target_sites.yaml",
+      "test_ref": "tests/unit/test_ws_r.py::test_reachability_controls",
+      "scope": "sequence-computable screen, not a guarantee of activity (relaxed-PAM engineered variants approximate)",
+      "evaluator_registered": true,
+      "has_citation": true
+    },
+    {
+      "id": "fold.cross_loop_complementarity",
+      "kind": "soft_penalty",
+      "category": "fold",
+      "mechanism": "bridge-RNA target/donor binding loops must not be mutually (or self-) complementary above threshold, or they recombine with each other (TBL-DBL / self cross-loop)",
+      "evaluator": "fold_cross_loop",
+      "param": {
+        "cross_loop_threshold": 0.6
+      },
+      "provenance": {
+        "doi": [
+          "10.1126/science.adz0276",
+          "10.1038/s41586-024-07552-4"
+        ],
+        "note": "v3.1.5 fold_qc cross-loop screen (ViennaRNA fold optional)"
+      },
+      "citation": [
+        "10.1126/science.adz0276",
+        "10.1038/s41586-024-07552-4"
+      ],
+      "note": "v3.1.5 fold_qc cross-loop screen (ViennaRNA fold optional)",
+      "test_ref": "tests/unit/test_ws_r.py::test_fold_controls",
+      "scope": "crude antiparallel-complementarity screen; sequence-level, not a full co-fold simulation",
+      "evaluator_registered": true,
+      "has_citation": true
+    },
+    {
+      "id": "payload.cargo_within_capacity",
+      "kind": "hard_reject",
+      "category": "payload",
+      "mechanism": "cargo size (bp) must not exceed the delivery vehicle's packaging capacity",
+      "evaluator": "payload_capacity",
+      "param": {},
+      "provenance": {
+        "doi": [
+          "10.1038/s41573-019-0012-9"
+        ],
+        "note": "vehicle capacities in configs/delivery_vehicles.yaml"
+      },
+      "citation": [
+        "10.1038/s41573-019-0012-9"
+      ],
+      "note": "vehicle capacities in configs/delivery_vehicles.yaml",
+      "test_ref": "tests/unit/test_ws_r.py::test_payload_controls",
+      "scope": "capacity is a hard packaging limit; efficiency near the limit is a separate soft penalty",
+      "evaluator_registered": true,
+      "has_citation": true
+    },
+    {
+      "id": "payload.split_aav_efficiency",
+      "kind": "soft_penalty",
+      "category": "payload",
+      "mechanism": "an AAV cargo above a single capsid (~4.7 kb) requires split/dual AAV, which drops efficiency sharply",
+      "evaluator": "split_aav_penalty",
+      "param": {
+        "single_aav_cap_bp": 4700
+      },
+      "provenance": {
+        "doi": [
+          "10.1128/JVI.79.15.9933-9944.2005"
+        ],
+        "note": "AAV packaging capacity (~4.7 kb); oversize cargo needs split/dual AAV"
+      },
+      "citation": [
+        "10.1128/JVI.79.15.9933-9944.2005"
+      ],
+      "note": "AAV packaging capacity (~4.7 kb); oversize cargo needs split/dual AAV",
+      "test_ref": "tests/unit/test_ws_r.py::test_payload_controls",
+      "scope": "directional efficiency flag, not a titre prediction",
+      "evaluator_registered": true,
+      "has_citation": true
+    },
+    {
+      "id": "multiplex.translocation_risk",
+      "kind": "soft_penalty",
+      "category": "multiplex",
+      "mechanism": "in a multi-edit plan, concurrent double-strand breaks at different loci can mis-join into a translocation; risk rises with cut count / cut probability / proximity, and is ~zero for DSB-free writers",
+      "evaluator": "multiplex_translocation",
+      "param": {
+        "risk_threshold": 0.2
+      },
+      "provenance": {
+        "doi": [
+          "10.1038/nbt.3198"
+        ],
+        "note": "v3.1 WS-G1 pairwise translocation screen"
+      },
+      "citation": [
+        "10.1038/nbt.3198"
+      ],
+      "note": "v3.1 WS-G1 pairwise translocation screen",
+      "test_ref": "tests/unit/test_ws_r.py::test_multiplex_controls",
+      "scope": "interpretable pairwise screen, not a calibrated translocation-rate predictor",
+      "evaluator_registered": true,
+      "has_citation": true
+    },
+    {
+      "id": "delivery.cargo_form_compatible",
+      "kind": "hard_reject",
+      "category": "delivery",
+      "mechanism": "the writer's output form (DNA cargo / mRNA / RNP) must be carriable by the chosen vehicle (e.g. an RNP-only payload cannot ride a DNA-only AAV; an mRNA/RNP rides LNP or eVLP)",
+      "evaluator": "delivery_cargo_form",
+      "param": {},
+      "provenance": {
+        "doi": [
+          "10.1038/s41578-021-00358-0",
+          "10.1016/j.cell.2022.03.045"
+        ],
+        "note": "cargo-form column in configs/delivery_vehicles.yaml"
+      },
+      "citation": [
+        "10.1038/s41578-021-00358-0",
+        "10.1016/j.cell.2022.03.045"
+      ],
+      "note": "cargo-form column in configs/delivery_vehicles.yaml",
+      "test_ref": "tests/unit/test_ws_r.py::test_delivery_controls",
+      "scope": "form compatibility is computable; precise tropism is not",
+      "evaluator_registered": true,
+      "has_citation": true
+    },
+    {
+      "id": "delivery.no_integration_constraint",
+      "kind": "hard_reject",
+      "category": "delivery",
+      "mechanism": "if the goal forbids genomic integration, an integrating vehicle (e.g. lentivirus) is illegal",
+      "evaluator": "delivery_no_integration",
+      "param": {},
+      "provenance": {
+        "doi": [
+          "10.1126/science.1233151"
+        ],
+        "note": "integration column in configs/delivery_vehicles.yaml"
+      },
+      "citation": [
+        "10.1126/science.1233151"
+      ],
+      "note": "integration column in configs/delivery_vehicles.yaml",
+      "test_ref": "tests/unit/test_ws_r.py::test_delivery_controls",
+      "scope": "integration status is a documented vehicle property",
+      "evaluator_registered": true,
+      "has_citation": true
+    },
+    {
+      "id": "delivery.sequence_constraints",
+      "kind": "soft_penalty",
+      "category": "delivery",
+      "mechanism": "vehicle-specific construct hazards (lentiviral internal poly(A), AAV inverted-repeat/homopolymer, recombinogenic direct repeats, GC extremes) lower titre/yield",
+      "evaluator": "delivery_sequence_constraints",
+      "param": {},
+      "provenance": {
+        "doi": [
+          "10.1128/JVI.79.15.9933-9944.2005"
+        ],
+        "note": "AAV genome/sequence constraints; v3.2 MC2 delivery_constraints scan (labelled heuristic, per-check sources in configs/delivery_constraints.yaml)"
+      },
+      "citation": [
+        "10.1128/JVI.79.15.9933-9944.2005"
+      ],
+      "note": "AAV genome/sequence constraints; v3.2 MC2 delivery_constraints scan (labelled heuristic, per-check sources in configs/delivery_constraints.yaml)",
+      "test_ref": "tests/unit/test_ws_r.py::test_delivery_controls",
+      "scope": "labeled heuristic, directional; not a titre predictor",
+      "evaluator_registered": true,
+      "has_citation": true
+    },
+    {
+      "id": "delivery.aav_packaging_margin",
+      "kind": "soft_penalty",
+      "category": "delivery",
+      "mechanism": "AAV packaging efficiency / titre drops sharply as the cargo approaches the capsid limit (computable from cargo_bp vs vehicle capacity), even while still under capacity (v4.0 delivery-oracle refinement)",
+      "evaluator": "delivery_aav_packaging",
+      "param": {
+        "margin_frac": 0.9
+      },
+      "provenance": {
+        "doi": [
+          "10.1089/hum.2010.245"
+        ],
+        "note": "AAV genome-size vs packaging-efficiency relationship"
+      },
+      "citation": [
+        "10.1089/hum.2010.245"
+      ],
+      "note": "AAV genome-size vs packaging-efficiency relationship",
+      "test_ref": "tests/unit/test_ws_atlas.py::test_aav_packaging_margin",
+      "scope": "computable efficiency margin, directional; not a titre predictor",
+      "evaluator_registered": true,
+      "has_citation": true
+    },
+    {
+      "id": "delivery.immunogenicity_magnitude",
+      "kind": "scope_flag",
+      "category": "delivery",
+      "mechanism": "the MAGNITUDE of immunogenicity and the precise in-vivo tropism of a vehicle are not modeled",
+      "evaluator": "delivery_immunogenicity_scope",
+      "param": {},
+      "provenance": {
+        "note": "known-unknown; surfaced, never predicted (Invariant 2)"
+      },
+      "citation": [],
+      "note": "known-unknown; surfaced, never predicted (Invariant 2)",
+      "test_ref": "tests/unit/test_ws_r.py::test_delivery_controls",
+      "scope": "declared out of scope; never a hard reject dressed as physics",
+      "evaluator_registered": true,
+      "has_citation": true
+    }
+  ]
+}

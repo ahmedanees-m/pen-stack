@@ -91,6 +91,13 @@ def curated_dois() -> frozenset[str]:
     from pen_stack.rules import load_ruleset
     for r in load_ruleset().rules:
         dois.update(r.provenance.get("doi", []) or [])
+    # v6.12 biosecurity-standards alignment provenance (IBBIS Common Mechanism + SecureDNA)
+    try:
+        from pen_stack.safety.standards import COMMON_MECHANISM, SECUREDNA
+        dois.add(COMMON_MECHANISM["citation_doi"])
+        dois.add("10.48550/arXiv." + SECUREDNA["citation_arxiv"])
+    except Exception: # noqa: BLE001
+        pass
     return frozenset(dois)
 
 

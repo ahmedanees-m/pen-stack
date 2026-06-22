@@ -50,6 +50,17 @@ def verify_write(design: dict) -> dict:
 
 
 @mcp.tool()
+def verify_proof(design: dict) -> dict:
+    """v6.12 verifier (WS-VERIFY): the repair-oriented proof object for a proposed write. Returns the three
+    axes (legality, confidence, biosecurity) reported separately, each with a status, the rule or signature
+    that fired, evidence, and a repair hint; the collapsed verdict is None. An agent fixes a failed-on-legality
+    design from the legality axis's repair hint and re-verifies. Biosecurity hazards are acknowledged and
+    routed to human review, never given an actionable repair."""
+    from pen_stack.verify.proof import verify_proof as _vp
+    return _vp(design).model_dump()
+
+
+@mcp.tool()
 def graph_query(locus: str, cargo_form: str | None = None) -> dict:
     """v4.5 world-model graph (WS-G): a multi-hop query. Returns the writer families that REACH `locus` AND
     are DELIVERABLE by a vehicle carrying `cargo_form` (optional), each answer with its provenanced edge path

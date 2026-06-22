@@ -1,0 +1,45 @@
+# PEN-STACK v6.12 - WS-VERIFY (PEN-VERIFY: formal verification service + proof object + standards-aligned biosecurity). Pre-registered.
+cycle: "v6.12"
+workstream: "WS-VERIFY"
+prepared: "2026-06-21"
+motivation: >
+  verify(design) already returns legality + calibrated confidence + a biosecurity verdict as separate fields, but
+  it is not a citable spec, the result is not a repair-oriented proof object an agent can fix a design from, and the
+  Guardian flags are not mapped to the community synthesis-screening standards. Stage F hardens the spine into a
+  formal verification service: a published, machine-readable rule spec; a per-axis proof/critique object with repair
+  hints; and a biosecurity hook aligned to the IBBIS Common Mechanism so it interoperates. The thesis is that
+  verification is tractable where generation is not.
+deliverable: >
+  pen_stack/rules/spec.py (machine-readable, citable export of the existing configs/rules/*.yaml ruleset, with a
+  0-mismatch parity test against the live solver), docs/rule_spec.md, pen_stack/verify/proof.py (per-axis proof object
+  {axis, status, violated_rule, evidence, repair_hint} over legality / confidence / biosecurity, plus a proof-driven
+  deterministic repair loop), pen_stack/safety/standards.py (map the Guardian screen kinds and decisions onto the
+  IBBIS Common Mechanism categories, with a concordance report), benchmarks/verify/ (repair + concordance fixtures and
+  a harness), and surfaces (MCP design.verify, REST POST /api/verify returning the proof, a web Verify page).
+method: >
+  Wrap, do not rebuild. The rule spec exports the existing ruleset (id, kind, category, mechanism, evaluator, param,
+  provenance{doi, note}, test_ref, scope) and a parity test proves the exported spec reproduces the live solver's
+  decisions with 0 mismatches (extends the v3.3 parity). The proof object derives from the verify() Verdict into three
+  separately-reported axes: legality (rule-deterministic), confidence (the calibrated trust layer, abstains when
+  uncalibrated), biosecurity (the Guardian, clear/flag/refuse/escalate); each carries status, the violated rule or
+  signature, evidence, and a repair_hint; the collapsed single verdict is None (never fused). The repair loop is a
+  deterministic function that consumes ONLY the proof object's repair_hints to mutate a failed design and re-verify to
+  a pass, demonstrating the object is agent-repairable. Standards: map the four Guardian screen kinds (function_flag,
+  taxon_flag, chimera_context, sequence_homology) and the four decisions onto the IBBIS Common Mechanism category
+  taxonomy; report the concordance verbatim on a labelled set.
+acceptance: >
+  F-G1 (rule spec): the exported spec reproduces the live solver on the legality/parity fixture with 0 mismatches, is
+  externally readable, and every rule carries a DOI or an explicit provenance note. Proof object: the three axes are
+  never collapsed (the collapsed verdict is None) and a failed design is repairable using ONLY the proof object (the
+  closed-loop repair test passes). Confidence axis: abstains when uncalibrated; coverage reported. Biosecurity
+  concordance with the Common Mechanism categories is reported verbatim (a concordance, not certification). Abstains
+  without inputs; 0 fabricated verdicts.
+honesty_invariant: >
+  The verdict covers legality, feasibility and biosecurity, NOT efficacy (efficacy stays a downstream prediction with
+  its own uncertainty). Biosecurity here is the in-design gate; the full sequence-screening pipeline is BioFirewall
+  (Stage K), and the standard alignment is a concordance, not a certification. Biosecurity repair hints are
+  deliberately non-actionable for hazard (acknowledge, do not instruct). The Stage A WriteSpec / SAT closed-loop
+  coupling named in the plan is DEFERRED until Stage A ships; the Stage F repair loop is self-contained and does not
+  depend on it. No fabricated verdicts; the rule spec relocates decisions, it does not change them.
+gate: "F-VERIFY - rule spec reproduces the live solver at 0-mismatch parity (DOI/note per rule); the proof object reports the three axes separately (never collapsed) and is agent-repairable from the repair hints alone; the calibrated-confidence axis abstains when uncalibrated; biosecurity-to-Common-Mechanism concordance reported verbatim; 0 fabricated verdicts."
+locked_files: [prereg/ws_verify.yaml]

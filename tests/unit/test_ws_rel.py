@@ -8,10 +8,28 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_6_11_0_everywhere():
-    assert pen_stack.__version__ == "6.11.0"
-    assert 'version = "6.11.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 6.11.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+def test_version_is_6_12_0_everywhere():
+    assert pen_stack.__version__ == "6.12.0"
+    assert 'version = "6.12.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 6.12.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+
+
+def test_v6_12_artifacts():
+    # the v6.12 artifacts: the verification service (rule spec + proof object + standards-aligned biosecurity)
+    from pen_stack.rules.spec import spec_parity # noqa: F401
+    from pen_stack.safety.standards import concordance_report # noqa: F401
+    from pen_stack.verify.proof import repair_from_proof, verify_proof # noqa: F401
+    cl = (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "[6.12.0]" in cl
+    # the three Verify-Bench gates pass: rule-spec parity, proof-object repair, standards concordance
+    from benchmarks.verify.harness import run
+    assert run()["all_gates_pass"] is True
+    for p in ("pen_stack/rules/spec.py", "pen_stack/verify/proof.py", "pen_stack/safety/standards.py",
+              "benchmarks/verify/harness.py", "benchmarks/verify/rule_spec.json",
+              "benchmarks/verify/verify_bench_metrics.json", "benchmarks/verify/SHA256SUMS",
+              "docs/rule_spec.md", "docs/verify_service.md",
+              "prereg/ws_verify.yaml", "prereg/SHA256_LOCK_ws_verify.json"):
+        assert (_ROOT / p).exists(), p
 
 
 def test_v6_11_artifacts():

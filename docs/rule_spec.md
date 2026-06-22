@@ -1,0 +1,18 @@
+# Genome-writing rule spec
+
+Version 1.0. 10 rules across 5 categories (delivery, fold, multiplex, payload, reachability). A rule is data, not code: each record names the evaluator that executes it against a Design, so the rules are enumerable, queryable, and citation-backed without changing any decision (proven by the parity tests).
+
+Generated from `pen_stack/rules/spec.py::export_spec`. Machine-readable form: `benchmarks/verify/rule_spec.json`.
+
+| Rule | Kind | Mechanism | Citation | Scope |
+|---|---|---|---|---|
+| `reachability.target_element_available` | hard_reject | the writer family's required targeting element must be present at the site (Cas NGG/TTTV PAM; CAST GTN PAM + fixed insertion distance; serine integrase attB/attP; bridge/seek central CT core; PE-installable), else the writer physically cannot engage the locus | 10.1126/science.adz0276, 10.1038/s41586-024-07552-4, 10.1126/science.aax9181, 10.1038/s41587-022-01527-4 | sequence-computable screen, not a guarantee of activity (relaxed-PAM engineered variants approximate) |
+| `fold.cross_loop_complementarity` | soft_penalty | bridge-RNA target/donor binding loops must not be mutually (or self-) complementary above threshold, or they recombine with each other (TBL-DBL / self cross-loop) | 10.1126/science.adz0276, 10.1038/s41586-024-07552-4 | crude antiparallel-complementarity screen; sequence-level, not a full co-fold simulation |
+| `payload.cargo_within_capacity` | hard_reject | cargo size (bp) must not exceed the delivery vehicle's packaging capacity | 10.1038/s41573-019-0012-9 | capacity is a hard packaging limit; efficiency near the limit is a separate soft penalty |
+| `payload.split_aav_efficiency` | soft_penalty | an AAV cargo above a single capsid (~4.7 kb) requires split/dual AAV, which drops efficiency sharply | 10.1128/JVI.79.15.9933-9944.2005 | directional efficiency flag, not a titre prediction |
+| `multiplex.translocation_risk` | soft_penalty | in a multi-edit plan, concurrent double-strand breaks at different loci can mis-join into a translocation; risk rises with cut count / cut probability / proximity, and is ~zero for DSB-free writers | 10.1038/nbt.3198 | interpretable pairwise screen, not a calibrated translocation-rate predictor |
+| `delivery.cargo_form_compatible` | hard_reject | the writer's output form (DNA cargo / mRNA / RNP) must be carriable by the chosen vehicle (e.g. an RNP-only payload cannot ride a DNA-only AAV; an mRNA/RNP rides LNP or eVLP) | 10.1038/s41578-021-00358-0, 10.1016/j.cell.2022.03.045 | form compatibility is computable; precise tropism is not |
+| `delivery.no_integration_constraint` | hard_reject | if the goal forbids genomic integration, an integrating vehicle (e.g. lentivirus) is illegal | 10.1126/science.1233151 | integration status is a documented vehicle property |
+| `delivery.sequence_constraints` | soft_penalty | vehicle-specific construct hazards (lentiviral internal poly(A), AAV inverted-repeat/homopolymer, recombinogenic direct repeats, GC extremes) lower titre/yield | 10.1128/JVI.79.15.9933-9944.2005 | labeled heuristic, directional; not a titre predictor |
+| `delivery.aav_packaging_margin` | soft_penalty | AAV packaging efficiency / titre drops sharply as the cargo approaches the capsid limit (computable from cargo_bp vs vehicle capacity), even while still under capacity (v4.0 delivery-oracle refinement) | 10.1089/hum.2010.245 | computable efficiency margin, directional; not a titre predictor |
+| `delivery.immunogenicity_magnitude` | scope_flag | the MAGNITUDE of immunogenicity and the precise in-vivo tropism of a vehicle are not modeled | known-unknown; surfaced, never predicted (Invariant 2) | declared out of scope; never a hard reject dressed as physics |

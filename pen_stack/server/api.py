@@ -158,6 +158,16 @@ def verify_endpoint(design: dict):
     return verify(design).model_dump()
 
 
+@app.post("/verify/proof")
+def verify_proof_endpoint(design: dict):
+    """v6.12 verification service (WS-VERIFY): the repair-oriented proof object. Returns the three axes
+    (legality, confidence, biosecurity) reported separately, each with a status, the rule or signature that
+    fired, evidence, and a repair hint; the collapsed verdict is None. An agent repairs a failed design from
+    the legality axis's repair hint. A `question` key (optional) is checked against the known-unknowns."""
+    from pen_stack.verify.proof import verify_proof
+    return verify_proof(design).model_dump()
+
+
 @app.post("/graph/query")
 def graph_query_endpoint(q: dict):
     """v4.5 world-model graph (WS-G): multi-hop query. Body: {locus, cargo_form?}. Returns writers that

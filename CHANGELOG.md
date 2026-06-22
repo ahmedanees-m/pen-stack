@@ -3,6 +3,36 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [6.12.0] - 2026-06-21 - Verification service: published rule spec, proof object, standards-aligned biosecurity
+
+Hardens `verify(design)` into a formal verification service. The rule base becomes a published, citable spec;
+`verify_proof()` returns a repair-oriented proof object an agent can fix a failed design from; and the
+biosecurity gate is mapped to the community synthesis-screening standards.
+
+### Added
+- **Published rule spec** (`pen_stack/rules/spec.py`, `benchmarks/verify/rule_spec.json`, `docs/rule_spec.md`).
+  The rule base exports as a machine-readable, citable document. A parity check confirms the exported spec
+  round-trips to the exact ruleset the solver loads (0 mismatches), every rule names a registered evaluator,
+  and every rule carries a DOI or a note.
+- **Repair-oriented proof object** (`pen_stack/verify/proof.py`). `verify_proof(design)` returns three axes,
+  legality, confidence and biosecurity, reported separately, each with a status, the rule or signature that
+  fired, evidence, and a repair hint; the collapsed verdict is `None`. `repair_from_proof` fixes a
+  failed-on-legality design using only the proof object and re-verifies it. Biosecurity hazards are
+  acknowledged and routed to human review, never auto-repaired.
+- **Biosecurity standards alignment** (`pen_stack/safety/standards.py`). Maps the Guardian screen kinds and
+  decisions onto the IBBIS Common Mechanism categories and `ScreenStatus` (Pass / Warning / Flag) and onto
+  SecureDNA's pass/deny outcome, with a concordance report (8/8 concordant on the labelled probe set).
+  References: Common Mechanism (Wheeler et al. 2024, `10.1089/apb.2023.0034`); SecureDNA (`arXiv:2403.14023`).
+- **Verify-Bench** (`benchmarks/verify/`) reporting the three gates, and surfaces: REST `POST /api/verify/proof`,
+  MCP `verify_proof`, manifest tool `verify_proof`, and `docs/verify_service.md`.
+
+### Notes
+- The verdict covers legality, feasibility and biosecurity, not efficacy (efficacy stays a downstream
+  prediction with its own uncertainty). The biosecurity hook is the in-design gate; the full sequence-screening
+  pipeline is BioFirewall, and the standard alignment is a concordance, not a certification.
+- The plan paired this with a Stage A WriteSpec / SAT repair loop. Stage A is not yet built, so the proof-object
+  repair loop here is self-contained; the WriteSpec coupling is a documented future integration.
+
 ## [6.11.0] - 2026-06-20 - Cross-modality deliverability and a learned capsid-fitness model
 
 Delivery moves from an 8-vehicle rule palette to a cross-modality recommender. It adds a learned,

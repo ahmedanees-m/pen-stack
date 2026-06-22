@@ -15,6 +15,10 @@ import pen_stack
 _TOOLS = [
     {"name": "verify_write", "summary": "legality + safety + calibrated confidence + immune profile for a design",
      "input": "Design", "output": "Verdict", "entrypoint": "pen_stack.verify.verify", "fabricates": False},
+    {"name": "verify_proof", "summary": "repair-oriented proof object: legality / confidence / biosecurity as "
+                                        "separate axes with repair hints (never collapsed)",
+     "input": "Design", "output": "Proof", "entrypoint": "pen_stack.verify.proof.verify_proof",
+     "fabricates": False},
     {"name": "safety_screen", "summary": "biosecurity / dual-use gate (clear/flag/escalate/refuse)",
      "input": "Design", "output": "SafetyVerdict", "entrypoint": "pen_stack.safety.safety_gate",
      "fabricates": False},

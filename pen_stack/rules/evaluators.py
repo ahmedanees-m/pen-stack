@@ -31,6 +31,11 @@ def get_evaluator(name: str) -> Callable[[Design, Rule], RuleResult]:
     return _REGISTRY[name]
 
 
+def registered_evaluators() -> set[str]:
+    """Names of every registered evaluator (used by the rule-spec export to confirm each rule is executable)."""
+    return set(_REGISTRY)
+
+
 def _result(rule: Rule, status: str, reason: str, value=None) -> RuleResult:
     return RuleResult(rule_id=rule.id, kind=rule.kind, category=rule.category, status=status,
                       reason=reason, citation=list(rule.provenance.get("doi", [])), value=value)
