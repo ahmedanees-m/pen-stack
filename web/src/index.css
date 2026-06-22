@@ -2,40 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Honest-UX palette as CSS variables (the components read these so status colours are consistent everywhere). */
+/* Provenance-UX palette as CSS variables (components read these so status colours are consistent everywhere). */
 :root {
   --ok: #3fb950;
   --warn: #d29922;
   --bad: #f85149;
   --muted: #6e7681;
   --brand: #5ec8d8;
-  --line: #243042;
+  --brand-deep: #2a9db0;
+  --line: #223042;
+  --line-soft: #1b2735;
 }
 
 html, body, #root { height: 100%; }
 body {
   margin: 0;
-  background: radial-gradient(1200px 600px at 70% -10%, #12202b 0%, #0a0e14 55%);
+  background:
+    radial-gradient(900px 480px at 82% -8%, rgba(94,200,216,0.10) 0%, rgba(10,14,20,0) 60%),
+    radial-gradient(1100px 600px at 8% -12%, rgba(42,157,176,0.10) 0%, rgba(10,14,20,0) 55%),
+    #0a0e14;
   color: #e6edf3;
+  font-feature-settings: "cv11", "ss01";
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 * { scrollbar-width: thin; scrollbar-color: #2d3846 transparent; }
 *::-webkit-scrollbar { width: 9px; height: 9px; }
-*::-webkit-scrollbar-thumb { background: #2d3846; border-radius: 6px; }
+*::-webkit-scrollbar-thumb { background: #283543; border-radius: 6px; }
+*::-webkit-scrollbar-thumb:hover { background: #344559; }
+
+/* a single, consistent keyboard-focus ring */
+:focus-visible { outline: none; box-shadow: 0 0 0 2px #0a0e14, 0 0 0 4px rgba(94,200,216,0.55); border-radius: 8px; }
 
 @layer components {
-  .card { @apply rounded-xl border border-line bg-ink-850/80 shadow-panel; }
+  .card { @apply rounded-xl border border-line bg-ink-850/70 shadow-panel; }
+  .card-hover { @apply transition-all duration-150 hover:border-brand/35 hover:bg-ink-800/70; }
+
   .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium
-          transition-colors disabled:opacity-50 disabled:cursor-not-allowed; }
-  .btn-primary { @apply btn bg-brand/15 text-brand border border-brand/30 hover:bg-brand/25; }
+          transition-colors duration-150 disabled:opacity-45 disabled:cursor-not-allowed select-none; }
+  .btn-primary { @apply btn text-ink-950 font-semibold;
+                 background: linear-gradient(180deg, #6fd2e1, #2a9db0); box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset, 0 6px 16px -8px rgba(42,157,176,0.7); }
+  .btn-primary:hover:not(:disabled) { filter: brightness(1.06); }
+  .btn-secondary { @apply btn border border-brand/30 bg-brand/10 text-brand hover:bg-brand/20; }
   .btn-ghost { @apply btn text-fg-dim hover:text-fg hover:bg-ink-700/60 border border-transparent; }
-  .input { @apply w-full rounded-lg border border-line bg-ink-900 px-3 py-2 text-sm text-fg
-           placeholder:text-fg-faint focus:border-brand/50 focus:outline-none focus:ring-1 focus:ring-brand/30; }
-  .label { @apply block text-xs font-medium uppercase tracking-wide text-fg-faint mb-1.5; }
-  .chip { @apply inline-flex items-center gap-1 rounded-md border border-line bg-ink-800 px-2 py-0.5
+
+  .input { @apply w-full rounded-lg border border-line bg-ink-900/80 px-3 py-2 text-sm text-fg
+           placeholder:text-fg-faint transition-colors focus:border-brand/60 focus:bg-ink-900 focus:outline-none; }
+  .label { @apply block text-[11px] font-medium uppercase tracking-wider text-fg-faint mb-1.5; }
+
+  .chip { @apply inline-flex items-center gap-1 rounded-md border border-line bg-ink-800/80 px-2 py-0.5
           text-[11px] font-medium text-fg-dim; }
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium; }
+  .kbd { @apply inline-flex items-center rounded border border-line bg-ink-800 px-1.5 font-mono text-[11px] text-fg-dim; }
+  .link { @apply text-brand underline-offset-2 hover:underline; }
+
+  .skeleton { @apply animate-pulse rounded-md bg-ink-700/50; }
+  .eyebrow { @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-brand/90; }
 }
 
 /* ConfidenceBand */
@@ -46,10 +70,15 @@ body {
               box-shadow: 0 0 0 3px rgba(0,0,0,0.45); }
 .band-label { font-size: 12px; font-variant-numeric: tabular-nums; }
 
+/* subtle dotted grid for hero/section backdrops */
+.grid-bg { background-image: radial-gradient(rgba(94,200,216,0.10) 1px, transparent 1px); background-size: 22px 22px; }
+
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
-.fade-in { animation: fade 0.25s ease both; }
-@keyframes fade { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+.fade-in { animation: fade 0.28s ease both; }
+@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 0.5s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
 .dotpulse { animation: dot 1.2s ease-in-out infinite; }
 @keyframes dot { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout.jsx";
+import Home from "./pages/Home.jsx";
 import CoScientist from "./pages/CoScientist.jsx";
 import SiteFinder from "./pages/SiteFinder.jsx";
 import WriterAtlas from "./pages/WriterAtlas.jsx";
@@ -23,7 +24,8 @@ export default function App() {
   return (
     <Layout backend={backend} allowLlm={allowLlm} setAllowLlm={setAllowLlm}>
       <Routes>
-        <Route path="/" element={<CoScientist onBackend={setBackend} allowLlm={allowLlm} />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/chat" element={<CoScientist onBackend={setBackend} allowLlm={allowLlm} />} />
         <Route path="/writespec" element={<WriteSpec />} />
         <Route path="/site-finder" element={<SiteFinder />} />
         <Route path="/atlas" element={<WriterAtlas />} />

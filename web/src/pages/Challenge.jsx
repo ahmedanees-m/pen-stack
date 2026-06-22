@@ -33,7 +33,7 @@ export default function Challenge() {
           <Stat label="Tasks" value={ref?.n_tasks} />
           <Stat label="Reference aggregate" value={pct(ref?.aggregate)} color="var(--ok)" />
           <Stat label="Circular labels" value={ref?.no_circular_labels ? "none" : "present"} color={ref?.no_circular_labels ? "var(--ok)" : "var(--bad)"} />
-          <Stat label="No-fabrication" value={ref?.no_fabrication ? "audited" : ", "} color="var(--ok)" />
+          <Stat label="No-fabrication" value={ref?.no_fabrication ? "audited" : "pending"} color="var(--ok)" />
         </div>
       </Card>
 

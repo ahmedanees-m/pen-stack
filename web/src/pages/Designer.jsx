@@ -68,7 +68,7 @@ export default function Designer() {
                     <td className="py-2 pr-3">{s.legal ? <span className="text-ok">legal</span> : <span className="text-bad">no</span>}</td>
                     <td className="py-2 pr-3"><SafetyBadge decision={s.safety_decision} compact /></td>
                     <td className="py-2 pr-3"><ConfidenceBand lo={s.interval?.[0]} hi={s.interval?.[1]} point={s.confidence} status="grounded" /></td>
-                    <td className="py-2">{s.scope_flags?.length ? <Pill color="var(--warn)">{s.scope_flags.length} scope</Pill> : <span className="text-fg-faint text-xs">, </span>}</td>
+                    <td className="py-2">{s.scope_flags?.length ? <Pill color="var(--warn)">{s.scope_flags.length} scope</Pill> : <span className="text-fg-faint text-xs">none</span>}</td>
                   </tr>
                 ))}
               </tbody>

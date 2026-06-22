@@ -89,7 +89,7 @@ export default function OffTarget() {
                   <tr key={i} className="border-b border-line/50">
                     <td className="py-2 pr-3 font-mono text-xs">{n.site?.slice(0, 23)}</td>
                     <td className="py-2 pr-3 tabular-nums">{n.n_mismatch}</td>
-                    <td className="py-2 pr-3 tabular-nums">{n.empirical_active_fraction == null ? ", " : num(n.empirical_active_fraction)}</td>
+                    <td className="py-2 pr-3 tabular-nums">{n.empirical_active_fraction == null ? "n/a" : num(n.empirical_active_fraction)}</td>
                     <td className={`py-2 pr-3 font-medium ${BAND[n.risk_band] || ""}`}>{n.risk_band}</td>
                     <td className="py-2 tabular-nums text-brand">{n.crisot_score == null ? "VM-only" : num(n.crisot_score)}</td>
                   </tr>

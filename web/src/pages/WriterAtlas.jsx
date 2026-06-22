@@ -63,10 +63,10 @@ export default function WriterAtlas() {
                   <td className="py-2 pr-3 font-medium">{r.representative_system}</td>
                   <td className="py-2 pr-3 text-fg-dim">{r.family}</td>
                   <td className="py-2 pr-3"><Pill color={confColor[r.confidence] || "var(--muted)"}>{r.confidence}</Pill></td>
-                  <td className="py-2 pr-3 text-fg-dim">{r.mechanism_bucket || ", "}</td>
-                  <td className="py-2 pr-3 tabular-nums">{r.cargo_capacity_bp ?? ", "}</td>
-                  <td className="py-2 pr-3">{r.reachability_tier ?? ", "}</td>
-                  <td className="py-2 text-fg-dim">{r.human_cell_activity ?? ", "}</td>
+                  <td className="py-2 pr-3 text-fg-dim">{r.mechanism_bucket || "n/a"}</td>
+                  <td className="py-2 pr-3 tabular-nums">{r.cargo_capacity_bp ?? "n/a"}</td>
+                  <td className="py-2 pr-3">{r.reachability_tier ?? "n/a"}</td>
+                  <td className="py-2 text-fg-dim">{r.human_cell_activity ?? "n/a"}</td>
                 </tr>
               ))}
             </tbody>
