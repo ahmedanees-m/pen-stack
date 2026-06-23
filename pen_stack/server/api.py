@@ -103,10 +103,17 @@ def writable(gene: str, ct: str = "k562", top: int = Query(20, le=200)):
         g = loci_for_gene(gene, ct)
     except FileNotFoundError as e:
         raise HTTPException(503, str(e)) from e
+    cov = next((c["coverage"] for c in _CELLTYPES if c["id"] == ct), "unknown")
+    # writability = 0.5*safety + 0.5*p_durable (an additive, decomposable mean -- NOT a product, and there is no
+    # separate accessibility axis; chromatin enters as input features to the safety + durability models).
+    meta = {"gene": gene, "ct": ct, "coverage": cov, "writability_formula": "0.5*safety + 0.5*p_durable",
+            "coverage_note": ("partial chromatin panel for this cell type: durability degrades gracefully over the "
+                              "missing tracks (still measured, not extrapolated)") if cov == "partial" else None,
+            "disclaimer": _DISCLAIMER}
     if g.empty:
-        return {"gene": gene, "ct": ct, "loci": [], "disclaimer": _DISCLAIMER}
+        return {**meta, "loci": []}
     cols = ["chrom", "bin", "safety", "p_durable", "writability"]
-    return {"gene": gene, "ct": ct, "loci": _records(g[cols].head(top)), "disclaimer": _DISCLAIMER}
+    return {**meta, "loci": _records(g[cols].head(top))}
 
 
 # the cell types the Site Finder offers, with their HONEST coverage. A cell type returns writable loci only when
@@ -182,7 +189,8 @@ def plan(gene: str, intent: str, cargo_bp: int = 2000, ct: str = "k562", k: int 
         plans = plan_write(gene, intent_e, cargo_bp, ct, k=k)
     except FileNotFoundError as e:
         raise HTTPException(503, str(e)) from e
-    return {"gene": gene, "intent": intent, "ct": ct, "n": len(plans), "plans": plans,
+    cov = next((c["coverage"] for c in _CELLTYPES if c["id"] == ct), "unknown")
+    return {"gene": gene, "intent": intent, "ct": ct, "coverage": cov, "n": len(plans), "plans": plans,
             "disclaimer": _DISCLAIMER}
 
 

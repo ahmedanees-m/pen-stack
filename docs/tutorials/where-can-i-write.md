@@ -2,9 +2,11 @@
 
 **Goal:** find safe, durable insertion loci near a target gene, in a specific cell type.
 
-The Writable Genome scores every 1 kb bin for `writability = safety x durability`, learned blind on
-public data (COSMIC/DepMap + 3.7M MLV integration sites for safety; TRIP position effects for
-durability). It is *conditional on the supplied epigenome*, so the cell type matters.
+The Writable Genome scores every 1 kb bin for `writability = 0.5*safety + 0.5*p_durable` (an additive,
+decomposable mean of the two grounded components, not a product, and with no separate accessibility term -
+chromatin enters as input features to the safety and durability models). Both are learned blind on public
+data (CancerMine/DepMap + MLV integration sites for safety; TRIP position effects for durability). It is
+*conditional on the supplied epigenome*, so the cell type matters.
 
 ## CLI
 

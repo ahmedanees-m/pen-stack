@@ -14,7 +14,7 @@ python -m pen_stack.agent.mcp_server   # or: docker compose up mcp
 
 | Tool | Signature | Returns |
 |---|---|---|
-| `writability` | `(gene, ct="k562")` | most-writable locus near a gene (safety x durability) |
+| `writability` | `(gene, ct="k562")` | most-writable locus near a gene (`0.5*safety + 0.5*p_durable`, additive) |
 | `reachable_writers` | `(gene, ct="k562")` | writer families that can reach the gene's best locus |
 | `writer_axes` | `(family)` | measured axes for a writer family (cargo, deliverability, tier) |
 | `plan_write` | `(gene, intent, cargo_bp=2000, ct="k562")` | full Write Planner: ranked, traceable plan |
