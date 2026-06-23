@@ -14,7 +14,7 @@ from pathlib import Path
 import pandas as pd
 
 try:
-    from fastapi import FastAPI, HTTPException, Query
+    from fastapi import FastAPI, HTTPException, Query, Request
 except ImportError as e: # pragma: no cover - server extra optional
     raise ImportError("FastAPI not installed: pip install 'pen-stack[server]'") from e
 
@@ -27,6 +27,26 @@ app = FastAPI(title="PEN-STACK API", version=__version__,
 
 _DISCLAIMER = ("Decision-support only - predictions are calibrated risk/durability estimates, not "
                "clinical directives. Tier-2/3 reachability is candidate and requires experimental validation.")
+
+
+def _resolve_ct(request: Request, ct: str, cell_type: str | None, allowed_params: set[str]) -> str:
+    """Resolve the cell type from `ct` OR its `cell_type` alias, and REJECT any unrecognized query parameter.
+
+    Without this, a misnamed cell-type argument (e.g. `?cell_type=hspc` when the endpoint reads `ct`) is silently
+    ignored by FastAPI and `ct` falls back to its "k562" default, so the caller gets confidently-wrong K562 data
+    labelled coverage=full. We instead accept both names and 422 on any unknown parameter, so the fallback can
+    never happen silently. The resolved cell type is validated against the known universe.
+    """
+    extra = set(request.query_params) - allowed_params
+    if extra:
+        raise HTTPException(422, f"unknown query parameter(s) {sorted(extra)}; for the cell type use 'ct' or its "
+                                 f"alias 'cell_type'. Valid parameters: {sorted(allowed_params)}.")
+    resolved = (cell_type or ct or "k562").lower()
+    known = {c["id"] for c in _CELLTYPES}
+    if resolved not in known:
+        raise HTTPException(422, f"unknown cell type '{resolved}'; valid cell types: {sorted(known)} "
+                                 f"(only k562/hepg2/hspc have a measured atlas; the others are a data-gated roadmap).")
+    return resolved
 
 
 def _atlas_df() -> pd.DataFrame:
@@ -71,8 +91,9 @@ def atlas(family: str | None = None, limit: int = Query(50, le=500)):
 
 
 @app.get("/crosslink/writers")
-def crosslink_writers(chrom: str, bin: int, ct: str = "k562"):
+def crosslink_writers(request: Request, chrom: str, bin: int, ct: str = "k562", cell_type: str | None = None):
     from pen_stack.atlas import crosslink as cl
+    ct = _resolve_ct(request, ct, cell_type, {"chrom", "bin", "ct", "cell_type"})
     try:
         w = cl.writers_for_locus(chrom, bin, ct)
     except FileNotFoundError as e:
@@ -87,8 +108,10 @@ def crosslink_writers(chrom: str, bin: int, ct: str = "k562"):
 
 
 @app.get("/crosslink/loci")
-def crosslink_loci(family: str, ct: str = "k562", top: int = Query(20, le=200)):
+def crosslink_loci(request: Request, family: str, ct: str = "k562", cell_type: str | None = None,
+                   top: int = Query(20, le=200)):
     from pen_stack.atlas import crosslink as cl
+    ct = _resolve_ct(request, ct, cell_type, {"family", "ct", "cell_type", "top"})
     try:
         loci = cl.loci_for_writer(family, ct, top=top)
     except FileNotFoundError as e:
@@ -97,8 +120,10 @@ def crosslink_loci(family: str, ct: str = "k562", top: int = Query(20, le=200)):
 
 
 @app.get("/writable")
-def writable(gene: str, ct: str = "k562", top: int = Query(20, le=200)):
+def writable(request: Request, gene: str, ct: str = "k562", cell_type: str | None = None,
+             top: int = Query(20, le=200)):
     from pen_stack.atlas.crosslink import loci_for_gene
+    ct = _resolve_ct(request, ct, cell_type, {"gene", "ct", "cell_type", "top"})
     try:
         g = loci_for_gene(gene, ct)
     except FileNotFoundError as e:
@@ -177,10 +202,12 @@ def ask(q: str):
 
 
 @app.get("/plan")
-def plan(gene: str, intent: str, cargo_bp: int = 2000, ct: str = "k562", k: int = Query(5, le=20)):
+def plan(request: Request, gene: str, intent: str, cargo_bp: int = 2000, ct: str = "k562",
+         cell_type: str | None = None, k: int = Query(5, le=20)):
     """Write Planner (Step 3.4): goal + edit_intent -> ranked, traceable plans."""
     from pen_stack.planner.optimize import EditIntent
     from pen_stack.planner.pipeline import plan_write
+    ct = _resolve_ct(request, ct, cell_type, {"gene", "intent", "cargo_bp", "ct", "cell_type", "k"})
     try:
         intent_e = EditIntent(intent)
     except ValueError as e:
