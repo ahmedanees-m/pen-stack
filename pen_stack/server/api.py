@@ -213,12 +213,14 @@ def writer_efficiency_endpoint():
 
 
 @app.get("/writer/variants", tags=["writer atlas"])
-def writer_variants_endpoint(integrase: str | None = None):
+def writer_variants_endpoint(integrase: str | None = None, system: str | None = None):
     """Variant critique (C-WS4): retrospective recovery of known serine-integrase hyperactive mutants over a frozen
     DOI'd panel (NOT a blind sequence-only predictor), plus the honest deferral of the blind protein-LM recovery
-    (no per-variant fitness endpoint exists, so it abstains rather than fabricate a positive)."""
+    (no per-variant fitness endpoint exists, so it abstains rather than fabricate a positive). `system` is accepted
+    as an alias for `integrase`; omit both to get the full panel."""
     from pen_stack.design import writer_variants as wv
-    return {"hyperactive_recovery": wv.hyperactive_recovery(integrase),
+    target = integrase or system  # accept either name; the panel is keyed by serine-integrase
+    return {"hyperactive_recovery": wv.hyperactive_recovery(target),
             "blind_lm_recovery": wv.lm_recovery(),
             "panel": wv.hyperactive_panel(),
             "note": "Retrospective catalogue recovery is real and DOI-backed; the blind LM predictor is deferred "

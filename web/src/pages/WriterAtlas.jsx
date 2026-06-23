@@ -27,6 +27,11 @@ export default function WriterAtlas() {
   const [recForm, setRecForm] = useState({ write_type: "insertion", cargo_bp: 2000, cell_type: "K562" });
   const [recBusy, setRecBusy] = useState(false);
 
+  // C-WS4 variant critique
+  const [vInput, setVInput] = useState("Bxb1");
+  const [variants, setVariants] = useState(null);
+  const [vBusy, setVBusy] = useState(false);
+
   useEffect(() => {
     (async () => {
       setBusy(true); setError(null);
@@ -37,11 +42,18 @@ export default function WriterAtlas() {
     })();
     api.writerEfficiency().then(setEff).catch(() => {});
     runRecommend(recForm);
+    runVariants("Bxb1");
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function runRecommend(form) {
     setRecBusy(true);
     try { setRec(await api.recommend({ ...form, top_k: 8 })); } catch { setRec(null); } finally { setRecBusy(false); }
+  }
+
+  async function runVariants(name) {
+    setVBusy(true);
+    try { setVariants(await api.writerVariants((name || "").trim() || undefined)); }
+    catch { setVariants(null); } finally { setVBusy(false); }
   }
 
   // Load a family's systems server-side on demand (the atlas has 33,370 systems, dominated by bridge_IS110 at
@@ -68,9 +80,11 @@ export default function WriterAtlas() {
         intro="Compare writer families and systems for a target. Every row is either measured or a labelled candidate. The KB ranking is the grounded primary; the learned integration-efficiency is a candidate advisory with an interval, never the authoritative ranking."
         items={[
           { term: "Confidence", scale: "measured / inferred / candidate", meaning: "measured = backed by human-cell activity data; inferred = partial evidence; candidate = a knowledge-base prediction, labelled as a hypothesis." },
-          { term: "Cargo capacity / Tier", scale: "bp · Tier-1/2/3", meaning: "Per-family payload from the curated atlas; Tier-1 = scannable / broadly reachable, Tier-2/3 = candidate, needs experimental confirmation." },
+          { term: "Reachability tier", scale: "Tier-1 / 2 / 3", meaning: "How confidently the writer can be AIMED at an arbitrary target. Tier-1 (scannable) = a target-programmable writer whose site is found by scanning the genome (Cas9, Cas12a, bridge IS110) — broadly reachable. Tier-2 (context-candidate) = reachable only in a permissive sequence/chromatin context, a candidate needing experimental confirmation. Tier-3 (not-predictable) = no reliable targeting rule yet — exploratory. Higher tier = more reach you can trust." },
+          { term: "Cargo capacity", scale: "bp", meaning: "The per-family payload capacity from the curated atlas; pair it with your cargo size to see which families fit." },
           { term: "Predicted efficiency", scale: "% integration + conformal interval", meaning: "A learned predictor (C-WS2) trained ONLY on the curated real dataset, emitted with a trained split-conformal interval. A candidate advisory — and only for families the dataset actually contains (never extrapolated to an unseen family)." },
           { term: "KB readiness", scale: "0–1, the primary rank", meaning: "A transparent score from the curated atlas (DSB-free + measured activity + cargo headroom). This, not the learned efficiency, is the grounded ranking signal." },
+          { term: "Variant critique", scale: "fold over WT", meaning: "For a chosen serine integrase, the measured hyperactive mutants ranked by fold-improvement over wild-type (each DOI-backed). A retrospective catalogue recovery — a blind sequence-only predictor is honestly deferred, not faked." },
         ]}
         caveats={[
           "Pre-registered honest result (gate C-G2): the learned predictor beats the KB family-mean baseline on held-out LOCUS (CI excludes 0) but NOT on held-out FAMILY at N=42, so the KB ranking is retained as primary and the efficiency ships as a candidate.",
@@ -180,6 +194,62 @@ export default function WriterAtlas() {
           </div>
         </Card>
       )}
+
+      <Card title="Variant critique" icon="verify"
+            subtitle="For a serine integrase, the measured hyperactive mutants ranked by fold-improvement over wild-type (each DOI-backed). A retrospective catalogue recovery; the blind sequence-only predictor is honestly deferred.">
+        <div className="flex flex-wrap items-end gap-3">
+          <Field label="Integrase / system">
+            <input className="input max-w-[220px]" value={vInput} placeholder="e.g. Bxb1, PhiC31"
+                   onChange={(e) => setVInput(e.target.value)}
+                   onKeyDown={(e) => e.key === "Enter" && runVariants(vInput)} />
+          </Field>
+          <Button onClick={() => runVariants(vInput)} disabled={vBusy}>Critique variants</Button>
+          <span className="pb-2 text-[11px] text-fg-faint">the frozen panel covers Bxb1 and PhiC31</span>
+        </div>
+        {vBusy ? <div className="mt-4"><Spinner label="Recovering the hyperactive panel…" /></div> : variants && (
+          <div className="mt-4 space-y-4">
+            {Object.keys(variants.hyperactive_recovery?.by_integrase || {}).length === 0 ? (
+              <p className="text-sm text-fg-faint">No measured hyperactive panel for “{vInput}”. The frozen, DOI-backed
+                panel currently covers <b>Bxb1</b> and <b>PhiC31</b> (serine integrases).</p>
+            ) : Object.entries(variants.hyperactive_recovery.by_integrase).map(([integ, d]) => (
+              <div key={integ}>
+                <div className="mb-1.5 flex flex-wrap items-center gap-2 text-sm">
+                  <span className="font-semibold text-fg">{integ}</span>
+                  <Badge tone="ok">top: {d.top}</Badge>
+                  <Badge tone={d.all_hyperactive_outrank_wt ? "ok" : "warn"}>
+                    {d.all_hyperactive_outrank_wt ? "all hyperactive variants outrank WT" : "ordering not clean"}</Badge>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">
+                      <th className="py-2 pr-3">Variant</th><th className="py-2 pr-3">Fold vs WT</th>
+                      <th className="py-2 pr-3">Basis</th><th className="py-2">DOI</th></tr></thead>
+                    <tbody>
+                      {(d.ranking || []).map((r, i) => {
+                        const p = variants.panel?.[r.variant] || {};
+                        const isWt = String(r.variant).endsWith("_WT");
+                        return (
+                          <tr key={i} className={`border-b border-line/50 ${isWt ? "opacity-60" : ""}`}>
+                            <td className="py-1.5 pr-3 font-mono text-xs">{r.variant}{isWt && <span className="ml-1 text-fg-faint">(WT anchor)</span>}</td>
+                            <td className="py-1.5 pr-3 tabular-nums font-medium text-brand">{r.fold}×</td>
+                            <td className="py-1.5 pr-3 text-xs text-fg-dim">{p.basis || "n/a"}</td>
+                            <td className="py-1.5 font-mono text-[10px] text-fg-faint">{p.doi || "n/a"}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
+            {variants.blind_lm_recovery && !variants.blind_lm_recovery.available && (
+              <p className="rounded-lg border border-warn/25 bg-warn/5 px-3 py-2 text-[11px] leading-relaxed text-fg-dim">
+                <strong className="text-warn">Blind LM recovery deferred (no fabrication):</strong> {variants.blind_lm_recovery.note}
+              </p>
+            )}
+          </div>
+        )}
+      </Card>
 
       {coverage && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
