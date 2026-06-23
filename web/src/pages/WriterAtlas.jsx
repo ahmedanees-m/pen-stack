@@ -15,7 +15,9 @@ const WRITE_TYPES = ["insertion", "knock_in_with_disruption", "landing_pad_inser
 export default function WriterAtlas() {
   const [coverage, setCoverage] = useState(null);
   const [rows, setRows] = useState(null);
+  const [total, setTotal] = useState(0);       // total systems matching the current filter (server-reported)
   const [family, setFamily] = useState("");
+  const [tableBusy, setTableBusy] = useState(false);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState(null);
 
@@ -29,8 +31,8 @@ export default function WriterAtlas() {
     (async () => {
       setBusy(true); setError(null);
       try {
-        const [cov, atlas] = await Promise.all([api.atlasCoverage(), api.atlas("", 300)]);
-        setCoverage(cov); setRows(atlas.rows || []);
+        const [cov, atlas] = await Promise.all([api.atlasCoverage(), api.atlas("", 200)]);
+        setCoverage(cov); setRows(atlas.rows || []); setTotal(atlas.n || 0);
       } catch (e) { setError(e); } finally { setBusy(false); }
     })();
     api.writerEfficiency().then(setEff).catch(() => {});
@@ -42,8 +44,17 @@ export default function WriterAtlas() {
     try { setRec(await api.recommend({ ...form, top_k: 8 })); } catch { setRec(null); } finally { setRecBusy(false); }
   }
 
-  const families = useMemo(() => Array.from(new Set((rows || []).map((r) => r.family))).sort(), [rows]);
-  const shown = (rows || []).filter((r) => !family || r.family === family);
+  // Load a family's systems server-side on demand (the atlas has 33,370 systems, dominated by bridge_IS110 at
+  // ~32k, so a single head() sample never spans all 8 families -- the dropdown is driven by the coverage endpoint).
+  async function onFamily(f) {
+    setFamily(f); setTableBusy(true);
+    try { const a = await api.atlas(f || "", f ? 300 : 200); setRows(a.rows || []); setTotal(a.n || 0); }
+    catch (e) { setError(e); } finally { setTableBusy(false); }
+  }
+
+  // the authoritative family list comes from /atlas/coverage (all 8 families + system counts), NOT the row sample
+  const families = useMemo(
+    () => [...(coverage?.coverage || [])].sort((a, b) => (b.n || 0) - (a.n || 0)), [coverage]);
   const confColor = { measured: "var(--ok)", inferred: "var(--warn)", candidate: "var(--muted)" };
 
   const hof = eff?.benchmark?.held_out_family, hol = eff?.benchmark?.held_out_locus;
@@ -181,12 +192,17 @@ export default function WriterAtlas() {
 
       <Card title="Compare writers" subtitle="Every row carries its confidence; candidate reachability needs lab validation."
             right={
-              <select className="input max-w-[180px]" value={family} onChange={(e) => setFamily(e.target.value)}>
-                <option value="">all families</option>
-                {families.map((f) => <option key={f} value={f}>{f}</option>)}
+              <select className="input max-w-[220px]" value={family} onChange={(e) => onFamily(e.target.value)}>
+                <option value="">all families ({coverage?.systems?.toLocaleString?.() || coverage?.systems})</option>
+                {families.map((c) => <option key={c.family} value={c.family}>{c.family} ({(c.n || 0).toLocaleString()})</option>)}
               </select>
             }>
+        <p className="mb-2 text-[11px] text-fg-faint">
+          Showing {(rows || []).length} of {(total || 0).toLocaleString()} {family ? `${family} ` : ""}systems
+          {!family && " — the atlas has 33,370 systems (mostly bridge_IS110 homologs); pick a family above to load its systems."}
+        </p>
         <div className="overflow-x-auto">
+          {tableBusy && <div className="pb-2"><Spinner label="Loading family systems…" /></div>}
           <table className="w-full text-sm">
             <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">
               <th className="py-2 pr-3">System</th><th className="py-2 pr-3">Family</th>
@@ -194,7 +210,7 @@ export default function WriterAtlas() {
               <th className="py-2 pr-3">Cargo bp</th><th className="py-2 pr-3">Tier</th>
               <th className="py-2">Human activity</th></tr></thead>
             <tbody>
-              {shown.map((r, i) => (
+              {(rows || []).map((r, i) => (
                 <tr key={i} className="border-b border-line/50">
                   <td className="py-2 pr-3 font-medium">{r.representative_system}</td>
                   <td className="py-2 pr-3 text-fg-dim">{r.family}</td>
