@@ -22,16 +22,16 @@ export default function Delivery() {
   return (
     <div className="space-y-4">
       <ScoreGuide
-        intro="Immune risk is reported as FIVE separate axes (0–1, higher = lower risk), never collapsed into one number. Each is a mechanistic or population proxy, not a patient-specific prediction."
+        intro="Immune risk is reported as SEPARATE axes (0–1, higher = lower risk), never collapsed into one number. Each is a mechanistic or population proxy, not a patient-specific prediction. An axis that does not apply abstains and shows n/a, never a guessed value."
         items={[
           { term: "Genotoxicity", scale: "higher = safer", meaning: "1.0 = episomal / non-integrating (no insertional-oncogenesis mechanism); lower = an integrating vector enriched for integrations near oncogenes." },
-          { term: "CD8 epitope", scale: "higher = less visible", meaning: "1 − fraction of the capsid presentable to cytotoxic T cells across a frequent HLA-I panel (MHCflurry). Sequence-intrinsic, CD8/MHC-I only." },
-          { term: "Innate / NAb / anti-PEG", scale: "higher = lower barrier", meaning: "Innate-sensing load (CpG/dsRNA), pre-existing neutralizing-antibody eligibility (serosurveys), and anti-PEG barrier (PEG vehicles only)." },
-          { term: "Capsid fitness", scale: "0–1 candidate", meaning: "A learned AAV packaging-viability score (FLIP-AAV-trained). A candidate for the measured packaging axis, not an in-vivo tropism claim." },
+          { term: "CD8 epitope", scale: "higher = less visible", meaning: "1 − fraction of the capsid presentable to cytotoxic T cells over a frequent HLA-I panel (NetMHCpan-4.1, MHCflurry cross-check). Sequence-intrinsic, CD8/MHC-I only." },
+          { term: "Innate / pre-existing NAb / anti-PEG", scale: "higher = lower barrier", meaning: "Innate-sensing load (CpG/dsRNA; needs a cargo sequence), pre-existing neutralizing-antibody eligibility (population serosurveys), and the anti-PEG barrier (PEG vehicles only). Each abstains when not applicable." },
+          { term: "Writer immunogenicity (MHC-II + ADA)", scale: "higher = lower risk", meaning: "The bundled writer protein's CD4/MHC-II epitope load and anti-drug-antibody risk. Abstains when no writer sequence is supplied with the design." },
         ]}
         caveats={[
-          "Patient-specific immune MAGNITUDE (titer, realized response) is a known-unknown — never predicted.",
-          "In-vivo human tropism of a novel capsid abstains; only approved-serotype tissue priors are given.",
+          "No single fused immune score is asserted (collapsed_score = None on purpose): the axes measure different mechanisms on different evidence, so averaging them would manufacture certainty.",
+          "Patient-specific immune MAGNITUDE (titer, realized response) is a known-unknown — never predicted; the axes are directional, not validated against a measured clinical outcome.",
         ]} />
 
       <Card title="Vehicle & context" subtitle="Switch the vehicle to watch the axes move, the engine recomputes each.">

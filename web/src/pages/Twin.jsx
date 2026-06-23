@@ -32,7 +32,7 @@ export default function Twin() {
       <ScoreGuide
         intro="The twin predicts a RELATIVE molecular outcome with an uncertainty band. It is a bounded estimate for decision-support, never a clinical or phenotypic guarantee."
         items={[
-          { term: "Relative expression", scale: "ratio, 1.0 = baseline", meaning: "The modeled expression of the insert relative to a baseline — a relative quantity, not an absolute titer or copy number." },
+          { term: "Relative expression", scale: "relative, dimensionless", meaning: "The modeled expression of the insert on a relative (dimensionless) scale, higher = stronger — a relative quantity, not an absolute titer or copy number." },
           { term: "Outcome band", scale: "interval, WIDENS on OOD", meaning: "A heuristic interval that widens when the query leaves the model's validity envelope. interval_kind states exactly what kind of interval it is (it is not a trained conformal interval — no public perturbation-outcome calibration set exists)." },
           { term: "OOD flag", scale: "yes / no", meaning: "yes = the design is outside the data the model was fit on; trust the widened band, not the point." },
         ]}

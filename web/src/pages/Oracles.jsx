@@ -55,7 +55,10 @@ export default function Oracles() {
     api.oracles().then(setData).catch(setError);
   }, []);
 
+  const canQuery = protein.trim() && smiles.trim();
+
   async function runAffinity() {
+    if (!canQuery) return;
     setBusy(true); setAffErr(null); setAff(null);
     try {
       setAff(await api.oracleAffinity({ protein_seq: protein, ligand_smiles: smiles, pair_type: pairType }));
@@ -130,7 +133,10 @@ export default function Oracles() {
           <Field label="Ligand SMILES"><input className="input font-mono text-xs" value={smiles} onChange={(e) => setSmiles(e.target.value)} /></Field>
           <Field label="Pair type"><Select value={pairType} onChange={setPairType} options={PAIR_TYPES} /></Field>
         </div>
-        <div className="mt-4"><Button onClick={runAffinity} disabled={busy}>Query affinity</Button></div>
+        <div className="mt-4 flex items-center gap-3">
+          <Button onClick={runAffinity} disabled={busy || !canQuery}>Query affinity</Button>
+          {!canQuery && <span className="text-[11px] text-fg-faint">Provide a protein sequence and a ligand SMILES.</span>}
+        </div>
         <p className="mt-2 text-[11px] text-amber-300/80">The Boltz-2 affinity head is protein-ligand only; protein-protein and protein-DNA pairs are returned as out-of-scope (extrapolating).</p>
 
         {busy && <div className="mt-3"><Spinner label="Querying the affinity oracle…" /></div>}

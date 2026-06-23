@@ -32,8 +32,9 @@ export default function DesignForm({ design, onChange, showCargoFunction = true 
         <Select value={design.cell_type} onChange={(v) => set("cell_type", v)} options={CELLS} />
       </Field>
       <Field label="Cargo size (bp)" hint="AAV single-vector payload caps near ~4.7 kb">
-        <input className="input" type="number" value={design.cargo_bp}
-               onChange={(e) => set("cargo_bp", parseInt(e.target.value || "0", 10))} />
+        <input className="input" type="number" min={0} max={200000} step={100} value={design.cargo_bp}
+               onChange={(e) => { const n = parseInt(e.target.value || "0", 10);
+                 set("cargo_bp", Number.isNaN(n) ? 0 : Math.min(200000, Math.max(0, n))); }} />
       </Field>
       <Field label="Context">
         <Select value={design.in_vivo ? "in_vivo" : "ex_vivo"} onChange={(v) => set("in_vivo", v === "in_vivo")}

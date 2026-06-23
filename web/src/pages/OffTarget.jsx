@@ -27,8 +27,10 @@ export default function OffTarget() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const isNuclease = family === "Cas9";
+  const canRun = isNuclease ? guide.trim() && cands.trim() : seq.trim();
 
   async function run() {
+    if (!canRun) return;
     setBusy(true); setError(null); setRes(null);
     try {
       const body = isNuclease
@@ -73,7 +75,10 @@ export default function OffTarget() {
             </Field>
           </div>
         )}
-        <div className="mt-4"><Button onClick={run} disabled={busy}>Nominate off-targets</Button></div>
+        <div className="mt-4 flex items-center gap-3">
+          <Button onClick={run} disabled={busy || !canRun}>Nominate off-targets</Button>
+          {!canRun && <span className="text-[11px] text-fg-faint">{isNuclease ? "Enter a guide and at least one candidate site." : "Paste a locus sequence to scan."}</span>}
+        </div>
       </Card>
 
       <Card>

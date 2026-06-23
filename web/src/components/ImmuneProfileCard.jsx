@@ -18,7 +18,7 @@ export default function ImmuneProfileCard({ profile }) {
         <span className="chip" style={{ color: "var(--warn)", borderColor: "var(--warn)55" }}>
           per-axis · never collapsed
         </span>
-        {profile.route_modifier && <span className="chip">route: {profile.route_modifier.route || ", "}</span>}
+        {profile.route_modifier?.route && <span className="chip">route: {profile.route_modifier.route}</span>}
       </div>
 
       <div className="grid gap-2.5 sm:grid-cols-2">

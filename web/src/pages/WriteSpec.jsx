@@ -36,6 +36,7 @@ export default function WriteSpec() {
   const [error, setError] = useState(null);
 
   async function run() {
+    if (!prose.trim()) return;
     setBusy(true); setError(null); setRes(null);
     try { setRes(await api.writespec(prose)); } catch (e) { setError(e); } finally { setBusy(false); }
   }

@@ -38,14 +38,15 @@ export default function Designer() {
   return (
     <div className="space-y-4">
       <ScoreGuide
-        intro="Generative strategies on the safety/efficacy Pareto frontier. Each is a CANDIDATE — a hypothesis that must pass verification, never asserted to work."
+        intro="The designer sweeps vehicles × cargo, then a verifier-as-discriminator keeps only the legal, screened survivors. Each row is a CANDIDATE — a hypothesis that must pass verification, never asserted to work in vivo. The columns below are what survives, not a ranking claim."
         items={[
-          { term: "Composite score", scale: "0–1, higher = better", meaning: "A balance of the grounded axes (safety, efficacy, immune-risk); non-dominated strategies form the frontier." },
-          { term: "Confidence band", scale: "calibrated interval", meaning: "The calibrated confidence on the soft scores (not on legality, not on success); it widens where data is thin." },
-          { term: "Scope flags", scale: "count", meaning: "How many axes are out-of-scope / extrapolating for this candidate — read them before trusting the score." },
+          { term: "Legal", scale: "legal / no", meaning: "The verifier's legality verdict. Only legal candidates survive; an illegal variant is discarded, never shown." },
+          { term: "Safety", scale: "clear / flag / escalate / refuse", meaning: "The Guardian's biosecurity decision for this candidate. Hazardous variants are removed before they reach the frontier." },
+          { term: "Confidence band", scale: "0–1 + interval", meaning: "The calibrated confidence on the soft scores (not on legality, not on success). The interval widens where data is thin." },
+          { term: "Scope flags", scale: "count", meaning: "How many axes are out-of-scope / extrapolating for this candidate (e.g. in-vivo immune magnitude) — read them before trusting the row." },
         ]}
         caveats={[
-          "verify() disposes hazardous or illegal proposals before they reach the frontier.",
+          "An empty result is by design, not a fallback: if every variant was illegal or hazardous, the discriminator returns nothing.",
         ]} />
 
       <Card title="Base design" subtitle="The designer sweeps vehicles × cargo, then the discriminator keeps only legal, screened survivors.">
