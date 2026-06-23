@@ -56,6 +56,12 @@ export const api = {
     req(`/api/atlas?${new URLSearchParams({ ...(family ? { family } : {}), limit })}`),
   atlasCoverage: () => req("/api/atlas/coverage"),
   celltypes: () => req("/api/celltypes"),
+  // Stage C writer surfaces: ranked writers with a candidate learned efficiency + conformal interval (C-WS2),
+  // the curated measured-efficiency dataset + held-out bench (C-WS1), and the variant-critique recovery (C-WS4).
+  recommend: ({ write_type = "insertion", cargo_bp = 2000, cell_type = "K562", top_k = 8 } = {}) =>
+    req(`/api/recommend?${new URLSearchParams({ write_type, cargo_bp, cell_type, top_k })}`),
+  writerEfficiency: () => req("/api/writer/efficiency"),
+  writerVariants: (integrase) => req(`/api/writer/variants${integrase ? `?integrase=${integrase}` : ""}`),
   writable: (gene, ct = "k562", top = 20) =>
     req(`/api/writable?${new URLSearchParams({ gene, ct, top })}`),
   plan: (gene, intent, cargo_bp = 2000, ct = "k562", k = 6) =>

@@ -178,6 +178,53 @@ def celltypes_endpoint():
                           "data-gated roadmap, never a fabricated or silently-empty result."}
 
 
+@app.get("/recommend", tags=["writer atlas"])
+def recommend_endpoint(write_type: str = "insertion", cargo_bp: int = 2000, cell_type: str = "K562",
+                       target_seq: str | None = None, donor_seq: str | None = None,
+                       top_k: int = Query(8, le=30)):
+    """Rank writer families for a write request (Stage C, C-WS5). KB readiness is the GROUNDED primary ranking;
+    each family also carries a CANDIDATE learned efficiency with a trained split-conformal interval (C-WS2), and a
+    dependency-free guide / att design (C-WS3) when target/donor sequences are supplied. No efficiency is ever
+    fabricated for a family the curated dataset never saw (KB-only for those)."""
+    from pen_stack.atlas.writer_recommend import recommend_writers
+    req = {"write_type": write_type, "cargo_bp": cargo_bp, "cell_type": cell_type,
+           "target_seq": (target_seq or "").strip() or None, "donor_seq": (donor_seq or "").strip() or None}
+    return recommend_writers(req, top_k=top_k)
+
+
+@app.get("/writer/efficiency", tags=["writer atlas"])
+def writer_efficiency_endpoint():
+    """The curated Writer-Efficiency dataset (C-WS1: real measured integration efficiencies, one row per condition
+    with a DOI + verbatim quote) and the held-out Writer-Efficiency-Bench result (C-WS2 validation). Honest,
+    pre-registered outcome: the learned predictor beats the KB family-mean baseline on held-out LOCUS (CI excludes
+    0) but NOT on held-out FAMILY at this N, so the KB ranking is retained as primary and the predictor ships as a
+    candidate advisory."""
+    from pen_stack.atlas import writer_efficiency as we
+    df = we.human_cell()
+    cols = [c for c in ["system", "family", "variant", "cargo_bp", "locus", "cell_type",
+                        "efficiency_pct", "specificity_pct", "doi", "quote"] if c in df.columns]
+    bench = None
+    p = _ATLAS.parents[2] / "benchmarks" / "writer_efficiency" / "result.json"
+    if p.exists():
+        bench = json.loads(p.read_text(encoding="utf-8"))
+    return {"dataset_summary": we.provenance_summary(), "records": _records(df[cols]), "benchmark": bench,
+            "note": "Measured, DOI-backed integration efficiencies (C-WS1). The bench is the contribution; the "
+                    "learned predictor (C-WS2) is a candidate advisory, not the authoritative ranking."}
+
+
+@app.get("/writer/variants", tags=["writer atlas"])
+def writer_variants_endpoint(integrase: str | None = None):
+    """Variant critique (C-WS4): retrospective recovery of known serine-integrase hyperactive mutants over a frozen
+    DOI'd panel (NOT a blind sequence-only predictor), plus the honest deferral of the blind protein-LM recovery
+    (no per-variant fitness endpoint exists, so it abstains rather than fabricate a positive)."""
+    from pen_stack.design import writer_variants as wv
+    return {"hyperactive_recovery": wv.hyperactive_recovery(integrase),
+            "blind_lm_recovery": wv.lm_recovery(),
+            "panel": wv.hyperactive_panel(),
+            "note": "Retrospective catalogue recovery is real and DOI-backed; the blind LM predictor is deferred "
+                    "(reported as a known limitation, never a manufactured positive)."}
+
+
 @app.get("/bridge/design")
 def bridge_design(target: str, donor: str, scaffold: str = "ISCro4_enhanced",
                   ct: str | None = None, scan: bool = False):
