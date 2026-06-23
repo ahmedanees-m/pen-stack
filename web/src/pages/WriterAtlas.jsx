@@ -2,6 +2,7 @@
 // human-cell activity, reachability tier. The "measured vs candidate" split is shown explicitly: Tier-2/3
 // reachability is candidate and needs experimental validation.
 import React, { useEffect, useMemo, useState } from "react";
+import ScoreGuide from "../components/ScoreGuide.jsx";
 import { api } from "../api.js";
 import { Card, Spinner, ErrorNote, Pill, Stat } from "../components/ui.jsx";
 import { titleCase } from "../lib/format.js";
@@ -34,6 +35,17 @@ export default function WriterAtlas() {
 
   return (
     <div className="space-y-4">
+      <ScoreGuide
+        intro="Compare writer families and systems for a target. A row is either measured or a labelled candidate — the confidence column says which."
+        items={[
+          { term: "Confidence", scale: "measured / candidate", meaning: "measured = backed by human-cell activity data; candidate = a knowledge-base-grounded prediction, labelled as a hypothesis." },
+          { term: "Cargo capacity", scale: "bp", meaning: "The per-family payload capacity from the curated atlas." },
+          { term: "Reachability tier", scale: "Tier-1 / 2 / 3", meaning: "Tier-1 = scannable / broadly reachable; Tier-2/3 = candidate, requires experimental confirmation." },
+        ]}
+        caveats={[
+          "A candidate writer is a hypothesis; reachability beyond Tier-1 is not a guarantee.",
+        ]} />
+
       {coverage && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Stat label="Families" value={coverage.families} />

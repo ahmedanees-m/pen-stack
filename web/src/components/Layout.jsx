@@ -40,10 +40,13 @@ export default function Layout({ children, backend, allowLlm, setAllowLlm }) {
           <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
             <a href={REPO} target="_blank" rel="noreferrer" className="btn-ghost hidden px-2 sm:inline-flex" title="GitHub" aria-label="GitHub"><Icon name="github" size={17} /></a>
             <GroundedPill up={up} backend={backend} version={health?.version} />
-            <label className="hidden items-center gap-1.5 text-[11px] text-fg-dim sm:flex" title="Use the local/hosted LLM to narrate; off = deterministic narrator (no LLM)">
-              <input type="checkbox" checked={allowLlm} onChange={(e) => setAllowLlm(e.target.checked)} className="accent-[var(--brand)]" />
-              LLM narration
-            </label>
+            {/* the LLM toggle only affects the co-scientist chat; tool pages are always deterministic, so show it there only */}
+            {loc.pathname === "/chat" && (
+              <label className="hidden items-center gap-1.5 text-[11px] text-fg-dim sm:flex" title="Use the local/hosted LLM to narrate the chat; off = deterministic narrator. Tool pages are always deterministic.">
+                <input type="checkbox" checked={allowLlm} onChange={(e) => setAllowLlm(e.target.checked)} className="accent-[var(--brand)]" />
+                Chat narration
+              </label>
+            )}
           </div>
         </div>
       </header>

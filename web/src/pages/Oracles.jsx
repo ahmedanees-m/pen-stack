@@ -4,6 +4,7 @@
 // query (Boltz-2 head): every output is a CANDIDATE with native uncertainty, cache-or-abstain; protein-protein
 // and protein-DNA pairs are flagged out-of-scope. Cross-oracle disagreement widens the reported interval.
 import React, { useEffect, useState } from "react";
+import ScoreGuide from "../components/ScoreGuide.jsx";
 import { api } from "../api.js";
 import { Card, Button, Spinner, ErrorNote, Field, Select } from "../components/ui.jsx";
 import { num } from "../lib/format.js";
@@ -68,6 +69,17 @@ export default function Oracles() {
 
   return (
     <div className="space-y-4">
+      <ScoreGuide
+        intro="Every oracle answers through one contract: a value, its provenance, its OWN native uncertainty, and a scope card. Outputs are candidates / hypotheses, never ground truth."
+        items={[
+          { term: "Reliability", scale: "published, verbatim", meaning: "The wrapped model's PUBLISHED benchmark accuracy, reported verbatim WITH a citation. It is NOT a claim about this stack's accuracy and is NOT re-computed here; null means a verbatim score was not verified." },
+          { term: "Native uncertainty", scale: "the model's own", meaning: "Surfaced, not hidden (e.g. half the spread between Boltz-2's two affinity heads). Cross-oracle disagreement widens the reported interval." },
+          { term: "Affinity value", scale: "log(IC50), lower = stronger", meaning: "A binder probability + a predicted affinity (a prediction, not a measured Kd). Protein-protein / protein-DNA pairs are out of scope (flagged)." },
+        ]}
+        caveats={[
+          "Held oracles (AF3 / Chai-1 / Protenix over full complexes) are cache-or-abstain, never run on the request path.",
+        ]} />
+
       <Card title="Oracle mesh" subtitle="Every wrapped foundation model answers through one contract: a value, its provenance, its own native uncertainty, and a scope card. Outputs are candidates, never ground truth.">
         {error && <ErrorNote error={error} />}
         {!data && !error && <Spinner label="Loading oracle status…" />}

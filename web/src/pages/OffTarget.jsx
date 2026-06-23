@@ -2,6 +2,7 @@
 // risk band (+ the real CRISOT learned score when cached) and ship the assay that would confirm them.
 // Conservative by construction: a nomination is a CANDIDATE, never a clearance; the engine abstains without inputs.
 import React, { useState } from "react";
+import ScoreGuide from "../components/ScoreGuide.jsx";
 import { api } from "../api.js";
 import { Card, Button, Spinner, ErrorNote, Field, Select } from "../components/ui.jsx";
 import { num } from "../lib/format.js";
@@ -42,6 +43,18 @@ export default function OffTarget() {
 
   return (
     <div className="space-y-4">
+      <ScoreGuide
+        intro="A nomination ranks candidate off-target sites by risk; it is NOT a safety clearance. Every candidate ships with the empirical assay that would confirm it."
+        items={[
+          { term: "Risk band", scale: "high / medium / low / minimal", meaning: "A mismatch-calibrated band from REAL assay data (GUIDE / CIRCLE / CHANGE / SITE-seq active fractions at k mismatches)." },
+          { term: "CRISOT score", scale: "0–1, higher = riskier", meaning: "The real learned nuclease off-target score (run on the VM, CC-BY-NC); higher = more likely an active off-target. Shown where cached, else VM-only." },
+          { term: "Empirical active fraction", scale: "0–1", meaning: "The measured fraction of candidates at this mismatch count that were validated-active in the calibration assay." },
+        ]}
+        caveats={[
+          "Nomination is not a clearance — it surfaces candidates and the assay that would confirm them.",
+          "Chromatin accessibility is a validated ANNOTATION, not folded into the risk score (it added no held-out ranking gain over CRISOT).",
+        ]} />
+
       <Card title="Off-target nomination" subtitle="Rank candidate off-targets with a real-data calibrated risk band, across nucleases, integrases, and bridge recombinases.">
         <div className="grid gap-3 sm:grid-cols-3">
           <Field label="Writer family"><Select value={family} onChange={setFamily} options={FAMILIES} /></Field>

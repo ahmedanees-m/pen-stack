@@ -4,6 +4,7 @@
 // verdict (reachability + deliverability + legality) names any blocking constraint. A WriteSpec is a request,
 // not a claim: the extractor never fabricates intent.
 import React, { useState } from "react";
+import ScoreGuide from "../components/ScoreGuide.jsx";
 import { api } from "../api.js";
 import { Card, Button, Spinner, ErrorNote, Field } from "../components/ui.jsx";
 
@@ -45,6 +46,16 @@ export default function WriteSpec() {
 
   return (
     <div className="space-y-4">
+      <ScoreGuide
+        intro="A WriteSpec is a typed, ontology-backed REQUEST, not a claim. Every field shows where it came from, and the extractor never fabricates intent."
+        items={[
+          { term: "Provenance", scale: "explicit / inferred / user / unresolved", meaning: "explicit = stated in your prose; inferred = a labelled default (with its assumption); user = a structured override; unresolved = could not be resolved, kept null." },
+          { term: "Feasibility", scale: "feasible / infeasible", meaning: "Necessary conditions only — reachability + deliverability + legality — with named blocking constraints + repair hints. NOT efficacy." },
+        ]}
+        caveats={[
+          "Unresolved terms stay null, never a hallucinated id; ambiguous required fields become a clarifying question.",
+        ]} />
+
       <Card title="Describe your write" subtitle="Plain language in; a typed, ontology-backed WriteSpec out. Inferred fields are labelled, ambiguous ones are asked, unresolved stays null.">
         <Field label="Your genome-writing goal">
           <textarea className="input text-sm h-24" value={prose} onChange={(e) => setProse(e.target.value)} />

@@ -1,6 +1,7 @@
 // Experiments, the next-experiment designer. Given a pool of candidate designs, the engine ranks a diverse,
 // informative batch by expected information gain (active learning), what to run next to learn the most.
 import React, { useState } from "react";
+import ScoreGuide from "../components/ScoreGuide.jsx";
 import { api } from "../api.js";
 import { Card, Button, Spinner, ErrorNote, Field, Select } from "../components/ui.jsx";
 import DesignForm, { DEFAULT_DESIGN, VEHICLES, CELLS } from "../components/DesignForm.jsx";
@@ -43,6 +44,16 @@ export default function Experiments() {
 
   return (
     <div className="space-y-4">
+      <ScoreGuide
+        intro="The most-informative next experiments, and the validation campaign that targets the program's first outcome-validated axis. Experiments are candidates; the wet run is the standing bottleneck."
+        items={[
+          { term: "Expected info gain (EIG)", scale: "higher = more informative", meaning: "How much an experiment is expected to reduce the model's predictive uncertainty (+ immune value-of-information). The batch is greedy-diverse." },
+          { term: "Validation campaign", scale: "ordered batch", meaning: "The (cassette × locus × cell type) measurements ordered by EIG that would flip the calibrate_axis gate to outcome-validated." },
+        ]}
+        caveats={[
+          "EIG-beats-random is reported verbatim either way (it is rep-sensitive on the synthetic task); cloud-lab execution is mock / dry-run.",
+        ]} />
+
     <div className="grid gap-4 lg:grid-cols-2">
       <Card title="Candidate pool" subtitle="A grid of vehicles × cargo; the engine picks the most informative batch.">
         <DesignForm design={design} onChange={setDesign} showCargoFunction={false} />

@@ -7,6 +7,7 @@ import { Card, Button, Spinner, ErrorNote, Pill, Stat, Field, Select } from "../
 import DesignForm, { DEFAULT_DESIGN, CELLS } from "../components/DesignForm.jsx";
 import ConfidenceBand from "../components/ConfidenceBand.jsx";
 import ImmuneProfileCard from "../components/ImmuneProfileCard.jsx";
+import ScoreGuide from "../components/ScoreGuide.jsx";
 import { num } from "../lib/format.js";
 
 export default function Twin() {
@@ -27,7 +28,18 @@ export default function Twin() {
   const status = res?.extrapolating ? "extrapolating" : "grounded";
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="space-y-4">
+      <ScoreGuide
+        intro="The twin predicts a RELATIVE molecular outcome with an uncertainty band. It is a bounded estimate for decision-support, never a clinical or phenotypic guarantee."
+        items={[
+          { term: "Relative expression", scale: "ratio, 1.0 = baseline", meaning: "The modeled expression of the insert relative to a baseline — a relative quantity, not an absolute titer or copy number." },
+          { term: "Outcome band", scale: "interval, WIDENS on OOD", meaning: "A heuristic interval that widens when the query leaves the model's validity envelope. interval_kind states exactly what kind of interval it is (it is not a trained conformal interval — no public perturbation-outcome calibration set exists)." },
+          { term: "OOD flag", scale: "yes / no", meaning: "yes = the design is outside the data the model was fit on; trust the widened band, not the point." },
+        ]}
+        caveats={[
+          "Bounded by the structure→phenotype boundary: in-vivo titer, phenotype and clinical durability are known-unknowns, never predicted.",
+        ]} />
+      <div className="grid gap-4 lg:grid-cols-2">
       <Card title="Design & cell state" subtitle="The twin predicts a relative outcome conditioned on the cell state.">
         <DesignForm design={design} onChange={setDesign} />
         <div className="mt-3">
@@ -63,6 +75,7 @@ export default function Twin() {
           </div>
         )}
       </Card>
+      </div>
     </div>
   );
 }

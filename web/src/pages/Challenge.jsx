@@ -2,6 +2,7 @@
 // reference leaderboard. Submissions are scored OFFLINE against held-out labels (never accepted over HTTP), so
 // this page only exposes the round and the anchor score.
 import React, { useEffect, useState } from "react";
+import ScoreGuide from "../components/ScoreGuide.jsx";
 import { api } from "../api.js";
 import { Card, Spinner, ErrorNote, Pill, Stat } from "../components/ui.jsx";
 import { pct, titleCase } from "../lib/format.js";
@@ -27,6 +28,15 @@ export default function Challenge() {
   const ref = lb?.leaderboard?.[0];
   return (
     <div className="space-y-4">
+      <ScoreGuide
+        intro="The open, held-out Genome-Writing Challenge: public tasks and the reference leaderboard. The label is the measured wet-lab call, not a submitter's claim."
+        items={[
+          { term: "Score / aggregate", scale: "0–1, higher = better", meaning: "Held-out performance on the sealed tasks (non-circular: the label is the measured outcome). The reference aggregate is the engine's own score, for comparison." },
+        ]}
+        caveats={[
+          "Splits are sealed before model selection; no circular labels (a submitter claim is never the label).",
+        ]} />
+
       <Card title={`Genome-Writing Challenge · ${lb?.round}`}
             subtitle="The CASP / Virtual-Cell-Challenge model for the writing side: held-out labels, no circular scoring.">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

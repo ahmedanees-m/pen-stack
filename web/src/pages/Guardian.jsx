@@ -5,6 +5,7 @@ import { api } from "../api.js";
 import { Card, Button, Spinner, ErrorNote, Pill } from "../components/ui.jsx";
 import DesignForm, { DEFAULT_DESIGN } from "../components/DesignForm.jsx";
 import SafetyBadge from "../components/SafetyBadge.jsx";
+import ScoreGuide from "../components/ScoreGuide.jsx";
 
 const PRESETS = [
   { label: "Benign, human Factor IX", patch: { cargo_function: "human factor IX", pfam_domains: [] } },
@@ -24,7 +25,18 @@ export default function Guardian() {
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="space-y-4">
+      <ScoreGuide
+        intro="The Guardian is a biosecurity / dual-use screen, not a score. It returns one of four decisions on the design's function, family and taxon signatures."
+        items={[
+          { term: "Decision", scale: "clear / flag / escalate / refuse", meaning: "clear = no dual-use signal; flag / escalate = route to a human with the reason; refuse = hazardous, the design stops here and is never scored on efficacy." },
+          { term: "Hit severity", scale: "high / medium", meaning: "Per-signature severity, each carrying its signature id and the control reference it matched." },
+        ]}
+        caveats={[
+          "Signature-level only — it inspects function / family / taxon signatures, never hazard sequences.",
+          "Necessary, not sufficient: a downstream sequence screen (BioFirewall) is the complementary check.",
+        ]} />
+      <div className="grid gap-4 lg:grid-cols-2">
       <Card title="Screen a design" subtitle="The Guardian inspects the cargo function and domains for hazard signal.">
         <div className="mb-3 flex flex-wrap gap-2">
           {PRESETS.map((p) => (
@@ -69,6 +81,7 @@ export default function Guardian() {
           </div>
         )}
       </Card>
+      </div>
     </div>
   );
 }

@@ -55,6 +55,7 @@ export const api = {
   atlas: (family, limit = 200) =>
     req(`/api/atlas?${new URLSearchParams({ ...(family ? { family } : {}), limit })}`),
   atlasCoverage: () => req("/api/atlas/coverage"),
+  celltypes: () => req("/api/celltypes"),
   writable: (gene, ct = "k562", top = 20) =>
     req(`/api/writable?${new URLSearchParams({ gene, ct, top })}`),
   plan: (gene, intent, cargo_bp = 2000, ct = "k562", k = 6) =>

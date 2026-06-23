@@ -6,6 +6,7 @@ import { api } from "../api.js";
 import { Card, Button, Spinner, ErrorNote } from "../components/ui.jsx";
 import DesignForm, { DEFAULT_DESIGN } from "../components/DesignForm.jsx";
 import ImmuneProfileCard from "../components/ImmuneProfileCard.jsx";
+import ScoreGuide from "../components/ScoreGuide.jsx";
 
 const AXIS_COLOR = {
   pass: "var(--ok)", clear: "var(--ok)",
@@ -61,7 +62,19 @@ export default function Verify() {
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="space-y-4">
+      <ScoreGuide
+        intro="Verification reports THREE axes separately — never collapsed into one pass/fail. Read each on its own; the colour is green / amber / red."
+        items={[
+          { term: "Legality", scale: "pass / abstain / fail", meaning: "A rule-set check (jurisdiction, germline, list-agent, IP). On failure it names the violated rule, its citation, and a suggested repair." },
+          { term: "Confidence", scale: "0–1, may abstain", meaning: "The calibrated confidence on the soft scores. It ABSTAINS rather than guess when uncalibrated — an abstain does not block, legality and biosecurity do." },
+          { term: "Biosecurity", scale: "clear / flag / escalate / refuse", meaning: "The dual-use screen over function / family / taxon signatures. A refuse short-circuits the whole design to a human." },
+        ]}
+        caveats={[
+          "Passable = legality AND biosecurity pass (confidence may abstain). The verdict covers legality, feasibility and biosecurity — NOT efficacy.",
+          "A flagged hazard is routed to a human, never auto-repaired.",
+        ]} />
+      <div className="grid gap-4 lg:grid-cols-2">
       <Card title="Design" subtitle="Build a proposed genomic write; the verifier evaluates each axis independently.">
         <DesignForm design={design} onChange={setDesign} />
         <div className="mt-4"><Button onClick={run} disabled={busy}>Verify design</Button></div>
@@ -83,6 +96,7 @@ export default function Verify() {
           </div>
         )}
       </Card>
+      </div>
     </div>
   );
 }

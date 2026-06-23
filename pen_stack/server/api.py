@@ -109,6 +109,43 @@ def writable(gene: str, ct: str = "k562", top: int = Query(20, le=200)):
     return {"gene": gene, "ct": ct, "loci": _records(g[cols].head(top)), "disclaimer": _DISCLAIMER}
 
 
+# the cell types the Site Finder offers, with their HONEST coverage. A cell type returns writable loci only when
+# its measured writability atlas (atlas_<ct>.parquet) is actually present; the rest are a data-gated roadmap,
+# never a silently-failing dropdown option.
+_CELLTYPES = [
+    {"id": "k562", "label": "K562", "description": "chronic myelogenous leukemia line",
+     "coverage": "full", "tracks": "ATAC + histones + TRIP durability + safety"},
+    {"id": "hepg2", "label": "HepG2", "description": "hepatocellular carcinoma line",
+     "coverage": "full", "tracks": "ATAC + histones + safety (partial TRIP)"},
+    {"id": "hspc", "label": "HSPC", "description": "hematopoietic stem and progenitor cells",
+     "coverage": "partial", "tracks": "ATAC + expression + genotoxicity; partial histone panel (graceful degradation)"},
+    {"id": "h1_hesc", "label": "H1 hESC", "description": "H1 human embryonic stem cells", "coverage": "none", "tracks": ""},
+    {"id": "ipsc", "label": "iPSC", "description": "induced pluripotent stem cells", "coverage": "none", "tracks": ""},
+    {"id": "cd8_t", "label": "CD8 T", "description": "cytotoxic T lymphocytes", "coverage": "none", "tracks": ""},
+    {"id": "pbmc", "label": "PBMC", "description": "peripheral blood mononuclear cells", "coverage": "none", "tracks": ""},
+]
+
+
+@app.get("/celltypes", tags=["site finder"])
+def celltypes_endpoint():
+    """Per cell type: whether a MEASURED writability atlas exists (so Site Finder returns real loci) and its
+    coverage. Cell types without an atlas are a documented, data-gated roadmap, never a silently-failing option."""
+    from pen_stack.atlas.crosslink import writability_path
+    out = []
+    for ct in _CELLTYPES:
+        try:
+            writability_path(ct["id"])
+            measured = True
+        except Exception: # noqa: BLE001
+            measured = False
+        cov = ct["coverage"] if measured else "none"
+        out.append({**ct, "coverage": cov, "measured": measured,
+                    "note": ct["tracks"] if measured else "no writability atlas built yet (data-gated roadmap)"})
+    return {"cell_types": out, "measured_count": sum(c["measured"] for c in out),
+            "disclaimer": "Only cell types with a measured writability atlas return loci; the rest are an honest, "
+                          "data-gated roadmap, never a fabricated or silently-empty result."}
+
+
 @app.get("/bridge/design")
 def bridge_design(target: str, donor: str, scaffold: str = "ISCro4_enhanced",
                   ct: str | None = None, scan: bool = False):
