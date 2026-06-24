@@ -100,13 +100,19 @@ def test_router_classifies_the_four_lanes():
     assert classify("how do you compute the immune score?", None) == "meta"
 
 
-def test_general_lane_is_labelled_and_not_attributed_to_pen_stack(monkeypatch):
-    # general knowledge must be explicitly labelled, provenance=general, grounded=False, with engine pointers
+def test_general_lane_is_grounded_by_retrieval_or_abstains(monkeypatch):
+    # PEN-CHAT v7.1: the general lane is grounded by the provenance-tagged corpus (provenance=literature-cited,
+    # with sources) OR it abstains (provenance=abstained) - it never presents unsourced trained knowledge as fact,
+    # and never attributes a number to PEN-STACK. It still carries engine pointers.
     monkeypatch.setenv("PEN_STACK_NO_LLM", "1")
+    monkeypatch.setenv("PEN_RAG_NO_EMBED", "1")  # deterministic lexical retrieval (no embedder in CI)
     out = grounded_reply("how many viral and non-viral vectors are there and which is best?")
-    assert out["mode"] == "general" and out["provenance"] == "general" and out["grounded"] is False
-    assert "not a PEN-STACK calculation" in out["reply"].replace(", ", "-").replace(", ", "-") or "General knowledge" in out["reply"]
-    assert out["angles"] and any(a["module"] for a in out["angles"]) # points to a PEN-STACK module
+    assert out["mode"] == "general"
+    assert out["provenance"] in ("literature-cited", "abstained")
+    assert out["provenance"] != "general"  # the old unsourced-trained-knowledge label is gone
+    if out["grounded"]:
+        assert out.get("sources"), "a grounded general answer must carry its retrieved sources"
+    assert out["angles"] and any(a["module"] for a in out["angles"])  # points to a PEN-STACK module
 
 
 def test_meta_lane_is_grounded_in_live_facts(monkeypatch):

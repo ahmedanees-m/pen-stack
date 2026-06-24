@@ -1,0 +1,9 @@
+{
+  "cycle": "v7.1",
+  "workstream": "PEN-CHAT",
+  "prepared": "2026-06-24",
+  "sha256": {
+    "prereg/ws_penchat.yaml": "68f9ba44edcd7e16acd4dd2e1c535478db40466362dff3ce899a6c19d9b7e6f4",
+    "data/rag_corpus.parquet": "44594399d7095494aaee63282f61235df266f58913f409a8bb8d363abf0ed8b1"
+  }
+}

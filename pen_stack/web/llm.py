@@ -332,22 +332,26 @@ def grounded_reply(message: str, history: list | None = None, *, allow_llm: bool
     mode = classify(message, history)
     hist = _history_block(history)
 
-    # ---- GENERAL: trained knowledge, labelled, with engine pointers (no grounding guard) ----
+    # ---- GENERAL: grounded by retrieval (PEN-RAG, v7.1) - retrieve -> cite-or-silence -> guard, else ABSTAIN.
+    # The General lane no longer answers from the model's unsourced trained knowledge: every general answer is
+    # backed by the provenance-tagged corpus (labelled 'literature-cited'), or the system abstains. ----
     if mode == "general":
         angles = pen_stack_angles(message)
-        base = {"mode": "general", "provenance": "general", "grounded": False, "angles": angles, "tool_results": None}
-        if allow_llm:
-            prompt = (f"{hist}USER: {message}\n\n"
-                      + (f"(PEN-STACK could concretely compute: {json.dumps(angles)})\n\n" if angles else "")
-                      + "Answer from general knowledge, clearly.")
-            text, backend = _run_llm(prompt, SYSTEM_GENERAL)
-            if text:
-                return {**base, "reply": _GENERAL_LABEL + "\n\n" + text.strip() + _angles_footer(message),
-                        "backend": backend}
-        # no LLM: general answers need the model; show what the engine CAN do
-        det = (_GENERAL_LABEL + "\n\nI can't answer general-knowledge questions without the language model right "
-               "now, but PEN-STACK's engine can compute grounded, specific answers." + _angles_footer(message))
-        return {**base, "reply": det, "backend": "deterministic"}
+        try:
+            from pen_stack.rag.ground import ground_general
+            g = ground_general(message, allow_llm=allow_llm)
+        except Exception:  # noqa: BLE001 - corpus/retriever unavailable -> abstain, never fall back to ungrounded priors
+            g = None
+        if g is not None:
+            base = {"mode": "general", "provenance": g["provenance"], "grounded": g["grounded"], "angles": angles,
+                    "tool_results": None, "sources": g.get("sources"), "retrieval": g.get("retrieval"),
+                    "status": g.get("status")}
+            return {**base, "reply": g["reply"] + _angles_footer(message), "backend": g["backend"]}
+        base = {"mode": "general", "provenance": "abstained", "grounded": False, "angles": angles,
+                "tool_results": None, "sources": []}
+        return {**base, "reply": ("The grounded literature corpus is unavailable right now, so I won't answer from "
+                "unsourced general knowledge. PEN-STACK's engine can still compute grounded answers."
+                + _angles_footer(message)), "backend": "deterministic"}
 
     # ---- META: facts about PEN-STACK itself (grounded over the live facts) ----
     if mode == "meta":
