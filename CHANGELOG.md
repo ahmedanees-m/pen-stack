@@ -3,6 +3,23 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.1.1] - 2026-06-24 - PEN-CHAT: General-lane helpfulness fix + benchmark-validity correction
+
+### Fixed
+- The General lane over-abstained: it declined simple/social ("hi") and general-knowledge ("what is DNA")
+  questions because P-WS1 made corpus retrieval a GATE on the whole lane. Retrieval is now **additive**
+  (`pen_stack/rag/ground.py`): the lane ANSWERS general + social questions, clearly labelled
+  "general - not PEN-STACK-verified" (a labelled general answer is honest, not a fabrication); a corpus hit
+  upgrades to "literature-cited"; abstention is reserved for a SPECIFIC unsourceable empirical claim. The "general"
+  provenance chip is restored in the web chat.
+
+### Changed
+- Benchmark-validity correction: the head-to-head headline moves from "answers-without-grounding" (which rewarded
+  over-abstention) to the **false-grounding rate** (a non-engine fact presented as a PEN-STACK result; 0.0 by
+  construction). Abstention is re-scoped to specific unsourceable empirical claims; the routing/grounding/safety
+  sets now include positive general + social cases that require a helpful, labelled answer (a regression guard).
+  `prereg/ws_penchat.yaml` amended + re-locked accordingly.
+
 ## [7.1.0] - 2026-06-24 - PEN-CHAT: the grounded conversational system
 
 Consolidates the four-lane chat (WS-HYBRID) with PEN-RAG into a fully-grounded, provenance-partitioned

@@ -297,26 +297,34 @@ def grounded_reply(message: str, history: list | None = None, *, allow_llm: bool
     mode = classify(message, history)
     hist = _history_block(history)
 
-    # ---- GENERAL: grounded by retrieval (PEN-RAG, v7.1) - retrieve -> cite-or-silence -> guard, else ABSTAIN.
-    # The General lane no longer answers from the model's unsourced trained knowledge: every general answer is
-    # backed by the provenance-tagged corpus (labelled 'literature-cited'), or the system abstains. ----
+    # ---- GENERAL: ANSWER general + social questions by default (labelled), with corpus retrieval ADDITIVE (PEN-RAG,
+    # v7.1.1). A general answer is labelled 'general - not PEN-STACK-verified'; a corpus hit upgrades it to
+    # 'literature-cited' with sources; the system abstains ONLY on a specific unsourceable empirical claim. The
+    # honesty mechanism is the per-lane LABEL (a general fact is never presented as a PEN-STACK result), not refusal. ----
     if mode == "general":
         angles = pen_stack_angles(message)
         try:
             from pen_stack.rag.ground import ground_general
             g = ground_general(message, allow_llm=allow_llm)
-        except Exception:  # noqa: BLE001 - corpus/retriever unavailable -> abstain, never fall back to ungrounded priors
+        except Exception:  # noqa: BLE001 - retriever unavailable -> still answer as labelled general, never as a result
             g = None
         if g is not None:
             base = {"mode": "general", "provenance": g["provenance"], "grounded": g["grounded"], "angles": angles,
                     "tool_results": None, "sources": g.get("sources"), "retrieval": g.get("retrieval"),
                     "status": g.get("status")}
             return {**base, "reply": g["reply"] + _angles_footer(message), "backend": g["backend"]}
-        base = {"mode": "general", "provenance": "abstained", "grounded": False, "angles": angles,
-                "tool_results": None, "sources": []}
-        return {**base, "reply": ("The grounded literature corpus is unavailable right now, so I won't answer from "
-                "unsourced general knowledge. PEN-STACK's engine can still compute grounded answers."
-                + _angles_footer(message)), "backend": "deterministic"}
+        # the retriever itself failed: still answer from labelled general knowledge if the LLM is on (never present
+        # it as a PEN-STACK result), else point to the engine.
+        if allow_llm:
+            text, backend = _run_llm(f"USER: {message}\n\nAnswer from general knowledge, clearly.", SYSTEM_GENERAL)
+            if text:
+                return {"mode": "general", "provenance": "general", "grounded": False, "angles": angles,
+                        "tool_results": None, "sources": [],
+                        "reply": _GENERAL_LABEL + "\n\n" + text.strip() + _angles_footer(message), "backend": backend}
+        return {"mode": "general", "provenance": "general", "grounded": False, "angles": angles, "tool_results": None,
+                "sources": [], "reply": _GENERAL_LABEL + "\n\nI can answer general questions when the language model "
+                "is enabled; the engine can also compute grounded, specific answers." + _angles_footer(message),
+                "backend": "deterministic"}
 
     # ---- META: facts about PEN-STACK itself (grounded over the live facts) ----
     if mode == "meta":

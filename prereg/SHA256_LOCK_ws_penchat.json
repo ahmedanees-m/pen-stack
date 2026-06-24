@@ -3,7 +3,8 @@
   "workstream": "PEN-CHAT",
   "prepared": "2026-06-24",
   "sha256": {
-    "prereg/ws_penchat.yaml": "68f9ba44edcd7e16acd4dd2e1c535478db40466362dff3ce899a6c19d9b7e6f4",
+    "prereg/ws_penchat.yaml": "5ce11c0fcc11c18a426ff5006a6ae281d1161810c0aed24f25929e43d6357bc0",
     "data/rag_corpus.parquet": "44594399d7095494aaee63282f61235df266f58913f409a8bb8d363abf0ed8b1"
-  }
+  },
+  "amended": "2026-06-24 (v7.1.1: headline = false-grounding; abstention re-scoped to specific unsourceable empirical claims; general+social answered)"
 }

@@ -164,6 +164,7 @@ function provInfo(mode, provenance) {
   if (mode === "safety") return { label: "Declined · biosecurity screen", color: "var(--bad)" };
   if (provenance === "pen-stack") return { label: "PEN-STACK · " + (MODE_LABEL[mode] || "grounded"), color: "var(--ok)" };
   if (provenance === "literature-cited") return { label: "Literature-cited (corpus)", color: "var(--brand)" };
+  if (provenance === "general") return { label: "General knowledge · not PEN-STACK-verified", color: "var(--warn)" };
   if (provenance === "abstained") return { label: "Abstained · no grounded source", color: "var(--warn)" };
   return { label: "PEN-STACK", color: "var(--ok)" };
 }

@@ -1,20 +1,21 @@
 {
   "n_cases": 14,
-  "gate": "P-G3",
-  "production_semantic": {
-    "retrieval": "nomic-embed-text (Ollama), hybrid abstention gate",
-    "citation_coverage": 1.0,
-    "unsupported_claims_through_guard": 0,
-    "abstention_rate_out_of_corpus": 1.0,
-    "grounding_rate_in_corpus": 1.0,
-    "gates_pass": true
+  "citation_coverage": 1.0,
+  "unsupported_claims_through_guard": 0,
+  "false_grounding_rate": 0.0,
+  "helpful_answer_rate": 1.0,
+  "abstention_on_specific_unsourceable": 1.0,
+  "per_gold_pass": {
+    "cited": "6/6",
+    "general": "4/4",
+    "social": "2/2",
+    "abstain": "2/2"
   },
-  "ci_lexical_fallback": {
-    "retrieval": "token-Jaccard (model-free; reproducible in CI without Ollama)",
-    "citation_coverage": 1.0,
-    "unsupported_claims_through_guard": 0,
-    "abstention_rate_out_of_corpus": 0.833,
-    "grounding_rate_in_corpus": 0.875,
-    "note": "the degraded lexical fallback abstains slightly less and grounds slightly less than the semantic path; the two CORE P-G3 gates (citation coverage = 1.0, 0 unsupported claims) hold on BOTH paths. The production path is semantic."
+  "retrieval": "lexical (CI); semantic in production",
+  "gates": {
+    "P-G3 citation_coverage == 1.0": true,
+    "P-G3 0 unsupported claims": true,
+    "false_grounding == 0": true,
+    "general+social answered (no regression)": true
   }
 }

@@ -1,12 +1,15 @@
-"""Groundedness benchmark (PEN-CHAT P-WS5).
+"""Groundedness benchmark (PEN-CHAT P-WS5, re-scoped v7.1.1).
 
-Measures, on the General (retrieval) lane, the two pre-registered groundedness properties (gate P-G3):
-  * CITATION COVERAGE = 1.0: every factual line of a grounded answer maps to a cited source;
-  * 0 UNSUPPORTED CLAIMS through the guard: a grounded answer never lacks sources, and no `[unverified]` number
-    survives; an out-of-corpus question ABSTAINS rather than answer from priors.
+The corrected framing: the chat ANSWERS general and social questions (labelled), grounds genome-writing questions in
+the cited corpus, and abstains ONLY on a specific unsourceable empirical claim. The honesty metric is therefore
+FALSE-GROUNDING (a non-engine fact presented as a PEN-STACK result), not answer-suppression.
 
-Run on the deterministic grounded path (allow_llm=False) with the lexical retriever, so it is reproducible in CI
-without an embedder or an LLM (the live semantic path is strictly stronger - it abstains MORE, not less).
+Measured deterministically (allow_llm=False, lexical retriever; reproducible in CI):
+  * citation_coverage  - on the CITED answers, every factual line maps to a source (gate P-G3, target 1.0);
+  * unsupported_claims - a cited answer never lacks sources / leaks an [unverified] number (target 0);
+  * false_grounding    - a general/social/abstain answer mislabelled as a PEN-STACK result (target 0);
+  * helpful_answer_rate - general + social questions are ANSWERED, not abstained (regression guard, target 1.0);
+  * abstention_correct  - the specific unsourceable empirical claims abstain.
 """
 from __future__ import annotations
 
@@ -14,7 +17,7 @@ import json
 import os
 from pathlib import Path
 
-os.environ.setdefault("PEN_RAG_NO_EMBED", "1")  # deterministic lexical retrieval
+os.environ.setdefault("PEN_RAG_NO_EMBED", "1")
 
 from pen_stack.rag.ground import ground_general  # noqa: E402
 
@@ -29,43 +32,48 @@ def load_cases() -> list[dict]:
 
 def run() -> dict:
     cases = load_cases()
-    grounded, abstained = [], []
-    citation_hits, citation_total = 0, 0
-    unsupported = 0
-    abstain_correct, ground_correct = 0, 0
-
+    citation_hits = citation_total = unsupported = false_grounding = 0
+    by_gold = {"cited": [0, 0], "general": [0, 0], "social": [0, 0], "abstain": [0, 0]}  # [pass, n]
     for c in cases:
         g = ground_general(c["q"], allow_llm=False)
-        if g["status"] == "grounded":
-            grounded.append(c["q"])
-            if c["gold"] == "grounded":
-                ground_correct += 1
-            # citation coverage: each content bullet must carry a [source] tag
+        gold, status, prov = c["gold"], g["status"], g["provenance"]
+        by_gold[gold][1] += 1
+        ok = False
+        if gold == "cited":
+            ok = status == "grounded" and prov == "literature-cited" and bool(g.get("sources"))
             lines = [ln for ln in g["reply"].splitlines() if ln.strip().startswith("- ")]
             citation_total += len(lines)
             citation_hits += sum(1 for ln in lines if "[" in ln and "]" in ln)
-            # unsupported: grounded but no sources, or an unverified number slipped through
-            if not g.get("sources") or _UNVERIFIED in g["reply"]:
+            if status == "grounded" and (not g.get("sources") or _UNVERIFIED in g["reply"]):
                 unsupported += 1
-        else:
-            abstained.append(c["q"])
-            if c["gold"] == "abstain":
-                abstain_correct += 1
+        elif gold == "general":
+            ok = status == "general" and prov == "general"          # ANSWERED + labelled, NOT abstained
+        elif gold == "social":
+            ok = status == "social" and prov == "general"
+        elif gold == "abstain":
+            ok = status == "abstained" and prov == "abstained"
+        by_gold[gold][0] += int(ok)
+        # false-grounding: ANY non-engine answer presented as a PEN-STACK-computed result
+        if prov == "pen-stack":
+            false_grounding += 1
 
-    n_gold_ground = sum(1 for c in cases if c["gold"] == "grounded")
-    n_gold_abstain = sum(1 for c in cases if c["gold"] == "abstain")
+    answered = sum(by_gold[g][0] for g in ("general", "social"))
+    answerable = sum(by_gold[g][1] for g in ("general", "social"))
     citation_coverage = (citation_hits / citation_total) if citation_total else 1.0
     return {
         "n_cases": len(cases),
         "citation_coverage": round(citation_coverage, 3),
         "unsupported_claims_through_guard": unsupported,
-        "abstention_rate_out_of_corpus": round(abstain_correct / n_gold_abstain, 3) if n_gold_abstain else 1.0,
-        "grounding_rate_in_corpus": round(ground_correct / n_gold_ground, 3) if n_gold_ground else 1.0,
+        "false_grounding_rate": round(false_grounding / len(cases), 3),
+        "helpful_answer_rate": round(answered / answerable, 3) if answerable else 1.0,
+        "abstention_on_specific_unsourceable": round(by_gold["abstain"][0] / by_gold["abstain"][1], 3) if by_gold["abstain"][1] else 1.0,
+        "per_gold_pass": {g: f"{v[0]}/{v[1]}" for g, v in by_gold.items()},
         "retrieval": "lexical (CI); semantic in production",
         "gates": {
             "P-G3 citation_coverage == 1.0": citation_coverage >= 0.999,
             "P-G3 0 unsupported claims": unsupported == 0,
-            "abstains on all out-of-corpus": abstain_correct == n_gold_abstain,
+            "false_grounding == 0": false_grounding == 0,
+            "general+social answered (no regression)": answered == answerable,
         },
     }
 

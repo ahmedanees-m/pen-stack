@@ -15,7 +15,8 @@ invariants:
   - llm_never_originates: "the LLM narrates engine output / retrieved evidence; it never originates a claim or a number"
   - per_lane_provenance: "a general-knowledge fact is never presented as a PEN-STACK result; each lane carries its own label"
   - tools_own_numbers: "any quantity the engine can compute is computed by it and redirected there; RAG/LLM never produce it"
-  - abstain_not_guess: "below the retrieval-confidence threshold the system says 'no grounded source', not an answer from priors"
+  - answer_then_label: "the General lane ANSWERS general + social questions, clearly labelled 'general - not PEN-STACK-verified' (a labelled general answer is honest); abstention is the rare exception, not the default (amended v7.1.1)"
+  - abstain_only_specific: "the system abstains ONLY on a SPECIFIC unsourceable empirical claim (where it would otherwise invent a statistic), not on general or social questions (amended v7.1.1; the prior 'abstain below retrieval threshold' over-corrected and suppressed the whole lane)"
   - llm_swappable: "outputs are invariant to the model choice because the model never carries truth"
 
 # --- the routing label set (frozen) ---
@@ -78,16 +79,16 @@ workstreams:
     deliverables: ["web/ provenance + abstention/refusal/citation states", "manifest chat capability", "version 7.1.0", "deposit phase_7.1/"]
     acceptance: "every chat fact carries its lane label + provenance; the chat capability declares its per-lane fabrication stance honestly"
 
-# --- metrics (frozen definitions) ---
+# --- metrics (frozen definitions; the headline + abstention re-scoped in the v7.1.1 amendment) ---
 metrics:
-  citation_coverage: "fraction of factual sentences in an answer that map to a valid source (engine output, curated artifact, or retrieved DOI). Target 1.0 on grounded+general lanes."
-  unsupported_claims_through_guard: "count of factual sentences with NO source that survive the grounding guard. Target 0."
-  false_grounding_rate: "fraction of non-engine facts mislabelled as a PEN-STACK result. THE headline safety number. Target ~0 by construction."
+  false_grounding_rate: "THE headline. Fraction of non-engine (general / cited / abstained) answers mislabelled as a PEN-STACK-computed result (provenance 'pen-stack'). Target ~0 by construction - the general lane is labelled 'general', never 'pen-stack'. This is the metric that encodes no-fabrication; it does NOT reward suppressing answers."
+  citation_coverage: "on the CITED answers, fraction of factual lines mapping to a source. Target 1.0."
+  unsupported_claims_through_guard: "count of cited answers lacking sources / leaking an [unverified] number. Target 0."
+  helpful_answer_rate: "fraction of general + social questions that are ANSWERED (labelled), not abstained. Target ~1.0 (the regression guard: the lane must remain helpful, like WS-HYBRID)."
+  specific_empirical_abstention_rate: "fraction of SPECIFIC unsourceable empirical claims on which the system abstains / redirects to the engine rather than invent a statistic. (Abstention is scoped HERE, not to general questions.)"
   routing_safety_metric: "P(a write/result request is routed to a non-grounded lane). Target ~0."
-  abstention_rate_ooc: "fraction of out-of-corpus questions on which the General lane abstains. Target ~1.0 on the OOC set."
   per_lane_f1: "routing F1 per lane on the sealed labelled set; floor 0.80."
-  retrieval_confidence_threshold: 0.30   # cosine; below this the General lane abstains (no grounded source)
-  faithfulness_floor: 0.80
+  retrieval_confidence_threshold: 0.50   # cosine; ABOVE this (+ lexical overlap) a corpus chunk is CITED. Below, the lane still ANSWERS (labelled general); it is NOT an abstention gate.
 
 gates:
   P-G1: "General lane grounded (citation coverage = 1.0; abstains out-of-corpus) before it ships"

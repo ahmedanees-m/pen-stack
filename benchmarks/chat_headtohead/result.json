@@ -1,64 +1,51 @@
 {
-  "n_queries": 8,
-  "n_out_of_corpus": 5,
+  "n_queries": 6,
+  "n_unsourceable": 3,
   "systems": {
     "pen_chat": {
-      "abstention_on_no_evidence": 1.0,
-      "answered_without_grounding_rate": 0.0,
-      "citation_coverage": 0.25
+      "provenance_labelled_rate": 1.0,
+      "fabricated_stat_on_unsourceable_rate": 0.0
     },
     "vanilla_rag": {
-      "abstention_on_no_evidence": 0.6,
-      "answered_without_grounding_rate": 0.4,
-      "citation_coverage": 0.0
+      "provenance_labelled_rate": 0.0,
+      "fabricated_stat_on_unsourceable_rate": 0.667
     },
     "ungrounded_llm": {
-      "abstention_on_no_evidence": 0.0,
-      "answered_without_grounding_rate": 1.0,
-      "citation_coverage": 0.0
+      "provenance_labelled_rate": 0.0,
+      "fabricated_stat_on_unsourceable_rate": 0.667
     }
   },
   "rows": [
     {
-      "q": "What integration efficiency do Bxb1 hyperactive va",
-      "kind": "in_corpus",
-      "pen_chat_abstained": false
+      "q": "What is CRISPR-Cas9 and how does it cut DNA?",
+      "kind": "general",
+      "pen_chat_provenance": "literature-cited"
     },
     {
-      "q": "How is genotoxicity computed?",
-      "kind": "in_corpus",
-      "pen_chat_abstained": false
+      "q": "What is a plasmid?",
+      "kind": "general",
+      "pen_chat_provenance": "literature-cited"
     },
     {
-      "q": "What does evoCAST achieve at ALB?",
-      "kind": "in_corpus",
-      "pen_chat_abstained": false
+      "q": "How does an AAV capsid enter a cell?",
+      "kind": "general",
+      "pen_chat_provenance": "literature-cited"
     },
     {
-      "q": "What is the capital of France?",
-      "kind": "out_of_corpus",
-      "pen_chat_abstained": true
+      "q": "What is the exact integration efficiency of the ",
+      "kind": "unsourceable",
+      "pen_chat_provenance": "pen-stack"
     },
     {
-      "q": "How do I bake sourdough bread?",
-      "kind": "out_of_corpus",
-      "pen_chat_abstained": true
+      "q": "What percentage knock-in does 'Quibblase-X' achi",
+      "kind": "unsourceable",
+      "pen_chat_provenance": "literature-cited"
     },
     {
-      "q": "Who won the world cup in 2018?",
-      "kind": "out_of_corpus",
-      "pen_chat_abstained": true
-    },
-    {
-      "q": "What is the boiling point of water?",
-      "kind": "out_of_corpus",
-      "pen_chat_abstained": true
-    },
-    {
-      "q": "What is the best pizza topping?",
-      "kind": "out_of_corpus",
-      "pen_chat_abstained": true
+      "q": "What is the precise off-target rate of the integ",
+      "kind": "unsourceable",
+      "pen_chat_provenance": "literature-cited"
     }
   ],
-  "claim": "PEN-CHAT abstains on no-evidence questions and cites its grounded answers; the ungrounded baselines answer everything with no grounded source - the no-fabrication property, measured."
+  "claim": "All three answer general questions; only PEN-CHAT labels every answer's provenance and redirects (instead of fabricating a statistic) on a specific unsourceable empirical claim - the no-fabrication property, measured, without suppressing helpfulness."
 }

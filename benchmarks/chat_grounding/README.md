@@ -1,24 +1,26 @@
-# Chat Groundedness Benchmark (PEN-CHAT P-WS5)
+# Chat Groundedness Benchmark (PEN-CHAT P-WS5, re-scoped v7.1.1)
 
-Measures the two pre-registered groundedness properties of the chat's General (retrieval) lane (gate **P-G3**):
-
-- **citation coverage = 1.0** - every factual line of a grounded answer maps to a cited source (`[source . DOI]`);
-- **0 unsupported claims through the guard** - a grounded answer never lacks sources and no `[unverified]` number
-  survives; an out-of-corpus question **abstains** rather than answer from priors.
+Measures the corrected groundedness properties of the chat. The lane ANSWERS general and social questions
+(labelled), grounds genome-writing questions in the cited corpus, and abstains ONLY on a specific unsourceable
+empirical claim. The honesty metric is **false-grounding**, not answer-suppression. Deterministic (lexical
+retriever, no LLM) -> reproducible in CI.
 
 ## Sealed set
-`cases.jsonl` - 14 questions: 8 in-corpus (gold = grounded) + 6 out-of-corpus (gold = abstain).
+`cases.jsonl` (SHA-locked) - `cited` (in-corpus genome-writing) + `general` (general knowledge) + `social` +
+`abstain` (specific unsourceable empirical) cases.
 
 ## Result (`result.json`)
-| path | citation coverage | unsupported | abstention (OOC) | grounding (in-corpus) |
-|---|---|---|---|---|
-| **production (semantic, nomic-embed-text)** | **1.0** | **0** | **1.0** | **1.0** |
-| CI fallback (lexical, model-free) | 1.0 | 0 | 0.833 | 0.875 |
+| metric | value |
+|---|---|
+| citation_coverage (on cited answers) | **1.0** |
+| unsupported_claims_through_guard | **0** |
+| **false_grounding_rate** (a general fact mislabelled as a PEN-STACK result) | **0.0** |
+| **helpful_answer_rate** (general + social ANSWERED, not abstained) | **1.0** |
+| abstention_on_specific_unsourceable | **1.0** |
+| per-gold pass | cited 6/6 · general 4/4 · social 2/2 · abstain 2/2 |
 
-Both core P-G3 gates (**citation coverage = 1.0**, **0 unsupported claims**) hold on **both** retrievers. The
-model-free lexical fallback (used in CI so the test needs no Ollama) abstains/grounds slightly less than the
-semantic path; this is reported, not hidden - the production lane is semantic, where abstention and grounding are
-both 1.0 on this set.
+The regression guard `helpful_answer_rate = 1.0` exists because v7.1.0 over-abstained (it declined "hi" and "what
+is DNA"); v7.1.1 made retrieval additive, so general + social questions are answered (labelled) while the cited
+answers keep citation coverage 1.0 and false-grounding stays 0.
 
-Reproduce (lexical, CI): `python -c "from benchmarks.chat_grounding.harness import run; print(run())"`.
-Semantic (needs Ollama `nomic-embed-text`): set `PEN_RAG_NO_EMBED=0` and run the same.
+Reproduce: `python -c "from benchmarks.chat_grounding.harness import run; print(run())"`.
