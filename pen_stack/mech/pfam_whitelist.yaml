@@ -81,8 +81,8 @@ domains:
     mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
     example_systems: [ISCro4, IS621, IS110, IS1111]
     example_uniprot: [D2TGM5] # ISCro4 transposase (carries PF01548 + PF02371)
-    reference: "Prudhomme 2002 J Bacteriol"
-    doi: "10.1128/JB.184.1.129-137.2002"
+    reference: "InterPro: Transposase IS116/IS110/IS902 family (PF01548 + PF02371)"
+    doi: null # the previously-listed Prudhomme 2002 J Bacteriol DOI did not resolve; classification rests on the Pfam domains
     co_occurs_with: [PF01548]
     notes: "C-terminal CTD of IS110 transposase. Contains HHH motif. DEDD chemistry (not serine recombinase). DNA binding + complex assembly."
 
@@ -104,8 +104,8 @@ domains:
     mechanism_bucket: TRANSPOSASE
     example_systems: [HIV_integrase, TnsB]
     example_uniprot: [P03366] # HIV-1 Gag-Pol (integrase, rve core); Tn3 P03008 removed (it is PF01526, not rve)
-    reference: "Rice 1995 Cell"
-    doi: "10.1016/0092-8674(95)90308-2"
+    reference: "Rice & Mizuuchi 1995 Cell"
+    doi: "10.1016/0092-8674(95)90308-9"
     notes: "RNase H / integrase core fold (rve superfamily). Shared by retroviral integrases and TnsB of Tn7. TnsB specificity comes from co-occurrence with TnsA (PF08721)."
 
   - accession: PF01609
@@ -155,8 +155,8 @@ domains:
     mechanism_bucket: DSB_FREE_TRANSEST_RECOMBINASE
     example_systems: [Tn5053, Tn7-related_targeting]
     example_uniprot: [A0A059KVU2] # AAA+ ATPase / TniB (carries PF05621); was P0CW70 (mouse mannosyltransferase - wrong)
-    reference: "Kholodii 1997 Res Microbiol"
-    doi: "10.1016/S0923-2508(97)83011-0"
+    reference: "Kholodii 1993 J Mol Biol (Tn5053)"
+    doi: "10.1006/jmbi.1993.1228"
     notes: "TniB P-loop NTPase. Related to TnsC-family regulators but distinct protein. Found in Tn5053 and related Tn7-like elements."
 
   # === Site-specific recombinases ===

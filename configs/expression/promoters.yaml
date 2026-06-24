@@ -38,8 +38,8 @@ tissue_specific:
   lp1: { strength: 0.85, context: liver, confidence: medium, note: "HCR1 enhancer + hAAT core; clinical FIX from single AAV (2nd after TBG)", citation: "10.1182/blood-2005-10-4035" }
   haat: { strength: 0.80, context: liver, confidence: medium, note: "human α1-antitrypsin; base of ApoE-hAAT/LP1 hybrids", citation: "10.1182/blood-2005-10-4035" }
   hlp: { strength: 0.70, context: liver, confidence: medium, note: "HCR+hAAT+ApoE ~800 bp; below TBG/LP1; therapeutic at compact size", citation: "10.1016/j.gene.2012.07.009" }
-  camkiia: { strength: 0.90, context: neuron, confidence: medium, note: "excitatory neurons; greater overall expression than hSyn1", citation: "10.1016/j.neulet.2021.135889" }
-  hsyn: { strength: 0.70, context: neuron, confidence: medium, note: "pan-neuronal ~460 bp; robust but slower kinetics (CAG-level only by ~3 mo)", citation: "10.1016/j.neulet.2021.135889" }
+  camkiia: { strength: 0.90, context: neuron, confidence: low, note: "excitatory neurons; greater overall expression than hSyn1; prior DOI did not resolve, relative strength not independently sourced", citation: null }
+  hsyn: { strength: 0.70, context: neuron, confidence: low, note: "pan-neuronal ~460 bp; robust but slower kinetics; prior DOI did not resolve, relative strength not independently sourced", citation: null }
   mecp2: { strength: 0.50, context: neuron, confidence: low, note: "neuron-restricted compact; weaker, relative fold not sourced", citation: null }
   gfaabc1d: { strength: 0.80, context: astrocyte,confidence: high, note: "~681 bp; ~2× stronger than full gfa2; astrocyte-restricted", citation: "10.1002/glia.20622" }
   gfap: { strength: 0.60, context: astrocyte,confidence: medium,note: "gfa2 ~2.2 kb astrocyte-selective", citation: "10.1002/glia.20622" }
