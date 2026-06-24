@@ -8,10 +8,22 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_7_0_0_everywhere():
-    assert pen_stack.__version__ == "7.0.0"
-    assert 'version = "7.0.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 7.0.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+def test_version_is_7_1_0_everywhere():
+    assert pen_stack.__version__ == "7.1.0"
+    assert 'version = "7.1.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 7.1.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "[7.1.0]" in (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+
+
+def test_v7_1_penchat_artifacts():
+    # the v7.1 PEN-CHAT: the grounded conversational system + its evaluation suite
+    from pen_stack.rag.ground import ground_general  # noqa: F401
+    from pen_stack.web.llm_provider import providers  # noqa: F401
+    from benchmarks.chat_routing.harness import run as routing_run
+    from benchmarks.chat_safety.harness import run as safety_run
+    assert routing_run()["routing_safety_metric"] <= 0.001  # no write request leaks to general
+    assert safety_run()["false_grounding_rate"] == 0.0       # no general fact mislabelled as a PEN-STACK result
+    assert "[7.1.0]" in (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 
 
 def test_v7_0_artifacts():

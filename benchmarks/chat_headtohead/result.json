@@ -1,0 +1,64 @@
+{
+  "n_queries": 8,
+  "n_out_of_corpus": 5,
+  "systems": {
+    "pen_chat": {
+      "abstention_on_no_evidence": 1.0,
+      "answered_without_grounding_rate": 0.0,
+      "citation_coverage": 0.25
+    },
+    "vanilla_rag": {
+      "abstention_on_no_evidence": 0.6,
+      "answered_without_grounding_rate": 0.4,
+      "citation_coverage": 0.0
+    },
+    "ungrounded_llm": {
+      "abstention_on_no_evidence": 0.0,
+      "answered_without_grounding_rate": 1.0,
+      "citation_coverage": 0.0
+    }
+  },
+  "rows": [
+    {
+      "q": "What integration efficiency do Bxb1 hyperactive va",
+      "kind": "in_corpus",
+      "pen_chat_abstained": false
+    },
+    {
+      "q": "How is genotoxicity computed?",
+      "kind": "in_corpus",
+      "pen_chat_abstained": false
+    },
+    {
+      "q": "What does evoCAST achieve at ALB?",
+      "kind": "in_corpus",
+      "pen_chat_abstained": false
+    },
+    {
+      "q": "What is the capital of France?",
+      "kind": "out_of_corpus",
+      "pen_chat_abstained": true
+    },
+    {
+      "q": "How do I bake sourdough bread?",
+      "kind": "out_of_corpus",
+      "pen_chat_abstained": true
+    },
+    {
+      "q": "Who won the world cup in 2018?",
+      "kind": "out_of_corpus",
+      "pen_chat_abstained": true
+    },
+    {
+      "q": "What is the boiling point of water?",
+      "kind": "out_of_corpus",
+      "pen_chat_abstained": true
+    },
+    {
+      "q": "What is the best pizza topping?",
+      "kind": "out_of_corpus",
+      "pen_chat_abstained": true
+    }
+  ],
+  "claim": "PEN-CHAT abstains on no-evidence questions and cites its grounded answers; the ungrounded baselines answer everything with no grounded source - the no-fabrication property, measured."
+}

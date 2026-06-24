@@ -3,6 +3,33 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.1.0] - 2026-06-24 - PEN-CHAT: the grounded conversational system
+
+Consolidates the four-lane chat (WS-HYBRID) with PEN-RAG into a fully-grounded, provenance-partitioned
+conversational agent: every surfaced fact is engine-computed or retrieved-and-cited, no claim originates from
+model weights, and the property is MEASURED, not asserted. The LLM is a swappable, non-load-bearing narrator.
+
+### Added
+- **Grounded General lane (PEN-RAG)** (`pen_stack/rag/{corpus,embed,retrieve,ground}.py`). The general lane no
+  longer answers from unsourced trained knowledge: it retrieves over a provenance-tagged corpus
+  (`data/rag_corpus.parquet`, built only from real DOI-backed repo content) with a committed embedding matrix
+  (`nomic-embed-text` via Ollama; exact cosine, no FAISS at this scale) and a deterministic lexical fallback,
+  answers under citation-or-silence, and **abstains** below a retrieval-confidence threshold. General answers are
+  labelled `literature-cited` or `abstained`, never a PEN-STACK-computed result.
+- **Swappable LLM provider abstraction** (`pen_stack/web/llm_provider.py`): one interface over local Ollama / cloud
+  Nemotron; the grounded result (lane, provenance, sources, numbers) is invariant to the provider.
+- **Lane + provenance memory**: a follow-up to a grounded answer stays grounded.
+- **Evaluation suite** measuring the no-fabrication claim: `benchmarks/chat_{routing,grounding,safety,headtohead}`
+  (routing-safety 0.0, citation coverage 1.0, 0 unsupported claims, false-grounding 0.0, dual-use refusal 1.0,
+  injection-hold 1.0). Pre-registered + SHA-locked in `prereg/ws_penchat.yaml`.
+- The chat is registered as a capability (`chat_answer`, `fabricates: False`); provenance / citation / abstention /
+  refusal chips in the web chat.
+
+### Changed
+- The pre-route biosecurity screen now escalates a build/express intent over any flagged dual-use hazard term even
+  when the specific agent is not catalogued; the router was made conservative so a write request never leaks to the
+  ungrounded lane.
+
 ## [7.0.0] - 2026-06-22 - Closed loop: a biosecurity-gated, Level-3 self-driving-lab engine
 
 The capstone. Turns the in-silico closed loop into a genome-writing-specific, biosecurity-gated, autonomy-honest

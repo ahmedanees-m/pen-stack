@@ -1,0 +1,40 @@
+{"q": "insert a 3 kb cassette at AAVS1 in hepatocytes via AAV", "lane": "design", "history": null}
+{"q": "express factor IX from a lentivirus in T cells", "lane": "design", "history": null}
+{"q": "knock in GFP at CCR5 in K562", "lane": "design", "history": null}
+{"q": "deliver a 5 kb payload to the liver with a dual AAV", "lane": "design", "history": null}
+{"q": "which writer can integrate a 2 kb cargo at albumin in hepatocytes", "lane": "design", "history": null}
+{"q": "AAV insertion of FIX in liver", "lane": "design", "history": null}
+{"q": "correct a point mutation in HBB in HSPCs with a base editor", "lane": "design", "history": null}
+{"q": "disrupt TRAC with an LNP-delivered nuclease in primary T cells", "lane": "design", "history": null}
+{"q": "integrate a landing pad at CLYBL in iPSCs", "lane": "design", "history": null}
+{"q": "write a 4 kb transgene into the safe harbour in K562 via electroporation", "lane": "design", "history": null}
+{"q": "place a doxycycline-inducible cassette at CCR5 in CD8 T cells", "lane": "design", "history": null}
+{"q": "what does that 0.55 mean?", "lane": "explain", "history": "grounded"}
+{"q": "is that safe?", "lane": "explain", "history": "grounded"}
+{"q": "what is the reference range for that score?", "lane": "explain", "history": "grounded"}
+{"q": "interpret the durability number", "lane": "explain", "history": "grounded"}
+{"q": "and why is it low?", "lane": "explain", "history": "grounded"}
+{"q": "tell me more about that result", "lane": "explain", "history": "grounded"}
+{"q": "what about the delivery for that design?", "lane": "explain", "history": "grounded"}
+{"q": "is that good or bad?", "lane": "explain", "history": "grounded"}
+{"q": "how do I read those numbers?", "lane": "explain", "history": "grounded"}
+{"q": "how many writers does pen-stack cover?", "lane": "meta", "history": null}
+{"q": "how is genotoxicity computed?", "lane": "meta", "history": null}
+{"q": "how accurate is the efficiency predictor?", "lane": "meta", "history": null}
+{"q": "what can you do?", "lane": "meta", "history": null}
+{"q": "what datasets does pen-stack use?", "lane": "meta", "history": null}
+{"q": "how many immune axes are there?", "lane": "meta", "history": null}
+{"q": "how reliable is your delivery model?", "lane": "meta", "history": null}
+{"q": "where do these numbers come from?", "lane": "meta", "history": null}
+{"q": "how many enzymes and vectors do you cover?", "lane": "meta", "history": null}
+{"q": "what is CRISPR-Cas9 and how does it cut DNA?", "lane": "general", "history": null}
+{"q": "hi", "lane": "general", "history": null}
+{"q": "what is a plasmid?", "lane": "general", "history": null}
+{"q": "how does an AAV capsid enter a cell?", "lane": "general", "history": null}
+{"q": "what is gene therapy?", "lane": "general", "history": null}
+{"q": "who discovered restriction enzymes?", "lane": "general", "history": null}
+{"q": "explain the central dogma of molecular biology", "lane": "general", "history": null}
+{"q": "what is the difference between a promoter and an enhancer?", "lane": "general", "history": null}
+{"q": "thanks, that was helpful", "lane": "general", "history": null}
+{"q": "is AAV generally considered safe as a vector?", "lane": "general", "history": null}
+{"q": "what are serine integrases used for in biology?", "lane": "general", "history": null}

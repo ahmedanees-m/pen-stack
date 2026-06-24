@@ -91,6 +91,15 @@ _TOOLS = [
      "input": "oracle name, or {protein_seq, ligand_smiles, pair_type}", "output": "oracle status + reliability, "
      "or a candidate affinity (binder probability + value) or abstain; protein-protein/protein-DNA flagged OOD",
      "entrypoint": "pen_stack.oracles.affinity.predict_affinity", "fabricates": False},
+    {"name": "chat_answer", "summary": "the grounded conversational co-scientist (PEN-CHAT v7.1): a provenance-"
+     "partitioned 4-lane agent (design/explain/meta = engine-grounded with the guard ON; general = retrieval-"
+     "grounded over a provenance-tagged corpus under citation-or-silence, abstaining below a retrieval-confidence "
+     "threshold). The LLM narrates and is swappable; it NEVER originates a claim or a number. Measured by the "
+     "chat_routing / chat_grounding / chat_safety benchmarks (routing-safety ~0, citation coverage 1.0, "
+     "false-grounding ~0)",
+     "input": "{message, history?, allow_llm?}", "output": "{reply, mode (lane), provenance, grounded, sources?, "
+     "backend}; general answers are 'literature-cited' or 'abstained', never a PEN-STACK-computed result",
+     "entrypoint": "pen_stack.web.llm.grounded_reply", "fabricates": False},
 ]
 
 _POLICY = ("outputs outside scope are returned as `out_of_scope` (known-unknown) or `extrapolating` (OOD) and are "

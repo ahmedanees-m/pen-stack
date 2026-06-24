@@ -82,7 +82,8 @@ def chat_stream_route(req: dict) -> StreamingResponse:
             {"tool_results": result.get("tool_results"), "backend": result["backend"],
              "grounded": result["grounded"], "mode": result.get("mode"),
              "provenance": result.get("provenance"), "angles": result.get("angles"),
-             "facts": result.get("facts")}, default=str) + "\n\n")
+             "facts": result.get("facts"), "sources": result.get("sources"),
+             "status": result.get("status")}, default=str) + "\n\n")
 
     return StreamingResponse(_events(), media_type="text/event-stream")
 

@@ -29,7 +29,8 @@ export default function CoScientist({ onBackend, allowLlm }) {
     const q = (text ?? input).trim();
     if (!q || busy) return;
     setInput("");
-    const history = msgs.map((m) => ({ role: m.role, content: m.content }));
+    // P-WS3: carry each turn's lane + provenance so a follow-up resolves against the prior answer's grounding.
+    const history = msgs.map((m) => ({ role: m.role, content: m.content, mode: m.mode, provenance: m.provenance }));
     setMsgs((m) => [...m, { role: "user", content: q }, { role: "assistant", content: "", streaming: true }]);
     setBusy(true);
     try {
@@ -42,7 +43,7 @@ export default function CoScientist({ onBackend, allowLlm }) {
         },
       });
       onBackend?.(done.backend);
-      setMsgs((m) => { const c = [...m]; c[c.length - 1] = { role: "assistant", content: acc, dossier: done.tool_results || null, backend: done.backend, mode: done.mode, provenance: done.provenance, angles: done.angles }; return c; });
+      setMsgs((m) => { const c = [...m]; c[c.length - 1] = { role: "assistant", content: acc, dossier: done.tool_results || null, backend: done.backend, mode: done.mode, provenance: done.provenance, angles: done.angles, sources: done.sources, status: done.status }; return c; });
     } catch (e) {
       // network/stream failure → fall back to the non-streamed grounded endpoint
       try {
@@ -82,8 +83,9 @@ export default function CoScientist({ onBackend, allowLlm }) {
             <Button onClick={() => send()} disabled={busy || !input.trim()}>Send</Button>
           </div>
           <p className="mt-1.5 text-[11px] text-fg-faint">
-            Genome-writing questions are answered by the engine ( every number tool-sourced, guarded). General
-            questions get a clearly-labelled general-knowledge answer, and a pointer to what PEN-STACK can compute.
+            Genome-writing questions are answered by the engine (every number tool-sourced, guarded). General
+            questions are answered from a cited literature corpus, or the assistant abstains, never an unsourced
+            guess. Every answer carries its lane and provenance.
           </p>
         </div>
       </div>
@@ -126,18 +128,25 @@ function Message({ m, onPick }) {
       </div>
     );
   }
-  const general = m.provenance === "general";
+  const cited = m.provenance === "literature-cited";
+  const abstained = m.provenance === "abstained";
+  const safety = m.mode === "safety";
+  const tint = safety ? "border-bad/30 bg-bad/5" : cited ? "border-brand/25 bg-brand/5"
+    : abstained ? "border-warn/30 bg-warn/5" : "border-line bg-ink-850";
+  const footer = safety ? "declined by the biosecurity screen" : cited ? "from the cited literature corpus"
+    : abstained ? "abstained, no grounded source" : "numbers from the engine";
   return (
     <div className="flex justify-start">
       <div className="max-w-[92%] space-y-3">
-        <div className={`rounded-2xl rounded-bl-sm border px-4 py-3 text-sm leading-relaxed ${general ? "border-warn/30 bg-warn/5" : "border-line bg-ink-850"}`}>
+        <div className={`rounded-2xl rounded-bl-sm border px-4 py-3 text-sm leading-relaxed ${tint}`}>
           {m.provenance && !m.streaming && <ProvenanceBadge mode={m.mode} provenance={m.provenance} />}
           {m.error ? <span className="text-bad">Engine error: {m.error}</span> : <Markdownish text={m.content} />}
           {m.streaming && <span className="ml-1 inline-block h-3 w-1.5 animate-pulse bg-brand align-middle" />}
+          {!m.streaming && <SourceChips sources={m.sources} />}
           {m.angles?.length > 0 && <AnglePointers angles={m.angles} onPick={onPick} />}
           {m.backend && (
             <div className="mt-2 text-[10.5px] text-fg-faint">
-              {general ? "from general knowledge" : "numbers from the engine"} · narrated by <span className="font-mono">{m.backend}</span>
+              {footer} · narrated by <span className="font-mono">{m.backend}</span>
             </div>
           )}
         </div>
@@ -147,16 +156,35 @@ function Message({ m, onPick }) {
   );
 }
 
-const MODE_LABEL = {
-  design: "PEN-STACK · grounded design", explain: "PEN-STACK · metric guide",
-  meta: "PEN-STACK · about the engine", general: "General knowledge, not PEN-STACK-verified",
-};
+const MODE_LABEL = { design: "grounded design", explain: "metric guide", meta: "about the engine" };
+// PEN-CHAT v7.1: every lane carries its own provenance, including the new retrieval-grounded / abstained / refused
+// states. The colour encodes the grounding posture: green = engine-grounded, cyan = literature-cited, amber =
+// abstained (no grounded source), red = declined by the biosecurity screen.
+function provInfo(mode, provenance) {
+  if (mode === "safety") return { label: "Declined · biosecurity screen", color: "var(--bad)" };
+  if (provenance === "pen-stack") return { label: "PEN-STACK · " + (MODE_LABEL[mode] || "grounded"), color: "var(--ok)" };
+  if (provenance === "literature-cited") return { label: "Literature-cited (corpus)", color: "var(--brand)" };
+  if (provenance === "abstained") return { label: "Abstained · no grounded source", color: "var(--warn)" };
+  return { label: "PEN-STACK", color: "var(--ok)" };
+}
 function ProvenanceBadge({ mode, provenance }) {
-  const general = provenance === "general";
+  const { label, color } = provInfo(mode, provenance);
   return (
     <div className="mb-2 inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10.5px] font-medium"
-         style={{ borderColor: general ? "var(--warn)55" : "var(--ok)55", color: general ? "var(--warn)" : "var(--ok)" }}>
-      <span>{general ? "" : ""}</span>{MODE_LABEL[mode] || (general ? "General knowledge" : "PEN-STACK")}
+         style={{ borderColor: color + "55", color }}>{label}</div>
+  );
+}
+function SourceChips({ sources }) {
+  if (!sources?.length) return null;
+  return (
+    <div className="mt-2 flex flex-wrap gap-1.5">
+      <span className="text-[10px] text-fg-faint">sources:</span>
+      {sources.map((s, i) => (
+        <span key={i} className="rounded border border-brand/30 bg-brand/5 px-1.5 py-0.5 text-[10px] text-fg-dim"
+              title={s.doi || s.source_id}>
+          {String(s.source_id).split(":").slice(0, 2).join(":")}{s.doi ? ` · ${s.doi}` : ""}
+        </span>
+      ))}
     </div>
   );
 }

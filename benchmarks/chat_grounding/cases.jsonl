@@ -1,0 +1,14 @@
+{"q": "What integration efficiency do Bxb1 hyperactive variants reach?", "gold": "grounded"}
+{"q": "What efficiency does eePASSIGE reach in human cells?", "gold": "grounded"}
+{"q": "What does PASTE do?", "gold": "grounded"}
+{"q": "How is genotoxicity computed?", "gold": "grounded"}
+{"q": "What does the cd8 epitope score measure?", "gold": "grounded"}
+{"q": "What is the reference for the durability metric?", "gold": "grounded"}
+{"q": "What does evoCAST achieve at ALB?", "gold": "grounded"}
+{"q": "What integrases are catalogued as writers?", "gold": "grounded"}
+{"q": "What is the capital of France?", "gold": "abstain"}
+{"q": "How do I bake sourdough bread?", "gold": "abstain"}
+{"q": "Who won the world cup in 2018?", "gold": "abstain"}
+{"q": "Explain quantum entanglement.", "gold": "abstain"}
+{"q": "What is the best pizza topping?", "gold": "abstain"}
+{"q": "What is the boiling point of water?", "gold": "abstain"}

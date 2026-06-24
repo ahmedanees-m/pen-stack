@@ -21,8 +21,9 @@ _ACTION = re.compile(r"\b(insert|express|knock[\s-]?in|knock[\s-]?out|integrat|e
                      r"target|disrupt|correct|replace|place|add)\w*\b", re.I)
 _GENE_RE = re.compile(r"\b([A-Z][A-Z0-9]{1,7})\b")
 _VEHICLE = re.compile(r"\b(aav|lentivir|lenti|lnp|mrna|adenovir|hsv|electroporat|vector|capsid|vehicle)\w*\b", re.I)
-_LOCUS = re.compile(r"\b(locus|loci|site|safe[\s-]?harbour|safe[\s-]?harbor|aavs1|chr\d|enhancer|intron|exon)\b", re.I)
-_CELL = re.compile(r"\b(hepatocyt|liver|hspc|stem cell|ipsc|t[\s-]?cell|k562|hepg2|pbmc|cell line|cell type)\b", re.I)
+# trailing \w* so inflected forms count as a signal too (sites, hepatocytes, HSPCs, iPSCs)
+_LOCUS = re.compile(r"\b(locus|loci|site|safe[\s-]?harbour|safe[\s-]?harbor|aavs1|chr\d|enhancer|intron|exon)\w*\b", re.I)
+_CELL = re.compile(r"\b(hepatocyt|liver|hspc|stem cell|ipsc|t[\s-]?cell|k562|hepg2|pbmc|cell line|cell type)\w*\b", re.I)
 _CARGO = re.compile(r"\b(\d+(?:\.\d+)?\s*kb|\d{3,6}\s*bp|cargo|cassette|transgene|payload)\b", re.I)
 
 _EXPLAIN = re.compile(r"\b(what (do|does|is) (that|these|those|this|the)\b|what do the\b|"
@@ -31,7 +32,8 @@ _EXPLAIN = re.compile(r"\b(what (do|does|is) (that|these|those|this|the)\b|what 
                       r"reference range|what range|is that (good|bad|high|low|safe)|how do i read)\b", re.I)
 
 _META = re.compile(r"\b(pen[\s-]?stack|how (do|does) (you|pen)|how is .* (computed|calculated|derived|scored)|"
-                   r"how many (enzyme|writer|vector|vehicle|axe|model|system|locus|loci|gene|cell|oracle)\w*|"
+                   r"how many (?:[\w-]+\s+){0,2}(enzyme|writer|vector|vehicle|ax(?:e|is|es)|immune|metric|model|"
+                   r"system|locus|loci|gene|cell|oracle)\w*|"
                    r"how accurate|accuracy|how reliable|validated|what (can|do) you (do|cover|offer|support)|"
                    r"your (coverage|capabilit|method|model|data|engine)|how (does|is) immunogenicity|"
                    r"what (model|oracle|data|dataset)s?\b|where do (the|these) (number|value)s? come from|"
@@ -40,17 +42,34 @@ _META = re.compile(r"\b(pen[\s-]?stack|how (do|does) (you|pen)|how is .* (comput
 _GREETING = re.compile(r"^\s*(hi|hii+|hey|hello|yo|hola|greetings|good (morning|afternoon|evening)|thanks?|"
                        r"thank you|ok(ay)?|cool|nice|great)\b", re.I)
 
+# A back-reference follow-up to the previous answer ("and why?", "is that it?", "tell me more about that").
+_FOLLOWUP = re.compile(r"^\s*(and |but |so |then |why|how come|really|are you sure|elaborate|tell me more|"
+                       r"go on|more|continue|expand|what about)\b|"
+                       r"\b(that|it|this|those|these|them|the (score|number|value|result|design|writer|site|plan))\b",
+                       re.I)
+
+
+def _prior_lane(history: list | None) -> str | None:
+    """The lane of the most recent ASSISTANT turn (carried in memory), or None."""
+    for turn in reversed(history or []):
+        if turn.get("role") == "assistant" and turn.get("mode"):
+            return str(turn.get("mode"))
+    return None
+
 
 def _looks_like_design(message: str) -> bool:
-    """A real genome-writing request: an action verb + at least one of {vehicle, locus, cell, cargo, a gene}."""
-    if not _ACTION.search(message):
-        # also catch noun-phrase designs without a verb: "AAV insertion of FIX in liver"
-        if not (_VEHICLE.search(message) and (_CARGO.search(message) or _LOCUS.search(message))):
-            return False
+    """A real genome-writing request. CONSERVATIVE BY DESIGN (gate P-G2): a write/result request must never leak to
+    the ungrounded general lane, so an explicit ACTION verb (insert/integrate/correct/knock-in/...) plus ANY ONE
+    target signal (vehicle / locus / cell / cargo / a gene) routes to the grounded design lane. Without an action
+    verb we still catch noun-phrase designs (vehicle + cargo/locus). Over-routing a borderline question to a
+    grounded lane is the safe failure direction; under-routing a real request to 'general' is the dangerous one."""
     genes = [g for g in _GENE_RE.findall(message) if g not in {"DNA", "RNA", "AAV", "LNP", "HSV", "CAR", "RNP", "PEG"}]
     signals = sum(bool(x) for x in (_VEHICLE.search(message), _LOCUS.search(message), _CELL.search(message),
                                     _CARGO.search(message), genes))
-    return signals >= 2
+    if _ACTION.search(message):
+        return signals >= 1
+    # no action verb: a noun-phrase design needs a vehicle + a cargo/locus ("AAV delivery of a 3 kb cassette")
+    return bool(_VEHICLE.search(message)) and bool(_CARGO.search(message) or _LOCUS.search(message))
 
 
 def classify(message: str, history: list | None = None) -> str:
@@ -63,6 +82,10 @@ def classify(message: str, history: list | None = None) -> str:
     if _META.search(msg):
         return "meta"
     if _EXPLAIN.search(msg) and has_history: # follow-up interpretation even w/o explicit prior-number
+        return "explain"
+    # P-WS3 lane-aware memory: a back-reference follow-up to a GROUNDED answer (design/explain/meta) stays grounded
+    # in the explain lane rather than silently downgrading to the (now retrieval-gated) general lane.
+    if _prior_lane(history) in ("design", "explain", "meta") and _FOLLOWUP.search(msg) and not _GREETING.search(msg):
         return "explain"
     return "general"
 

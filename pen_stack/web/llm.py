@@ -17,9 +17,8 @@ against the prior dossier. (The frontend keeps history in-session until refresh.
 from __future__ import annotations
 
 import json
-import os
 import re
-from pathlib import Path
+from types import SimpleNamespace
 
 from pen_stack.web.guide import enrich_axes, guide_for, metric_guide, pen_stack_facts
 from pen_stack.web.router import classify, pen_stack_angles
@@ -214,68 +213,22 @@ def _angles_footer(message: str) -> str:
 
 
 # -------------------------------------------------------------------------------------- LLM backends
-def _ollama_base():
-    return os.getenv("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
-
-
-def _llm_timeout():
-    return float(os.getenv("PEN_STACK_LLM_TIMEOUT", "150"))
-
-
-def _call_ollama(prompt, system):
-    import requests
-    r = requests.post(f"{_ollama_base()}/api/generate",
-                      json={"model": os.getenv("OLLAMA_MODEL", "qwen2.5:3b-instruct"), "prompt": prompt,
-                            "system": system, "stream": False, "keep_alive": os.getenv("OLLAMA_KEEP_ALIVE", "30m"),
-                            "options": {"temperature": 0.2, "num_predict": int(os.getenv("OLLAMA_NUM_PREDICT", "450"))}},
-                      timeout=_llm_timeout())
-    r.raise_for_status()
-    return r.json()["response"]
-
-
-def _nvidia_key():
-    key = os.getenv("NVIDIA_API_KEY")
-    if key:
-        return key.strip()
-    f = Path(__file__).resolve().parents[2] / "configs" / "nvidia_api_key.txt"
-    return f.read_text(encoding="utf-8").strip() if f.exists() else None
-
-
-def _call_nemotron(prompt, system):
-    import requests
-    key = _nvidia_key()
-    if not key:
-        raise RuntimeError("no NVIDIA_API_KEY")
-    r = requests.post("https://integrate.api.nvidia.com/v1/chat/completions",
-                      headers={"Authorization": f"Bearer {key}"},
-                      json={"model": os.getenv("NEMOTRON_MODEL", "nvidia/llama-3.3-nemotron-super-49b-v1"),
-                            "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt}],
-                            "temperature": 0.2, "max_tokens": 700}, timeout=_llm_timeout())
-    r.raise_for_status()
-    return r.json()["choices"][0]["message"]["content"]
-
-
-def _run_llm(prompt, system):
-    """Try the configured backends in order; return (text, backend) or (None, None)."""
-    if os.getenv("PEN_STACK_NO_LLM") == "1":
-        return None, None
-    backends = {"ollama": _call_ollama, "nemotron": _call_nemotron}
-    for name in [b.strip().lower() for b in os.getenv("PEN_STACK_LLM_ORDER", "ollama,nemotron").split(",")]:
-        fn = backends.get(name)
-        if fn is None:
-            continue
-        try:
-            return fn(prompt, system), name
-        except Exception:
-            continue
-    return None, None
+# The provider backends live in pen_stack/web/llm_provider.py (PEN-CHAT P-WS2, the swappable abstraction). The chat
+# narrates through `run_llm`; the grounding guard below makes the GROUNDED result invariant to which provider fired.
+def _run_llm(prompt, system, provider=None):
+    """Delegate to the swappable provider abstraction; returns (text, backend) or (None, None)."""
+    from pen_stack.web.llm_provider import run_llm
+    return run_llm(prompt, system, provider=provider)
 
 
 def _history_block(history):
+    # P-WS3: each turn carries its lane/provenance in memory, so a follow-up resolves against the prior answer's
+    # grounding (e.g. interpreting an engine dossier) instead of being treated as fresh, unsourced text.
     out = ""
     for turn in (history or [])[-8:]:
         role = turn.get("role", "user")
-        out += f"{role.upper()}: {turn.get('content', '')}\n"
+        tag = f" [{turn.get('provenance')}]" if role == "assistant" and turn.get("provenance") else ""
+        out += f"{role.upper()}{tag}: {turn.get('content', '')}\n"
     return out
 
 
@@ -295,15 +248,27 @@ _HAZARD_RE = re.compile(
 
 def _pre_route_safety(message: str):
     """If the message is hazard-adjacent, run the Guardian (framing-stripped) on it BEFORE lane routing. Returns a
-    SafetyVerdict when the decision is refuse/escalate (the caller short-circuits to a decline), else None."""
-    if not _HAZARD_RE.search(message or ""):
+    SafetyVerdict when the decision is refuse/escalate (the caller short-circuits to a decline), else None.
+
+    Defence-in-depth: a hazard term combined with a BUILD/EXPRESS intent (an action verb) is escalated to a human
+    even when the specific agent is not in the Guardian's signature DB - the chat will not help express or design a
+    dual-use toxin/pathogen on the basis of generic language, and routes to biosecurity review instead."""
+    msg = message or ""
+    if not _HAZARD_RE.search(msg):
         return None
     try:
         from pen_stack.safety import safety_gate
-        verdict = safety_gate({"cargo_function": (message or "").strip()}, actor="chat")
+        verdict = safety_gate({"cargo_function": msg.strip()}, actor="chat")
+        if getattr(verdict, "decision", None) in {"refuse", "escalate"}:
+            return verdict
     except Exception: # noqa: BLE001 - the screen must never crash the chat; design lane still screens via run_tools
-        return None
-    return verdict if getattr(verdict, "decision", None) in {"refuse", "escalate"} else None
+        pass
+    from pen_stack.web.router import _ACTION
+    if _ACTION.search(msg):
+        return SimpleNamespace(decision="escalate", reason=(
+            "a build/express intent over a flagged dual-use hazard term; routed to human biosecurity review "
+            "(the specific agent need not be catalogued for the chat to decline)"))
+    return None
 
 
 def _safety_decline(verdict) -> dict:
