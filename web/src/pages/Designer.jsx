@@ -14,8 +14,20 @@ function buildCandidates(base) {
   const out = [];
   for (const veh of VEHICLES) {
     for (const bp of [base.cargo_bp, Math.round(base.cargo_bp * 1.5)]) {
-      out.push({ ...base, delivery_vehicle: veh, cargo_bp: bp,
-        safety: 0.7, p_durable: 0.6, writer_activity: 0.5, on_target: 0.8, deliverability: 0.6 });
+      // v7.1.2 CRITICAL FIX: Do NOT hardcode fake scores. These fields (safety, p_durable, writer_activity)
+      // are computed by the planning pipeline, not the Designer. Hardcoding them breaks confidence calibration.
+      // The candidate dict should only have user-supplied values; the planner adds computed scores.
+      out.push({
+        write_type: base.write_type,
+        gene: base.gene,
+        chrom: base.chrom,
+        delivery_vehicle: veh,
+        cargo_bp: bp,
+        cargo_function: base.cargo_function,  // CRITICAL: Guardian screens this; never drop it
+        cell_type: base.cell_type,
+        in_vivo: base.in_vivo,
+        edit_intent: base.edit_intent || "safe_harbour_insertion",
+      });
     }
   }
   return out;
