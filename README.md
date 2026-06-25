@@ -85,9 +85,10 @@ flowchart TB
 | Generative designer | `pen_stack.design` | Proposes candidate writing systems and keeps only those that pass safety, legality, and calibration, returning a Pareto frontier. |
 | Digital twin | `pen_stack.twin` | Calibrated, out-of-distribution-gated outcome prediction, bounded at phenotype. |
 | Experiment designer | `pen_stack.active` | Active learning by expected information gain, with a retrospective active-versus-random evaluation. |
-| Build interface | `pen_stack.build` | Safety-gated protocol export (draft only, never auto-run) and gated ingestion of results. |
-| Closed loop | `pen_stack.loop` | A gated design, build, test, learn loop with drift detection and versioned, reversible recalibration. |
-| Agent and co-scientist | `pen_stack.agent` | Goal to cited, auditable plan; MCP server; the co-scientist that drives the loop. |
+| Build interface | `pen_stack.build` | Safety-gated protocol export (draft only, never auto-run) and gated ingestion of results, with a cloud-lab connector that runs the biosecurity gate before any submission. |
+| Closed loop | `pen_stack.loop`, `pen_stack.active` | A gated design, build, test, learn loop with drift detection and versioned, reversible recalibration; an SDL-brain benchmark and a validation-campaign engine that orders the most-informative next measurements by expected information gain. |
+| Write intent (WriteSpec) | `pen_stack.spec` | A typed, ontology-backed `WriteRequest` (an SBOL3 profile) with a grounded extractor that resolves free text to verified ontology ids, asks clarifying questions on ambiguity, and runs a SAT feasibility check. |
+| Agent, co-scientist, and chat | `pen_stack.agent`, `pen_stack.web`, `pen_stack.rag` | Goal to cited, auditable plan; MCP server; the co-scientist that drives the loop; and the grounded conversational chat (four lanes: design, explain, meta, general; provenance-tagged retrieval; a swappable LLM provider). |
 | Bridge off-target engine | `pen_stack.bridge` | Off-target nomination and guide QC for bridge recombinases. |
 | Interfaces | `pen_stack.server`, `pen_stack.web`, `pen_stack.ui`, `pen_stack.cli` | REST API, web application, and command-line tools. |
 
@@ -172,20 +173,22 @@ A single assembly path (`pen_stack/atlas/universe.py`) feeds the classifier, the
 ```
 pen-stack/
   pen_stack/            the installable package
-    wgenome/            Writable Genome: features, safety, durability, writability, uncertainty, structure3d
-    atlas/              Writer Atlas, knowledge base, cross-link, variant proposal, canonical universe
+    spec/               WriteSpec: typed SBOL3-profile intent layer, grounded extractor, ontology resolvers, SAT feasibility
+    wgenome/            Writable Genome: features, safety, durability, writability, uncertainty, structure3d, off-target nomination
+    atlas/              Writer Atlas, knowledge base, cross-link, variant proposal, canonical universe, writer-efficiency predictor
     mech/  score/       mechanism classification at scale; re-grounded therapeutic-readiness axes
-    planner/            Write Planner: optimisation, cargo, routing, delivery palette, delivery immunology
+    planner/            Write Planner: optimisation, cargo, routing, delivery palette, delivery immunology, capsid fitness
     bridge/             bridge off-target engine and guide QC
-    oracles/            oracle mesh: the OracleResult contract and adapters over the foundation models
+    oracles/            oracle mesh: the OracleResult contract and adapters over the foundation models, with binding-affinity and per-oracle reliability
     graph/              living world-model knowledge graph (gated, propose-only)
-    rules/  verify/     machine-readable rule base and the verify(design) service
-    safety/             the biosecurity and dual-use gate
-    design/  twin/      generative designer; calibrated digital twin
-    active/  build/     experiment designer; safety-gated build interface
+    rules/  verify/     machine-readable rule base, the verify(design) service, and the proof-object with repair hints
+    safety/             the biosecurity and dual-use gate, with standards concordance
+    design/  twin/      generative designer; calibrated digital twin with a learned position-effect model
+    active/  build/     experiment designer with the SDL-brain benchmark and validation-campaign engine; safety-gated build interface and cloud-lab connector
     loop/               the gated design-build-test-learn loop
+    rag/                PEN-CHAT: provenance-tagged retrieval corpus, embedder, and four-branch ground router (social, cited, general, abstained)
     agent/              agent platform, co-scientist, MCP server
-    api/  web/  server/ ui/  cli.py    AI integration surface, web platform, REST API, CLI
+    api/  web/  server/ ui/  cli.py    AI integration surface, web platform with the grounded chat and swappable LLM provider, REST API, CLI
   benchmarks/           Genome-Writing Bench and the public Genome-Writing Challenge
   scripts/              reproducible pipeline drivers
   configs/              pinned datasets, thresholds, and curation (YAML)
@@ -219,7 +222,7 @@ All public: hg38 (UCSC); ENCODE and Roadmap chromatin (ATAC/DNase and histone ma
   author  = {Mahaboob Ali, Anees Ahmed},
   title   = {PEN-STACK: open infrastructure for genome writing (The Writable Genome)},
   year    = {2026},
-  version = {6.11.0},
+  version = {7.1.2},
   url     = {https://github.com/ahmedanees-m/pen-stack}
 }
 ```
