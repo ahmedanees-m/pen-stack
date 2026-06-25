@@ -133,6 +133,25 @@ controlled_functions:
     keywords: ["pathogen_essential", "virulence_factor", "pathogen essential"]
     control_ref: "DURC policy"
     severity: medium
+  - id: FUNC-VIRAL-TROPISM-ENHANCE
+    # v7.1.2 CRITICAL: Added to catch furin-cleavage and other viral enhancement modifications.
+    # Furin is a ubiquitous human protease; inserting furin cleavage sites increases proteolytic
+    # activation of viral glycoproteins, broadening cell tropism and transmissibility (GOF concern).
+    name: "engineered enhancement of viral cell tropism / proteolytic activation (furin cleavage, PRRA inserts)"
+    keywords: ["furin cleavage", "furin_cleavage", "protease activation", "receptor binding enhancement",
+               "tropism enhancement", "tropism_expansion", "virulence enhancement"]
+    control_ref: "DURC policy (GOF concern, HHS P3CO oversight)"
+    severity: high
+  - id: FUNC-ONCOGENIC-SUPPRESSOR
+    # v7.1.2 CRITICAL: Added to catch dominant-negative tumor suppressors and oncogenic manipulations.
+    # Deleting or inhibiting tumor suppressors (TP53, RB, PTEN) ablates apoptosis/cell-cycle checkpoints,
+    # enabling unrestricted proliferation and malignant transformation (oncogenic context).
+    name: "dominant-negative / ablation of tumor-suppressor checkpoints (TP53, RB, PTEN, APC)"
+    keywords: ["dominant-negative", "dominant negative", "tp53_suppressor", "p53_ablation", "rb_suppressor",
+               "pten_suppressor", "apc_suppressor", "apoptosis_checkpoint_ablation", "cell_cycle_checkpoint_ablation",
+               "tumor_suppressor_knockout", "unrestricted_proliferation", "apoptosis_evasion"]
+    control_ref: "DURC policy (oncogenic context, malignant transformation risk)"
+    severity: high
 
 # --- Chimera / context rules: hazardous ASSEMBLY of individually-benign parts. ---------
 chimera_rules:
