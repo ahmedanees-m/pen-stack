@@ -90,7 +90,8 @@ def _cited_answer(message: str, r: dict, allow_llm: bool) -> dict:
         system = ("You answer ONLY from the SOURCES provided. After each claim, cite the bracketed [n] it came from. "
                   "If the sources do not cover the question, say so. Never add a number, name, or vehicle that is "
                   "not in the sources. Never present anything as a PEN-STACK-computed result.")
-        text, backend = _run_llm(f"SOURCES:\n{ctx}\n\nQUESTION: {message}\n\nAnswer concisely, citing [n].", system)
+        text, backend = _run_llm(f"SOURCES:\n{ctx}\n\nQUESTION: {message}\n\nAnswer concisely, citing [n].", system,
+                                 kind="general")  # v7.1.2 fast-path: short timeout + token cap for cited answers
         if text:
             allow = extract_grounded_numbers({"hits": [h["text"] for h in grounded_hits]})
             return {**base, "reply": _LABEL + "\n\n" + _enforce_grounding(text.strip(), allow), "backend": backend}
@@ -119,7 +120,7 @@ def ground_general(message: str, *, allow_llm: bool = True) -> dict:
         from pen_stack.web.llm import SYSTEM_GENERAL, _GENERAL_LABEL, _run_llm
         text, backend = _run_llm(
             f"USER: {msg}\n\nAnswer from general knowledge, clearly and at a graduate level. Do not present anything "
-            f"as a PEN-STACK result.", SYSTEM_GENERAL)
+            f"as a PEN-STACK result.", SYSTEM_GENERAL, kind="general")  # v7.1.2: fast-path timeout
         if text:
             return {"status": "general", "reply": _GENERAL_LABEL + "\n\n" + text.strip(), "sources": [],
                     "provenance": "general", "grounded": False, "backend": backend, "retrieval": r["method"],

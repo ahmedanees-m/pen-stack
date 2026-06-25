@@ -215,10 +215,12 @@ def _angles_footer(message: str) -> str:
 # -------------------------------------------------------------------------------------- LLM backends
 # The provider backends live in pen_stack/web/llm_provider.py (PEN-CHAT P-WS2, the swappable abstraction). The chat
 # narrates through `run_llm`; the grounding guard below makes the GROUNDED result invariant to which provider fired.
-def _run_llm(prompt, system, provider=None):
-    """Delegate to the swappable provider abstraction; returns (text, backend) or (None, None)."""
+def _run_llm(prompt, system, provider=None, kind="default"):
+    """Delegate to the swappable provider abstraction; returns (text, backend) or (None, None).
+    kind="general" picks the fast-path timeout/token cap (Social / General lane); "default" keeps the longer budget
+    for engine-grounded design / explain / meta narration. v7.1.2."""
     from pen_stack.web.llm_provider import run_llm
-    return run_llm(prompt, system, provider=provider)
+    return run_llm(prompt, system, provider=provider, kind=kind)
 
 
 def _history_block(history):
@@ -316,7 +318,8 @@ def grounded_reply(message: str, history: list | None = None, *, allow_llm: bool
         # the retriever itself failed: still answer from labelled general knowledge if the LLM is on (never present
         # it as a PEN-STACK result), else point to the engine.
         if allow_llm:
-            text, backend = _run_llm(f"USER: {message}\n\nAnswer from general knowledge, clearly.", SYSTEM_GENERAL)
+            text, backend = _run_llm(f"USER: {message}\n\nAnswer from general knowledge, clearly.", SYSTEM_GENERAL,
+                                     kind="general")  # v7.1.2 fast-path: short timeout + token cap for the General lane
             if text:
                 return {"mode": "general", "provenance": "general", "grounded": False, "angles": angles,
                         "tool_results": None, "sources": [],

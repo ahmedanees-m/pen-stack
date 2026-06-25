@@ -96,6 +96,36 @@ def test_provider_abstraction_is_documented_and_swappable(monkeypatch):
     assert lp.run_llm("x", "y") == (None, None)
 
 
+def test_general_lane_uses_fast_path_timeout_and_token_cap(monkeypatch):
+    # v7.1.2 latency fix: kind="general" picks a tighter timeout / token cap than the default (engine-grounded) path.
+    monkeypatch.delenv("PEN_STACK_LLM_TIMEOUT", raising=False)
+    monkeypatch.delenv("PEN_STACK_LLM_TIMEOUT_GENERAL", raising=False)
+    monkeypatch.delenv("OLLAMA_NUM_PREDICT", raising=False)
+    monkeypatch.delenv("OLLAMA_NUM_PREDICT_GENERAL", raising=False)
+    monkeypatch.delenv("NEMOTRON_MAX_TOKENS", raising=False)
+    monkeypatch.delenv("NEMOTRON_MAX_TOKENS_GENERAL", raising=False)
+    from pen_stack.web import llm_provider as lp
+    assert lp._llm_timeout("general") < lp._llm_timeout("default")
+    assert lp._ollama_num_predict("general") < lp._ollama_num_predict("default")
+    assert lp._nemotron_max_tokens("general") < lp._nemotron_max_tokens("default")
+
+
+def test_query_embedding_is_cached(monkeypatch):
+    # v7.1.2 latency fix: a repeated query phrase reuses the cached embedding instead of re-calling Ollama.
+    from pen_stack.rag import embed
+    calls = {"n": 0}
+
+    def fake_embed_text(text, task="query"):
+        calls["n"] += 1
+        import numpy as np
+        return np.ones(8, dtype="float32") / (8 ** 0.5)
+    embed._embed_query_cached.cache_clear()
+    monkeypatch.setattr(embed, "embed_text", fake_embed_text)
+    a = embed.embed_query("what is DNA")
+    b = embed.embed_query("what is DNA")
+    assert a is not None and b is not None and calls["n"] == 1  # the second call hit the LRU, not the network
+
+
 def test_grounded_fields_are_provider_independent_by_construction(monkeypatch):
     # P-WS2 acceptance (the invariant): the grounded fields - lane, provenance, cited sources - come from retrieval
     # and the tools, NOT the LLM. With the LLM off the grounded answer still carries them, so the result is

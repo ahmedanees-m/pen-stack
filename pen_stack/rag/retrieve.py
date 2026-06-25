@@ -12,7 +12,7 @@ from functools import lru_cache
 import numpy as np
 
 from pen_stack.rag.corpus import emb_path, load_corpus
-from pen_stack.rag.embed import embed_text, lexical_scores
+from pen_stack.rag.embed import embed_query, lexical_scores
 
 
 @lru_cache(maxsize=1)
@@ -30,7 +30,7 @@ def _load():
 def retrieve(query: str, k: int = 4) -> dict:
     df, emb = _load()
     texts = df["text"].tolist()
-    qv = embed_text(query) if emb is not None else None
+    qv = embed_query(query) if emb is not None else None  # v7.1.2: LRU-cached query embedding
     if qv is not None and emb is not None:
         scores = emb @ qv  # both L2-normalised -> dot product is cosine
         method = "semantic (nomic-embed-text)"

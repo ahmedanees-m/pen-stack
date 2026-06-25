@@ -3,6 +3,23 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.1.2] - 2026-06-25 - PEN-CHAT: chat-response latency fix
+
+### Fixed
+- Chat response time was unnecessarily high because every General-lane request paid for an Ollama embedding
+  round-trip on the query side, and the LLM call ran with a generous 150 s timeout / 450-token cap suited to the
+  engine-grounded design lane, not a textbook answer. Three minimal changes, no behaviour change for the grounded
+  lanes:
+  - `pen_stack/rag/embed.py` adds an LRU-cached `embed_query()` (256 entries) so a repeated phrasing skips the
+    embedder; `pen_stack/rag/retrieve.py` uses it.
+  - `pen_stack/web/llm_provider.py` now accepts `kind="general"`, which selects `PEN_STACK_LLM_TIMEOUT_GENERAL`
+    (45 s default, was 150 s) and `OLLAMA_NUM_PREDICT_GENERAL` / `NEMOTRON_MAX_TOKENS_GENERAL` (280 / 400, was
+    450 / 700). The default-kind path used by the engine-grounded design / explain / meta lanes is unchanged
+    (`PEN_STACK_LLM_TIMEOUT` default lowered 150 → 90).
+  - The General-lane and PEN-RAG cited-answer callers (`pen_stack/rag/ground.py`, `pen_stack/web/llm.py`) now pass
+    `kind="general"`.
+- No grounding-guard change; the LLM stays non-load-bearing and the per-lane provenance labels are unchanged.
+
 ## [7.1.1] - 2026-06-24 - PEN-CHAT: General-lane helpfulness fix + benchmark-validity correction
 
 ### Fixed

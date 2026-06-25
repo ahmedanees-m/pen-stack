@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import os
 import urllib.request
+from functools import lru_cache
 
 import numpy as np
 
@@ -37,6 +38,24 @@ def embed_text(text: str, task: str = "query") -> np.ndarray | None:
         return v / n if n else v
     except Exception:  # noqa: BLE001 - any failure -> caller uses the lexical fallback
         return None
+
+
+# v7.1.2 latency fix: cache live query embeddings in-process. The chat embeds the user's message on every General-lane
+# request; repeat phrasings ("hi", "what is DNA", "what is gene editing") would otherwise hit Ollama every time. The
+# document side is unaffected - corpus embeddings are computed once at build time and committed.
+@lru_cache(maxsize=256)
+def _embed_query_cached(text: str) -> tuple | None:
+    v = embed_text(text, task="query")
+    return tuple(float(x) for x in v) if v is not None else None
+
+
+def embed_query(text: str) -> np.ndarray | None:
+    """Cached query-side embedding. Identical to `embed_text(text, task='query')` but memoised by text."""
+    t = (text or "").strip()
+    if not t:
+        return embed_text(t, task="query")
+    cached = _embed_query_cached(t)
+    return np.asarray(cached, dtype="float32") if cached is not None else None
 
 
 def embed_corpus(texts: list[str]) -> np.ndarray:
