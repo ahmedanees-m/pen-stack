@@ -98,6 +98,26 @@ def test_registry_accessions_present_and_versioned():
         assert acc in all_pfam, f"{acc} missing from registry"
 
 
+# --- v7.1.2 CRITICAL FIXES: viral tropism + oncogenic functions ----------------------
+
+def test_furin_cleavage_enhancement_caught():
+    """v7.1.2 CRITICAL: Guardian must catch furin-cleavage enhancement (viral tropism GOF)."""
+    design = {"cargo_function": "enhanced furin cleavage site insertion to increase viral receptor binding and tropism"}
+    v = safety_gate(design, actor="test")
+    assert v.decision in ("refuse", "escalate"), f"furin cleavage slipped through as {v.decision}"
+    assert any("furin" in h.detail.lower() or "tropism" in h.detail.lower() for h in v.hits), \
+        "no furin/tropism hit found"
+
+
+def test_dominant_negative_tp53_caught():
+    """v7.1.2 CRITICAL: Guardian must catch dominant-negative TP53 (oncogenic GOF)."""
+    design = {"cargo_function": "dominant-negative TP53 suppressor to ablate apoptosis checkpoints and enable unrestricted proliferation"}
+    v = safety_gate(design, actor="test")
+    assert v.decision in ("refuse", "escalate"), f"TP53 suppressor slipped through as {v.decision}"
+    assert any("tumor" in h.detail.lower() or "tp53" in h.detail.lower() or "apoptosis" in h.detail.lower() for h in v.hits), \
+        "no tumor-suppressor hit found"
+
+
 # --- audit trail -----------------------------------------------------------------------
 
 def test_audit_chain_tamper_evident():
