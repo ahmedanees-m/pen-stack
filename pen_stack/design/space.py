@@ -93,3 +93,33 @@ def candidate_space(goal: dict, *, n: int = 200, k: int = 8) -> list[dict[str, A
             if len(cands) >= n:
                 return cands
     return cands
+
+
+def vehicle_sweep(goal: dict, *, n: int = 200) -> list[dict[str, Any]]:
+    """Atlas-FREE candidate enumeration: sweep the compatible delivery vehicles for the goal WITHOUT planner
+    scores. Used when the writability atlas has no coverage for the requested cell type (e.g. cd8_t / pbmc /
+    h1_hesc), so `candidate_space` (which needs `plan_write`) yields nothing.
+
+    Each candidate carries the goal's cargo_function (so the Guardian still screens it), the cargo size (so the
+    capacity rules still filter oversize vehicles), and NO safety/p_durable/writer_activity (so verify() honestly
+    ABSTAINS on the calibrated confidence rather than inventing one). The legality + biosecurity discrimination is
+    fully exercised; only the calibrated-confidence column is left uncomputed (and labelled as such in the UI)."""
+    intent = goal.get("intent") or goal.get("edit_intent") or "safe_harbour_insertion"
+    cargo_bp = int(goal.get("cargo_bp") or goal.get("payload_bp") or 3000)
+    ct = goal.get("cell_type") or goal.get("ct") or "k562"
+    write_type = _INTENT_WRITE_TYPE.get(intent, "insertion")
+    screen_extra = {f: goal[f] for f in ("cargo_function", "cargo_seq", "in_vivo", "delivery_tropism",
+                                         "replication_competent") if goal.get(f) is not None}
+    cands: list[dict] = []
+    for veh in _compatible_vehicles(cargo_bp):
+        cands.append({
+            **screen_extra,
+            "write_type": write_type, "gene": goal.get("gene"), "chrom": goal.get("chrom"),
+            "edit_intent": intent, "cargo_bp": cargo_bp, "cell_type": ct, "delivery_vehicle": veh,
+            "deliverability": deliverability_score(veh, cargo_bp),
+            "provenance": {"candidate_space": "v7.1.2 atlas-free vehicle sweep "
+                           "(no measured writability atlas for this cell type; confidence abstains)"},
+        })
+        if len(cands) >= n:
+            break
+    return cands

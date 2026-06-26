@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pen_stack.design.space import candidate_space
+from pen_stack.design.space import candidate_space, vehicle_sweep
 from pen_stack.verify import verify
 
 # a survivor must be legal AND safe (cleared or low-severity advisory); refuse/escalate are discarded.
@@ -29,8 +29,19 @@ def generate_designs(goal: dict | None = None, *, candidates: list[dict] | None 
     by confidence. Hazardous (refuse/escalate) or illegal proposals are discarded, never returned.
 
     Pass an explicit ``candidates`` list to discriminate a known pool (atlas-independent); otherwise candidates
-    are enumerated from ``goal`` via the planner-backed candidate space."""
-    pool = candidates if candidates is not None else candidate_space(goal or {}, n=n)
+    are enumerated from ``goal`` via the planner-backed candidate space.
+
+    v7.1.2: when the goal's cell type has NO measured writability atlas (so the planner-backed candidate_space
+    yields nothing), fall back to an atlas-free vehicle sweep so the legality + biosecurity discrimination still
+    runs; those survivors carry no calibrated confidence (it abstains honestly, surfaced in the UI) rather than
+    the page showing an empty table for a perfectly legal, screened design. The explicit-``candidates`` path is
+    untouched (``generate_designs(candidates=[])`` still returns [])."""
+    if candidates is not None:
+        pool = candidates
+    else:
+        pool = candidate_space(goal or {}, n=n)
+        if not pool and goal: # atlas absent for this cell type -> atlas-free sweep (confidence will abstain)
+            pool = vehicle_sweep(goal, n=n)
     survivors: list[dict] = []
     for d in pool:
         v = verify(dict(d), actor=actor)

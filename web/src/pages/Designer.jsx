@@ -116,7 +116,7 @@ export default function Designer() {
                     <td className="py-2 pr-3">
                       {s.confidence != null
                         ? <ConfidenceBand lo={s.interval?.[0]} hi={s.interval?.[1]} point={s.confidence} status="grounded" />
-                        : <span className="text-fg-faint text-xs">not calibrated (planner scores absent)</span>}
+                        : <span className="text-fg-faint text-xs" title="This cell type has no measured writability atlas (only K562 / HepG2 / HSPC do), so the planner cannot compute calibrated safety/durability scores. The legality and biosecurity screens still ran.">abstained · no measured atlas for this cell type</span>}
                     </td>
                     <td className="py-2">{s.scope_flags?.length ? <Pill color="var(--warn)">{s.scope_flags.length} scope</Pill> : <span className="text-fg-faint text-xs">none</span>}</td>
                   </tr>
