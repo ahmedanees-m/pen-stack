@@ -51,13 +51,22 @@ def deliverability_score(vehicle_name: str, cargo_bp: int) -> float:
 
 
 def candidate_space(goal: dict, *, n: int = 200, k: int = 8) -> list[dict[str, Any]]:
-    """Enumerate candidate designs for a goal {gene, intent, cargo_bp, cell_type}. Each candidate is a plain
-    dict consumable by `verify()` and carries the planner's grounded scores. Returns [] if the atlas is absent."""
+    """Enumerate candidate designs for a goal {gene, intent, cargo_bp, cell_type, cargo_function?}. Each candidate
+    is a plain dict consumable by `verify()` and carries the planner's grounded scores. Returns [] if the atlas is
+    absent.
+
+    v7.1.2: the goal's screening-relevant fields (cargo_function, cargo_seq, in_vivo, delivery_tropism,
+    replication_competent) are PROPAGATED onto every candidate so the Guardian biosecurity gate in verify() screens
+    the cargo function for each swept vehicle. Previously these were dropped here, so a hazardous cargo function
+    reached NO screen on the goal-based path."""
     gene = goal["gene"]
     intent = goal.get("intent") or goal.get("edit_intent") or "safe_harbour_insertion"
     cargo_bp = int(goal.get("cargo_bp") or goal.get("payload_bp") or 3000)
     ct = goal.get("cell_type") or goal.get("ct") or "k562"
     write_type = _INTENT_WRITE_TYPE.get(intent, "insertion")
+    # screening-relevant goal fields propagated onto every candidate (the Guardian reads cargo_function).
+    screen_extra = {f: goal[f] for f in ("cargo_function", "cargo_seq", "in_vivo", "delivery_tropism",
+                                         "replication_competent") if goal.get(f) is not None}
 
     from pen_stack.planner.pipeline import plan_write
     try:
@@ -70,6 +79,7 @@ def candidate_space(goal: dict, *, n: int = 200, k: int = 8) -> list[dict[str, A
     for p in plans:
         for veh in vehicles:
             cands.append({
+                **screen_extra, # v7.1.2: cargo_function et al. so the Guardian screens this candidate
                 "write_type": write_type, "gene": gene, "chrom": p["site"]["chrom"],
                 "edit_intent": intent, "writer_family": p["writer"], "cargo_bp": cargo_bp,
                 "cell_type": ct, "delivery_vehicle": veh,

@@ -440,11 +440,30 @@ def delivery_tropism_endpoint(target_tissue: str):
 @app.post("/generate", tags=["v6.1 AI surface"])
 def generate_endpoint(req: dict):
     """v5.8 generative designer: verifier-as-discriminator. Body: {goal?, candidates?, keep?}. Hazardous/illegal
-    candidates are discarded; survivors are calibrated + immune-profiled candidates (never asserted to work)."""
+    candidates are discarded; survivors are calibrated + immune-profiled candidates (never asserted to work).
+
+    v7.1.2: the GOAL'S cargo function is screened by the Guardian FIRST, before the vehicle x cargo sweep. A
+    hazardous goal (e.g. a furin-cleavage tropism-enhancement or a dominant-negative tumor-suppressor ablation) is
+    REFUSED up front and the response carries the explicit safety verdict, so an empty result is correctly
+    attributed to a biosecurity refusal (not a silent 'no candidates'). The per-candidate Guardian still runs in
+    verify() as defence in depth."""
     from pen_stack.design import generate_designs
-    return {"survivors": generate_designs(req.get("goal"), candidates=req.get("candidates"),
+    goal = req.get("goal")
+    # Guardian pre-screen on the goal's declared cargo function (the artifact, not any free-text justification).
+    if isinstance(goal, dict) and any(goal.get(f) for f in ("cargo_function", "cargo_seq")):
+        from pen_stack.safety.gate import safety_gate
+        screen = {f: goal[f] for f in ("cargo_function", "cargo_seq", "gene", "delivery_vehicle", "in_vivo",
+                                       "delivery_tropism", "replication_competent") if goal.get(f) is not None}
+        gv = safety_gate(screen, actor=str(req.get("actor", "api")))
+        if gv.decision in ("refuse", "escalate"):
+            return {"survivors": [], "refused": True,
+                    "safety": {"decision": gv.decision, "reason": gv.reason,
+                               "hits": [{"detail": h.detail, "severity": h.severity, "kind": h.kind}
+                                        for h in gv.hits]},
+                    "disclaimer": _DISCLAIMER}
+    return {"survivors": generate_designs(goal, candidates=req.get("candidates"),
                                           keep=int(req.get("keep", 25)), actor=str(req.get("actor", "api"))),
-            "disclaimer": _DISCLAIMER}
+            "refused": False, "disclaimer": _DISCLAIMER}
 
 
 @app.post("/predict", tags=["v6.1 AI surface"])

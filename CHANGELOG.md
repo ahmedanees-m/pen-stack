@@ -3,14 +3,27 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
-## [7.1.2] - 2026-06-25 - Designer + Chat latency fixes
+## [7.1.2] - 2026-06-25 - Designer correctness (Guardian + calibration) + Chat latency fixes
 
 ### Fixed
-- **CRITICAL (Designer):** The Designer page was hardcoding fake planner scores (0.7 / 0.6 / 0.5) on every candidate,
-  breaking calibrated confidence computation. Confidence was hardcoded to `1.00 · [0.56, 0.71]` regardless of input.
-  Fixed by removing hardcoded fake scores from `buildCandidates()` (`web/src/pages/Designer.jsx`), allowing the
-  verifier to abstain on confidence when real planner scores are unavailable (correct behaviour). The `cargo_function`
-  field is now preserved on every candidate so Guardian properly screens for hazardous cargo.
+- **CRITICAL (Designer / Guardian biosecurity):** Hazardous cargo functions (e.g. furin-cleavage viral
+  tropism-enhancement, dominant-negative tumor-suppressor ablation) passed the Designer as "Safety: Clear" with
+  full survivor tables. Two root causes, both fixed:
+  - The hazard registry (`configs/safety/hazard_registry.yaml`) had **no signatures** for engineered viral tropism
+    enhancement or oncogenic tumor-suppressor ablation. Added `FUNC-VIRAL-TROPISM-ENHANCE` (furin cleavage /
+    receptor-binding / tropism, high severity) and `FUNC-ONCOGENIC-SUPPRESSOR` (dominant-negative TP53 / RB / PTEN,
+    apoptosis-checkpoint ablation, high severity), both DURC / HHS-P3CO categories.
+  - The goal-based candidate path (`pen_stack/design/space.py::candidate_space`) **dropped** the goal's
+    `cargo_function`, so the Guardian in `verify()` screened nothing. It is now propagated onto every swept
+    candidate. The `/generate` endpoint additionally screens the goal's cargo function FIRST and returns an explicit
+    biosecurity refusal (`refused: true` + the safety verdict) so an empty table is correctly attributed to a
+    refusal, not a silent "no candidates".
+- **CRITICAL (Designer / calibration):** Confidence was a constant `1.00 · [0.56, 0.71]` for every input because the
+  page hardcoded fake planner scores (0.7 / 0.6 / 0.5) on each candidate. The page now submits the design GOAL and
+  the engine plans real writable sites with grounded per-locus safety / durability / writer-activity, so the
+  confidence band is genuinely calibrated (it differs by locus/vehicle, e.g. F9 → `[0.866, 0.972]`, and is absent
+  for a refused design). `web/src/pages/Designer.jsx` rewritten to send a goal and render the refused / empty /
+  survivor states distinctly.
 - **Chat response latency:** Every General-lane request paid for an Ollama embedding round-trip, and the LLM call ran
   with a generous 150 s timeout / 450-token cap suited to engine-grounded design, not a textbook answer. Three minimal
   changes:
