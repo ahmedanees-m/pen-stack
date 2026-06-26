@@ -29,13 +29,24 @@ _INTENT_WRITE_TYPE = {
 }
 
 
-def _compatible_vehicles(cargo_bp: int) -> list[str]:
-    """Vehicles whose curated cargo capacity fits the cargo (capacity None = no DNA-packaging limit)."""
+def _compatible_vehicles(cargo_bp: int, in_vivo: bool | None = None) -> list[str]:
+    """Vehicles whose curated cargo capacity fits the cargo (capacity None = no DNA-packaging limit).
+
+    v7.1.2: when an administration ``in_vivo`` context is given, also filter by the vehicle's curated route
+    (the `in_vivo` / `ex_vivo` flags in configs/delivery_vehicles.yaml) - an in-vivo goal keeps the in-vivo-capable
+    vehicles, an ex-vivo goal keeps the ex-vivo-capable ones (e.g. lentivirus / electroporation / eVLP). This is a
+    grounded compatibility filter from the curated palette, not a clinical claim. ``in_vivo=None`` keeps all."""
     out = []
     for n in _vehicle_names():
-        cap = (_vehicle(n) or {}).get("cargo_capacity_bp")
-        if cap is None or cargo_bp <= cap:
-            out.append(n)
+        v = _vehicle(n) or {}
+        cap = v.get("cargo_capacity_bp")
+        if cap is not None and cargo_bp > cap:
+            continue
+        if in_vivo is True and not v.get("in_vivo"):
+            continue
+        if in_vivo is False and not v.get("ex_vivo"):
+            continue
+        out.append(n)
     return out
 
 
@@ -74,7 +85,7 @@ def candidate_space(goal: dict, *, n: int = 200, k: int = 8) -> list[dict[str, A
     except Exception: # atlas/data absent -> no candidates (discriminator/Pareto unaffected)
         return []
 
-    vehicles = _compatible_vehicles(cargo_bp)
+    vehicles = _compatible_vehicles(cargo_bp, in_vivo=goal.get("in_vivo"))
     cands: list[dict] = []
     for p in plans:
         for veh in vehicles:
@@ -111,7 +122,7 @@ def vehicle_sweep(goal: dict, *, n: int = 200) -> list[dict[str, Any]]:
     screen_extra = {f: goal[f] for f in ("cargo_function", "cargo_seq", "in_vivo", "delivery_tropism",
                                          "replication_competent") if goal.get(f) is not None}
     cands: list[dict] = []
-    for veh in _compatible_vehicles(cargo_bp):
+    for veh in _compatible_vehicles(cargo_bp, in_vivo=goal.get("in_vivo")):
         cands.append({
             **screen_extra,
             "write_type": write_type, "gene": goal.get("gene"), "chrom": goal.get("chrom"),
