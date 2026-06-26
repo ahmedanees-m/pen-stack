@@ -13,6 +13,19 @@ All notable changes to PEN-STACK are documented here. This file follows
     enhancement or oncogenic tumor-suppressor ablation. Added `FUNC-VIRAL-TROPISM-ENHANCE` (furin cleavage /
     receptor-binding / tropism, high severity) and `FUNC-ONCOGENIC-SUPPRESSOR` (dominant-negative TP53 / RB / PTEN,
     apoptosis-checkpoint ablation, high severity), both DURC / HHS-P3CO categories.
+  - **Oncogenic-manipulation PATTERN screen** (`oncogenic_manipulation` in the registry +
+    `HazardRegistry.oncogenic_flags`): a flat keyword list is brittle to paraphrase — a red-team pass found the
+    Guardian caught only **1/8** mechanism/synonym phrasings ("R175H p53 abolishing transactivation", "PTEN
+    knockout", "RAS G12D constitutive activation", "hTERT immortalization", "APC frameshift", "EGFR
+    ligand-independent activation", "NF1+BAX/BAK knockout"). The pattern screen flags the *combination*
+    `(tumor-suppressor + disruptive verb)` OR `(oncogene + activating signature)` OR `immortalization`, which
+    catches **8/8** while the deliberate asymmetry spares therapy with **no allow-list** — restoring a suppressor or
+    silencing an oncogene matches neither, so "p53 correction to restore apoptosis", "TRAC/CCR5 knockout",
+    "knock-down of mutant KRAS" stay clear (**11/11** benign). Disposition is escalate (dual-use → human review).
+  - **Keyword matcher hardened** (`_kw_match`): a plain substring test made the ricin abbreviation `"rip"` fire
+    inside **"transc-rip-tion"** (a word in almost every editing design → benign cassettes false-refused as ricin),
+    and let a hyphenated `"furin-cleavage"` slip past the space-form keyword. Matching is now separator-insensitive
+    (`-`/`_`/space unified) and word-boundary anchored, fixing both the false positive and the evasion.
   - The goal-based candidate path (`pen_stack/design/space.py::candidate_space`) **dropped** the goal's
     `cargo_function`, so the Guardian in `verify()` screened nothing. It is now propagated onto every swept
     candidate. The `/generate` endpoint additionally screens the goal's cargo function FIRST and returns an explicit

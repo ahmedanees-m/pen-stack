@@ -12,6 +12,7 @@ sequence still carries a hazardous FUNCTION annotation, and function, not homolo
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
@@ -25,6 +26,26 @@ _REGISTRY_REL = "configs/safety/hazard_registry.yaml"
 
 def _norm(s: Any) -> str:
     return str(s or "").strip().lower()
+
+
+def _sep_norm(s: Any) -> str:
+    """Lowercase and collapse separator runs (whitespace / hyphen / underscore) to a single space, so
+    "furin-cleavage", "furin_cleavage" and "furin cleavage" are one token. Keeps the matcher robust to the
+    hyphen/space/underscore variation that is ubiquitous in free-text function descriptions."""
+    return re.sub(r"[\s_\-]+", " ", _norm(s)).strip()
+
+
+def _kw_match(kw: str, text: str) -> bool:
+    """Separator-insensitive, word-boundary keyword match (v7.1.2). Two failure modes of a plain substring test:
+    (1) over-broad - the short ricin keyword "rip" matches inside "transc-RIP-tion", a word in almost every
+    genome-editing design, so a benign promoter cassette would false-refuse as ricin; (2) too-narrow - a
+    hyphenated "furin-cleavage" would slip past the space-form keyword "furin cleavage". Normalising separators
+    then matching on alphanumeric boundaries fixes both: "rip" matches "RIP" standalone but not inside a longer
+    word, and "furin cleavage" / "furin-cleavage" / "furin_cleavage" all match."""
+    k = _sep_norm(kw)
+    if not k:
+        return False
+    return re.search(r"(?<![a-z0-9])" + re.escape(k) + r"(?![a-z0-9])", _sep_norm(text)) is not None
 
 
 def _design_function_tokens(design: dict) -> set[str]:
@@ -57,6 +78,7 @@ class HazardRegistry:
     regulated_taxa: list[dict] = field(default_factory=list)
     controlled_functions: list[dict] = field(default_factory=list)
     chimera_rules: list[dict] = field(default_factory=list)
+    oncogenic_manipulation: dict = field(default_factory=dict)
     external_enabled: bool = False
     external_hook: Callable[[str], list[ScreenHit]] | None = None
 
@@ -71,6 +93,7 @@ class HazardRegistry:
             regulated_taxa=raw.get("regulated_taxa", []),
             controlled_functions=raw.get("controlled_functions", []),
             chimera_rules=raw.get("chimera_rules", []),
+            oncogenic_manipulation=raw.get("oncogenic_manipulation", {}),
             external_enabled=external_hook is not None,
             external_hook=external_hook,
         )
@@ -88,7 +111,7 @@ class HazardRegistry:
         pfam = _design_pfam(design)
         for entry in self.toxin_functions + self.controlled_functions:
             by_pfam = pfam & {_norm(p) for p in entry.get("pfam", [])}
-            by_kw = {kw for kw in (entry.get("keywords") or []) if any(_norm(kw) in t or t == _norm(kw) for t in toks)}
+            by_kw = {kw for kw in (entry.get("keywords") or []) if any(_kw_match(kw, t) for t in toks)}
             if by_pfam or by_kw:
                 ev = {}
                 if by_pfam:
@@ -99,6 +122,47 @@ class HazardRegistry:
                                       severity=entry.get("severity", "medium"),
                                       provenance=self._prov(entry), evidence=ev))
         return hits
+
+    def oncogenic_flags(self, design: dict) -> list[ScreenHit]:
+        """Oncogenic-manipulation PATTERN screen (v7.1.2). Flags the COMBINATION that a flat keyword list misses:
+        a tumor-suppressor gene with a disruptive verb, an oncogene with an activating signature, or an
+        immortalization signature. The asymmetry spares therapy without an allow-list (restoring a suppressor /
+        silencing an oncogene matches neither). Escalates to human review (dual-use, legitimate cancer-model path)."""
+        cfg = self.oncogenic_manipulation
+        if not cfg:
+            return []
+        # screen the declared function annotations only (the artifact, not any free-text justification)
+        text = " " + " | ".join(sorted(_design_function_tokens(design))) + " "
+        if not text.strip(" |"):
+            return []
+
+        def has(keys: list[str]) -> list[str]:
+            return [k for k in (keys or []) if _norm(k) in text]
+
+        supp = has(cfg.get("tumor_suppressors"))
+        onco = has(cfg.get("oncogenes"))
+        disrupt = has(cfg.get("disrupt_verbs"))
+        activate = has(cfg.get("activate_signatures"))
+        immortal = has(cfg.get("immortalization"))
+        therapy = has(cfg.get("therapy_context"))
+
+        reasons = []
+        if supp and disrupt:
+            reasons.append(f"tumor-suppressor disruption ({supp[0]} + {disrupt[0]})")
+        if onco and activate:
+            reasons.append(f"oncogene activation ({onco[0]} + {activate[0]})")
+        if immortal:
+            reasons.append(f"immortalization signature ({immortal[0]})")
+        if not reasons:
+            return []
+        # therapeutic restoration / supplementation with NO disruptive/activating/immortalization signal -> clear.
+        if therapy and not (disrupt or activate or immortal):
+            return []
+        return [ScreenHit(kind="oncogenic_flag", detail=cfg.get("name", "oncogenic manipulation"),
+                          severity=cfg.get("severity", "medium"), provenance=self._prov(cfg),
+                          evidence={"patterns": reasons,
+                                    "suppressor": supp[:2], "oncogene": onco[:2], "disrupt": disrupt[:2],
+                                    "activate": activate[:2], "immortalization": immortal[:2]})]
 
     def taxon_flags(self, design: dict) -> list[ScreenHit]:
         """Regulated-pathogen-TAXON screen (Select Agent / Australia Group membership by declared source)."""
@@ -121,8 +185,9 @@ class HazardRegistry:
         hits: list[ScreenHit] = []
         rules = {r["id"]: r for r in self.chimera_rules}
 
-        has_toxin = bool(self.function_flags(design)) or _norm(design.get("cargo_function")) and any(
-            _norm(kw) in _norm(design.get("cargo_function")) for e in self.toxin_functions for kw in (e.get("keywords") or []))
+        cf = _norm(design.get("cargo_function"))
+        has_toxin = bool(self.function_flags(design)) or bool(cf) and any(
+            _kw_match(kw, cf) for e in self.toxin_functions for kw in (e.get("keywords") or []))
         broad = _norm(design.get("delivery_tropism")) in {"broad", "broad_systemic", "systemic"} or \
             _norm(design.get("delivery_vehicle")) in {"aav9", "aavrh10"}
         replicating = bool(design.get("replication_competent"))

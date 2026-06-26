@@ -15,7 +15,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-ScreenKind = Literal["sequence_homology", "function_flag", "taxon_flag", "chimera_context"]
+ScreenKind = Literal["sequence_homology", "function_flag", "taxon_flag", "chimera_context", "oncogenic_flag"]
 Severity = Literal["low", "medium", "high"]
 
 
@@ -43,6 +43,7 @@ def screen_design(design: dict, registry=None) -> list[ScreenHit]:
         design = dict(design)
     hits: list[ScreenHit] = []
     hits += reg.function_flags(design) # toxin / pathogen-essential function domains
+    hits += reg.oncogenic_flags(design) # v7.1.2 oncogenic-manipulation pattern (mechanism/synonym-robust)
     hits += reg.taxon_flags(design) # regulated pathogen taxa
     hits += reg.chimera_context(design) # hazardous assembly of benign parts
     seq = _assemble_cargo(design)

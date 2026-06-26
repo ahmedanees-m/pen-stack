@@ -153,6 +153,50 @@ controlled_functions:
     control_ref: "DURC policy (oncogenic context, malignant transformation risk)"
     severity: high
 
+# --- Oncogenic-manipulation PATTERN screen (v7.1.2). -----------------------------------
+# A flat keyword list (FUNC-ONCOGENIC-SUPPRESSOR above) catches only literal phrasings; an adversary (or an
+# honest user) describing the same edit by MECHANISM or SYNONYM evades it ("R175H p53 that abolishes
+# transactivation", "PTEN knockout", "RAS G12D constitutive activation", "hTERT immortalization"). This pattern
+# screen flags the COMBINATION rather than a fixed phrase:
+#   (tumor-suppressor gene token  +  a disruptive verb)        -> losing a growth/apoptosis brake
+#   (oncogene token               +  an activating signature)  -> flooring a growth accelerator
+#   (an immortalization signature)                             -> bypassing replicative senescence
+# The asymmetry is deliberate and is what spares legitimate therapy WITHOUT an explicit allow-list: RESTORING a
+# suppressor or SILENCING/knocking-down an oncogene does not match (restoration verbs are not disruptive; silencing
+# is not an activating signature), so "wild-type p53 correction to restore apoptosis" or "knock down mutant KRAS"
+# stay clear. Disposition is ESCALATE (medium): deliberate oncogenic transformation is dual-use, but cancer-model
+# research is legitimate and has an IBC/oversight path, so it routes to human review rather than a blanket refuse;
+# the blatant dominant-negative phrasings still REFUSE via FUNC-ONCOGENIC-SUPPRESSOR. Tokens are public gene
+# symbols / standard molecular-biology verbs - no exploit detail.
+oncogenic_manipulation:
+  id: FUNC-ONCOGENIC-PATTERN
+  name: "engineered oncogenic transformation (tumor-suppressor disruption / oncogene activation / immortalization)"
+  control_ref: "DURC policy (oncogenic transformation); cancer-model research has a legitimate IBC/oversight path"
+  severity: medium
+  tumor_suppressors: ["tp53", "trp53", " p53", "rb1", "retinoblastoma protein", "pten", " apc ", "cdkn2a",
+                      "ink4a", " p16", " arf ", " nf1", "neurofibromin", "brca1", "brca2", " vhl", "smad4",
+                      "stk11", " lkb1", " bax", " bak", "pro-apoptotic", "tumor suppressor", "tumour suppressor"]
+  oncogenes: ["kras", "nras", "hras", "k-ras", "n-ras", "h-ras", " ras ", " myc", "c-myc", "mycn", "braf",
+              "egfr", "erbb2", " her2", "pik3ca", " akt ", " alk ", " met ", " ret ", "bcr-abl", "ccnd1",
+              "cyclin d", " mdm2", "ezh2", "beta-catenin", "wnt-target", "mapk flux", "pi3k/akt"]
+  disrupt_verbs: ["knockout", "knock out", "knock-out", "knocked out", "disrupt", "ablat", "dominant-negative",
+                  "dominant negative", "frameshift", "inactivat", "abolish", "sequester", "loss-of-function",
+                  "loss of function", "null allele", "truncat", "silence the suppressor", "remove the",
+                  "release the", "derepress", "lipid-phosphatase brake"]
+  activate_signatures: ["constitutive activ", "constitutively active", "gain-of-function", "gain of function",
+                        "activating mutation", "oncogenic mutation", "ligand-independent", "ligand independent",
+                        "autoinhibition", "g12d", "g12v", "g12c", "g13d", "q61", "v600e", "gtp-bound active",
+                        "switch in its gtp", "constitutive mapk", "constitutive wnt", "constitutive signaling",
+                        "constitutive survival", "hyperactivat", "independent of ligand", "sustain constitutive"]
+  immortalization: ["immortaliz", "telomerase", "htert", "unlimited replicative", "unlimited proliferat",
+                    "unrestricted proliferat", "indefinite proliferat", "replicative lifespan", "bypass senescence",
+                    "evade senescence", "escape senescence"]
+  # restoration verbs that, when no disruptive/activating/immortalization signal is present, keep a suppressor /
+  # oncogene mention CLEAR (therapeutic gene correction). Belt-and-braces on top of the asymmetric logic.
+  therapy_context: ["restore", "restoration", "correct the", "gene correction", "wild-type replacement",
+                    "replace the defective", "reconstitute the wild-type", "functional copy", "supplementation",
+                    "wild-type p53 gene correction"]
+
 # --- Chimera / context rules: hazardous ASSEMBLY of individually-benign parts. ---------
 chimera_rules:
   - id: CHIM-TOXIN-PAYLOAD
