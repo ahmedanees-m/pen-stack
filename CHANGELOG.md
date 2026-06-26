@@ -3,12 +3,12 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
-## [7.1.2] - 2026-06-25 - Designer correctness (Guardian + calibration) + Chat latency fixes
+## [7.1.3] - 2026-06-26 - Designer correctness: Guardian biosecurity + calibrated confidence
 
 ### Fixed
 - **CRITICAL (Designer / Guardian biosecurity):** Hazardous cargo functions (e.g. furin-cleavage viral
   tropism-enhancement, dominant-negative tumor-suppressor ablation) passed the Designer as "Safety: Clear" with
-  full survivor tables. Two root causes, both fixed:
+  full survivor tables. Several root causes, all fixed:
   - The hazard registry (`configs/safety/hazard_registry.yaml`) had **no signatures** for engineered viral tropism
     enhancement or oncogenic tumor-suppressor ablation. Added `FUNC-VIRAL-TROPISM-ENHANCE` (furin cleavage /
     receptor-binding / tropism, high severity) and `FUNC-ONCOGENIC-SUPPRESSOR` (dominant-negative TP53 / RB / PTEN,
@@ -44,15 +44,27 @@ All notable changes to PEN-STACK are documented here. This file follows
   ABSTAINS on the calibrated confidence (no fabricated band) — surfaced as "abstained, no measured atlas for this
   cell type". `candidate_space` still returns `[]` without the atlas; `generate_designs(candidates=[])` still
   returns `[]`.
-- **Chat response latency:** Every General-lane request paid for an Ollama embedding round-trip, and the LLM call ran
-  with a generous 150 s timeout / 450-token cap suited to engine-grounded design, not a textbook answer. Three minimal
-  changes:
-  - `pen_stack/rag/embed.py` adds an LRU-cached `embed_query()` (256 entries) so repeated phrasings skip the embedder;
-    `pen_stack/rag/retrieve.py` uses it.
-  - `pen_stack/web/llm_provider.py` now accepts `kind="general"`, selecting `PEN_STACK_LLM_TIMEOUT_GENERAL` (45 s
-    default, was 150 s) and `OLLAMA_NUM_PREDICT_GENERAL` / `NEMOTRON_MAX_TOKENS_GENERAL` (280 / 400, was 450 / 700).
-    Default-kind path (design/explain/meta) unchanged; `PEN_STACK_LLM_TIMEOUT` lowered 150 → 90.
-  - General-lane + cited-answer callers (`pen_stack/rag/ground.py`, `pen_stack/web/llm.py`) pass `kind="general"`.
+- **Designer (administration context):** the vehicle sweep now filters by the goal's `in_vivo` flag using the
+  curated `in_vivo` / `ex_vivo` route flags in `configs/delivery_vehicles.yaml` (an ex-vivo goal keeps
+  lentivirus / electroporation / eVLP; an in-vivo goal keeps AAV / LNP / HDAd / HSV / eVLP). Grounded from the
+  curated palette, not a clinical claim; `in_vivo=None` keeps all (existing callers/tests unchanged).
+
+## [7.1.2] - 2026-06-25 - PEN-CHAT: chat-response latency fix
+
+### Fixed
+- Chat response time was unnecessarily high because every General-lane request paid for an Ollama embedding
+  round-trip on the query side, and the LLM call ran with a generous 150 s timeout / 450-token cap suited to the
+  engine-grounded design lane, not a textbook answer. Three minimal changes, no behaviour change for the grounded
+  lanes:
+  - `pen_stack/rag/embed.py` adds an LRU-cached `embed_query()` (256 entries) so a repeated phrasing skips the
+    embedder; `pen_stack/rag/retrieve.py` uses it.
+  - `pen_stack/web/llm_provider.py` now accepts `kind="general"`, which selects `PEN_STACK_LLM_TIMEOUT_GENERAL`
+    (45 s default, was 150 s) and `OLLAMA_NUM_PREDICT_GENERAL` / `NEMOTRON_MAX_TOKENS_GENERAL` (280 / 400, was
+    450 / 700). The default-kind path used by the engine-grounded design / explain / meta lanes is unchanged
+    (`PEN_STACK_LLM_TIMEOUT` default lowered 150 → 90).
+  - The General-lane and PEN-RAG cited-answer callers (`pen_stack/rag/ground.py`, `pen_stack/web/llm.py`) now pass
+    `kind="general"`.
+- No grounding-guard change; the LLM stays non-load-bearing and the per-lane provenance labels are unchanged.
 
 ## [7.1.1] - 2026-06-24 - PEN-CHAT: General-lane helpfulness fix + benchmark-validity correction
 
