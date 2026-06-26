@@ -24,6 +24,13 @@ All notable changes to PEN-STACK are documented here. This file follows
   confidence band is genuinely calibrated (it differs by locus/vehicle, e.g. F9 → `[0.866, 0.972]`, and is absent
   for a refused design). `web/src/pages/Designer.jsx` rewritten to send a goal and render the refused / empty /
   survivor states distinctly.
+- **Designer (cell types without a measured atlas):** a goal in a cell type with no writability atlas (cd8_t /
+  pbmc / h1_hesc / ipsc) returned an empty table, because the planner-backed `candidate_space` needs `plan_write`.
+  `generate_designs` now falls back to `space.vehicle_sweep(goal)`: it sweeps the capacity-compatible vehicles,
+  carries `cargo_function` (the Guardian still screens), runs full legality + biosecurity discrimination, and
+  ABSTAINS on the calibrated confidence (no fabricated band) — surfaced as "abstained, no measured atlas for this
+  cell type". `candidate_space` still returns `[]` without the atlas; `generate_designs(candidates=[])` still
+  returns `[]`.
 - **Chat response latency:** Every General-lane request paid for an Ollama embedding round-trip, and the LLM call ran
   with a generous 150 s timeout / 450-token cap suited to engine-grounded design, not a textbook answer. Three minimal
   changes:
