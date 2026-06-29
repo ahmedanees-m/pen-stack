@@ -12,11 +12,9 @@ export const NAV = [
     tip: "Score loci by safety, durability and reachability for an edit intent." },
   { path: "/atlas", id: "atlas", label: "Writer Atlas", group: "Design", icon: "atlas",
     tip: "Compare writers: capacity, programmability, DSB-freeness, human-cell activity, deliverability." },
-  { path: "/designer", id: "designer", label: "Designer", group: "Design", icon: "designer",
-    tip: "Generative strategies on the safety/efficacy Pareto frontier, candidates, never asserted to work." },
+  { path: "/design", id: "design-studio", label: "Design Studio", group: "Design", icon: "verify",
+    tip: "One design form, two actions: Verify a single design (legality / confidence / biosecurity, each its own axis, with a repairable proof) or Generate alternatives (sweep the goal for legal, screened candidates with a calibrated confidence band)." },
 
-  { path: "/verify", id: "verify", label: "Verify", group: "Assess", icon: "verify",
-    tip: "Submit a design and get legality, safety and calibrated confidence, each its own axis, with a repairable proof." },
   { path: "/delivery", id: "delivery", label: "Delivery & Immunity", group: "Assess", icon: "delivery",
     tip: "The per-axis immune-risk profile (genotox / CD8 / innate / NAb / anti-PEG) plus the delivery recommendation and known-unknowns." },
   { path: "/twin", id: "twin", label: "Digital Twin", group: "Assess", icon: "twin",

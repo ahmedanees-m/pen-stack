@@ -11,7 +11,7 @@ const STAGES = [
   { to: "/atlas", icon: "atlas", k: "Writer", t: "Pick the enzyme", d: "Compare writer families: capacity, programmability, DSB-freeness, human-cell activity." },
   { to: "/delivery", icon: "delivery", k: "Delivery", t: "Deliver & screen immunity", d: "Vehicle recommendation plus a five-axis immune-risk profile, never collapsed." },
   { to: "/offtarget", icon: "offtarget", k: "Off-target", t: "Nominate off-targets", d: "A real-data calibrated risk band, with the assay that would confirm each candidate." },
-  { to: "/verify", icon: "verify", k: "Verify", t: "Legality, safety, confidence", d: "Three separate axes and a repairable proof, never one collapsed score." },
+  { to: "/design", icon: "verify", k: "Design Studio", t: "Verify or generate", d: "Audit one design across three separate axes with a repairable proof, or sweep your goal for legal, screened candidates." },
   { to: "/guardian", icon: "guardian", k: "Biosecurity", t: "Guardian screen", d: "A dual-use gate: clear / flag / escalate / refuse, with an audit note." },
   { to: "/twin", icon: "twin", k: "Outcome", t: "Calibrated prediction", d: "OOD-gated outcome with a calibrated, widening interval, bounded by what is knowable." },
   { to: "/oracles", icon: "oracles", k: "Oracles", t: "Foundation-model mesh", d: "Structure, sequence, regulatory and affinity oracles under one result contract." },

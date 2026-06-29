@@ -16,7 +16,8 @@ def test_all_listed_write_types_route():
 
 def test_insertion_routes_to_insertion_subgraph():
     r = route(Design(write_type="insertion"))
-    assert set(r["rule_categories"]) == {"reachability", "fold", "payload", "delivery"}
+    # compliance (germline-prohibition scope-of-use) applies to every write type (v7.1.4)
+    assert set(r["rule_categories"]) == {"reachability", "fold", "payload", "delivery", "compliance"}
     assert "verify" in r["steps"]
 
 
@@ -37,7 +38,7 @@ def test_route_and_evaluate_runs_only_routed_categories():
                                     edits=[{"family": "bridge_IS110", "chrom": "chr1", "pos": 1},
                                            {"family": "bridge_IS110", "chrom": "chr2", "pos": 2}]))
     cats = {rr["category"] for rr in res["rule_results"]}
-    assert cats <= {"reachability", "multiplex", "delivery"}
+    assert cats <= {"reachability", "multiplex", "delivery", "compliance"}  # +compliance (v7.1.4)
     assert res["legal"] in (True, False) and not res["deferred"]
 
 
