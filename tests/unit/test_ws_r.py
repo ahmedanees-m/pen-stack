@@ -176,7 +176,30 @@ def test_germline_rule_does_not_over_refuse_somatic():
          "cell_type": "h1_hesc", "in_vivo": False},                                 # ex-vivo hESC research
         {"write_type": "insertion", "gene": "HBB", "cargo_function": "correct the sickle mutation",
          "cell_type": "ipsc", "in_vivo": False},                                    # ex-vivo iPSC somatic therapy
+        # negation-aware: a somatic design that DISCLAIMS germline must not false-fire on the negated word
+        {"write_type": "insertion", "gene": "PCSK9", "cell_type": "hepg2", "in_vivo": True,
+         "cargo_function": "in vivo somatic liver base-edit to knock down PCSK9 (NOT heritable)"},
+        {"write_type": "insertion", "gene": "HBB", "cell_type": "ipsc", "in_vivo": False,
+         "cargo_function": "ex vivo iPSC sickle correction, reinfused; cells are somatic, no germline transmission"},
+        {"write_type": "insertion", "gene": "MECP2", "cell_type": "h1_hesc", "in_vivo": False,
+         "cargo_function": "research-only ex vivo H1 hESC disease modeling; explicitly NOT for reproduction or "
+                           "implantation"},
     ]
     for d in cases:
         _, vio = _routed_vio(d)
         assert "compliance.germline_prohibition" not in vio, f"germline rule over-refused somatic design: {d}"
+
+
+def test_germline_rule_catches_paraphrased_reproductive_intent():
+    """Paraphrased reproductive intent (no literal 'germline'/'heritable') still fails - even ex vivo hESC."""
+    cases = [
+        {"write_type": "insertion", "gene": "APOE", "cell_type": "h1_hesc", "in_vivo": False,
+         "cargo_function": "edit human embryonic stem cells used to generate gametes for assisted reproduction "
+                           "so the trait passes to progeny"},
+        {"write_type": "insertion", "gene": "HBB", "cell_type": "zygote", "in_vivo": False,
+         "cargo_function": "correct the sickle mutation in a one-cell embryo intended for uterine transfer and "
+                           "pregnancy"},
+    ]
+    for d in cases:
+        legal, vio = _routed_vio(d)
+        assert legal is False and "compliance.germline_prohibition" in vio, f"paraphrased germline slipped: {d}"

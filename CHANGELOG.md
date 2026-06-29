@@ -3,6 +3,31 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.1.4] - 2026-06-29 - Germline-prohibition legality rule
+
+### Added
+- **Compliance rule category + `compliance.germline_prohibition` (hard_reject).** A heritable / germline edit
+  previously passed the Legality axis because no rule existed for it (the only germline handling was a
+  known-unknown scope matcher for *questions*, not *designs*). The new rule fails legality for: a reproductive
+  germline target cell (embryo / zygote / oocyte / sperm / gamete - unconditional), a declared reproductive-use
+  intent (gametes / assisted reproduction / implantation / "for reproduction"), a declared heritable intent
+  (germline / heritable / "transmitted to offspring"), or a germline-competent cell type (hESC / iPSC) edited in a
+  heritable context (in vivo, or a reproductive/heritable intent). It is cited (Lander et al. 2019 moratorium,
+  `10.1038/d41586-019-00726-5`; US National Academies 2017, `10.17226/24623`) and emits a proof-object repair hint
+  (restrict to somatic / ex-vivo editing). It is a scope-of-use legality bound, reported on the LEGALITY axis,
+  separate from the Biosecurity axis. The category is wired into every write type; `rule_spec.json` is now 11 rules.
+- **Paraphrase + negation robustness** (red-team-hardened). The free-text intent match is NEGATION-aware
+  (negated-span detection), so a somatic design that explicitly says "somatic, not germline" / "no germline
+  transmission" / "NOT for reproduction or implantation" is not false-flagged, while paraphrased reproductive
+  intent (e.g. "generate gametes for assisted reproduction", "embryo intended for uterine transfer") with no
+  literal "germline"/"heritable" word still fails. Validated against a 30-design adversarial set: 0 evasions,
+  0 false positives.
+
+### Fixed
+- The Verify page's Legality description claimed it adjudicates "jurisdiction / list-agent / IP", which it does
+  not. Corrected to describe the actual legality axis (physical feasibility + germline scope-of-use compliance),
+  noting that dual-use hazard is the separate Biosecurity axis.
+
 ## [7.1.3] - 2026-06-26 - Designer correctness: Guardian biosecurity + calibrated confidence
 
 ### Fixed

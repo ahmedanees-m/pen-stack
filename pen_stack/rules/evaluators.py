@@ -11,6 +11,7 @@ YAML record + (if new) one evaluator here, never scattered ``if`` checks in the 
 """
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 
 from pen_stack.rules.schema import Design, Rule, RuleResult
@@ -207,13 +208,45 @@ def delivery_immunogenicity_scope(design: Design, rule: Rule) -> RuleResult:
 # --------------------------------------------------------------------------------------------------
 # compliance / scope-of-use legality (v7.1.4): heritable human germline editing is out of scope + prohibited
 # --------------------------------------------------------------------------------------------------
+# A term in declared free text counts only if it is NOT inside a NEGATED span, so a somatic design that says
+# "no germline transmission", "not heritable", "somatic, not germline", or "NOT for reproduction or implantation"
+# (a distributed negation over a list) does not false-fire on the negated word. A negator opens a span that runs
+# across list connectors (or / and / ,) until a clause break (. ; but however yet) or ~60 chars.
+_NEGATOR = re.compile(r"\b(not|non|no|never|without|isn'?t|aren'?t|rather than|as opposed to)\b")
+_CLAUSE_BREAK = re.compile(r"[;.]|\bbut\b|\bhowever\b|\byet\b|\bexcept\b")
+
+
+def _negated_spans(text: str) -> list[tuple[int, int]]:
+    spans = []
+    for m in _NEGATOR.finditer(text):
+        rest = text[m.end():m.end() + 60]
+        brk = _CLAUSE_BREAK.search(rest)
+        spans.append((m.start(), m.end() + (brk.start() if brk else len(rest))))
+    return spans
+
+
+def _intent_present(term: str, text: str, spans: list[tuple[int, int]]) -> bool:
+    t = str(term or "").strip().lower()
+    if not t:
+        return False
+    idx = text.find(t)
+    while idx != -1:
+        if not any(s <= idx < e for s, e in spans):
+            return True  # a non-negated occurrence
+        idx = text.find(t, idx + 1)
+    return False
+
+
 @evaluator("germline_prohibition")
 def germline_prohibition(design: Design, rule: Rule) -> RuleResult:
-    """Hard legality reject for a heritable / germline edit. Fires on (a) an explicit heritable/germline INTENT in
-    the design's declared function/intent, (b) a reproductive germline TARGET cell (embryo/zygote/gamete/germ
-    cell), or (c) an in-vivo edit of a germline-COMPETENT cell type (hESC/iPSC/embryonic). A somatic, ex-vivo use
-    of a germline-competent research line (e.g. iPSC ex vivo) does NOT fire - editing it is in scope. The screen
-    reads the declared design artifact only (not any free-text justification)."""
+    """Hard legality reject for a heritable / germline edit. Fires on (a) a reproductive germline TARGET cell
+    (embryo/zygote/oocyte/sperm/gamete - structured, unconditional), (b) a declared REPRODUCTIVE-USE intent
+    (gametes / assisted reproduction / implantation / 'for reproduction'), (c) a declared HERITABLE intent
+    (germline / heritable / transmitted to offspring), or (d) a germline-COMPETENT cell type (hESC/iPSC) in a
+    heritable context (in vivo, or a reproductive/heritable intent). The free-text intent matches are NEGATION-
+    aware, so a SOMATIC design that explicitly says 'somatic, not germline' / 'no germline transmission' / 'not
+    heritable' is NOT false-flagged, and an ex-vivo somatic use of a germline-competent research line stays in
+    scope. The screen reads the declared design artifact only (not any free-text justification)."""
     extra = design.model_extra or {}
 
     def _norm(x) -> str:
@@ -224,27 +257,40 @@ def germline_prohibition(design: Design, rule: Rule) -> RuleResult:
                                        extra.get("notes")) if x)
     ct = _norm(design.cell_type)
     in_vivo = bool(extra.get("in_vivo")) and _norm(extra.get("in_vivo")) not in ("false", "0", "no")
+    p = rule.param
 
-    heritable = [t for t in rule.param.get("heritable_terms", []) if _norm(t) in text]
-    repro = [c for c in rule.param.get("germline_cell_types", []) if _norm(c) in ct]
-    competent = [c for c in rule.param.get("germline_competent_cell_types", []) if _norm(c) in ct]
+    spans = _negated_spans(text)
+    repro_ct = [c for c in p.get("germline_cell_types", []) if _norm(c) in ct]
+    competent_ct = [c for c in p.get("germline_competent_cell_types", []) if _norm(c) in ct]
+    repro_intent = [t for t in p.get("reproductive_intent_terms", []) if _intent_present(_norm(t), text, spans)]
+    heritable = [t for t in p.get("heritable_terms", []) if _intent_present(_norm(t), text, spans)]
 
     triggers = []
+    if repro_ct:
+        triggers.append(f"a reproductive germline target cell ('{repro_ct[0]}')")
+    if repro_intent:
+        triggers.append(f"a declared reproductive-use intent ('{repro_intent[0]}')")
     if heritable:
         triggers.append(f"a declared heritable/germline-editing intent ('{heritable[0]}')")
-    if repro:
-        triggers.append(f"a reproductive germline target cell ('{repro[0]}')")
-    if competent and in_vivo:
-        triggers.append(f"an in-vivo edit of a germline-competent cell type ('{competent[0]}')")
+    if competent_ct and (in_vivo or repro_intent or heritable):
+        ctx = "in vivo" if in_vivo else (repro_intent or heritable)[0]
+        triggers.append(f"a germline-competent cell type ('{competent_ct[0]}') edited in a heritable context "
+                        f"('{ctx}')")
     if triggers:
+        # de-duplicate while preserving order, then report
+        seen, uniq = set(), []
+        for t in triggers:
+            if t not in seen:
+                seen.add(t)
+                uniq.append(t)
         return _result(rule, "violate",
                        "heritable human germline editing is out of scope for this somatic tool and is broadly "
-                       "prohibited (international moratorium): " + "; ".join(triggers)
+                       "prohibited (international moratorium): " + "; ".join(uniq)
                        + ". Restrict to somatic editing (ex vivo, or a somatic cell type / somatic context).")
     note = ""
-    if competent:
-        note = (f" (cell type '{competent[0]}' is germline-competent; somatic/ex-vivo editing of it is in scope, "
-                "but an in-vivo heritable edit would not be)")
+    if competent_ct:
+        note = (f" (cell type '{competent_ct[0]}' is germline-competent; somatic/ex-vivo editing of it is in "
+                "scope, but an in-vivo or reproductive heritable edit would not be)")
     return _result(rule, "pass", "no heritable/germline-editing intent or germline target declared" + note)
 
 

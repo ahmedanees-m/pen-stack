@@ -8,11 +8,11 @@ import pen_stack
 _ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_version_is_7_1_3_everywhere():
-    assert pen_stack.__version__ == "7.1.3"
-    assert 'version = "7.1.3"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 7.1.3" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert "[7.1.3]" in (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+def test_version_is_7_1_4_everywhere():
+    assert pen_stack.__version__ == "7.1.4"
+    assert 'version = "7.1.4"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 7.1.4" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert "[7.1.4]" in (_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 
 
 def test_v7_1_penchat_artifacts():
