@@ -98,6 +98,18 @@ def verify(design: Design | dict, question: str | None = None, *, actor: str = "
                   for r in results if r["kind"] == "scope_flag" and r["status"] == "scope"]
     scope_flags += rule_scope
 
+    # v7.1.5: chromosome validation + gene/chromosome concordance + chromosome-context advisory. The free-text
+    # chrom field does not move the scored locus (scoring is indexed by the gene's resolved coordinates), so a
+    # mismatch / invalid value / chromosome-context note is surfaced as a scope flag, never silently ignored.
+    from pen_stack.planner.chromosome import chromosome_concordance, chromosome_context
+    conc = chromosome_concordance(design.gene, getattr(design, "chrom", None))
+    if conc["status"] in ("invalid", "mismatch", "unverifiable"):
+        scope_flags.append({"kind": f"chromosome_{conc['status']}", "reason": conc["message"],
+                            "entered": conc["entered"], "gene_chrom": conc["gene_chrom"]})
+    ctx = chromosome_context(getattr(design, "chrom", None))
+    if ctx:
+        scope_flags.append({"kind": "chromosome_context", "chrom": ctx["chrom"], "reason": ctx["note"]})
+
     pc = _plan_confidence(design)
     verdict = classify(grounded=True, confidence=pc["confidence"], out_of_scope=oos_hit)
 

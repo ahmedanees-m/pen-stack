@@ -122,6 +122,22 @@ export default function DesignStudio() {
                 <span className="text-fg-faint"> (legality and biosecurity must pass; confidence may abstain)</span>
               </p>
               {proof.axes.map((ax) => <AxisRow key={ax.axis} ax={ax} />)}
+              {(() => {
+                const flags = (verdict?.scope_flags || []).filter((f) => String(f.kind || "").startsWith("chromosome_"));
+                if (!flags.length) return null;
+                return (
+                  <div className="rounded border border-border p-3">
+                    <strong className="text-sm">Site &amp; chromosome notes</strong>
+                    <ul className="mt-2 text-sm text-fg-dim space-y-1">
+                      {flags.map((f, i) => (
+                        <li key={i} style={f.kind === "chromosome_invalid" || f.kind === "chromosome_mismatch" ? { color: "var(--warn)" } : undefined}>
+                          <code>{f.kind.replace("chromosome_", "chrom: ")}</code> {f.reason}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })()}
               {verdict?.immune_profile?.axes && <ImmuneProfileCard profile={verdict.immune_profile} />}
             </div>
           )}

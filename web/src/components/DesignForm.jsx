@@ -1,8 +1,15 @@
-// A shared design builder used by Verify / Guardian / Delivery & Immunity / Twin. Produces the `design` dict the
+// A shared design builder used by Design Studio / Delivery & Immunity / Twin. Produces the `design` dict the
 // engine expects. The vocabularies below mirror the engine's accepted values; the form adds no science, it just
 // assembles the request the typed API validates.
-import React from "react";
+//
+// v7.1.5: the Chromosome field is a controlled dropdown (no free-text typos like "chrZZZ" can be entered) and is
+// gene/chromosome concordance-checked against the engine: when the entered chromosome does not match the named
+// gene's canonical location (e.g. BRCA1 is on chr17, not chr1), an inline warning + a one-click fix is shown.
+// The chromosome does NOT move the scored locus (scoring is indexed by the gene's resolved coordinates) - the
+// concordance check is the meaningful chromosome-level signal.
+import React, { useEffect, useState } from "react";
 import { Field, Select } from "./ui.jsx";
+import { api } from "../api.js";
 
 export const VEHICLES = [
   "AAV_single", "AAV_dual", "lentivirus", "lnp_mrna", "helper_dependent_adenovirus", "hsv_amplicon", "electroporation",
@@ -12,6 +19,7 @@ export const INTENTS = [
   "regulatory_element_excision", "landing_pad_insertion", "repeat_excision",
 ];
 export const CELLS = ["k562", "hepg2", "hspc", "h1_hesc", "ipsc", "cd8_t", "pbmc"];
+export const CHROMS = [...Array(22).keys()].map((i) => `chr${i + 1}`).concat(["chrX", "chrY", "chrM"]);
 
 export const DEFAULT_DESIGN = {
   write_type: "insertion", gene: "AAVS1", chrom: "chr19", delivery_vehicle: "AAV_single",
@@ -20,10 +28,40 @@ export const DEFAULT_DESIGN = {
 
 export default function DesignForm({ design, onChange, showCargoFunction = true }) {
   const set = (k, v) => onChange({ ...design, [k]: v });
+  // canonical chrom of the gene: a string if found, null if the gene is unknown, undefined before the check.
+  const [geneChrom, setGeneChrom] = useState(undefined);
+
+  // gene/chromosome concordance: resolve the gene's canonical chromosome (debounced) so we can warn on a mismatch.
+  useEffect(() => {
+    const g = (design.gene || "").trim();
+    if (!g) { setGeneChrom(undefined); return; }
+    let live = true;
+    const t = setTimeout(() => {
+      api.geneLocation(g)
+        .then((r) => { if (live) setGeneChrom(r.found ? r.chrom : null); })
+        .catch(() => { if (live) setGeneChrom(undefined); });
+    }, 300);
+    return () => { live = false; clearTimeout(t); };
+  }, [design.gene]);
+
+  const mismatch = geneChrom && design.chrom && geneChrom !== design.chrom;
+
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       <Field label="Gene / target"><input className="input" value={design.gene} onChange={(e) => set("gene", e.target.value)} /></Field>
-      <Field label="Chromosome"><input className="input" value={design.chrom} onChange={(e) => set("chrom", e.target.value)} /></Field>
+      <Field label="Chromosome" hint={geneChrom ? `${design.gene} is on ${geneChrom}` : "chr1–chr22, chrX, chrY, chrM"}>
+        <Select value={design.chrom} onChange={(v) => set("chrom", v)} options={CHROMS} />
+        {mismatch && (
+          <p className="mt-1 text-[12px]" style={{ color: "var(--warn)" }}>
+            ⚠ {design.gene} is on <strong>{geneChrom}</strong>, not {design.chrom}. The chromosome does not move the
+            scored locus (scoring uses the gene's canonical location).{" "}
+            <button type="button" className="underline" onClick={() => set("chrom", geneChrom)}>Use {geneChrom}</button>
+          </p>
+        )}
+        {geneChrom === null && (design.gene || "").trim() && (
+          <p className="mt-1 text-[11px] text-fg-faint">{design.gene} is not in the coordinate table; concordance can't be confirmed.</p>
+        )}
+      </Field>
       <Field label="Delivery vehicle">
         <Select value={design.delivery_vehicle} onChange={(v) => set("delivery_vehicle", v)}
                 options={VEHICLES.map((v) => ({ value: v, label: v.replace(/_/g, " ") }))} />

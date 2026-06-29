@@ -64,6 +64,7 @@ export const api = {
   writerVariants: (integrase) => req(`/api/writer/variants${integrase ? `?integrase=${integrase}` : ""}`),
   writable: (gene, ct = "k562", top = 20) =>
     req(`/api/writable?${new URLSearchParams({ gene, ct, top })}`),
+  geneLocation: (gene) => req(`/api/gene/location?${new URLSearchParams({ gene })}`),
   plan: (gene, intent, cargo_bp = 2000, ct = "k562", k = 6) =>
     req(`/api/plan?${new URLSearchParams({ gene, intent, cargo_bp, ct, k })}`),
 

@@ -119,6 +119,23 @@ def crosslink_loci(request: Request, family: str, ct: str = "k562", cell_type: s
     return {"family": family, "ct": ct, "loci": _records(loci), "disclaimer": _DISCLAIMER}
 
 
+@app.get("/gene/location")
+def gene_location(gene: str):
+    """v7.1.5: the canonical chromosome of a gene (or safe-harbour locus nickname), for the UI's gene/chromosome
+    concordance check. found=False when the gene is not in the coordinate table (no fabrication)."""
+    from pen_stack.planner.chromosome import canonical_chromosome
+    from pen_stack.planner.optimize import gene_region, resolve_gene
+    try:
+        reg = gene_region(gene)
+    except Exception:  # noqa: BLE001 - coords table absent -> cannot resolve
+        reg = None
+    resolved = resolve_gene(gene)
+    if reg is None:
+        return {"gene": gene, "resolved": resolved, "found": False, "chrom": None}
+    return {"gene": gene, "resolved": resolved, "found": True, "chrom": canonical_chromosome(reg[0]),
+            "start": int(reg[1]), "end": int(reg[2])}
+
+
 @app.get("/writable")
 def writable(request: Request, gene: str, ct: str = "k562", cell_type: str | None = None,
              top: int = Query(20, le=200)):

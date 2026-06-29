@@ -3,6 +3,29 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.1.5] - 2026-06-29 - Chromosome field: validation, gene concordance, context
+
+### Added
+- The `chrom` design field was a free-text pass-through with no validation and no downstream effect. It is now
+  meaningful (`pen_stack/planner/chromosome.py`):
+  - **Validation** — the web form's Chromosome input is a controlled dropdown (chr1–chr22, chrX, chrY, chrM), so
+    an impossible value like `chrZZZ` can no longer be entered; `canonical_chromosome()` normalises/validates on
+    the backend (`chrX`/`X`/`x`, `chr1`/`1`, `chrM`/`chrMT`/`MT`, `23`→X, `24`→Y; rejects the rest).
+  - **Gene/chromosome concordance** — `verify()` now flags `chromosome_mismatch` when the entered chromosome does
+    not match the named gene's canonical location (e.g. *BRCA1 is on chr17, not chr1*), `chromosome_invalid` for a
+    non-standard value, and `chromosome_unverifiable` for an unknown gene. The web form shows the warning inline
+    with a one-click fix, driven by the new `GET /api/gene/location` endpoint. This closes the silent-mismatch gap.
+  - **Chromosome context** — `chromosome_context()` adds grounded, chromosome-driven advisories surfaced as scope
+    flags: **chrM** is not addressable by nuclear genome-writing tools (mtDNA needs DdCBE/TALED — out of scope),
+    **chrY** is male-specific with ampliconic repeats, **chrX** is hemizygous in 46,XY vs X-inactivated in 46,XX.
+
+### Note (honest scoping)
+- The free-text chromosome does **not** move the scored locus: per-locus safety / durability / accessibility /
+  off-target are indexed by the gene's *resolved genomic coordinates* via the writability atlas, so a bare
+  chromosome string with no position cannot refine them. Rather than fabricate a per-chromosome score delta, the
+  field's grounded effect is validation + gene concordance (ensuring the score is read for the right locus, and
+  flagging when the entered chromosome disagrees with the gene) + the chromosome-context advisories above.
+
 ## [7.1.4] - 2026-06-29 - Germline-prohibition legality rule
 
 ### Added
