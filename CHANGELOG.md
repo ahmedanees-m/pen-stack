@@ -18,6 +18,10 @@ All notable changes to PEN-STACK are documented here. This file follows
   - **Chromosome context** — `chromosome_context()` adds grounded, chromosome-driven advisories surfaced as scope
     flags: **chrM** is not addressable by nuclear genome-writing tools (mtDNA needs DdCBE/TALED — out of scope),
     **chrY** is male-specific with ampliconic repeats, **chrX** is hemizygous in 46,XY vs X-inactivated in 46,XX.
+- The Design Studio **cell-type dropdown now shows writability-atlas coverage** (from `/api/celltypes`): K562 /
+  HepG2 / HSPC are labelled measured (full / full / partial), while h1_hesc / iPSC / CD8 T / PBMC are labelled
+  "no atlas" — so a data-gated cell type is no longer silently indistinguishable from a measured one (the same
+  honest-field principle as the chromosome field). The 7 cell types are unchanged and already matched the backend.
 
 ### Note (honest scoping)
 - The free-text chromosome does **not** move the scored locus: per-locus safety / durability / accessibility /

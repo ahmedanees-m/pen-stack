@@ -26,10 +26,30 @@ export const DEFAULT_DESIGN = {
   cargo_bp: 3000, cargo_function: "human factor IX", cell_type: "k562", in_vivo: true,
 };
 
+// only K562 / HepG2 / HSPC have a measured writability atlas; the rest are a declared, data-gated roadmap. The
+// dropdown shows this so a no-atlas cell type is not silently indistinguishable from a measured one (v7.1.5).
+const _COV_LABEL = { full: "full atlas", partial: "partial atlas", none: "no atlas" };
+
 export default function DesignForm({ design, onChange, showCargoFunction = true }) {
   const set = (k, v) => onChange({ ...design, [k]: v });
   // canonical chrom of the gene: a string if found, null if the gene is unknown, undefined before the check.
   const [geneChrom, setGeneChrom] = useState(undefined);
+  // cell-type options labelled with their writability-atlas coverage (from /api/celltypes); plain list as fallback.
+  const [cellOpts, setCellOpts] = useState(CELLS);
+  const [cellCov, setCellCov] = useState(null);
+
+  useEffect(() => {
+    let live = true;
+    api.celltypes()
+      .then((r) => {
+        const list = (r && (r.cell_types || r)) || [];
+        if (!live || !Array.isArray(list) || !list.length) return;
+        setCellCov(Object.fromEntries(list.map((c) => [c.id, c.coverage])));
+        setCellOpts(list.map((c) => ({ value: c.id, label: `${c.label || c.id} · ${_COV_LABEL[c.coverage] || c.coverage}` })));
+      })
+      .catch(() => {});
+    return () => { live = false; };
+  }, []);
 
   // gene/chromosome concordance: resolve the gene's canonical chromosome (debounced) so we can warn on a mismatch.
   useEffect(() => {
@@ -66,8 +86,12 @@ export default function DesignForm({ design, onChange, showCargoFunction = true 
         <Select value={design.delivery_vehicle} onChange={(v) => set("delivery_vehicle", v)}
                 options={VEHICLES.map((v) => ({ value: v, label: v.replace(/_/g, " ") }))} />
       </Field>
-      <Field label="Cell type">
-        <Select value={design.cell_type} onChange={(v) => set("cell_type", v)} options={CELLS} />
+      <Field label="Cell type" hint={cellCov && design.cell_type
+              ? (cellCov[design.cell_type] === "none"
+                 ? "no measured writability atlas — locus scoring abstains for this cell type"
+                 : `${_COV_LABEL[cellCov[design.cell_type]] || cellCov[design.cell_type]} (measured)`)
+              : "K562 / HepG2 / HSPC have a measured atlas; others are a data-gated roadmap"}>
+        <Select value={design.cell_type} onChange={(v) => set("cell_type", v)} options={cellOpts} />
       </Field>
       <Field label="Cargo size (bp)" hint="AAV single-vector payload caps near ~4.7 kb">
         <input className="input" type="number" min={0} max={200000} step={100} value={design.cargo_bp}
