@@ -88,6 +88,13 @@ def _repair_for_violation(d: Design, rule_id: str) -> dict[str, Any] | None:
         return {"text": "the writer cannot reach the target as specified; declare a pre-installed landing pad "
                         "(installed_att) or choose a writer family whose target element is present.",
                 "repair": {"field": "installed_att", "set_to": True}}
+    if rule_id == "compliance.germline_prohibition":
+        return {"text": "this is a heritable / germline edit, which is out of scope for this somatic-editing "
+                        "tool and is broadly prohibited (international moratorium); restrict to SOMATIC editing - "
+                        "move to ex vivo (in_vivo = false) and/or a somatic cell type (e.g. hepatocytes / HepG2, "
+                        "HSPCs), and drop any germline/heritable intent. (Not auto-repairable: a germline edit is "
+                        "a change of intent, not a field fix.)",
+                "repair": None}
     return None
 
 

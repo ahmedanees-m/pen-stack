@@ -1,6 +1,6 @@
 # Genome-writing rule spec
 
-Version 1.0. 10 rules across 5 categories (delivery, fold, multiplex, payload, reachability). A rule is data, not code: each record names the evaluator that executes it against a Design, so the rules are enumerable, queryable, and citation-backed without changing any decision (proven by the parity tests).
+Version 1.0. 11 rules across 6 categories (compliance, delivery, fold, multiplex, payload, reachability). A rule is data, not code: each record names the evaluator that executes it against a Design, so the rules are enumerable, queryable, and citation-backed without changing any decision (proven by the parity tests).
 
 Generated from `pen_stack/rules/spec.py::export_spec`. Machine-readable form: `benchmarks/verify/rule_spec.json`.
 
@@ -16,3 +16,4 @@ Generated from `pen_stack/rules/spec.py::export_spec`. Machine-readable form: `b
 | `delivery.sequence_constraints` | soft_penalty | vehicle-specific construct hazards (lentiviral internal poly(A), AAV inverted-repeat/homopolymer, recombinogenic direct repeats, GC extremes) lower titre/yield | 10.1128/JVI.79.15.9933-9944.2005 | labeled heuristic, directional; not a titre predictor |
 | `delivery.aav_packaging_margin` | soft_penalty | AAV packaging efficiency / titre drops sharply as the cargo approaches the capsid limit (computable from cargo_bp vs vehicle capacity), even while still under capacity (v4.0 delivery-oracle refinement) | 10.1089/hum.2010.245 | computable efficiency margin, directional; not a titre predictor |
 | `delivery.immunogenicity_magnitude` | scope_flag | the MAGNITUDE of immunogenicity and the precise in-vivo tropism of a vehicle are not modeled | known-unknown; surfaced, never predicted (Invariant 2) | declared out of scope; never a hard reject dressed as physics |
+| `compliance.germline_prohibition` | hard_reject | heritable human germline editing is out of scope for this somatic tool and broadly prohibited: a declared germline/heritable intent, a reproductive germline target cell, or an in-vivo edit of a germline-competent cell type is rejected (somatic/ex-vivo use of a germline-competent research line is in scope) | 10.1038/d41586-019-00726-5, 10.17226/24623 | a scope-of-use / regulatory legality bound, not a biosecurity-hazard signature and not an efficacy claim |

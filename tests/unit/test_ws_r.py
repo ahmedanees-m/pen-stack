@@ -137,3 +137,46 @@ def test_legality_and_confidence_not_collapsed():
                                delivery_vehicle="AAV_single"))
     assert "legal" in r and "confidence" not in r
     assert all("confidence" not in rr for rr in r["rule_results"])
+
+
+# ---- v7.1.4: compliance / germline-prohibition (heritable human germline editing is out of scope) -----------
+
+def _routed_vio(design: dict):
+    from pen_stack.planner.router import route_and_evaluate
+    r = route_and_evaluate(Design(**design))
+    return r["legal"], [x["rule_id"] for x in r["rule_results"]
+                        if x["kind"] == "hard_reject" and x["status"] == "violate"]
+
+
+def test_germline_edit_fails_legality():
+    """A heritable / germline edit is a HARD legality reject naming compliance.germline_prohibition."""
+    cases = [
+        # the canonical reported example: explicit germline intent + germline-competent cell + in vivo
+        {"write_type": "insertion", "gene": "PCSK9", "writer_family": "base_editor",
+         "cargo_function": "permanent lipid-lowering germline edit", "cell_type": "h1_hesc", "in_vivo": True},
+        {"write_type": "insertion", "gene": "PCSK9", "cargo_function": "heritable correction passed to offspring",
+         "cell_type": "hepg2", "in_vivo": True},                                    # explicit heritable intent
+        {"write_type": "insertion", "gene": "X", "cargo_function": "reporter", "cell_type": "embryo"},  # repro cell
+        {"write_type": "insertion", "gene": "X", "cargo_function": "express GFP",
+         "cell_type": "h1_hesc", "in_vivo": True},                                  # germline-competent + in vivo
+    ]
+    for d in cases:
+        legal, vio = _routed_vio(d)
+        assert legal is False, f"germline design wrongly legal: {d}"
+        assert "compliance.germline_prohibition" in vio, f"germline rule did not fire: {d} -> {vio}"
+
+
+def test_germline_rule_does_not_over_refuse_somatic():
+    """Somatic / ex-vivo editing (incl. a germline-competent research line used ex vivo) stays legal."""
+    cases = [
+        {"write_type": "insertion", "gene": "F9", "writer_family": "bridge_is110", "cargo_bp": 1500,
+         "delivery_vehicle": "AAV_single", "cargo_function": "factor IX for haemophilia",
+         "cell_type": "hepg2", "in_vivo": True},
+        {"write_type": "insertion", "gene": "X", "cargo_function": "express GFP reporter for research",
+         "cell_type": "h1_hesc", "in_vivo": False},                                 # ex-vivo hESC research
+        {"write_type": "insertion", "gene": "HBB", "cargo_function": "correct the sickle mutation",
+         "cell_type": "ipsc", "in_vivo": False},                                    # ex-vivo iPSC somatic therapy
+    ]
+    for d in cases:
+        _, vio = _routed_vio(d)
+        assert "compliance.germline_prohibition" not in vio, f"germline rule over-refused somatic design: {d}"

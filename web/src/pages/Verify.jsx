@@ -66,7 +66,7 @@ export default function Verify() {
       <ScoreGuide
         intro="Verification reports THREE axes separately — never collapsed into one pass/fail. Read each on its own; the colour is green / amber / red."
         items={[
-          { term: "Legality", scale: "pass / abstain / fail", meaning: "A rule-set check (jurisdiction, germline, list-agent, IP). On failure it names the violated rule, its citation, and a suggested repair." },
+          { term: "Legality", scale: "pass / fail", meaning: "A grounded rule-set check: physical feasibility (writer reachability, payload-vs-capacity, cargo-form ↔ vehicle, integration constraint) plus scope-of-use compliance (heritable human germline editing is out of scope and rejected). On failure it names the violated rule, its citation, and a suggested repair. It does NOT adjudicate jurisdiction-specific law or IP — dual-use hazard is the separate Biosecurity axis." },
           { term: "Confidence", scale: "0–1, may abstain", meaning: "The calibrated confidence on the soft scores. It ABSTAINS rather than guess when uncalibrated — an abstain does not block, legality and biosecurity do." },
           { term: "Biosecurity", scale: "clear / flag / escalate / refuse", meaning: "The dual-use screen over function / family / taxon signatures. A refuse short-circuits the whole design to a human." },
         ]}

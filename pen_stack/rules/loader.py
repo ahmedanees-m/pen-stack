@@ -10,7 +10,7 @@ from pen_stack._resources import resource
 from pen_stack.rules.schema import Rule, Ruleset
 
 RULES_VERSION = "1.0"
-_CATEGORIES = ("reachability", "fold", "payload", "multiplex", "delivery")
+_CATEGORIES = ("reachability", "fold", "payload", "multiplex", "delivery", "compliance")
 
 
 @lru_cache(maxsize=1)

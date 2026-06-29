@@ -18,7 +18,7 @@ from pydantic import BaseModel, Field
 
 RuleKind = Literal["hard_reject", "soft_penalty", "scope_flag"]
 RuleStatus = Literal["pass", "violate", "flag", "scope", "not_applicable"]
-RuleCategory = Literal["reachability", "fold", "payload", "multiplex", "delivery"]
+RuleCategory = Literal["reachability", "fold", "payload", "multiplex", "delivery", "compliance"]
 
 
 class Rule(BaseModel):

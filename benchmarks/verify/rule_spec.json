@@ -1,8 +1,9 @@
 {
   "spec": "PEN-STACK genome-writing rule base",
   "version": "1.0",
-  "n_rules": 10,
+  "n_rules": 11,
   "categories": [
+    "compliance",
     "delivery",
     "fold",
     "multiplex",
@@ -248,6 +249,75 @@
       "note": "known-unknown; surfaced, never predicted (Invariant 2)",
       "test_ref": "tests/unit/test_ws_r.py::test_delivery_controls",
       "scope": "declared out of scope; never a hard reject dressed as physics",
+      "evaluator_registered": true,
+      "has_citation": true
+    },
+    {
+      "id": "compliance.germline_prohibition",
+      "kind": "hard_reject",
+      "category": "compliance",
+      "mechanism": "heritable human germline editing is out of scope for this somatic tool and broadly prohibited: a declared germline/heritable intent, a reproductive germline target cell, or an in-vivo edit of a germline-competent cell type is rejected",
+      "evaluator": "germline_prohibition",
+      "param": {
+        "heritable_terms": [
+          "germline",
+          "germ line",
+          "germ-line",
+          "germ cell editing",
+          "heritable",
+          "inheritable",
+          "inherited by",
+          "pass to offspring",
+          "passed to offspring",
+          "transmit to offspring",
+          "transmissible to progeny",
+          "future generations",
+          "next generation edit",
+          "reproductive editing",
+          "embryo editing",
+          "embryonic editing"
+        ],
+        "germline_cell_types": [
+          "embryo",
+          "zygote",
+          "oocyte",
+          "ovum",
+          "egg cell",
+          "sperm",
+          "spermatozoa",
+          "spermatocyte",
+          "spermatogonia",
+          "gamete",
+          "germ cell",
+          "germline",
+          "primordial germ",
+          "pgc",
+          "blastocyst"
+        ],
+        "germline_competent_cell_types": [
+          "h1_hesc",
+          "hesc",
+          "embryonic stem",
+          "ipsc",
+          "ips cell",
+          "pluripotent stem",
+          "epiblast"
+        ]
+      },
+      "provenance": {
+        "doi": [
+          "10.1038/d41586-019-00726-5",
+          "10.17226/24623"
+        ],
+        "note": "Heritable human germline genome editing is broadly prohibited / under moratorium: Lander et al. 2019 international call for a moratorium (Nature 567:165); US National Academies 2017 'Human Genome Editing: Science, Ethics, and Governance'; WHO Expert Advisory Committee framework (2021); US FDA is barred from considering heritable-germline clinical applications (Consolidated Appropriations Act rider); Council of Europe Oviedo Convention Art. 13. PEN-STACK is a SOMATIC tool and takes no position on germline editing beyond declaring it out of scope."
+      },
+      "citation": [
+        "10.1038/d41586-019-00726-5",
+        "10.17226/24623"
+      ],
+      "note": "Heritable human germline genome editing is broadly prohibited / under moratorium: Lander et al. 2019 international call for a moratorium (Nature 567:165); US National Academies 2017 'Human Genome Editing: Science, Ethics, and Governance'; WHO Expert Advisory Committee framework (2021); US FDA is barred from considering heritable-germline clinical applications (Consolidated Appropriations Act rider); Council of Europe Oviedo Convention Art. 13. PEN-STACK is a SOMATIC tool and takes no position on germline editing beyond declaring it out of scope.",
+      "test_ref": "tests/unit/test_ws_safety.py::test_germline_edit_fails_legality",
+      "scope": "a scope-of-use / regulatory legality bound, not a biosecurity-hazard signature and not an efficacy claim",
       "evaluator_registered": true,
       "has_citation": true
     }

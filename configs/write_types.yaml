@@ -9,35 +9,35 @@ write_types:
   insertion:
     status: supported
     description: "insert a cargo at a safe/durable locus"
-    rule_categories: [reachability, fold, payload, delivery]
+    rule_categories: [reachability, fold, payload, delivery, compliance]
     steps: [site_selection, writer_selection, cargo_design, offtarget, structural_risk, verify]
     writer_classes: [bridge, cast, serine_integrase, pe_integrase]
 
   excision:
     status: coverage_only
     description: "excise a segment (e.g. BCL11A enhancer, FXN GAA repeat) via a recombinase/nuclease pair"
-    rule_categories: [reachability, multiplex, delivery]
+    rule_categories: [reachability, multiplex, delivery, compliance]
     steps: [breakpoint_reachability, pair_safety, delivery, verify]
     writer_classes: [serine_integrase, recombinase, nuclease_pair]
 
   inversion:
     status: coverage_only
     description: "invert a segment between two recombination sites"
-    rule_categories: [reachability, multiplex, delivery]
+    rule_categories: [reachability, multiplex, delivery, compliance]
     steps: [site_pair_reachability, orientation_check, delivery, verify]
     writer_classes: [serine_integrase, recombinase]
 
   replacement:
     status: coverage_only
     description: "replace a segment (excise + insert)"
-    rule_categories: [reachability, fold, payload, multiplex, delivery]
+    rule_categories: [reachability, fold, payload, multiplex, delivery, compliance]
     steps: [excision_reachability, insertion_reachability, payload, delivery, verify]
     writer_classes: [pe_integrase, serine_integrase, cast]
 
   regulatory_rewrite:
     status: coverage_only
     description: "edit a regulatory element (enhancer/silencer); routes to AlphaGenome variant-effect + scope"
-    rule_categories: [reachability, delivery]
+    rule_categories: [reachability, delivery, compliance]
     steps: [variant_effect_oracle, regulatory_scope, delivery, verify]
     writer_classes: [base_editor, pe, nuclease]
     scope_note: "regulatory-element function change is partly out of scope (structure->phenotype); flagged"
@@ -45,13 +45,13 @@ write_types:
   landing_pad_install:
     status: coverage_only
     description: "install an att landing pad (PE), then a deterministic integrase step"
-    rule_categories: [reachability, payload, delivery]
+    rule_categories: [reachability, payload, delivery, compliance]
     steps: [pe_installability, integrase_step, payload, delivery, verify]
     writer_classes: [pe_integrase]
 
   multiplex:
     status: supported
     description: "multiple concurrent edits; routes to the translocation screen"
-    rule_categories: [reachability, multiplex, delivery]
+    rule_categories: [reachability, multiplex, delivery, compliance]
     steps: [per_edit_reachability, translocation_screen, delivery, verify]
     writer_classes: [any]

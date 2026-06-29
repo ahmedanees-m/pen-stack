@@ -205,6 +205,50 @@ def delivery_immunogenicity_scope(design: Design, rule: Rule) -> RuleResult:
 
 
 # --------------------------------------------------------------------------------------------------
+# compliance / scope-of-use legality (v7.1.4): heritable human germline editing is out of scope + prohibited
+# --------------------------------------------------------------------------------------------------
+@evaluator("germline_prohibition")
+def germline_prohibition(design: Design, rule: Rule) -> RuleResult:
+    """Hard legality reject for a heritable / germline edit. Fires on (a) an explicit heritable/germline INTENT in
+    the design's declared function/intent, (b) a reproductive germline TARGET cell (embryo/zygote/gamete/germ
+    cell), or (c) an in-vivo edit of a germline-COMPETENT cell type (hESC/iPSC/embryonic). A somatic, ex-vivo use
+    of a germline-competent research line (e.g. iPSC ex vivo) does NOT fire - editing it is in scope. The screen
+    reads the declared design artifact only (not any free-text justification)."""
+    extra = design.model_extra or {}
+
+    def _norm(x) -> str:
+        return str(x or "").strip().lower()
+
+    text = " ".join(_norm(x) for x in (design.edit_intent, extra.get("cargo_function"),
+                                       extra.get("goal_function"), extra.get("function_annotation"),
+                                       extra.get("notes")) if x)
+    ct = _norm(design.cell_type)
+    in_vivo = bool(extra.get("in_vivo")) and _norm(extra.get("in_vivo")) not in ("false", "0", "no")
+
+    heritable = [t for t in rule.param.get("heritable_terms", []) if _norm(t) in text]
+    repro = [c for c in rule.param.get("germline_cell_types", []) if _norm(c) in ct]
+    competent = [c for c in rule.param.get("germline_competent_cell_types", []) if _norm(c) in ct]
+
+    triggers = []
+    if heritable:
+        triggers.append(f"a declared heritable/germline-editing intent ('{heritable[0]}')")
+    if repro:
+        triggers.append(f"a reproductive germline target cell ('{repro[0]}')")
+    if competent and in_vivo:
+        triggers.append(f"an in-vivo edit of a germline-competent cell type ('{competent[0]}')")
+    if triggers:
+        return _result(rule, "violate",
+                       "heritable human germline editing is out of scope for this somatic tool and is broadly "
+                       "prohibited (international moratorium): " + "; ".join(triggers)
+                       + ". Restrict to somatic editing (ex vivo, or a somatic cell type / somatic context).")
+    note = ""
+    if competent:
+        note = (f" (cell type '{competent[0]}' is germline-competent; somatic/ex-vivo editing of it is in scope, "
+                "but an in-vivo heritable edit would not be)")
+    return _result(rule, "pass", "no heritable/germline-editing intent or germline target declared" + note)
+
+
+# --------------------------------------------------------------------------------------------------
 # multiplex translocation (delegates to planner.multiplex, soft penalty)
 # --------------------------------------------------------------------------------------------------
 @evaluator("multiplex_translocation")
