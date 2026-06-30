@@ -3,6 +3,29 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.1.8] - 2026-06-30 - Writer immunogenicity moves to the Writer Atlas; SpCas9 removed from the writer options
+
+### Changed
+- **The writer enzyme is no longer chosen in the Design Studio; its immunogenicity moves to the Writer Atlas, where
+  writers belong.** The Design Studio's writer dropdown existed only to feed the two writer-as-antigen immune axes
+  (MHC-II + ADA); that duplicated the dedicated Writer Atlas page. Now:
+  - The **Writer enzyme dropdown is removed** from `DesignForm` (and `DEFAULT_DESIGN`). The Design Studio's "Profile
+    immune & delivery" action correctly scopes to the **delivery/vehicle** axes (genotoxicity, CD8 capsid, innate,
+    pre-existing NAb, anti-PEG). `ImmuneProfileCard` hides the writer axes by default (`hideWriterAxes`).
+  - A new **Writer immunogenicity** card on the **Writer Atlas** surfaces each genome writer's MHC-II/CD4 epitope
+    load + ADA risk + human self-match, read from the **committed NetMHCIIpan-4.0 cache — not recomputed**
+    (`GET /api/writer/immune`, `immune_profile.writer_immunogenicity_table()`).
+  - **SpCas9 is removed** from the writer set: it is a nuclease/editor, not a large-cargo genome writer. The Writer
+    Atlas immunogenicity covers the actual writers — **Bxb1** (serine integrase) and **ISCro4** (bridge recombinase);
+    the Cas9 nuclease and the human self control are excluded. (The engine retains SpCas9 in its cache for other
+    uses; only the user-facing writer list drops it.)
+- The engine still returns the `mhc2_writer` / `ada_writer` axes from `immune_profile()` for API/MCP callers that
+  pass a `writer_family` — only the web UI moved the writer profiling to the Writer Atlas. No data was recomputed.
+
+### Added
+- `test_ws_profile.py`: `test_writer_immunogenicity_table_for_the_writer_atlas` (covers Bxb1 + ISCro4 from the
+  cache; SpCas9 and the self control excluded; grounded MHC-II + ADA values).
+
 ## [7.1.7] - 2026-06-30 - Administration context (in-vivo / ex-vivo) now drives the immune profile
 
 ### Fixed

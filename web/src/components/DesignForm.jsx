@@ -18,14 +18,6 @@ export const INTENTS = [
   "safe_harbour_insertion", "knock_in_with_disruption", "high_durability_insertion",
   "regulatory_element_excision", "landing_pad_insertion", "repeat_excision",
 ];
-// Writer enzyme: the families with a bundled real UniProt sequence + a committed NetMHCIIpan-4.0 epitope cache,
-// so the MHC-II/CD4 + ADA writer-as-antigen axes compute real values. "(none)" leaves those two axes abstaining.
-export const WRITERS = [
-  { value: "", label: "— none (writer axes abstain)" },
-  { value: "serine_integrase", label: "Serine integrase · Bxb1" },
-  { value: "bridge_IS110", label: "Bridge recombinase · ISCro4" },
-  { value: "Cas9", label: "Cas9 nuclease · SpCas9" },
-];
 // A clearly-labelled EXAMPLE cassette fragment (GFP CDS opening) so a user can see the innate-sensing axis compute;
 // real use pastes the actual cargo sequence. It is an example, not a default, and is never auto-applied.
 export const EXAMPLE_CARGO_SEQ =
@@ -36,16 +28,16 @@ export const CHROMS = [...Array(22).keys()].map((i) => `chr${i + 1}`).concat(["c
 export const DEFAULT_DESIGN = {
   write_type: "insertion", gene: "AAVS1", chrom: "chr19", delivery_vehicle: "AAV_single",
   cargo_bp: 3000, cargo_function: "human factor IX", cell_type: "k562", in_vivo: true,
-  // a default writer so the MHC-II / ADA writer-as-antigen axes populate out of the box (a serine integrase is a
-  // standard safe-harbour writer); cargo_seq is intentionally empty (no fabricated sequence) until the user pastes one.
-  writer_family: "serine_integrase", cargo_seq: "",
+  // cargo_seq is intentionally empty (no fabricated sequence) until the user pastes one (powers the innate axis).
+  // The writer enzyme is chosen on the Writer Atlas page (where its immunogenicity is profiled), not here.
+  cargo_seq: "",
 };
 
 // only K562 / HepG2 / HSPC have a measured writability atlas; the rest are a declared, data-gated roadmap. The
 // dropdown shows this so a no-atlas cell type is not silently indistinguishable from a measured one (v7.1.5).
 const _COV_LABEL = { full: "full atlas", partial: "partial atlas", none: "no atlas" };
 
-export default function DesignForm({ design, onChange, showCargoFunction = true, showWriter = true, showCargoSeq = true }) {
+export default function DesignForm({ design, onChange, showCargoFunction = true, showCargoSeq = true }) {
   const set = (k, v) => onChange({ ...design, [k]: v });
   // canonical chrom of the gene: a string if found, null if the gene is unknown, undefined before the check.
   const [geneChrom, setGeneChrom] = useState(undefined);
@@ -102,11 +94,6 @@ export default function DesignForm({ design, onChange, showCargoFunction = true,
         <Select value={design.delivery_vehicle} onChange={(v) => set("delivery_vehicle", v)}
                 options={VEHICLES.map((v) => ({ value: v, label: v.replace(/_/g, " ") }))} />
       </Field>
-      {showWriter && (
-        <Field label="Writer enzyme" hint="Drives the MHC-II / CD4 + ADA writer-as-antigen axes (real NetMHCIIpan-4.0)">
-          <Select value={design.writer_family || ""} onChange={(v) => set("writer_family", v)} options={WRITERS} />
-        </Field>
-      )}
       <Field label="Cell type" hint={cellCov && design.cell_type
               ? (cellCov[design.cell_type] === "none"
                  ? "no measured writability atlas — locus scoring abstains for this cell type"

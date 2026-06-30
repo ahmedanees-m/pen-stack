@@ -244,6 +244,22 @@ def writer_variants_endpoint(integrase: str | None = None, system: str | None = 
                     "(reported as a known limitation, never a manufactured positive)."}
 
 
+@app.get("/writer/immune", tags=["writer atlas"])
+def writer_immune_endpoint():
+    """The writer enzyme's immunogenicity as an antigen (v6.9 writer-as-antigen, surfaced in the Writer Atlas from
+    v7.1.8): per genome-writer family, the real NetMHCIIpan-4.0 MHC-II/CD4 epitope load + the ADA-risk axis
+    (MHC-II density x foreignness, self-tolerance filtered against the human proteome). Read from the committed
+    cache - NOT recomputed. Population-level proxy, never a patient-specific magnitude (a known-unknown). The Cas9
+    nuclease (an editor, not a large-cargo writer) and the human self control are excluded."""
+    from pen_stack.planner.immune_profile import writer_immunogenicity_table
+    return {"writers": writer_immunogenicity_table(),
+            "method": "NetMHCIIpan-4.0 MHC-II epitope load + ADA risk (MHC-II density x foreignness, self-tolerance "
+                      "filtered against the human proteome). Population-level proxy from the committed cache; the "
+                      "realized CD4 response / ADA titer is a known-unknown.",
+            "scale": "0-1, higher = lower risk (1 = least presentable / least ADA-driving)",
+            "no_fabrication": True}
+
+
 @app.get("/bridge/design")
 def bridge_design(target: str, donor: str, scaffold: str = "ISCro4_enhanced",
                   ct: str | None = None, scan: bool = False):

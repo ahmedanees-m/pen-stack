@@ -23,6 +23,7 @@ export default function WriterAtlas() {
 
   // Stage C surfaces
   const [eff, setEff] = useState(null);
+  const [immune, setImmune] = useState(null); // v7.1.8: the writer's immunogenicity as an antigen (MHC-II + ADA)
   const [rec, setRec] = useState(null);
   const [recForm, setRecForm] = useState({ write_type: "insertion", cargo_bp: 2000, cell_type: "K562" });
   const [recBusy, setRecBusy] = useState(false);
@@ -41,6 +42,7 @@ export default function WriterAtlas() {
       } catch (e) { setError(e); } finally { setBusy(false); }
     })();
     api.writerEfficiency().then(setEff).catch(() => {});
+    api.writerImmune().then(setImmune).catch(() => {});
     runRecommend(recForm);
     runVariants("Bxb1");
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -192,6 +194,37 @@ export default function WriterAtlas() {
             </table>
             {(eff.records || []).length > 12 && <p className="mt-1 text-[11px] text-fg-faint">…and {eff.records.length - 12} more measured rows.</p>}
           </div>
+        </Card>
+      )}
+
+      {immune?.writers?.length > 0 && (
+        <Card title="Writer immunogenicity (the writer as an antigen)" icon="delivery"
+              subtitle="Each genome writer's own MHC-II/CD4 epitope load and anti-drug-antibody (ADA) risk — a writer property, profiled here (it used to live in the design immune profile). Read from the committed NetMHCIIpan-4.0 cache; not recomputed.">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">
+                <th className="py-2 pr-3">Writer</th><th className="py-2 pr-3">Family</th><th className="py-2 pr-3">Origin</th>
+                <th className="py-2 pr-3">MHC-II load</th><th className="py-2 pr-3">ADA risk</th><th className="py-2">Human self-match</th></tr></thead>
+              <tbody>
+                {immune.writers.map((w, i) => (
+                  <tr key={i} className="border-b border-line/50">
+                    <td className="py-2 pr-3 font-medium">{w.representative}
+                      {w.accession && <span className="ml-1 font-mono text-[10px] text-fg-faint">{w.accession}</span>}</td>
+                    <td className="py-2 pr-3 text-fg-dim">{titleCase(w.writer_family)}</td>
+                    <td className="py-2 pr-3"><Pill color={w.is_foreign ? "var(--warn)" : "var(--ok)"}>{w.is_foreign ? "foreign" : "self"}</Pill></td>
+                    <td className="py-2 pr-3 tabular-nums">{num(w.mhc2_immune_score)}
+                      <span className="text-fg-faint"> (density {num(w.epitope_density)})</span></td>
+                    <td className="py-2 pr-3 tabular-nums">{num(w.ada_immune_score)}</td>
+                    <td className="py-2 tabular-nums text-fg-dim">{num(w.self_match_human_proteome?.human_9mer_match_fraction)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-2 text-[11px] leading-relaxed text-fg-faint">
+            Scores are 0–1, higher = lower risk (1 = least presentable / least ADA-driving). {immune.method} The Cas9
+            nuclease (an editor, not a large-cargo writer) and the human self control are excluded.
+          </p>
         </Card>
       )}
 

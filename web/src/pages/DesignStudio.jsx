@@ -20,13 +20,12 @@ import ScoreGuide from "../components/ScoreGuide.jsx";
 // The five-axis immune-risk guide, folded in from the former Delivery & Immunity page (v7.1.6): one design surface
 // covers Verify / Generate AND the per-axis immune profile, so there is no separate delivery page to keep in sync.
 const IMMUNE_GUIDE = {
-  intro: "Immune risk is reported as SEPARATE axes (0–1, higher = lower risk), never collapsed into one number. Each is a mechanistic or population proxy, not a patient-specific prediction. An axis that lacks its input abstains and shows n/a, never a guessed value — supply a writer enzyme (MHC-II/ADA), a cargo sequence (innate), or a PEGylated vehicle (anti-PEG) to compute it.",
+  intro: "This is the DELIVERY immune profile: the vehicle/cargo axes, reported SEPARATELY (0–1, higher = lower risk), never collapsed into one number. Each is a mechanistic or population proxy, not a patient-specific prediction. An axis that lacks its input abstains and shows n/a, never a guessed value — supply a cargo sequence (innate) or a PEGylated vehicle (anti-PEG) to compute it. The WRITER enzyme's own immunogenicity (MHC-II + ADA) lives on the Writer Atlas page, where the writer is chosen.",
   items: [
     { term: "Genotoxicity", scale: "higher = safer", meaning: "1.0 = episomal / non-integrating (no insertional-oncogenesis mechanism); lower = an integrating vector enriched for integrations near oncogenes." },
     { term: "CD8 epitope", scale: "higher = less visible", meaning: "1 − fraction of the capsid presentable to cytotoxic T cells over a frequent HLA-I panel (NetMHCpan-4.1, MHCflurry cross-check). Sequence-intrinsic, CD8/MHC-I only." },
     { term: "Innate sensing", scale: "higher = lower load", meaning: "CpG/TLR9 for DNA cargo, U-content + dsRNA (ViennaRNA) for mRNA. The cargo form follows the vehicle. Needs a cargo sequence; abstains without one." },
     { term: "Pre-existing NAb / anti-PEG", scale: "higher = lower barrier", meaning: "Pre-existing neutralizing-antibody eligibility (population serosurveys) and the anti-PEG barrier (PEGylated LNP only — abstains for non-PEG vehicles)." },
-    { term: "Writer immunogenicity (MHC-II + ADA)", scale: "higher = lower risk", meaning: "The bundled writer protein's CD4/MHC-II epitope load (real NetMHCIIpan-4.0) and anti-drug-antibody risk, self-tolerance filtered. Abstains when no writer is selected." },
   ],
   caveats: [
     "No single fused immune score is asserted (collapsed_score = None on purpose): the axes measure different mechanisms on different evidence, so averaging them would manufacture certainty.",

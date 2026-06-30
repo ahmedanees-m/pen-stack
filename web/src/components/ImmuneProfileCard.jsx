@@ -6,10 +6,15 @@ import ConfidenceBand from "./ConfidenceBand.jsx";
 import ProvenanceChip from "./ProvenanceChip.jsx";
 import { num, statusOf, titleCase } from "../lib/format.js";
 
-export default function ImmuneProfileCard({ profile }) {
+// hideWriterAxes (default true): the writer-as-antigen axes (MHC-II / ADA over the writer enzyme) now live on the
+// Writer Atlas page (v7.1.8), where the writer is chosen, so this delivery-immunity card shows only the vehicle/
+// cargo axes (genotox / CD8 / innate / NAb / anti-PEG). The engine still returns the writer axes for API callers.
+const _WRITER_AXES = new Set(["mhc2_writer", "ada_writer"]);
+
+export default function ImmuneProfileCard({ profile, hideWriterAxes = true }) {
   if (!profile) return null;
   const axes = profile.axes || {};
-  const names = Object.keys(axes);
+  const names = Object.keys(axes).filter((n) => !(hideWriterAxes && _WRITER_AXES.has(n)));
 
   return (
     <div>
@@ -71,8 +76,9 @@ export default function ImmuneProfileCard({ profile }) {
         })}
       </div>
 
-      {/* writer-as-antigen: which writer enzyme drove the MHC-II/ADA axes, and whether it is the dominant antigen */}
-      {profile.writer_as_antigen && (
+      {/* writer-as-antigen: which writer enzyme drove the MHC-II/ADA axes, and whether it is the dominant antigen.
+          Hidden here when the writer axes live on the Writer Atlas (v7.1.8); shown for API callers that pass a writer. */}
+      {!hideWriterAxes && profile.writer_as_antigen && (
         <div className="mt-3 rounded-lg border border-line bg-ink-900 p-3 text-[11px] leading-snug">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-semibold text-fg">Writer as antigen</span>

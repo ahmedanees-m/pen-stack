@@ -58,6 +58,22 @@ def test_writer_axes_compute_when_a_writer_is_supplied():
     assert nw["axes"]["mhc2_writer"]["value"] is None and nw["axes"]["ada_writer"]["value"] is None
 
 
+def test_writer_immunogenicity_table_for_the_writer_atlas():
+    # v7.1.8: the writer-as-antigen immunogenicity (MHC-II + ADA) is surfaced on the Writer Atlas, read from the
+    # committed NetMHCIIpan-4.0 cache (no recompute). It covers the genome-writer families (serine integrase Bxb1,
+    # bridge ISCro4) and EXCLUDES the Cas9 nuclease (an editor, not a large-cargo writer) and the human self control.
+    from pen_stack.planner.immune_profile import writer_immunogenicity_table
+    t = writer_immunogenicity_table()
+    reps = {w["representative"] for w in t}
+    fams = {w["writer_family"] for w in t}
+    assert {"Bxb1", "ISCro4"} <= reps
+    assert "SpCas9" not in reps and "HumanAlbumin" not in reps  # Cas9 removed; self control excluded
+    assert fams == {"serine_integrase", "bridge_IS110"}
+    for w in t:
+        assert w["mhc2_immune_score"] is not None and w["ada_immune_score"] is not None  # grounded, from the cache
+        assert w["is_foreign"] is True
+
+
 def test_administration_context_mutes_vector_facing_axes_ex_vivo():
     # v7.1.7: ex-vivo administration (cells transduced in a dish, washed before transplant) bypasses the patient's
     # circulating antibodies, so the pre-existing anti-vector NAb axis is muted to "no barrier" (1.0) and the

@@ -11,9 +11,9 @@ export const NAV = [
   { path: "/site-finder", id: "sitefinder", label: "Site Finder", group: "Design", icon: "site",
     tip: "Score loci by safety, durability and reachability for an edit intent." },
   { path: "/atlas", id: "atlas", label: "Writer Atlas", group: "Design", icon: "atlas",
-    tip: "Compare writers: capacity, programmability, DSB-freeness, human-cell activity, deliverability." },
+    tip: "Compare writers: capacity, programmability, DSB-freeness, human-cell activity, deliverability, and the writer's own immunogenicity (MHC-II + ADA)." },
   { path: "/design", id: "design-studio", label: "Design Studio", group: "Design", icon: "verify",
-    tip: "One design form, three actions: Verify a single design (legality / confidence / biosecurity, each its own axis, with a repairable proof), Generate alternatives (sweep the goal for legal, screened candidates with a calibrated confidence band), or Profile immune & delivery (the per-axis immune-risk profile: genotox / CD8 / innate / NAb / anti-PEG / writer MHC-II + ADA, never collapsed)." },
+    tip: "One design form, three actions: Verify a single design (legality / confidence / biosecurity, each its own axis, with a repairable proof), Generate alternatives (sweep the goal for legal, screened candidates with a calibrated confidence band), or Profile immune & delivery (the per-axis delivery immune profile: genotox / CD8 / innate / NAb / anti-PEG, never collapsed; the writer's own immunogenicity is on the Writer Atlas)." },
 
   { path: "/twin", id: "twin", label: "Digital Twin", group: "Assess", icon: "twin",
     tip: "Calibrated, OOD-gated outcome prediction bounded by the structure-to-phenotype boundary." },

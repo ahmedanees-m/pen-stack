@@ -186,6 +186,24 @@ def _writer_antigen_card(design: dict) -> dict | None:
                     "Population-level proxy; realized CD4 response / ADA titer is a known-unknown."}
 
 
+# Genome-WRITER families surfaced in the Writer Atlas immunogenicity view: the bundled writers that are actual
+# genome writers (integrase / recombinase), each with a committed real NetMHCIIpan-4.0 MHC-II load + ADA-risk cache.
+# The Cas9 nuclease (an editor, not a large-cargo writer) and the human self control are intentionally excluded.
+_WRITER_IMMUNE_FAMILIES = ("serine_integrase", "bridge_IS110")
+
+
+def writer_immunogenicity_table() -> list[dict]:
+    """Per-writer immunogenicity (MHC-II/CD4 epitope load + ADA risk) for the bundled genome-writer families, read
+    from the committed NetMHCIIpan-4.0 cache (no recomputation). Surfaced in the Writer Atlas as the writer's
+    antigen profile. Reuses the v6.9 writer-as-antigen card; excludes the Cas9 nuclease and the self control."""
+    out = []
+    for fam in _WRITER_IMMUNE_FAMILIES:
+        card = _writer_antigen_card({"writer_family": fam})
+        if card:
+            out.append({"writer_family": fam, **card})
+    return out
+
+
 def immune_profile(design: dict) -> dict:
     """Per-design immune-risk profile across all axes. ``design`` keys: ``delivery_vehicle`` (or ``vehicle``),
     ``serotype``, ``cargo_seq``, ``writer_output_form`` (or ``cargo_form``), ``pegylated``.
