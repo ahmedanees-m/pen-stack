@@ -9,7 +9,7 @@ const STAGES = [
   { to: "/writespec", icon: "writespec", k: "Intent", t: "Describe a write", d: "Plain language to a typed, ontology-backed WriteSpec, every field shows its provenance." },
   { to: "/site-finder", icon: "site", k: "Where", t: "Find the site", d: "Score loci by safety, durability and reachability for an edit intent." },
   { to: "/atlas", icon: "atlas", k: "Writer", t: "Pick the enzyme", d: "Compare writer families: capacity, programmability, DSB-freeness, human-cell activity." },
-  { to: "/delivery", icon: "delivery", k: "Delivery", t: "Deliver & screen immunity", d: "Vehicle recommendation plus a five-axis immune-risk profile, never collapsed." },
+  { to: "/design", icon: "delivery", k: "Delivery", t: "Deliver & screen immunity", d: "Vehicle recommendation plus a five-axis immune-risk profile, never collapsed — in the Design Studio." },
   { to: "/offtarget", icon: "offtarget", k: "Off-target", t: "Nominate off-targets", d: "A real-data calibrated risk band, with the assay that would confirm each candidate." },
   { to: "/design", icon: "verify", k: "Design Studio", t: "Verify or generate", d: "Audit one design across three separate axes with a repairable proof, or sweep your goal for legal, screened candidates." },
   { to: "/guardian", icon: "guardian", k: "Biosecurity", t: "Guardian screen", d: "A dual-use gate: clear / flag / escalate / refuse, with an audit note." },

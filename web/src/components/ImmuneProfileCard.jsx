@@ -58,6 +58,27 @@ export default function ImmuneProfileCard({ profile }) {
         })}
       </div>
 
+      {/* writer-as-antigen: which writer enzyme drove the MHC-II/ADA axes, and whether it is the dominant antigen */}
+      {profile.writer_as_antigen && (
+        <div className="mt-3 rounded-lg border border-line bg-ink-900 p-3 text-[11px] leading-snug">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-semibold text-fg">Writer as antigen</span>
+            <span className="chip">{profile.writer_as_antigen.representative || profile.writer_as_antigen.writer_family}</span>
+            {profile.writer_as_antigen.is_foreign != null && (
+              <span className="chip" style={{ color: profile.writer_as_antigen.is_foreign ? "var(--warn)" : "var(--ok)" }}>
+                {profile.writer_as_antigen.is_foreign ? "foreign" : "self"}
+              </span>
+            )}
+            {profile.writer_as_antigen.dominant_antigen && (
+              <span className="chip" style={profile.writer_as_antigen.writer_dominant_risk ? { color: "var(--warn)", borderColor: "var(--warn)55" } : undefined}>
+                dominant antigen: {profile.writer_as_antigen.dominant_antigen}
+              </span>
+            )}
+          </div>
+          <p className="mt-1.5 text-fg-dim">{profile.writer_as_antigen.note}</p>
+        </div>
+      )}
+
       {/* legend: explain the overloaded "extrapolating" badge in plain words, once, under the grid */}
       <p className="mt-3 text-[11px] leading-snug text-fg-faint">
         <span style={{ color: "var(--warn)" }}> extrapolating</span> means the axis is a{" "}

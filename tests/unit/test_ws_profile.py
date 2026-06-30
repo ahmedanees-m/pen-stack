@@ -25,6 +25,39 @@ def test_profile_returns_all_axes_with_uncertainty_and_label():
         assert "proxy" in rec["validation"].lower() # WS-CALIB labels travel with the profile
 
 
+def test_innate_axis_derives_cargo_form_from_vehicle():
+    # v7.1.6: when a cargo sequence is supplied but no explicit cargo_form, the form is derived from the vehicle's
+    # defining cargo class (DNA vehicle -> CpG/TLR9), so the innate axis computes for any caller. No fabrication:
+    # still abstains with no sequence, and an explicit form always wins.
+    from pen_stack.planner.immune_profile import _vehicle_cargo_form
+    assert _vehicle_cargo_form("AAV_single") == "DNA"
+    assert _vehicle_cargo_form("lnp_mrna") == "mRNA"
+    assert _vehicle_cargo_form("evlp") == "RNP"
+    assert _vehicle_cargo_form("totally_unknown_vehicle") is None
+    # DNA vehicle + cargo_seq, no explicit cargo_form -> innate now computes (was abstaining before v7.1.6).
+    dna = immune_profile({"delivery_vehicle": "AAV_single", "cargo_seq": "ACGTACGTACGTCGCGCGCGATATAT"})
+    assert dna["axes"]["innate"]["available"] is True and dna["axes"]["innate"]["value"] is not None
+    # no cargo sequence -> still abstains (never a guessed value).
+    none = immune_profile({"delivery_vehicle": "AAV_single"})
+    assert none["axes"]["innate"]["available"] is False and none["axes"]["innate"]["value"] is None
+    # an explicit cargo_form overrides the vehicle-derived default.
+    forced = immune_profile({"delivery_vehicle": "AAV_single", "cargo_seq": "ACGUACGUACGU" * 3,
+                             "cargo_form": "mRNA"})
+    assert forced["axes"]["innate"]["available"] is True
+
+
+def test_writer_axes_compute_when_a_writer_is_supplied():
+    # v7.1.6: the MHC-II/CD4 + ADA writer-as-antigen axes compute when a grounded writer family is named (bundled
+    # sequence + committed NetMHCIIpan-4.0 cache), and abstain otherwise. The web form now exposes this input.
+    p = immune_profile({"delivery_vehicle": "AAV_single", "writer_family": "serine_integrase"})
+    assert p["axes"]["mhc2_writer"]["value"] is not None and p["axes"]["mhc2_writer"]["available"] is True
+    assert p["axes"]["ada_writer"]["value"] is not None
+    assert p["writer_as_antigen"] is not None and p["writer_as_antigen"]["representative"] == "Bxb1"
+    # no writer -> the two writer axes abstain (None), never fabricated.
+    nw = immune_profile({"delivery_vehicle": "AAV_single"})
+    assert nw["axes"]["mhc2_writer"]["value"] is None and nw["axes"]["ada_writer"]["value"] is None
+
+
 def test_profile_is_never_collapsed_into_one_number():
     # the central WS-PROFILE gate: no single fused score (that would fake confidence).
     p = immune_profile({"delivery_vehicle": "AAV_single"})

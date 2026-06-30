@@ -3,6 +3,38 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.1.6] - 2026-06-30 - Immune axes wired end-to-end + Delivery folded into Design Studio
+
+### Fixed
+- **Four immune-risk axes were unreachable from the web UI and showed as out-of-scope** — innate sensing, anti-PEG,
+  and the writer-as-antigen MHC-II + ADA axes abstained on every web design because the design form never collected
+  their inputs (the engine computed them correctly when called directly; this was a wiring gap, not a model gap):
+  - **`innate`** needs a cargo sequence. The design form now has an optional **Cargo sequence** field; the cargo
+    nucleic-acid form (DNA -> CpG/TLR9, mRNA -> U-content + dsRNA, RNP -> transient) is derived from the vehicle's
+    defining cargo class (`immune_profile._vehicle_cargo_form`) so the axis computes for any caller (chat / MCP /
+    REST) once a sequence is supplied. Empty sequence still abstains; an explicit `cargo_form` still wins. No
+    fabrication: an unknown vehicle returns no form and the axis abstains.
+  - **`mhc2_writer` / `ada_writer`** need a writer protein. The design form now has a **Writer enzyme** selector
+    (the three grounded families with a bundled UniProt sequence + committed NetMHCIIpan-4.0 cache: serine integrase
+    Bxb1, bridge recombinase ISCro4, Cas9 SpCas9); `DEFAULT_DESIGN` ships a serine integrase so the two axes populate
+    out of the box. No writer selected -> the two axes abstain (never fabricated).
+  - **`anti_peg`** applies only to PEGylated vehicles; selecting `lnp_mrna` now surfaces it (with an inline hint),
+    and it correctly abstains for non-PEG vehicles.
+  - `ImmuneProfileCard` now shows the **writer-as-antigen** summary (representative writer, foreign/self, dominant
+    antigen) so the writer axes are self-explanatory.
+
+### Changed
+- **Delivery & Immunity folded into Design Studio.** The standalone Delivery page duplicated the same design form and
+  immune profile, so it is merged into Design Studio as a third action - **Profile immune & delivery** - with the
+  per-axis immune ScoreGuide, the vehicle quick-switch, the `ImmuneProfileCard` and the scope ledger. Design Studio is
+  now one design surface with three actions (Verify / Generate / Profile immune & delivery). `/delivery` redirects to
+  `/design`; the nav drops the separate item; old links keep working.
+
+### Added
+- `test_ws_profile.py`: tests for the vehicle-derived cargo form (innate computes for a DNA vehicle with a cargo
+  sequence; abstains without one; explicit form overrides) and for the writer axes computing when a grounded writer
+  is supplied (and abstaining otherwise).
+
 ## [7.1.5] - 2026-06-29 - Chromosome field: validation, gene concordance, context
 
 ### Added

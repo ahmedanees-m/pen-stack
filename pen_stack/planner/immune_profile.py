@@ -53,6 +53,34 @@ _SCORE_KEY = {"genotoxicity": "genotox_score", "cd8_epitope": "capsid_immune_sco
               "innate": "innate_score", "preexisting_nab": "preexisting_score",
               "anti_peg": "preexisting_antipeg_score"}
 
+# Canonical cargo nucleic-acid FORM per delivery vehicle, used to drive the innate-sensing pathway (DNA -> TLR9
+# CpG; mRNA -> TLR7/8 + RIG-I/MDA5; RNP -> transient) when a design does not state ``cargo_form`` explicitly.
+# This is the vehicle's defining cargo class, NOT a fabricated quantity: an LNP-mRNA vehicle delivers mRNA, a
+# DNA-virus / electroporated-plasmid vehicle delivers DNA, an (e)VLP delivers a transient ribonucleoprotein. A
+# lentivirus is packaged as RNA but the persistent, innate-relevant cassette is the integrated proviral DNA.
+# An unknown vehicle returns None so the innate axis ABSTAINS rather than guesses a form.
+_VEHICLE_CARGO_FORM = {
+    "lnp_mrna": "mRNA",
+    "aav_single": "DNA", "aav_dual": "DNA", "lentivirus": "DNA",
+    "helper_dependent_adenovirus": "DNA", "hsv_amplicon": "DNA", "electroporation": "DNA",
+    "evlp": "RNP", "vlp": "RNP",
+}
+
+
+def _vehicle_cargo_form(vehicle: str | None) -> str | None:
+    """Derive the cargo nucleic-acid form (DNA / mRNA / RNP) from the delivery vehicle, or None when unknown.
+    Used only when the design does not supply ``cargo_form`` / ``writer_output_form`` explicitly."""
+    if not vehicle:
+        return None
+    v = str(vehicle).strip().lower()
+    if v in _VEHICLE_CARGO_FORM:
+        return _VEHICLE_CARGO_FORM[v]
+    if "mrna" in v or "lnp" in v:
+        return "mRNA"
+    if "vlp" in v:
+        return "RNP"
+    return None
+
 
 def _axis(result, axis: str) -> dict:
     """One axis record: value (headline score or None when abstaining) + native uncertainty + scope + the
@@ -108,7 +136,11 @@ def immune_profile(design: dict) -> dict:
     veh = design.get("delivery_vehicle") or design.get("vehicle")
     sero = design.get("serotype")
     cargo_seq = design.get("cargo_seq") or ""
-    form = design.get("writer_output_form") or design.get("cargo_form") or ""
+    # cargo form: honour an explicit design field, else derive it from the vehicle's defining cargo class so the
+    # innate axis computes for any caller (chat / MCP / REST) once a cargo sequence is supplied. Still abstains
+    # with no sequence and for an unknown vehicle (form None) - never fabricates.
+    form = (design.get("writer_output_form") or design.get("cargo_form")
+            or _vehicle_cargo_form(veh) or "")
     peg = design.get("pegylated")
 
     capsid_cd8 = capsid_epitope_oracle(veh)

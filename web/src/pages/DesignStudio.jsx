@@ -10,11 +10,29 @@
 import React, { useState } from "react";
 import { api } from "../api.js";
 import { Card, Button, Spinner, ErrorNote, Pill } from "../components/ui.jsx";
-import DesignForm, { DEFAULT_DESIGN } from "../components/DesignForm.jsx";
+import DesignForm, { DEFAULT_DESIGN, VEHICLES } from "../components/DesignForm.jsx";
 import ConfidenceBand from "../components/ConfidenceBand.jsx";
 import SafetyBadge from "../components/SafetyBadge.jsx";
 import ImmuneProfileCard from "../components/ImmuneProfileCard.jsx";
+import ScopeLedger from "../components/ScopeLedger.jsx";
 import ScoreGuide from "../components/ScoreGuide.jsx";
+
+// The five-axis immune-risk guide, folded in from the former Delivery & Immunity page (v7.1.6): one design surface
+// covers Verify / Generate AND the per-axis immune profile, so there is no separate delivery page to keep in sync.
+const IMMUNE_GUIDE = {
+  intro: "Immune risk is reported as SEPARATE axes (0–1, higher = lower risk), never collapsed into one number. Each is a mechanistic or population proxy, not a patient-specific prediction. An axis that lacks its input abstains and shows n/a, never a guessed value — supply a writer enzyme (MHC-II/ADA), a cargo sequence (innate), or a PEGylated vehicle (anti-PEG) to compute it.",
+  items: [
+    { term: "Genotoxicity", scale: "higher = safer", meaning: "1.0 = episomal / non-integrating (no insertional-oncogenesis mechanism); lower = an integrating vector enriched for integrations near oncogenes." },
+    { term: "CD8 epitope", scale: "higher = less visible", meaning: "1 − fraction of the capsid presentable to cytotoxic T cells over a frequent HLA-I panel (NetMHCpan-4.1, MHCflurry cross-check). Sequence-intrinsic, CD8/MHC-I only." },
+    { term: "Innate sensing", scale: "higher = lower load", meaning: "CpG/TLR9 for DNA cargo, U-content + dsRNA (ViennaRNA) for mRNA. The cargo form follows the vehicle. Needs a cargo sequence; abstains without one." },
+    { term: "Pre-existing NAb / anti-PEG", scale: "higher = lower barrier", meaning: "Pre-existing neutralizing-antibody eligibility (population serosurveys) and the anti-PEG barrier (PEGylated LNP only — abstains for non-PEG vehicles)." },
+    { term: "Writer immunogenicity (MHC-II + ADA)", scale: "higher = lower risk", meaning: "The bundled writer protein's CD4/MHC-II epitope load (real NetMHCIIpan-4.0) and anti-drug-antibody risk, self-tolerance filtered. Abstains when no writer is selected." },
+  ],
+  caveats: [
+    "No single fused immune score is asserted (collapsed_score = None on purpose): the axes measure different mechanisms on different evidence, so averaging them would manufacture certainty.",
+    "Patient-specific immune MAGNITUDE (titer, realized response) is a known-unknown — never predicted; the axes are directional, not validated against a measured clinical outcome.",
+  ],
+};
 
 const AXIS_COLOR = {
   pass: "var(--ok)", clear: "var(--ok)",
@@ -61,11 +79,12 @@ function goalFromDesign(b) {
 
 export default function DesignStudio() {
   const [design, setDesign] = useState(DEFAULT_DESIGN);
-  const [mode, setMode] = useState(null);   // "verify" | "generate" — which action produced the current result
+  const [mode, setMode] = useState(null);   // "verify" | "generate" | "immune" — which action produced the result
   const [proof, setProof] = useState(null);
   const [verdict, setVerdict] = useState(null);
   const [gen, setGen] = useState(null);     // the /generate response
-  const [busy, setBusy] = useState(null);   // "verify" | "generate" while running
+  const [imm, setImm] = useState(null);     // the /immune response (per-axis profile)
+  const [busy, setBusy] = useState(null);   // "verify" | "generate" | "immune" while running
   const [error, setError] = useState(null);
 
   async function runVerify() {
@@ -82,13 +101,17 @@ export default function DesignStudio() {
       setGen(r); setMode("generate");
     } catch (e) { setError(e); } finally { setBusy(null); }
   }
+  async function runImmune(d = design) {
+    setBusy("immune"); setError(null);
+    try { setImm(await api.immune(d)); setMode("immune"); } catch (e) { setError(e); } finally { setBusy(null); }
+  }
 
   const survivors = gen?.survivors || [];
 
   return (
     <div className="space-y-4">
       <ScoreGuide
-        intro="One design surface, two actions. VERIFY audits a single design and reports three axes separately — never collapsed — with a repairable proof. GENERATE plans real sites for your goal, sweeps the compatible vehicles, and returns the legal, screened survivors with a calibrated confidence band. Generate runs the same verifier on many candidates; Verify is the single-design check it is built on."
+        intro="One design surface, three actions. VERIFY audits a single design and reports three axes separately — never collapsed — with a repairable proof. GENERATE plans real sites for your goal, sweeps the compatible vehicles, and returns the legal, screened survivors with a calibrated confidence band. PROFILE IMMUNE & DELIVERY returns the per-axis immune-risk profile for the design's vehicle, cargo and writer. Generate runs the same verifier on many candidates; Verify is the single-design check it is built on."
         items={[
           { term: "Legality", scale: "pass / fail", meaning: "A grounded rule-set check: physical feasibility (reachability, payload-vs-capacity, cargo-form ↔ vehicle, integration) plus scope-of-use compliance (heritable human germline editing is out of scope and rejected). On failure it names the rule, its citation, and a repair. It does NOT adjudicate jurisdiction-specific law or IP — dual-use hazard is the separate Biosecurity axis." },
           { term: "Confidence", scale: "0–1, may abstain", meaning: "The calibrated confidence on the soft scores; it ABSTAINS rather than guess when uncalibrated. An abstain does not block — legality and biosecurity do." },
@@ -105,6 +128,7 @@ export default function DesignStudio() {
         <div className="mt-4 flex flex-wrap gap-3">
           <Button onClick={runVerify} disabled={!!busy}>{busy === "verify" ? "Verifying…" : "Verify this design"}</Button>
           <Button onClick={runGenerate} disabled={!!busy} variant="secondary">{busy === "generate" ? "Generating…" : "Generate alternatives"}</Button>
+          <Button onClick={() => runImmune()} disabled={!!busy} variant="secondary">{busy === "immune" ? "Profiling…" : "Profile immune & delivery"}</Button>
         </div>
       </Card>
 
@@ -198,8 +222,34 @@ export default function DesignStudio() {
         </Card>
       )}
 
+      {/* IMMUNE result: the per-axis immune-risk profile (absorbs the former Delivery & Immunity page) */}
+      {mode === "immune" && !error && (
+        <>
+          <ScoreGuide intro={IMMUNE_GUIDE.intro} items={IMMUNE_GUIDE.items} caveats={IMMUNE_GUIDE.caveats} />
+          <Card title="Immune-risk profile" subtitle="Switch the vehicle to watch the axes move — the engine recomputes each. Five axes, never collapsed.">
+            <div className="mb-3 flex flex-wrap gap-1.5">
+              {VEHICLES.map((v) => (
+                <button key={v} onClick={() => { const d = { ...design, delivery_vehicle: v }; setDesign(d); runImmune(d); }}
+                  className={`rounded-lg border px-2.5 py-1 text-xs ${design.delivery_vehicle === v ? "border-brand/50 bg-brand/15 text-brand" : "border-line bg-ink-900 text-fg-dim hover:text-fg"}`}>
+                  {v.replace(/_/g, " ")}
+                </button>
+              ))}
+            </div>
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
+              <div>
+                {busy === "immune" ? <Spinner /> : !imm ? null : <ImmuneProfileCard profile={imm} />}
+              </div>
+              <div>
+                {imm && <ScopeLedger knownUnknowns={imm.known_unknowns} />}
+                {imm?.note && <p className="mt-3 text-[11px] text-fg-faint">{imm.note}</p>}
+              </div>
+            </div>
+          </Card>
+        </>
+      )}
+
       {!mode && !error && (
-        <Card title="Result"><p className="text-sm text-fg-faint">Verify a design for its 3-axis proof, or Generate alternatives to sweep the goal for legal, screened candidates.</p></Card>
+        <Card title="Result"><p className="text-sm text-fg-faint">Verify a design for its 3-axis proof, Generate alternatives to sweep the goal for legal screened candidates, or Profile immune &amp; delivery for the per-axis immune-risk profile.</p></Card>
       )}
     </div>
   );

@@ -18,19 +18,34 @@ export const INTENTS = [
   "safe_harbour_insertion", "knock_in_with_disruption", "high_durability_insertion",
   "regulatory_element_excision", "landing_pad_insertion", "repeat_excision",
 ];
+// Writer enzyme: the families with a bundled real UniProt sequence + a committed NetMHCIIpan-4.0 epitope cache,
+// so the MHC-II/CD4 + ADA writer-as-antigen axes compute real values. "(none)" leaves those two axes abstaining.
+export const WRITERS = [
+  { value: "", label: "— none (writer axes abstain)" },
+  { value: "serine_integrase", label: "Serine integrase · Bxb1" },
+  { value: "bridge_IS110", label: "Bridge recombinase · ISCro4" },
+  { value: "Cas9", label: "Cas9 nuclease · SpCas9" },
+];
+// A clearly-labelled EXAMPLE cassette fragment (GFP CDS opening) so a user can see the innate-sensing axis compute;
+// real use pastes the actual cargo sequence. It is an example, not a default, and is never auto-applied.
+export const EXAMPLE_CARGO_SEQ =
+  "ATGGTGAGCAAGGGCGAGGAGCTGTTCACCGGGGTGGTGCCCATCCTGGTCGAGCTGGACGGCGACGTAAACGGCCACAAGTTCAGCGTGTCCGGCGAGGGC";
 export const CELLS = ["k562", "hepg2", "hspc", "h1_hesc", "ipsc", "cd8_t", "pbmc"];
 export const CHROMS = [...Array(22).keys()].map((i) => `chr${i + 1}`).concat(["chrX", "chrY", "chrM"]);
 
 export const DEFAULT_DESIGN = {
   write_type: "insertion", gene: "AAVS1", chrom: "chr19", delivery_vehicle: "AAV_single",
   cargo_bp: 3000, cargo_function: "human factor IX", cell_type: "k562", in_vivo: true,
+  // a default writer so the MHC-II / ADA writer-as-antigen axes populate out of the box (a serine integrase is a
+  // standard safe-harbour writer); cargo_seq is intentionally empty (no fabricated sequence) until the user pastes one.
+  writer_family: "serine_integrase", cargo_seq: "",
 };
 
 // only K562 / HepG2 / HSPC have a measured writability atlas; the rest are a declared, data-gated roadmap. The
 // dropdown shows this so a no-atlas cell type is not silently indistinguishable from a measured one (v7.1.5).
 const _COV_LABEL = { full: "full atlas", partial: "partial atlas", none: "no atlas" };
 
-export default function DesignForm({ design, onChange, showCargoFunction = true }) {
+export default function DesignForm({ design, onChange, showCargoFunction = true, showWriter = true, showCargoSeq = true }) {
   const set = (k, v) => onChange({ ...design, [k]: v });
   // canonical chrom of the gene: a string if found, null if the gene is unknown, undefined before the check.
   const [geneChrom, setGeneChrom] = useState(undefined);
@@ -82,10 +97,16 @@ export default function DesignForm({ design, onChange, showCargoFunction = true 
           <p className="mt-1 text-[11px] text-fg-faint">{design.gene} is not in the coordinate table; concordance can't be confirmed.</p>
         )}
       </Field>
-      <Field label="Delivery vehicle">
+      <Field label="Delivery vehicle"
+             hint={design.delivery_vehicle === "lnp_mrna" ? "PEGylated LNP — the anti-PEG axis applies (re-dosing barrier)" : "non-PEG vehicle — the anti-PEG axis abstains"}>
         <Select value={design.delivery_vehicle} onChange={(v) => set("delivery_vehicle", v)}
                 options={VEHICLES.map((v) => ({ value: v, label: v.replace(/_/g, " ") }))} />
       </Field>
+      {showWriter && (
+        <Field label="Writer enzyme" hint="Drives the MHC-II / CD4 + ADA writer-as-antigen axes (real NetMHCIIpan-4.0)">
+          <Select value={design.writer_family || ""} onChange={(v) => set("writer_family", v)} options={WRITERS} />
+        </Field>
+      )}
       <Field label="Cell type" hint={cellCov && design.cell_type
               ? (cellCov[design.cell_type] === "none"
                  ? "no measured writability atlas — locus scoring abstains for this cell type"
@@ -106,6 +127,25 @@ export default function DesignForm({ design, onChange, showCargoFunction = true 
         <div className="sm:col-span-2">
           <Field label="Cargo function" hint="Plain description; the Guardian screens this for dual-use hazard signal">
             <input className="input" value={design.cargo_function || ""} onChange={(e) => set("cargo_function", e.target.value)} />
+          </Field>
+        </div>
+      )}
+      {showCargoSeq && (
+        <div className="sm:col-span-2">
+          <Field label="Cargo sequence (optional)"
+                 hint="Powers the innate-sensing axis (CpG/TLR9 for DNA, U-content + dsRNA for mRNA — the form follows the vehicle). Empty = the axis abstains, never a guessed value.">
+            <textarea className="input font-mono text-[11px] leading-snug" rows={3}
+                      placeholder="Paste the cargo / cassette nucleotide sequence (A/C/G/T or A/C/G/U)…"
+                      value={design.cargo_seq || ""} onChange={(e) => set("cargo_seq", e.target.value)} />
+            <div className="mt-1 flex items-center gap-3 text-[11px]">
+              <button type="button" className="underline text-fg-faint hover:text-fg"
+                      onClick={() => set("cargo_seq", EXAMPLE_CARGO_SEQ)}>insert example (GFP CDS fragment)</button>
+              {design.cargo_seq ? (
+                <button type="button" className="underline text-fg-faint hover:text-fg"
+                        onClick={() => set("cargo_seq", "")}>clear</button>
+              ) : null}
+              {design.cargo_seq ? <span className="text-fg-faint tabular-nums">{design.cargo_seq.replace(/\s/g, "").length} nt</span> : null}
+            </div>
           </Field>
         </div>
       )}
