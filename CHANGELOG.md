@@ -3,6 +3,31 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.1.7] - 2026-06-30 - Administration context (in-vivo / ex-vivo) now drives the immune profile
+
+### Fixed
+- **The in-vivo / ex-vivo "Context" toggle had no effect on the immune profile.** It already drove the Generate
+  vehicle sweep (route-compatible vehicles) and the Verify germline-prohibition legality rule, but `immune_profile()`
+  ignored it, so the per-axis immune profile was identical for in-vivo and ex-vivo. It now applies a documented,
+  grounded administration modifier (`immune_profile._administration_modifier` / `_apply_administration`):
+  - **Pre-existing NAb is muted to "no barrier" (1.0) ex vivo.** Ex-vivo delivery (cells transduced in a dish and
+    washed before transplant) never exposes the vector to the patient's circulating antibodies, so pre-existing
+    anti-vector NAb does not gate eligibility — the eligibility fraction is 1.0 regardless of titer. The original
+    seroprevalence value is preserved (`pre_admin_value`) and the muting is explained in the axis note. This is the
+    same in-vivo/ex-vivo distinction the v5.1 `delivery_immunology` profile already encodes (`computed_ex_vivo_muted`).
+  - **CD8 capsid is flagged muted ex vivo** (systemic anti-capsid response minimal), but its intrinsic presentability
+    value is kept — transduced cells can still present capsid epitopes, a real residual concern, so no number is
+    fabricated.
+  - **Genotoxicity, innate, anti-PEG and the writer axes are unchanged** by administration context (insertional risk
+    and cargo/writer immunogenicity are intrinsic, not a function of circulating-antibody exposure).
+  - A `administration_modifier` block (parallel to the existing `route_modifier`) is added to the profile; the
+    `ImmuneProfileCard` shows an in-vivo/ex-vivo chip, a per-axis "ex-vivo muted" badge with the reason, and the
+    administration effect line. In-vivo and unspecified contexts leave every axis untouched (backward compatible).
+
+### Added
+- `test_ws_profile.py`: `test_administration_context_mutes_vector_facing_axes_ex_vivo` (ex-vivo mutes pre-existing
+  NAb to 1.0 and flags CD8; in-vivo/unspecified are unchanged; genotoxicity is never muted by administration).
+
 ## [7.1.6] - 2026-06-30 - Immune axes wired end-to-end + Delivery folded into Design Studio
 
 ### Fixed

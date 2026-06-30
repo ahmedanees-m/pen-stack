@@ -19,6 +19,12 @@ export default function ImmuneProfileCard({ profile }) {
           per-axis · never collapsed
         </span>
         {profile.route_modifier?.route && <span className="chip">route: {profile.route_modifier.route}</span>}
+        {profile.administration_modifier && (
+          <span className="chip"
+                style={profile.administration_modifier.context === "ex_vivo" ? { color: "var(--warn)", borderColor: "var(--warn)55" } : undefined}>
+            {profile.administration_modifier.context.replace("_", " ")}
+          </span>
+        )}
       </div>
 
       <div className="grid gap-2.5 sm:grid-cols-2">
@@ -47,6 +53,13 @@ export default function ImmuneProfileCard({ profile }) {
               <p className="mt-2 text-[11px] leading-snug text-fg-dim">
                 {a.meaning || a.validation || a.note || ""}
               </p>
+              {/* administration (in-vivo/ex-vivo) muting: explain why this vector-facing axis was muted ex vivo */}
+              {a.administration_muted && (
+                <p className="mt-1.5 rounded border border-warn/30 bg-warn/5 px-2 py-1 text-[10px] leading-snug"
+                   style={{ color: "var(--warn)" }}>
+                  ex-vivo muted{a.pre_admin_value != null ? ` · in-vivo value was ${num(a.pre_admin_value)}` : ""}: {a.note}
+                </p>
+              )}
               <div className="mt-1 flex items-center justify-between gap-2">
                 <span className="text-[10px] leading-tight text-fg-faint">
                   {a.guide?.computed ? `Computed: ${a.guide.computed}` : ""}
@@ -77,6 +90,16 @@ export default function ImmuneProfileCard({ profile }) {
           </div>
           <p className="mt-1.5 text-fg-dim">{profile.writer_as_antigen.note}</p>
         </div>
+      )}
+
+      {/* administration context: explain the in-vivo / ex-vivo modifier on the vector-facing axes */}
+      {profile.administration_modifier && (
+        <p className="mt-3 text-[11px] leading-snug text-fg-faint">
+          <span style={{ color: profile.administration_modifier.context === "ex_vivo" ? "var(--warn)" : "var(--ok)" }}>
+            {profile.administration_modifier.context.replace("_", " ")}
+          </span>{" "}
+          — {profile.administration_modifier.effect}
+        </p>
       )}
 
       {/* legend: explain the overloaded "extrapolating" badge in plain words, once, under the grid */}

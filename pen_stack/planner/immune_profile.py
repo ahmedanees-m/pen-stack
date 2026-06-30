@@ -48,6 +48,65 @@ def _route_modifier(route: str | None) -> dict | None:
             "note": "DOCUMENTED qualitative modifier on the realized response, NOT a quantified magnitude "
                     "(the magnitude stays a known-unknown)."}
 
+
+# v7.1.7 WS-ADMIN, administration-context (in-vivo vs ex-vivo) modifier on the VECTOR-FACING immune axes.
+# Ex-vivo delivery (cells transduced in a dish and washed before transplant) does NOT expose the vector to the
+# patient's circulating antibodies, so the pre-existing anti-vector NAb axis - a humoral, bloodstream eligibility
+# barrier - does not gate ex-vivo use (it is muted to "no barrier"). The systemic anti-capsid CD8 response is also
+# muted ex vivo (the host barely sees the capsid), but transduced cells can still present capsid epitopes (a real,
+# residual concern), so that axis is FLAGGED muted without overwriting its intrinsic value. This is the SAME
+# in-vivo/ex-vivo distinction the v5.1 delivery_immunology profile already encodes ("computed_ex_vivo_muted").
+# A DOCUMENTED, mechanistic modifier - never a fabricated magnitude; the realized response stays a known-unknown.
+_EX_VIVO_MUTED_AXES = ("preexisting_nab", "cd8_epitope")
+
+
+def _is_ex_vivo(in_vivo) -> bool:
+    return str(in_vivo).strip().lower() in ("false", "0", "no", "ex_vivo", "ex vivo", "exvivo")
+
+
+def _administration_modifier(in_vivo) -> dict | None:
+    """Documented administration-context modifier (in-vivo / ex-vivo) on the vector-facing axes, or None when the
+    design does not state an administration context. Qualitative, never a fabricated magnitude."""
+    if in_vivo is None:
+        return None
+    if _is_ex_vivo(in_vivo):
+        return {"context": "ex_vivo", "muted_axes": list(_EX_VIVO_MUTED_AXES),
+                "effect": "ex-vivo administration: the vector contacts cells in a dish and is washed before "
+                          "transplant, so it is not exposed to the patient's circulating antibodies. Pre-existing "
+                          "anti-vector NAb does not gate eligibility (humoral barrier bypassed); the systemic "
+                          "anti-capsid CD8 response is muted, though transduced cells may still present capsid "
+                          "epitopes (a residual, separate consideration).",
+                "note": "DOCUMENTED qualitative administration modifier (the same in-vivo/ex-vivo distinction as the "
+                        "v5.1 delivery profile); the realized immune MAGNITUDE remains a known-unknown."}
+    return {"context": "in_vivo", "muted_axes": [],
+            "effect": "in-vivo (systemic / local) administration: the vector is exposed to the patient's "
+                      "circulating antibodies and immune system, so the pre-existing NAb and anti-capsid CD8 "
+                      "axes apply as reported.",
+            "note": "DOCUMENTED qualitative administration modifier; the realized magnitude is a known-unknown."}
+
+
+def _apply_administration(axes: dict, admin: dict | None) -> None:
+    """Mutate the vector-facing axes in place for an ex-vivo administration context. Pre-existing NAb is muted to
+    'no barrier' (eligibility not gated when the vector never meets circulating antibody); CD8 capsid is flagged
+    muted but its intrinsic value is kept (transduced cells can still present). No-op for in-vivo / unspecified."""
+    if not admin or admin.get("context") != "ex_vivo":
+        return
+    na = axes.get("preexisting_nab")
+    if na and na.get("available") and na.get("value") is not None:
+        na["pre_admin_value"] = na["value"]
+        na["value"] = 1.0
+        na["uncertainty"] = 0.0
+        na["administration_muted"] = True
+        na["note"] = (f"ex-vivo administration: pre-existing circulating anti-vector antibodies do not reach the "
+                      f"vector (transduction in a dish), so pre-existing NAb does not gate eligibility "
+                      f"(muted from {na['pre_admin_value']} to 1.0 = no barrier). " + (na.get("note") or ""))
+    cd = axes.get("cd8_epitope")
+    if cd and cd.get("available") and cd.get("value") is not None:
+        cd["administration_muted"] = True
+        cd["note"] = ("ex-vivo administration: the systemic anti-capsid CD8 response is muted (minimal host capsid "
+                      "exposure); transduced cells may still present capsid epitopes, so the intrinsic value is "
+                      "kept. " + (cd.get("note") or ""))
+
 # headline score key inside each oracle's value dict, per axis.
 _SCORE_KEY = {"genotoxicity": "genotox_score", "cd8_epitope": "capsid_immune_score",
               "innate": "innate_score", "preexisting_nab": "preexisting_score",
@@ -162,6 +221,11 @@ def immune_profile(design: dict) -> dict:
                                   "no bundled writer sequence -> abstains", "ada_writer"),
     }
 
+    # v7.1.7 administration context: ex-vivo delivery bypasses the patient's circulating antibodies, so the
+    # vector-facing axes (pre-existing NAb, capsid CD8) are muted - documented, not a fabricated magnitude.
+    admin = _administration_modifier(design.get("in_vivo"))
+    _apply_administration(axes, admin)
+
     # writer-as-antigen comparison: for non-viral delivery (no foreign capsid) or a foreign writer outscoring the
     # capsid, the WRITER is the dominant antigen, the v6.9 insight, never collapsed into the other axes.
     dominant = None
@@ -180,6 +244,7 @@ def immune_profile(design: dict) -> dict:
         "writer_as_antigen": ({**writer_card, "dominant_antigen": dominant,
                                "writer_dominant_risk": writer_dominant_risk} if writer_card else None),
         "route_modifier": _route_modifier(design.get("route")), # v5.6 WS-EXT documented route modifier (or None)
+        "administration_modifier": admin, # v7.1.7 in-vivo / ex-vivo documented modifier on the vector-facing axes
         "known_unknowns": KNOWN_UNKNOWNS,
         "no_fabrication": True,
         "note": ("relative immune-risk SCREEN across axes (now incl. CD4/MHC-II + ADA over the writer enzyme); each "

@@ -58,6 +58,30 @@ def test_writer_axes_compute_when_a_writer_is_supplied():
     assert nw["axes"]["mhc2_writer"]["value"] is None and nw["axes"]["ada_writer"]["value"] is None
 
 
+def test_administration_context_mutes_vector_facing_axes_ex_vivo():
+    # v7.1.7: ex-vivo administration (cells transduced in a dish, washed before transplant) bypasses the patient's
+    # circulating antibodies, so the pre-existing anti-vector NAb axis is muted to "no barrier" (1.0) and the
+    # capsid CD8 axis is flagged muted (intrinsic value kept). In-vivo / unspecified leave the axes untouched.
+    inv = immune_profile({"delivery_vehicle": "AAV_single", "in_vivo": True})
+    exv = immune_profile({"delivery_vehicle": "AAV_single", "in_vivo": False})
+    none = immune_profile({"delivery_vehicle": "AAV_single"})
+    # modifier block reflects the context (or is absent when unspecified)
+    assert inv["administration_modifier"]["context"] == "in_vivo"
+    assert exv["administration_modifier"]["context"] == "ex_vivo"
+    assert none["administration_modifier"] is None
+    # in-vivo and unspecified keep the grounded seroprevalence value; ex-vivo mutes it to no-barrier 1.0
+    nab_in = inv["axes"]["preexisting_nab"]["value"]
+    assert nab_in == none["axes"]["preexisting_nab"]["value"] and nab_in is not None and nab_in < 1.0
+    nab_ex = exv["axes"]["preexisting_nab"]
+    assert nab_ex["value"] == 1.0 and nab_ex["administration_muted"] is True
+    assert nab_ex["pre_admin_value"] == nab_in  # the original value is preserved, not discarded
+    # CD8 capsid is flagged muted ex-vivo but its intrinsic value is unchanged (transduced cells still present)
+    assert exv["axes"]["cd8_epitope"]["administration_muted"] is True
+    assert exv["axes"]["cd8_epitope"]["value"] == inv["axes"]["cd8_epitope"]["value"]
+    # no fabrication: genotoxicity (an intrinsic integration property) is NOT muted by administration context
+    assert exv["axes"]["genotoxicity"]["value"] == inv["axes"]["genotoxicity"]["value"]
+
+
 def test_profile_is_never_collapsed_into_one_number():
     # the central WS-PROFILE gate: no single fused score (that would fake confidence).
     p = immune_profile({"delivery_vehicle": "AAV_single"})
