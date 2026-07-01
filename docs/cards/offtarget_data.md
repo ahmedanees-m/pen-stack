@@ -90,3 +90,29 @@ candidate ENUMERATION needs the on-VM Cas-OFFinder/genome scan; this benchmark c
 candidates. Bridge/integrase off-target is data-thin: there is **no published genome-wide unbiased off-target assay
 or predictor for bridge recombinases** (verified), and the large-serine-integrase assays (Cryptic-seq/HIDE-seq) and
 predictor (IntQuery) are recent single-company preprints with no public weights.
+
+---
+
+## v7.2 (PEN-OFFTGT v2) — per-mechanism ground-truth status (O-WS8 / gate O-G3)
+
+Stage E is now a genome-wide **finder** (Cas-OFFinder over GRCh38; heavy scan on the VM, cached coordinates
+replayed by the app). Each writer class applies the correct off-target mechanism and carries a **truthful
+validation status** — a sealed benchmark where ground truth exists, an explicit **no-genome-wide-ground-truth
+disclosure** where it does not. No mechanism is ever presented as validated where the data cannot support it.
+
+| Writer class | Mechanism | Enumeration | Status | Ground truth / benchmark |
+|---|---|---|---|---|
+| **Nuclease** (SpCas9/SaCas9/Cas12a) | mismatch-tolerant cleavage at protospacer+PAM | Cas-OFFinder genome scan | ✅ **validated** | 4-assay Off-Target-Bench (above) + **O-G1**: enumeration recovers 100% of EMX1's documented GUIDE-seq off-targets ≤5 mm |
+| **Serine integrase** (Bxb1) | recombination at genomic pseudo-attP | fixed-sequence att-window scan | 🟡 **semi-validated** | documented pseudosites are partial ground truth; Bxb1 att verified (FlyBase FBto0000359 / Ghosh 2003, `10.1016/S1097-2765(03)00444-1`); Bxb1 is highly specific (few genomic pseudo-attP) |
+| **Serine integrase** (PhiC31) | — | — | 🟡 semi-validated | **DISCLOSED DATA GAP**: PhiC31 has ~19 documented human pseudo-attP (Chalberg 2006, `10.1016/j.jmb.2005.11.108`) — the strongest integrase benchmark — but its exact att arm / pseudosite sequences were not verifiable from an open source in this build, so PhiC31 is **not encoded and abstains** rather than fabricate. Encoding it is the follow-up that upgrades O-G2 to a sealed recall benchmark. |
+| **Bridge** (IS110/IS621) | recombination at bridge-RNA target-loop matches | core-seeded genome scan (pysam) | 🔵 **mechanism-based, unvalidated** | **NO genome-wide unbiased CELLULAR off-target assay exists** (technology ~2024). The mismatch-tolerance RANKER is validated on the measured Perry-2025 in-vitro DMS specificity (held-out ranking AUROC 0.88), but genomic recovery is unvalidated. |
+| **CAST** (ShCAST V-K / VchCAST I-F) | guide-directed integration + guide-independent untargeted transposition | spacer scan + per-system untargeted background | 🔵 **mechanism-based, unvalidated** | untargeted-transposition rates documented per system (`data/curated/cast_systems.yaml`): ShCAST high/AT-biased (Strecker 2019 `10.1126/science.aax9181`; Science 2024 `10.1126/science.adj8543`), VchCAST >95–99% on-target (Klompe 2019 `10.1038/s41586-019-1323-z`; Vo 2021 `10.1038/s41587-020-00745-y`). No genome-wide cellular assay for human-cell CAST. |
+| **PASTE / (ee)PASSIGE** | Cas9-nickase off-target + integrase pseudo-attP | compose(nuclease, integrase) | composite (✅ nickase + 🟡 integrase) | inherits the nuclease benchmark for the nickase and the integrase status for the installed att; recommends BOTH a nuclease assay AND an integrase assay |
+
+**O-G3 satisfied:** every mechanism has either a sealed benchmark (nuclease) or an explicit no-ground-truth /
+data-gap disclosure (integrase-PhiC31, bridge, CAST) — never a fabricated metric. The bridge and CAST paths are
+**hard-locked** to 🔵 unvalidated in code.
+
+**Honest limits (v7.2):** enumeration recall depends on the mismatch tolerance (≤5 mm nuclease, ≤8 mm integrase
+att window); very divergent off-targets can be missed (a limitation shared with CRISPOR). DNA/RNA bulges are not
+enumerated in v2.0 (substitutions only). The engine nominates and ranks; it does not clear a design.

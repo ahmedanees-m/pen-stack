@@ -31,6 +31,7 @@ _ALIAS = {"cas9": "SpCas9", "spcas9": "SpCas9", "nuclease": "SpCas9", "nickase":
           "sacas9": "SaCas9", "ascas12a": "AsCas12a", "lbcas12a": "LbCas12a", "cas12a": "AsCas12a"}
 DEFAULT_MAX_MISMATCH = 5
 _CACHE_PATH = "data/offtarget/enumerated_cache.parquet"
+_MOTIF_CACHE_PATH = "data/offtarget/motif_cache.parquet"  # att / CAST-spacer genome scans (label-keyed)
 
 
 def resolve_enzyme(name: str) -> str | None:
@@ -128,6 +129,86 @@ def _cache_df():
         return pd.read_parquet(resource(_CACHE_PATH))
     except Exception:  # noqa: BLE001
         return None
+
+
+# ---- generic motif (att / CAST-spacer) genome scan: an all-N pattern finds every L-mer within k mismatches ----
+def build_sequence_input(seq: str, genome_path: str, max_mismatch: int) -> str:
+    """Cas-OFFinder input for a fixed-sequence genome scan (no PAM): an all-N pattern of the sequence length, so
+    the query's specific bases match every genomic L-mer within ``max_mismatch``. Used for pseudo-att (integrase)
+    and CAST-spacer scans, where recognition is a sequence match rather than a protospacer+PAM."""
+    s = "".join(c for c in (seq or "").upper() if c in "ACGT")
+    return f"{genome_path}\n{'N' * len(s)}\n{s} {int(max_mismatch)}\n"
+
+
+def parse_sequence_output(text: str, seq_len: int) -> list[dict]:
+    """Parse a fixed-sequence (all-N pattern) Cas-OFFinder scan: same 6-column layout as the nuclease parser but
+    the query column is not enzyme-structured, so there is no guide/PAM split."""
+    out: list[dict] = []
+    for line in text.splitlines():
+        if not line.strip() or line.startswith("#"):
+            continue
+        f = line.split("\t")
+        if len(f) < 6:
+            continue
+        try:
+            pos, n_mm = int(f[2]), int(f[5])
+        except ValueError:
+            continue
+        strand, dna = f[4], f[3].upper()
+        if strand not in ("+", "-") or "-" in dna:
+            continue
+        out.append({"chrom": f[1].split()[0], "position": pos, "strand": strand,
+                    "sequence": dna[:seq_len], "n_mismatch": n_mm})
+    return out
+
+
+def scan_sequence_local(seq: str, genome_path: str, max_mismatch: int, device: str = "C",
+                        workdir: str | None = None) -> list[dict]:
+    """Run a fixed-sequence genome scan via Cas-OFFinder locally (VM). Raises if the binary/genome is absent."""
+    import os
+    import tempfile
+    binary = _casoffinder_bin()
+    if not binary:
+        raise RuntimeError("cas-offinder not on PATH (run inside casoffinder:tools on the VM)")
+    s = "".join(c for c in (seq or "").upper() if c in "ACGT")
+    wd = workdir or tempfile.mkdtemp(prefix="motif_")
+    inp, outp = os.path.join(wd, "in.txt"), os.path.join(wd, "out.txt")
+    with open(inp, "w", encoding="utf-8") as fh:
+        fh.write(build_sequence_input(s, genome_path, max_mismatch))
+    subprocess.run([binary, inp, device, outp], check=True, capture_output=True, text=True)
+    with open(outp, encoding="utf-8") as fh:
+        return parse_sequence_output(fh.read(), len(s))
+
+
+@lru_cache(maxsize=1)
+def _motif_cache_df():
+    """The committed motif (att / CAST-spacer) genome-scan cache, or None when absent. Columns: label, kind, doi,
+    query, chrom, position, strand, sequence, n_mismatch."""
+    try:
+        import pandas as pd
+
+        from pen_stack._resources import resource
+        return pd.read_parquet(resource(_MOTIF_CACHE_PATH))
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def enumerate_motif(label: str) -> dict:
+    """Replay a cached genome-wide motif scan (pseudo-att for an integrase, or a CAST spacer) by label, or abstain
+    (its scan runs on the VM). Coordinates are public-genome facts; the app never fabricates sites."""
+    df = _motif_cache_df()
+    if df is not None and not df.empty:
+        sub = df[df["label"] == label]
+        if not sub.empty:
+            cols = ["chrom", "position", "strand", "sequence", "n_mismatch"]
+            rec = sub.iloc[0]
+            return {"available": True, "abstain": False, "label": label, "source": "cache",
+                    "query": str(rec.get("query", "")), "doi": str(rec.get("doi", "")),
+                    "n_sites": len(sub), "sites": sub.sort_values("n_mismatch")[cols].to_dict("records")}
+    return {"available": False, "abstain": True, "label": label, "source": "none",
+            "cached_motifs": sorted(df["label"].unique().tolist()) if df is not None and not df.empty else [],
+            "note": "genome-wide motif scan runs on the VM (casoffinder:tools over GRCh38); this surface replays "
+                    "the committed cache or abstains (no fabricated sites)."}
 
 
 @lru_cache(maxsize=1)

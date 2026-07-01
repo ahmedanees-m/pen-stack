@@ -29,7 +29,7 @@ def recommend_assay(writer_family: str) -> dict:
                             "in the target cell type (GUIDE-seq), chromatin masks a fraction of in vitro sites",
                 "available": True,
                 "note": "nomination ranks CANDIDATES; an empirical assay is required for clearance."}
-    if "integrase" in fam or "paste" in fam or "passige" in fam or "bxb1" in fam or "phic31" in fam:
+    if ("integrase" in fam or "bxb1" in fam or "phic31" in fam) and "paste" not in fam and "passige" not in fam:
         return {"family": writer_family, "writer_class": "large serine integrase",
                 "recommended": [{"assay": "Cryptic-seq / HIDE-seq", "setting": "unbiased LSI off-target discovery",
                                  "doi": "10.1101/2024.08.23.609471",
@@ -39,6 +39,29 @@ def recommend_assay(writer_family: str) -> dict:
                             "quantitative prediction (IntQuery) is paper-only (no public weights)",
                 "available": True,
                 "note": "LSI off-target assays are recent preprints; coverage is single-company / largely Bxb1."}
+    if "paste" in fam or "passige" in fam:
+        return {"family": writer_family, "writer_class": "prime-editing integrase (PASTE / PASSIGE)",
+                "recommended": [
+                    {"assay": "GUIDE-seq / CHANGE-seq", "setting": "nuclease (nickase) off-target", "doi": "10.1038/nbt.3117",
+                     "use": "confirm the Cas9-nickase off-targets of the pegRNA spacer"},
+                    {"assay": "Cryptic-seq / HIDE-seq", "setting": "integrase off-target", "doi": "10.1101/2024.08.23.609471",
+                     "use": "confirm the integrase pseudo-attP sites of the installed att"}],
+                "strategy": "PASTE off-target is composite — run BOTH a nuclease assay (for the nickase) AND an "
+                            "integrase assay (for the installed att); the two components are independent.",
+                "available": True,
+                "note": "two independent off-target mechanisms; neither assay alone clears a PASTE design."}
+    if "cast" in fam or "cas12k" in fam or "shcast" in fam or "vchcast" in fam or "evocast" in fam:
+        return {"family": writer_family, "writer_class": "CRISPR-associated transposase (CAST)",
+                "recommended": [{"assay": "transposon insertion-site sequencing", "setting": "unbiased integration mapping",
+                                 "doi": "10.1126/science.aax9181",
+                                 "use": "map genome-wide integration sites, including guide-INDEPENDENT untargeted "
+                                        "transposition (the dominant off-target mode for Type V-K, e.g. ShCAST)"}],
+                "strategy": "sequence integration sites to capture BOTH guide-directed off-targets and the "
+                            "guide-independent untargeted-transposition background (Type V-K high; Type I-F low)",
+                "available": True,
+                "note": "KNOWN GAP: no genome-wide unbiased CELLULAR off-target assay is standardised for human-cell "
+                        "CAST; untargeted-transposition rates are characterised in bacteria/biochemically. "
+                        "Mechanism-based, unvalidated."}
     if "bridge" in fam or "is110" in fam or "is621" in fam or "seek" in fam or "iscro4" in fam:
         return {"family": writer_family, "writer_class": "bridge recombinase (IS110/IS621 RNA-guided)",
                 "recommended": [{"assay": "targeted amplicon / capture sequencing at nominated pseudosites",

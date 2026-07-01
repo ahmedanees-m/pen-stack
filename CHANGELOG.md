@@ -3,12 +3,41 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
-## [7.2.0] - 2026-07-01 - PEN-OFFTGT v2: Stage E becomes a genome-wide off-target FINDER (nuclease path)
+## [7.2.0] - 2026-07-01 - PEN-OFFTGT v2: Stage E becomes a genome-wide, per-mechanism off-target FINDER (all 5 writer classes)
 
 Stage E was a candidate *scorer* — it ranked off-target sites you supplied. A real off-target tool (CRISPOR /
-CHOPCHOP) takes a guide and *finds* the genome-wide off-target set itself. This release closes that enumeration
-gap for the nuclease path (O-WS0–O-WS2 of the PEN-OFFTGT v2 plan); the integrase pseudo-att genome scan, bridge,
-CAST, and PASTE paths are the continuing v7.2.x work.
+CHOPCHOP) takes a guide/target and *finds* the genome-wide off-target set itself. PEN-OFFTGT v2 closes that
+enumeration gap AND applies the **correct off-target mechanism for each writer class**, each carrying a truthful
+per-mechanism validation status (O-WS0–O-WS9 of the plan).
+
+### Per-mechanism paths (O-WS3–O-WS6)
+- **Serine integrase** (`offtarget_integrase.py`, O-WS3): a genome-wide **pseudo-attP** scan — a fixed-sequence
+  Cas-OFFinder scan of the attP core window over GRCh38, scored by att-arm similarity. **Bxb1** is fully encoded
+  (FlyBase FBto0000359 / Ghosh 2003) and is highly specific. Status **semi-validated**. **PhiC31 is a disclosed
+  data gap** (its documented human pseudo-attP set — Chalberg 2006 — could not be verified from an open source in
+  this build, so it abstains rather than fabricate). `data/curated/integrase_att.yaml`.
+- **Bridge** (`offtarget_bridge.py`, O-WS4): wraps the existing DMS-scored genome scan (measured Perry-2025
+  specificity, held-out ranking AUROC 0.88). Status **hard-locked mechanism-based-unvalidated** — the ranker is
+  DMS-validated but **no genome-wide cellular off-target assay exists** for bridge recombinases, so genomic
+  recovery is unvalidated (stated in a no-ground-truth disclosure).
+- **CAST** (`offtarget_cast.py` + `data/curated/cast_systems.yaml`, O-WS5) — NEW: guide-directed spacer scan +
+  the distinctive **guide-independent untargeted-transposition** background per system (ShCAST/Type V-K high +
+  AT-biased; VchCAST/Type I-F >95–99% on-target), all DOI-tagged. Status **mechanism-based-unvalidated**.
+- **PASTE / (ee)PASSIGE** (`offtarget_paste.py`, O-WS6) — NEW: composes the validated nuclease finder (Cas9
+  nickase, pegRNA) with the semi-validated integrase pseudo-attP scan (installed att); returns both component sets
+  and recommends BOTH a nuclease assay and an integrase assay. Status **composite**.
+
+### Status labels + assay recommender (O-WS7) + disclosures (O-WS8 / gate O-G3)
+- Every nomination carries a per-mechanism status label + the mechanism-appropriate confirm assay; `recommend_assay`
+  now covers CAST (transposon insertion-site seq) and PASTE (dual). `docs/cards/offtarget_data.md` documents the
+  per-mechanism ground-truth status — **O-G3: every mechanism has either a sealed benchmark (nuclease) or an
+  explicit no-ground-truth / data-gap disclosure (integrase-PhiC31, bridge, CAST) — never a fabricated metric.**
+- Disclosed deviations from the plan (no silent substitution): `att_pwm.json` → an att-similarity model in
+  `integrase_att.yaml` (a per-position PWM needs aligned pseudosites that do not exist at genome scale);
+  `bridge_dms_specificity.parquet` → the existing measured `bridge_offtarget_profile_measured.parquet` is reused;
+  `known_pseudosites.parquet` → not created (Bxb1 highly specific; PhiC31 disclosed data gap).
+
+### Nuclease finder (O-WS0–O-WS2)
 
 ### Added
 - **Genome-wide enumeration engine** (`pen_stack/wgenome/offtarget_enumerate.py`, O-WS1). Given a guide + enzyme,

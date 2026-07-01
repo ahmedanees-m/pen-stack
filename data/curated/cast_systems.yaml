@@ -1,0 +1,59 @@
+# CRISPR-associated transposase (CAST) systems — per-system off-target properties (PEN-OFFTGT v2, O-WS5).
+#
+# CAST off-target has TWO distinct modes, and the balance differs by system type:
+#   1. guide-directed  — integration at genomic sites matching the crRNA spacer (a sequence-match scan, like a
+#                        nuclease off-target, but the transposon inserts ~49-66 bp downstream of the protospacer).
+#   2. guide-INDEPENDENT untargeted transposition — the Tn7-like transposase machinery (TnsB/TnsC/TniQ) inserting
+#                        WITHOUT the CRISPR effector or the guide. This is the DISTINCTIVE, dominant off-target mode
+#                        for Type V-K systems (ShCAST) and is largely absent in Type I-F systems (VchCAST).
+#
+# All values are DOCUMENTED facts from the primary literature (DOIs below), reported as a qualitative tier plus the
+# published on-target fidelity where a number is stated. This is NOT a genome-wide cellular off-target assay
+# (none exists for CAST at genome scale) -> status is mechanism_based_unvalidated; the confirming assay is
+# transposon insertion-site sequencing.
+
+version: "1.0"
+
+systems:
+  ShCAST:
+    full_name: "Scytonema hofmanni CAST"
+    cast_type: "V-K"
+    effector: "Cas12k"
+    untargeted_transposition: high            # guide/Cas12k-INDEPENDENT, AT-biased (the dominant off-target mode)
+    guide_independent: true
+    at_biased_untargeted: true
+    on_target_fidelity_note: "up to ~80% integration in E. coli without selection, but LOW fidelity: prone to
+      extensive RNA-independent (guide-independent) transposition via TnsB/TnsC/TniQ; improved vectors that
+      suppress the RNA-independent pathway raise specificity up to 98.1% (Type V-K)."
+    dois:
+      - "10.1126/science.aax9181"   # Strecker et al. 2019, ShCAST (Science) — RNA-guided DNA insertion with CAST
+      - "10.1126/science.adj8543"   # Type V-K target-site selection + untargeted mechanism (Science 2024)
+  VchCAST:
+    full_name: "Vibrio cholerae CAST (Tn6677 / INTEGRATE)"
+    cast_type: "I-F"
+    effector: "Cascade (Cas6-Cas7-Cas8/Cas5) + TniQ"
+    untargeted_transposition: low             # high fidelity; guide-independent transposition largely absent
+    guide_independent: false
+    at_biased_untargeted: false
+    on_target_fidelity_note: "remarkable fidelity — the majority of crRNAs direct >95% on-target integration and
+      many exceed 99%; up to ~100% integration efficiency of cargo up to ~10 kb in bacteria."
+    dois:
+      - "10.1038/s41586-019-1323-z" # Klompe et al. 2019, VchCAST / Tn6677 (Nature)
+      - "10.1038/s41587-020-00745-y" # Vo et al. 2021, INTEGRATE high-efficiency multiplexed (Nat Biotechnol)
+  evoCAST:
+    full_name: "evolved Scytonema hofmanni CAST (PACE-evolved)"
+    cast_type: "V-K"
+    effector: "Cas12k (evolved)"
+    untargeted_transposition: moderate        # directed evolution improved specificity over WT ShCAST
+    guide_independent: true
+    at_biased_untargeted: true
+    on_target_fidelity_note: "evolved Type V-K CAST with substantially improved on-target integration in human
+      cells; guide-independent transposition is reduced relative to WT ShCAST but not eliminated."
+    dois:
+      - "10.1126/science.adr8492"   # Tou et al. 2025, evoCAST (Science) — evolved CAST for human-cell insertion
+      - "10.1038/s41587-023-01748-1" # Lampe et al. 2024, targeted integration in human cells without DSBs (Nat Biotechnol)
+
+# scope: human-cell CAST is emerging (evoCAST 2025); the untargeted-transposition rates above are characterised in
+# bacteria / biochemically. No genome-wide unbiased CELLULAR off-target assay exists for human-cell CAST -> the
+# genomic predictions are mechanism-based, unvalidated; confirm with transposon insertion-site sequencing.
+confirm_assay: "transposon insertion-site sequencing (e.g. Tn-seq / integration-site amplicon sequencing)"

@@ -32,8 +32,10 @@ from pen_stack.wgenome.offtarget_data import (
 )
 
 _NUCLEASE = {"cas9", "spcas9", "nuclease", "sacas9", "ascas12a", "cas12a", "nickase"}
-_INTEGRASE = {"serine_integrase", "bxb1", "phic31", "pe_integrase", "paste", "passige"}
+_INTEGRASE = {"serine_integrase", "bxb1", "phic31", "pe_integrase"}
 _BRIDGE = {"bridge_is110", "seek_is1111", "bridge", "is110", "is621", "iscro4"}
+_PASTE = {"paste", "passige", "ee_passige", "eepassige", "prime_editing_integrase"}
+_CAST = {"cast", "shcast", "vchcast", "evocast", "cast_vk", "cast_v-k", "cast_if", "cas12k", "type_v-k", "type_i-f"}
 
 
 def _ham20(a: str, b: str) -> int:
@@ -225,7 +227,15 @@ def nominate_offtargets(writer_family: str, guide: str | None = None, candidate_
     from pen_stack.wgenome.offtarget_assay import recommend_assay
     fam = (writer_family or "").lower()
     assay_rec = recommend_assay(writer_family)
-    if fam in _NUCLEASE or "cas9" in fam or "nuclease" in fam:
+    # PASTE first (its name embeds an integrase) → compose nuclease + integrase (O-WS6)
+    if fam in _PASTE or "paste" in fam or "passige" in fam:
+        from pen_stack.wgenome.offtarget_paste import nominate_paste
+        res = nominate_paste(guide=guide, integrase="Bxb1", max_mismatch=max_mismatch, assay=assay,
+                             cell_type=cell_type)
+    elif fam in _CAST or "cast" in fam or "cas12k" in fam:
+        from pen_stack.wgenome.offtarget_cast import nominate_cast
+        res = nominate_cast(system=enzyme or writer_family or "ShCAST", spacer=guide, max_mismatch=max_mismatch)
+    elif fam in _NUCLEASE or "cas9" in fam or "nuclease" in fam:
         if candidate_sites:  # v6.10 path: score/rank the caller-supplied candidates
             res = nominate_nuclease(guide or "", candidate_sites, accessibility, assay, loci=loci,
                                     cell_type=cell_type)
@@ -233,16 +243,16 @@ def nominate_offtargets(writer_family: str, guide: str | None = None, candidate_
             from pen_stack.wgenome.offtarget_nuclease import find_nuclease_offtargets
             res = find_nuclease_offtargets(guide or "", enzyme=enzyme or writer_family or "SpCas9",
                                            max_mismatch=max_mismatch, assay=assay, cell_type=cell_type)
-    elif fam in _INTEGRASE or "integrase" in fam or "paste" in fam or "passige" in fam or "bxb1" in fam:
-        integrase = "Bxb1"
-        res = (pseudo_attb_sites(sequence, integrase) if sequence else
-               {"family": "serine_integrase", "available": False, "abstain": True,
-                "note": "provide a target/locus sequence to scan for cryptic pseudo-attB sites"})
+    elif fam in _INTEGRASE or "integrase" in fam or "bxb1" in fam or "phic31" in fam:
+        integrase = "PhiC31" if "phic31" in fam else "Bxb1"
+        if sequence:  # v6.10 path: scan a supplied locus for cryptic pseudo-attB
+            res = pseudo_attb_sites(sequence, "Bxb1")
+        else:  # v7.2 genome-wide pseudo-attP scan (O-WS3)
+            from pen_stack.wgenome.offtarget_integrase import nominate_integrase
+            res = nominate_integrase(integrase)
     elif fam in _BRIDGE or "bridge" in fam or "is110" in fam or "is621" in fam or "seek" in fam:
-        from pen_stack.bridge.offtarget import predict_offtargets
-        bf = "bridge_IS110" if ("is110" in fam or "bridge" in fam or "iscro4" in fam) else "seek_IS1111"
-        res = {"family": "bridge", "delegated_to": "pen_stack.bridge.offtarget",
-               **predict_offtargets(bf, target_core=target_core, fasta=fasta, chroms=chroms)}
+        from pen_stack.wgenome.offtarget_bridge import nominate_bridge
+        res = nominate_bridge(target_core=target_core, writer_family=writer_family, fasta=fasta, chroms=chroms)
     else:
         res = {"family": writer_family, "available": False, "abstain": True,
                "note": f"no off-target nomination model for family {writer_family!r}"}

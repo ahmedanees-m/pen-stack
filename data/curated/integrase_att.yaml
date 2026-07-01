@@ -1,0 +1,43 @@
+# Serine-integrase attachment sites for the genome-wide pseudo-att off-target scan (PEN-OFFTGT v2, O-WS3).
+#
+# A serine integrase recombines a donor attB with a genomic pseudo-attP resembling the phage attP. The off-target
+# scan enumerates genomic sites similar to the attP core region (a fixed-sequence Cas-OFFinder scan over GRCh38,
+# tolerating mismatches), then scores each by att-arm similarity. Status: SEMI-VALIDATED (documented pseudosites as
+# partial ground truth). Confirming assay: Cryptic-seq / HIDE-seq.
+#
+# DEVIATION (disclosed): the prereg named `att_pwm.json`. A position-weight MATRIX requires many aligned pseudosite
+# sequences to estimate per-position tolerance; that alignment does not exist at genome scale for these integrases.
+# So the scan uses att-arm SIMILARITY (mismatch count to the documented att, core-anchored) rather than a fitted
+# PWM — a mechanism-based similarity model, honestly labelled, not a fabricated per-position matrix.
+
+version: "1.0"
+
+integrases:
+  Bxb1:
+    origin: "phage Bxb1 (Mycobacterium)"
+    attB: "TCGGCCGGCTTGTCGACGACGGCGGTCTCCGTCGTCAGGATCATCCGGGC"
+    attP: "GTCGTGGTTTGTCTGGTCAACCACCGCGGTCTCAGTGGTGTACGGTACAAACCCCGAC"
+    core: "GCGGTCTC"
+    central_dinucleotide: "GT"
+    # 34-nt attP window centred on the core — the fixed sequence scanned genome-wide for pseudo-attP
+    scan_window: "CTGGTCAACCACCGCGGTCTCAGTGGTGTACGGT"
+    scan_max_mismatch: 8
+    specificity_note: "Bxb1 is highly specific — very few genomic pseudo-attP in human cells (a reason it is the
+      integrase of choice for PASTE/PASSIGE). The scan therefore returns few high-similarity candidates."
+    source: "FlyBase FBto0000359/358; Ghosh, Kim & Hatfull, Mol Cell 2003"
+    doi: "10.1016/S1097-2765(03)00444-1"
+
+# PhiC31 — DISCLOSED DATA GAP (reported, not fabricated): PhiC31 is the integrase with the best-documented human
+# pseudo-attP set (~19 sites, Chalberg et al. 2006), which would make the strongest semi-validation benchmark.
+# Its exact minimal attB/attP arm sequences and the pseudo-attP genomic coordinates could not be verified from an
+# open, citable source in this build (the central crossover is a documented TT dinucleotide; the minimal attB is
+# ~34 bp). Rather than fabricate the arm sequence or the pseudosite coordinates, PhiC31 is NOT encoded here; the
+# integrase scan abstains for PhiC31 with this disclosure. Encoding the verified PhiC31 att + the Chalberg-2006
+# pseudo-attP table is the follow-up that would upgrade O-G2 from "stated" to a sealed recall benchmark.
+phic31_disclosure:
+  status: "not_encoded_data_gated"
+  documented_fact: "PhiC31 has ~19 characterised human pseudo-attP sites (a promiscuous serine integrase)."
+  central_dinucleotide: "TT"
+  minimal_attB_length_bp: 34
+  reference: "Chalberg et al., J Mol Biol 2006 (PhiC31 human pseudo-attP mapping); Thyagarajan et al., Mol Cell Biol 2001"
+  doi: "10.1016/j.jmb.2005.11.108"

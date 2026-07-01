@@ -121,9 +121,10 @@ def test_integrase_pseudo_attb_scan_uses_real_core():
 
 
 def test_dispatcher_bridge_delegates_and_nomination_not_clearance():
+    # v7.2 (O-WS4): bridge now routes to the wrapped nominate_bridge (status + no-ground-truth disclosure).
     d = nominate_offtargets("bridge_IS110")
-    assert d["family"] == "bridge_IS110" and d["delegated_to"] == "pen_stack.bridge.offtarget"
-    assert d["nomination_is_not_clearance"] is True
+    assert d["family"] == "bridge" and d["status"] == "mechanism_based_unvalidated"
+    assert d["no_ground_truth_disclosure"] and d["nomination_is_not_clearance"] is True
     # cas9 dispatch carries a recommended assay + the not-clearance flag
     rows = [r for r in bench_records() if r["guide"] == "FANCF" and r["assay"] == "guideseq"]
     d2 = nominate_offtargets("Cas9", guide=rows[0]["On"], candidate_sites=[r["Off"] for r in rows[:5]])
