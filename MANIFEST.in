@@ -5,6 +5,7 @@ include README.md LICENSE CHANGELOG.md CITATION.cff pyproject.toml
 recursive-include configs *.yaml *.yml *.txt.example *.fasta
 recursive-include prereg *.yaml *.json
 recursive-include data/curated *
+recursive-include data/offtarget *.parquet
 recursive-include benchmarks *.yaml *.md SHA256SUMS
 recursive-include bench *.py
 recursive-include docs *.md

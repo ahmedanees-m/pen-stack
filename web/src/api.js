@@ -35,9 +35,10 @@ export const api = {
   suggest: (reqbody) => req("/api/suggest", { method: "POST", body: reqbody }),
   session: (reqbody) => req("/api/session", { method: "POST", body: reqbody }),
 
-  // v6.10 off-target nomination
+  // v6.10 off-target nomination · v7.2 genome-wide finder
   offtarget: (reqbody) => req("/api/offtarget", { method: "POST", body: reqbody }),
   offtargetAssay: (family) => req(`/api/offtarget/assay?${new URLSearchParams({ writer_family: family })}`),
+  offtargetEnumerated: () => req("/api/offtarget/enumerated"),
 
   // v6.13 oracle mesh: status + published reliability, and protein-ligand binding affinity (Boltz-2)
   oracles: (probe = false) => req(`/api/oracles${probe ? "?probe=true" : ""}`),

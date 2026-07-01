@@ -3,6 +3,43 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.2.0] - 2026-07-01 - PEN-OFFTGT v2: Stage E becomes a genome-wide off-target FINDER (nuclease path)
+
+Stage E was a candidate *scorer* — it ranked off-target sites you supplied. A real off-target tool (CRISPOR /
+CHOPCHOP) takes a guide and *finds* the genome-wide off-target set itself. This release closes that enumeration
+gap for the nuclease path (O-WS0–O-WS2 of the PEN-OFFTGT v2 plan); the integrase pseudo-att genome scan, bridge,
+CAST, and PASTE paths are the continuing v7.2.x work.
+
+### Added
+- **Genome-wide enumeration engine** (`pen_stack/wgenome/offtarget_enumerate.py`, O-WS1). Given a guide + enzyme,
+  enumerates every genomic site within the mismatch tolerance across GRCh38 via **Cas-OFFinder** (Bae, Park & Kim,
+  Bioinformatics 2014, `10.1093/bioinformatics/btu048`), returning coordinates, strand, matched sequence, and
+  mismatch count. Supports SpCas9 (NGG), SaCas9 (NNGRRT), and Cas12a (TTTV, 5' PAM). A full scan is heavy, so it
+  runs **only on the VM** (`casoffinder:tools` Docker image, `docker/casoffinder.Dockerfile`); the live app
+  **replays a committed coordinate cache** for the canonical guides or **abstains honestly** for a novel one
+  (never fabricates sites) — the same replay-or-abstain pattern as the heavy structure oracles. The enumerated
+  coordinates are facts from the public GRCh38 assembly (no license restriction), so the cache is committed
+  (`data/offtarget/enumerated_cache.parquet`, 8 canonical guides, 40,268 sites).
+- **Nuclease off-target FINDER** (`pen_stack/wgenome/offtarget_nuclease.py`, O-WS2): chains enumeration into the
+  existing, validated scorer — real CRISOT-Score → mismatch-calibrated risk band → chromatin annotation — so a
+  guide returns the genome-wide ranked off-target set *with coordinates*. Scoring is unchanged from v6.10 (still
+  validated: CRISOT beats homology on four unbiased assays); v2 adds the enumeration front end.
+- **O-G1 gate PASSED**: enumeration recovers **100%** of EMX1's documented GUIDE-seq off-targets within the ≤5-mm
+  tolerance (all 16 validated-active sites, which are all ≤4 mm; the higher-mismatch fixture rows are inactive
+  negatives). The on-target is recovered at chr2:72,933,852. `tests/unit/test_ws_offtarget2.py`.
+- **Prereg** `prereg/ws_offtarget2.yaml` (SHA-locked): the mechanism taxonomy, per-enzyme enumeration parameters,
+  the truthful per-mechanism status-label rules (validated / semi-validated / mechanism-based-unvalidated), and
+  the O-G1/G2/G3 gates.
+- REST: `POST /offtarget` is now a **finder by default** for a nuclease guide with no supplied `candidate_sites`
+  (accepts `enzyme`, `max_mismatch`); `GET /offtarget/enumerated` lists the cached guides. The web **Off-Target**
+  page is rebuilt as a finder (guide in → genome-wide ranked off-targets with coordinates), with the scorer→finder
+  explanation and the VM/cache architecture stated.
+
+### Unchanged / backward compatible
+- Supplying `candidate_sites` keeps the v6.10 score-my-candidates path. The integrase (pseudo-attB sequence scan),
+  bridge (Perry-DMS), chromatin annotation, and validation-assay recommender are unchanged. Nomination remains a
+  candidate, never a clearance.
+
 ## [7.1.8] - 2026-06-30 - Writer immunogenicity moves to the Writer Atlas; SpCas9 removed from the writer options
 
 ### Changed

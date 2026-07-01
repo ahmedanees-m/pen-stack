@@ -374,15 +374,19 @@ def immune_endpoint(design: dict):
 
 @app.post("/offtarget", tags=["v6.10 off-target"])
 def offtarget_endpoint(req: dict):
-    """v6.10 PEN-OFFTGT cross-family off-target NOMINATION (NOT a clearance). Body:
-    {writer_family, guide?, candidate_sites?, sequence?, accessibility?, assay?}. Returns ranked candidate
-    off-targets with a real-data mismatch-calibrated risk band + the recommended validation assay; abstains
-    without inputs and never fabricates sites."""
+    """PEN-OFFTGT cross-family off-target NOMINATION (NOT a clearance). Body:
+    {writer_family, guide?, enzyme?, max_mismatch?, candidate_sites?, sequence?, accessibility?, assay?}.
+
+    v7.2 (finder): for a nuclease guide with NO ``candidate_sites``, enumerates the genome-wide off-target set
+    over GRCh38 (Cas-OFFinder, replayed from the committed cache) and ranks it by the real CRISOT-Score +
+    mismatch-calibrated risk + chromatin annotation - the CRISPOR-like default. Supplying ``candidate_sites``
+    keeps the v6.10 score-my-candidates path. Abstains (never fabricates) for a novel guide with no VM scan."""
     from pen_stack.wgenome.offtarget_predict import nominate_offtargets
     return nominate_offtargets(
         req.get("writer_family", ""), guide=req.get("guide"), candidate_sites=req.get("candidate_sites"),
         sequence=req.get("sequence"), accessibility=req.get("accessibility"),
-        target_core=req.get("target_core"), assay=req.get("assay", "guideseq"))
+        target_core=req.get("target_core"), assay=req.get("assay", "guideseq"),
+        enzyme=req.get("enzyme"), max_mismatch=int(req.get("max_mismatch", 5)))
 
 
 @app.get("/offtarget/assay", tags=["v6.10 off-target"])
@@ -390,6 +394,20 @@ def offtarget_assay_endpoint(writer_family: str):
     """v6.10 validation-assay recommendation for a writer family (the assay that would confirm a nomination)."""
     from pen_stack.wgenome.offtarget_assay import recommend_assay
     return recommend_assay(writer_family)
+
+
+@app.get("/offtarget/enumerated", tags=["v6.10 off-target"])
+def offtarget_enumerated_endpoint():
+    """v7.2: the guides whose genome-wide off-target enumeration is CACHED (so the finder works here without a VM
+    scan). A novel guide abstains (its scan runs on the VM). Enumerated coordinates are public-genome facts."""
+    from pen_stack.wgenome.offtarget_data import CANONICAL_GUIDES
+    from pen_stack.wgenome.offtarget_enumerate import enumerated_guides
+    cached = enumerated_guides()
+    seq2name = {v: k for k, v in CANONICAL_GUIDES.items()}
+    return {"enzyme": "SpCas9",
+            "guides": [{"guide": g, "name": seq2name.get(g, g), "enzyme": e} for e, g in cached],
+            "note": ("genome-wide enumeration for these guides is replayed from the committed GRCh38 Cas-OFFinder "
+                     "cache; a novel guide requires an on-VM scan (the finder abstains rather than fabricate).")}
 
 
 @app.get("/campaign", tags=["v7.0 closed-loop"])

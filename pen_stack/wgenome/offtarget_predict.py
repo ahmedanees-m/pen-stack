@@ -213,15 +213,26 @@ def pseudo_attb_sites(sequence: str, integrase: str = "Bxb1", max_arm_mismatch: 
 def nominate_offtargets(writer_family: str, guide: str | None = None, candidate_sites: list[str] | None = None,
                         sequence: str | None = None, accessibility: list[float] | None = None,
                         target_core: str | None = None, fasta=None, chroms: list[str] | None = None,
-                        assay: str = "guideseq", loci: list | None = None, cell_type: str = "k562") -> dict:
+                        assay: str = "guideseq", loci: list | None = None, cell_type: str = "k562",
+                        enzyme: str | None = None, max_mismatch: int = 5) -> dict:
     """Cross-family dispatcher. Returns a nomination dict (candidates, never claims) + the recommended validation
     assay, or an abstention. Never fabricates off-target sites. ``loci`` (per-candidate (chrom, bin)) +
-    ``cell_type`` enable the REAL Stage B chromatin-accessibility modifier for nucleases."""
+    ``cell_type`` enable the REAL Stage B chromatin-accessibility modifier for nucleases.
+
+    v7.2 (O-WS2): for a nuclease guide WITHOUT supplied ``candidate_sites``, this runs the genome-wide FINDER
+    (enumerate GRCh38 -> CRISOT -> risk -> chromatin), the CRISPOR-like default. Supplying ``candidate_sites``
+    keeps the v6.10 score-my-candidates path (backward compatible)."""
     from pen_stack.wgenome.offtarget_assay import recommend_assay
     fam = (writer_family or "").lower()
     assay_rec = recommend_assay(writer_family)
     if fam in _NUCLEASE or "cas9" in fam or "nuclease" in fam:
-        res = nominate_nuclease(guide or "", candidate_sites, accessibility, assay, loci=loci, cell_type=cell_type)
+        if candidate_sites:  # v6.10 path: score/rank the caller-supplied candidates
+            res = nominate_nuclease(guide or "", candidate_sites, accessibility, assay, loci=loci,
+                                    cell_type=cell_type)
+        else:  # v7.2 finder: enumerate genome-wide, then score (replays the VM cache or abstains)
+            from pen_stack.wgenome.offtarget_nuclease import find_nuclease_offtargets
+            res = find_nuclease_offtargets(guide or "", enzyme=enzyme or writer_family or "SpCas9",
+                                           max_mismatch=max_mismatch, assay=assay, cell_type=cell_type)
     elif fam in _INTEGRASE or "integrase" in fam or "paste" in fam or "passige" in fam or "bxb1" in fam:
         integrase = "Bxb1"
         res = (pseudo_attb_sites(sequence, integrase) if sequence else

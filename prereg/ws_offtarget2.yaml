@@ -1,0 +1,99 @@
+# PEN-OFFTGT v2 — genome-wide, per-mechanism off-target engine — PRE-REGISTRATION
+# Locks the mechanism taxonomy, per-mechanism enumeration parameters, the status-label rules, and the acceptance
+# gates BEFORE building, per the standing "pre-register + SHA-lock" discipline. Lands as v7.2.0 (Stage E).
+#
+# The load-bearing change: Stage E becomes a genome-wide FINDER (enumerates candidates itself, like CRISPOR/
+# CHOPCHOP) instead of only a SCORER of supplied candidates. Enumeration is heavy and runs on the VM over GRCh38;
+# the live app replays a committed coordinate cache or abstains (the enumerated coordinates are public-genome facts).
+
+version: "1.0"
+codename: PEN-OFFTGT-v2
+base_version: "7.1.8"
+lands_as: "7.2.0"
+deposit: phase_7.2
+
+invariants:
+  - nomination_is_not_clearance   # every candidate ships with the confirming empirical assay
+  - no_fabrication                # never invent a site or a validated status; abstain / flag where no data
+  - per_mechanism_honesty         # each writer class returns its own mechanism, algorithm, and status label
+  - genome_wide_by_default        # the engine enumerates candidates itself (the CRISPOR-like property)
+
+# The enumerated off-target coordinates are FACTS derivable from the public GRCh38 assembly with a public tool
+# (Cas-OFFinder). Unlike the CRISOT weights (CC-BY-NC, VM-only), the coordinates carry no license restriction and
+# ARE committed as a cache so the live app can behave like a finder without the heavy on-VM scan.
+enumeration:
+  tool: cas-offinder                # Bae, Park & Kim, Bioinformatics 2014, 10.1093/bioinformatics/btu048
+  tool_image: "casoffinder:tools"   # VM Docker image (CPU OpenCL via pocl; GPU device available)
+  genome: GRCh38
+  genome_path_vm: "/home/anees_22phd0670/pen-stack/data/genomes/GRCh38.fa"
+  device: C                         # CPU OpenCL (reproducible; G = GPU also available)
+  live_behaviour: replay_cache_or_abstain   # same pattern as the heavy structure oracles
+
+# Per-mechanism enumeration parameters + the correct off-target mechanism + the truthful status label.
+# status: validated | semi_validated | mechanism_based_unvalidated  (never a fabricated "validated" where no data)
+mechanisms:
+  nuclease:
+    writers: [SpCas9, SaCas9, AsCas12a, LbCas12a, nickase]
+    off_target_mechanism: mismatch/bulge-tolerant cleavage at protospacer + PAM
+    pam: {SpCas9: NGG, SaCas9: NNGRRT, AsCas12a: TTTV, LbCas12a: TTTV}
+    protospacer_len: {SpCas9: 20, SaCas9: 21, AsCas12a: 23, LbCas12a: 23}
+    max_mismatches: 5               # enumeration tolerance (recall/-precision trade; CRISPOR-comparable)
+    max_dna_bulge: 0                # v2.0 ships substitutions only; bulges are a follow-up
+    max_rna_bulge: 0
+    scorer: crisot                  # existing real CRISOT-Score (VM, CC-BY-NC, derived scores cached)
+    risk: mismatch_calibrated_active_fraction   # existing real-data band (offtarget_data)
+    chromatin: annotation_only      # validated (matched HEK293T AUROC 0.671), NOT a re-ranker (v6.10.4)
+    status: validated
+    confirm_assay: [GUIDE-seq, CHANGE-seq, CIRCLE-seq, SITE-seq]
+  serine_integrase:
+    writers: [Bxb1, PhiC31]
+    off_target_mechanism: recombination at genomic pseudo-att sites resembling the att core/arms
+    enumeration: att core + arm PWM similarity scan (genome-wide)
+    scorer: att_pwm_similarity + known_pseudosite_table
+    status: semi_validated          # documented PhiC31 human pseudo-attP; Bxb1 highly specific
+    confirm_assay: [Cryptic-seq, HIDE-seq]
+  bridge:
+    writers: [ISCro4, IS621]
+    off_target_mechanism: recombination at sites matching the bridge-RNA target-binding-loop specificity
+    enumeration: TBL-target match scan (tolerated mismatches from the DMS landscape)
+    scorer: perry_durrant_dms_specificity
+    status: mechanism_based_unvalidated   # HARD-LOCKED: no genome-wide unbiased bridge off-target assay exists
+    no_ground_truth_disclosure: true
+    confirm_assay: [targeted amplicon / integration-site sequencing]
+  cast:
+    writers: [VchCAST, ShCAST]      # Type I-F (low untargeted) / Type V-K (high untargeted)
+    off_target_mechanism: guide-directed integration + guide-independent untargeted transposition
+    enumeration: CRISPR-array target match scan + per-system untargeted-background flag
+    scorer: guide_match + documented_untargeted_rate
+    status: mechanism_based_unvalidated
+    confirm_assay: [transposon insertion-site sequencing]
+  paste:
+    writers: [PASTE, ee_PASSIGE]
+    off_target_mechanism: Cas9-nickase (pegRNA-directed) + integrase pseudo-att at the installed site
+    enumeration: compose(nuclease, serine_integrase)
+    scorer: compose(crisot, att_pwm_similarity)
+    status: composite               # nuclease component validated + integrase component semi_validated
+    confirm_assay: [a nuclease assay AND an integrase assay]
+
+acceptance_gates:
+  O-G1:
+    workstream: O-WS1
+    claim: enumeration reproduces a documented Cas9 off-target set (behaves like CRISPOR's search step)
+    metric: recall of the EMX1 documented/validated GUIDE-seq off-targets among the enumerated candidates
+    floor: 0.90                     # >=90% of the documented validated off-targets are enumerated at k<=5
+    guide: EMX1 (GAGTCCGAGCAGAAGAAGAA, NGG)
+  O-G2:
+    workstream: O-WS3
+    claim: integrase path recovers documented pseudosites above background OR ships semi_validated with that stated
+  O-G3:
+    workstream: O-WS8
+    claim: every mechanism has EITHER a sealed benchmark OR an explicit no-ground-truth disclosure — never a fabricated metric
+    hard_locked_unvalidated: [bridge, cast]
+
+deliverables:
+  code: [offtarget_enumerate.py, offtarget_nuclease.py, offtarget_integrase.py, offtarget_bridge.py, offtarget_cast.py, offtarget_paste.py]
+  data: [att_pwm.json, known_pseudosites.parquet, bridge_dms_specificity.parquet, cast_systems.yaml]  # all DOI-tagged, SHA-locked
+  vm_tools: [casoffinder:tools]
+  cache: [data/offtarget/enumerated_cache.parquet]   # committed genome-wide coordinates for the canonical guides
+  benchmarks: [benchmarks/offtarget/nuclease, benchmarks/offtarget/integrase]
+  surfaces: [POST /offtarget (guide -> genome-wide ranked), GET /offtarget/assay, MCP offtarget_scan]

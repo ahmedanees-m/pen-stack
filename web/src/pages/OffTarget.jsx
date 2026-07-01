@@ -1,40 +1,41 @@
-// Off-Target, cross-writer-family off-target NOMINATION. Rank candidate sites by a real-data, mismatch-calibrated
-// risk band (+ the real CRISOT learned score when cached) and ship the assay that would confirm them.
-// Conservative by construction: a nomination is a CANDIDATE, never a clearance; the engine abstains without inputs.
-import React, { useState } from "react";
+// Off-Target FINDER (v7.2). A real off-target tool takes a GUIDE and returns the genome-wide off-target set —
+// like CRISPOR/CHOPCHOP — instead of scoring sites you supply. Enumeration (Cas-OFFinder over GRCh38) is heavy
+// and runs on the VM; this surface replays the committed coordinate cache for the canonical guides, or abstains
+// honestly for a novel one (a VM scan). Nomination is a CANDIDATE, never a clearance.
+import React, { useEffect, useState } from "react";
 import ScoreGuide from "../components/ScoreGuide.jsx";
 import { api } from "../api.js";
-import { Card, Button, Spinner, ErrorNote, Field, Select } from "../components/ui.jsx";
+import { Card, Button, Spinner, ErrorNote, Field, Select, Pill } from "../components/ui.jsx";
 import { num } from "../lib/format.js";
 
 const FAMILIES = [
-  { value: "Cas9", label: "Cas9 nuclease" },
-  { value: "Bxb1", label: "Bxb1 serine integrase" },
+  { value: "Cas9", label: "Cas9 nuclease (genome-wide finder)" },
+  { value: "Bxb1", label: "Bxb1 serine integrase (pseudo-attB scan)" },
   { value: "bridge_IS110", label: "bridge recombinase (IS110)" },
 ];
-// prefilled with EMX1 (Tsai 2015 GUIDE-seq) + a few real candidate sites so results render out of the box
-const EMX1 = "GAGTCCGAGCAGAAGAAGAAGGG";
-const EMX1_CANDS = "GAGTCCGAGCAGAAGAAGAAGGG\nGAGTTAGAGCAGAAGAAGAAGGG\nAAGTCCGAGCAGAAGAAGAAGGG\nGAGTCTAAGCAGAAGAAGAGGGG";
-
+const EMX1 = "GAGTCCGAGCAGAAGAAGAAGGG"; // a cached canonical guide (Tsai 2015 GUIDE-seq) — works out of the box
 const BAND = { high: "text-red-400", medium: "text-amber-400", low: "text-emerald-400", minimal: "text-fg-faint", uncalibrated: "text-fg-faint" };
+const STATUS = { validated: "var(--ok)", semi_validated: "var(--warn)", mechanism_based_unvalidated: "var(--warn)" };
 
 export default function OffTarget() {
   const [family, setFamily] = useState("Cas9");
   const [guide, setGuide] = useState(EMX1);
-  const [cands, setCands] = useState(EMX1_CANDS);
   const [seq, setSeq] = useState("");
+  const [cached, setCached] = useState([]);
   const [res, setRes] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const isNuclease = family === "Cas9";
-  const canRun = isNuclease ? guide.trim() && cands.trim() : seq.trim();
+  const canRun = isNuclease ? guide.trim().length >= 20 : seq.trim();
+
+  useEffect(() => { api.offtargetEnumerated().then((r) => setCached(r.guides || [])).catch(() => {}); }, []);
 
   async function run() {
     if (!canRun) return;
     setBusy(true); setError(null); setRes(null);
     try {
       const body = isNuclease
-        ? { writer_family: family, guide, candidate_sites: cands.split(/\s+/).filter(Boolean) }
+        ? { writer_family: "Cas9", enzyme: "SpCas9", guide }               // finder: guide -> genome-wide set
         : { writer_family: family, sequence: seq };
       setRes(await api.offtarget(body));
     } catch (e) { setError(e); } finally { setBusy(false); }
@@ -46,27 +47,39 @@ export default function OffTarget() {
   return (
     <div className="space-y-4">
       <ScoreGuide
-        intro="A nomination ranks candidate off-target sites by risk; it is NOT a safety clearance. Every candidate ships with the empirical assay that would confirm it."
+        intro="An off-target FINDER: give it a guide and it returns the genome-wide off-target set (coordinates, mismatches, risk, and the real CRISOT score) — the way CRISPOR/CHOPCHOP work — not a list of sites you supply. A nomination is a CANDIDATE, never a clearance; every result ships with the empirical assay that would confirm it."
         items={[
+          { term: "Finder vs scorer", scale: "genome-wide", meaning: "The engine ENUMERATES every genomic site within the mismatch tolerance itself (Cas-OFFinder over GRCh38), then scores + ranks them. Previously it only scored candidate sites you pasted in." },
           { term: "Risk band", scale: "high / medium / low / minimal", meaning: "A mismatch-calibrated band from REAL assay data (GUIDE / CIRCLE / CHANGE / SITE-seq active fractions at k mismatches)." },
-          { term: "CRISOT score", scale: "0–1, higher = riskier", meaning: "The real learned nuclease off-target score (run on the VM, CC-BY-NC); higher = more likely an active off-target. Shown where cached, else VM-only." },
-          { term: "Empirical active fraction", scale: "0–1", meaning: "The measured fraction of candidates at this mismatch count that were validated-active in the calibration assay." },
+          { term: "CRISOT score", scale: "0–1, higher = riskier", meaning: "The real learned nuclease off-target score (VM, CC-BY-NC). Shown where cached; a novel (guide, site) pair is VM-only." },
+          { term: "Per-mechanism status", scale: "validated / semi / unvalidated", meaning: "Nuclease is validated (CRISOT beats homology on 4 assays; enumeration recovers the documented off-target set). Integrase is semi-validated; bridge/CAST have no genome-wide ground truth and say so." },
         ]}
         caveats={[
-          "Nomination is not a clearance — it surfaces candidates and the assay that would confirm them.",
+          "Enumeration runs on the VM; this page replays the committed cache for the canonical guides, or abstains for a novel guide (a VM scan) — it never fabricates sites.",
           "Chromatin accessibility is a validated ANNOTATION, not folded into the risk score (it added no held-out ranking gain over CRISOT).",
+          "The engine nominates and ranks; it does NOT clear a design — wet-lab confirmation with the recommended assay is required.",
         ]} />
 
-      <Card title="Off-target nomination" subtitle="Rank candidate off-targets with a real-data calibrated risk band, across nucleases, integrases, and bridge recombinases.">
+      <Card title="Off-target finder" subtitle="Give a guide; get the genome-wide ranked off-target set. Nucleases enumerate over GRCh38; integrases scan a supplied locus for cryptic pseudo-attB.">
         <div className="grid gap-3 sm:grid-cols-3">
           <Field label="Writer family"><Select value={family} onChange={setFamily} options={FAMILIES} /></Field>
         </div>
         {isNuclease ? (
           <div className="mt-3 grid gap-3">
-            <Field label="Guide (protospacer + PAM)"><input className="input font-mono text-xs" value={guide} onChange={(e) => setGuide(e.target.value)} /></Field>
-            <Field label="Candidate sites (one per line, from a Cas-OFFinder/genome scan)">
-              <textarea className="input font-mono text-xs h-28" value={cands} onChange={(e) => setCands(e.target.value)} />
+            <Field label="Guide (protospacer + PAM, SpCas9 NGG)">
+              <input className="input font-mono text-xs" value={guide} onChange={(e) => setGuide(e.target.value.toUpperCase())} />
             </Field>
+            {cached.length > 0 && (
+              <div className="text-[11px] text-fg-faint">
+                Cached guides (replay the genome-wide scan instantly):{" "}
+                {cached.map((c) => (
+                  <button key={c.guide} onClick={() => setGuide(c.guide + "GGG")}
+                          className="mr-1 mb-1 rounded border border-line px-1.5 py-0.5 font-mono hover:border-brand/50 hover:text-brand">
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <div className="mt-3">
@@ -76,36 +89,40 @@ export default function OffTarget() {
           </div>
         )}
         <div className="mt-4 flex items-center gap-3">
-          <Button onClick={run} disabled={busy || !canRun}>Nominate off-targets</Button>
-          {!canRun && <span className="text-[11px] text-fg-faint">{isNuclease ? "Enter a guide and at least one candidate site." : "Paste a locus sequence to scan."}</span>}
+          <Button onClick={run} disabled={busy || !canRun}>{isNuclease ? "Find genome-wide off-targets" : "Scan for pseudo-attB"}</Button>
+          {!canRun && <span className="text-[11px] text-fg-faint">{isNuclease ? "Enter a ≥20-nt guide (or pick a cached one)." : "Paste a locus sequence to scan."}</span>}
         </div>
       </Card>
 
-      <Card>
-        <p className="text-xs text-amber-300/90"> Nomination is <b>not</b> a safety clearance, every candidate ships with the empirical assay that would confirm it. The CRISOT learned score is run on the VM (CC-BY-NC); only derived scores are cached.</p>
-      </Card>
-
-      {busy && <Card><Spinner label="Scoring candidate off-targets…" /></Card>}
+      {busy && <Card><Spinner label="Enumerating genome-wide off-targets…" /></Card>}
       {error && <Card><ErrorNote error={error} /></Card>}
 
       {res && res.abstain && (
-        <Card title="Abstained (no fabrication)"><p className="text-sm text-fg-dim">{res.note}</p></Card>
+        <Card title="Abstained (no fabrication)">
+          <p className="text-sm text-fg-dim">{res.note}</p>
+          {res.cached_guides?.length > 0 && (
+            <p className="mt-2 text-[11px] text-fg-faint">Guides with a cached genome-wide scan: {res.cached_guides.join(", ")}. A novel guide's scan runs on the VM.</p>
+          )}
+        </Card>
       )}
 
-      {res && !res.abstain && isNuclease && (
-        <Card title={`Ranked off-target candidates`} subtitle={`${res.n_candidates} candidates · risk calibrated on ${res.assay_calibration} · ranked by the real CRISOT score where cached`}>
-          {res.bench && (
-            <p className="mb-2 text-[11px] text-fg-faint">Bench (held-out guides): CRISOT AUPRC {num(res.bench.crisot_auprc)} vs homology {num(res.bench.homology_auprc)}, the learned predictor beats homology (CI {JSON.stringify(res.bench.gap_ci95)}).</p>
-          )}
+      {res && res.mode === "finder" && !res.abstain && (
+        <Card title="Genome-wide off-targets"
+              subtitle={`${res.n_sites_genome_wide} sites over GRCh38 · ${res.n_on_target} on-target · ${res.n_offtargets} off-targets · source: ${res.source}`}>
+          <div className="mb-2 flex flex-wrap items-center gap-2 text-[11px]">
+            <Pill color={STATUS[res.status] || "var(--muted)"}>{String(res.status).replace(/_/g, " ")}</Pill>
+            {res.bench && <span className="text-fg-faint">Bench: CRISOT AUPRC {num(res.bench.crisot_auprc)} vs homology {num(res.bench.homology_auprc)} (beats homology, CI excludes 0).</span>}
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">
-                <th className="py-2 pr-3">Site</th><th className="py-2 pr-3">Mismatch</th>
+                <th className="py-2 pr-3">Locus</th><th className="py-2 pr-3">Strand</th><th className="py-2 pr-3">Mismatch</th>
                 <th className="py-2 pr-3">Empirical active</th><th className="py-2 pr-3">Risk</th><th className="py-2">CRISOT</th></tr></thead>
               <tbody>
                 {noms.map((n, i) => (
-                  <tr key={i} className="border-b border-line/50">
-                    <td className="py-2 pr-3 font-mono text-xs">{n.site?.slice(0, 23)}</td>
+                  <tr key={i} className={`border-b border-line/50 ${n.n_mismatch === 0 ? "bg-emerald-500/5" : ""}`}>
+                    <td className="py-2 pr-3 font-mono text-xs">{n.chrom}:{n.position}{n.n_mismatch === 0 ? " (on-target)" : ""}</td>
+                    <td className="py-2 pr-3 tabular-nums">{n.strand}</td>
                     <td className="py-2 pr-3 tabular-nums">{n.n_mismatch}</td>
                     <td className="py-2 pr-3 tabular-nums">{n.empirical_active_fraction == null ? "n/a" : num(n.empirical_active_fraction)}</td>
                     <td className={`py-2 pr-3 font-medium ${BAND[n.risk_band] || ""}`}>{n.risk_band}</td>
@@ -115,10 +132,11 @@ export default function OffTarget() {
               </tbody>
             </table>
           </div>
+          <p className="mt-2 text-[11px] text-fg-faint">{res.method}</p>
         </Card>
       )}
 
-      {res && !res.abstain && !isNuclease && (
+      {res && !res.abstain && res.mode !== "finder" && (
         <Card title="Cryptic pseudo-attB candidates" subtitle={`${res.n_candidates || 0} candidates · core ${res.att_core || ""} · ${res.validating_assay || ""}`}>
           {noms.length === 0 ? <p className="text-sm text-fg-faint">No cryptic pseudo-attB sites found in the supplied sequence.</p> : (
             <ol className="space-y-2">
