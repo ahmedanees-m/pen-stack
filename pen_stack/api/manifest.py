@@ -50,11 +50,13 @@ _TOOLS = [
      "efficiency w/ conformal interval + auto-designed guide/att (v6.8 PEN-WRITER)",
      "input": "write request (write-type, cargo, cell type, optional target/donor seq)", "output": "WriterRanking",
      "entrypoint": "pen_stack.atlas.writer_recommend.recommend_writers", "fabricates": False},
-    {"name": "nominate_offtargets", "summary": "cross-writer-family off-target NOMINATION: rank candidate sites "
-     "with a real-data mismatch-calibrated risk band + the real CRISOT learned score (nuclease), pseudo-attB "
-     "scan (integrase), Perry-DMS pseudosite engine (bridge); nomination is NOT a clearance (v6.10 PEN-OFFTGT)",
-     "input": "writer family + guide/candidate sites (nuclease) or locus sequence (integrase)",
-     "output": "ranked off-target candidates + calibrated risk + recommended validation assay",
+    {"name": "nominate_offtargets", "summary": "genome-wide, per-mechanism off-target FINDER (v7.2 PEN-OFFTGT v2): "
+     "enumerates the off-target set over GRCh38 (Cas-OFFinder) and applies the correct mechanism per writer class "
+     "- nuclease cleavage (validated: CRISOT + risk + chromatin), integrase pseudo-attP (semi-validated), bridge "
+     "target-specificity (unvalidated), CAST guide + untargeted transposition (unvalidated), PASTE composition - "
+     "each with a truthful status label; nomination is NOT a clearance",
+     "input": "writer family + guide/target (enumerated genome-wide) or supplied candidate sites",
+     "output": "genome-wide ranked off-target candidates + per-mechanism status + calibrated risk + validation assay",
      "entrypoint": "pen_stack.wgenome.offtarget_predict.nominate_offtargets", "fabricates": False},
     {"name": "recommend_delivery", "summary": "cross-modality delivery recommender: rank vehicles by cargo-form + "
      "safety<->efficacy + a grounded serotype->tissue tropism prior (approved therapies) + the learned FLIP-AAV "

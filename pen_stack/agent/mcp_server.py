@@ -156,14 +156,17 @@ def immune_profile(design: dict) -> dict:
 
 @mcp.tool()
 def offtarget_scan(writer_family: str, guide: str | None = None, candidate_sites: list | None = None,
-                   sequence: str | None = None, assay: str = "guideseq") -> dict:
-    """v6.10 PEN-OFFTGT cross-family off-target NOMINATION (NOT a clearance). Ranks candidate sites with a
-    real-data mismatch-calibrated risk band + the real CRISOT learned score (nuclease), a pseudo-attB scan
-    (integrase), or the Perry-DMS pseudosite engine (bridge); ships the validation assay that would confirm
-    each candidate. Abstains without inputs; never fabricates sites."""
+                   sequence: str | None = None, assay: str = "guideseq", enzyme: str | None = None,
+                   max_mismatch: int = 5) -> dict:
+    """PEN-OFFTGT v2 genome-wide, per-mechanism off-target FINDER (NOT a clearance). For a nuclease guide it
+    enumerates the genome-wide off-target set over GRCh38 (Cas-OFFinder, cached) + real CRISOT + risk + chromatin
+    (validated); serine integrase = genome-wide pseudo-attP scan (semi-validated); bridge = DMS-scored scan
+    (mechanism-based, unvalidated); CAST = guide-directed + untargeted-transposition background (unvalidated);
+    PASTE = nuclease + integrase composition. Each carries a truthful status label + the confirming assay.
+    Abstains for a novel input (VM scan); never fabricates sites."""
     from pen_stack.wgenome.offtarget_predict import nominate_offtargets
     return nominate_offtargets(writer_family, guide=guide, candidate_sites=candidate_sites,
-                               sequence=sequence, assay=assay)
+                               sequence=sequence, assay=assay, enzyme=enzyme, max_mismatch=max_mismatch)
 
 
 @mcp.tool()
