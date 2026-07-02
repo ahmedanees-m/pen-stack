@@ -1,7 +1,7 @@
 """Nuclease off-target FINDER (PEN-OFFTGT v2, O-WS2): enumerate -> CRISOT -> risk -> chromatin.
 
 Chains the genome-wide enumeration (O-WS1) into the existing, validated nuclease scorer, so a GUIDE returns a
-genome-wide ranked off-target set (what CRISPOR/CHOPCHOP do) rather than a hand-supplied one. The scoring is
+genome-wide ranked off-target set rather than a hand-supplied one. The scoring is
 UNCHANGED from v6.10 — the real CRISOT-Score, the mismatch-calibrated risk band, and the chromatin annotation
 (validated, not a re-ranker). v2 only adds the enumeration front end. Status: **validated** (CRISOT beats
 homology on four unbiased assays; enumeration reproduces the documented off-target set, gate O-G1).

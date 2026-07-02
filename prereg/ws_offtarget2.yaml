@@ -2,8 +2,8 @@
 # Locks the mechanism taxonomy, per-mechanism enumeration parameters, the status-label rules, and the acceptance
 # gates BEFORE building, per the standing "pre-register + SHA-lock" discipline. Lands as v7.2.0 (Stage E).
 #
-# The load-bearing change: Stage E becomes a genome-wide FINDER (enumerates candidates itself, like CRISPOR/
-# CHOPCHOP) instead of only a SCORER of supplied candidates. Enumeration is heavy and runs on the VM over GRCh38;
+# The load-bearing change: Stage E becomes a genome-wide FINDER (given a guide, it enumerates the candidate sites
+# itself) instead of only a SCORER of supplied candidates. Enumeration is heavy and runs on the VM over GRCh38;
 # the live app replays a committed coordinate cache or abstains (the enumerated coordinates are public-genome facts).
 
 version: "1.0"
@@ -16,7 +16,7 @@ invariants:
   - nomination_is_not_clearance   # every candidate ships with the confirming empirical assay
   - no_fabrication                # never invent a site or a validated status; abstain / flag where no data
   - per_mechanism_honesty         # each writer class returns its own mechanism, algorithm, and status label
-  - genome_wide_by_default        # the engine enumerates candidates itself (the CRISPOR-like property)
+  - genome_wide_by_default        # the engine enumerates candidates itself (a guide in, the off-target sites out)
 
 # The enumerated off-target coordinates are FACTS derivable from the public GRCh38 assembly with a public tool
 # (Cas-OFFinder). Unlike the CRISOT weights (CC-BY-NC, VM-only), the coordinates carry no license restriction and
@@ -37,7 +37,7 @@ mechanisms:
     off_target_mechanism: mismatch/bulge-tolerant cleavage at protospacer + PAM
     pam: {SpCas9: NGG, SaCas9: NNGRRT, AsCas12a: TTTV, LbCas12a: TTTV}
     protospacer_len: {SpCas9: 20, SaCas9: 21, AsCas12a: 23, LbCas12a: 23}
-    max_mismatches: 5               # enumeration tolerance (recall/-precision trade; CRISPOR-comparable)
+    max_mismatches: 5               # enumeration tolerance (a recall / precision trade-off)
     max_dna_bulge: 0                # v2.0 ships substitutions only; bulges are a follow-up
     max_rna_bulge: 0
     scorer: crisot                  # existing real CRISOT-Score (VM, CC-BY-NC, derived scores cached)
@@ -78,7 +78,7 @@ mechanisms:
 acceptance_gates:
   O-G1:
     workstream: O-WS1
-    claim: enumeration reproduces a documented Cas9 off-target set (behaves like CRISPOR's search step)
+    claim: enumeration reproduces a documented Cas9 off-target set (the finder's genome-wide search step)
     metric: recall of the EMX1 documented/validated GUIDE-seq off-targets among the enumerated candidates
     floor: 0.90                     # >=90% of the documented validated off-targets are enumerated at k<=5
     guide: EMX1 (GAGTCCGAGCAGAAGAAGAA, NGG)

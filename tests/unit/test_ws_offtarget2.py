@@ -166,7 +166,7 @@ def test_assay_recommender_covers_cast_and_paste():
 
 @pytest.mark.skipif(not _have_cache, reason="enumeration cache absent")
 def test_o_g1_enumeration_recovers_documented_emx1_offtargets():
-    # O-G1 gate: enumeration reproduces the documented Cas9 off-target set (CRISPOR-like search step).
+    # O-G1 gate: enumeration reproduces the documented Cas9 off-target set (the finder's genome-wide search step).
     from pen_stack.wgenome.offtarget_data import bench_records
     recs = bench_records()
     if not recs:

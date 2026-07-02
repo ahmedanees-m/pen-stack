@@ -1,9 +1,9 @@
-"""Genome-wide off-target ENUMERATION — the CRISPOR/CHOPCHOP-like search step (PEN-OFFTGT v2, O-WS1).
+"""Genome-wide off-target ENUMERATION — the search step of the off-target finder (PEN-OFFTGT v2, O-WS1).
 
 Stage E used to only SCORE candidate sites a caller supplied. This module adds the missing half: given a guide +
 enzyme, ENUMERATE every genomic site within the mismatch tolerance across GRCh38 — returning coordinates, strand,
-matched sequence, and mismatch count — so the downstream scorer ranks a genome-wide candidate set (what a real
-off-target tool does), not a hand-typed one.
+matched sequence, and mismatch count — so the downstream scorer ranks a genome-wide candidate set, not a
+hand-typed one (the caller supplies a guide and gets the off-target sites back).
 
 **Where it runs.** A full GRCh38 scan is heavy, so enumeration executes ONLY where Cas-OFFinder + the genome are
 present — the VM, via the `casoffinder:tools` Docker image (Bae, Park & Kim, Bioinformatics 2014,

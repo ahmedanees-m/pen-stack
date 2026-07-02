@@ -1,8 +1,9 @@
-// Off-Target FINDER (v7.2) — genome-wide, per-writer-mechanism. A real off-target tool takes a guide/target and
-// returns the genome-wide off-target set (like CRISPOR/CHOPCHOP), applying the CORRECT mechanism per writer class:
-// nuclease cleavage, integrase pseudo-attP, bridge target-specificity, CAST guide+untargeted, PASTE composition.
-// Each carries a TRUTHFUL status (validated / semi-validated / mechanism-based-unvalidated). Enumeration runs on
-// the VM; the app replays the cache or abstains. Nomination is a CANDIDATE, never a clearance.
+// Off-Target finder (v7.2) — genome-wide, per-writer-mechanism. Given a guide/target for a writer, it scans the
+// human genome for every site the writer could also act on, then scores and ranks them, applying the CORRECT
+// off-target mechanism per writer class: nuclease cleavage, integrase pseudo-attP, bridge target-specificity,
+// CAST guide + untargeted transposition, PASTE composition. Each carries a truthful validation status. Genome-wide
+// enumeration runs on the VM; the app replays the committed cache or abstains. A result is a CANDIDATE, never a
+// clearance — wet-lab confirmation with the named assay is required.
 import React, { useEffect, useState } from "react";
 import ScoreGuide from "../components/ScoreGuide.jsx";
 import { api } from "../api.js";
@@ -57,17 +58,54 @@ export default function OffTarget() {
 
   return (
     <div className="space-y-4">
+      {/* plain-language explainer: what an off-target is, what to enter, what you get back */}
+      <Card title="Off-target effects, and how this finder works">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div>
+            <div className="text-sm font-semibold text-fg">What an off-target is</div>
+            <p className="mt-1 text-[12px] leading-relaxed text-fg-dim">
+              A genome-writing enzyme is aimed at one intended site, but it can also act at <em>other</em> places in
+              the genome that resemble the target. Those unintended edits are <b>off-targets</b> — the central safety
+              question for any writer.
+            </p>
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-fg">What you enter</div>
+            <p className="mt-1 text-[12px] leading-relaxed text-fg-dim">
+              Pick the writer class, then give it what defines the target: a <b>guide</b> (protospacer + PAM) for a
+              nuclease or a PASTE pegRNA; a <b>bridge-RNA target</b> for a bridge recombinase; a system (± spacer)
+              for CAST. A serine integrase (Bxb1 / phiC31) needs no input — it reports its documented sites.
+            </p>
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-fg">What you get back</div>
+            <p className="mt-1 text-[12px] leading-relaxed text-fg-dim">
+              A ranked list of genome-wide off-target sites with their <b>coordinates</b> (chromosome:position), a
+              <b> risk band</b>, and the <b>lab assay</b> that would confirm them. Every result is a candidate to
+              test — never a clearance.
+            </p>
+          </div>
+        </div>
+        <p className="mt-3 rounded border border-line bg-ink-900 px-3 py-2 text-[11px] leading-relaxed text-fg-faint">
+          <b className="text-fg-dim">How it works:</b> the engine scans the whole human genome (GRCh38) for every
+          site within the enzyme's mismatch tolerance, then scores and ranks each one — so you supply a guide and
+          get the off-target sites back, rather than having to supply the candidate sites yourself. The genome scan
+          is heavy, so it runs on the VM; this page replays the committed results for the built-in guides and is
+          honest (it abstains) for a novel guide rather than inventing sites.
+        </p>
+      </Card>
+
       <ScoreGuide
-        intro="A genome-wide off-target FINDER that applies the CORRECT mechanism for each writer class and labels each with a truthful validation status. A nomination is a CANDIDATE, never a clearance; every result ships with the empirical assay that would confirm it."
+        intro="Each writer class uses the correct off-target mechanism and carries a truthful validation status. A result is a candidate, never a clearance; every one ships with the empirical assay that would confirm it."
         items={[
-          { term: "Per-mechanism status", scale: "validated / semi / unvalidated", meaning: "Nuclease is VALIDATED (CRISOT beats homology on 4 assays; enumeration recovers the documented off-target set). Integrase is SEMI-VALIDATED (documented pseudosites, partial). Bridge & CAST are MECHANISM-BASED, UNVALIDATED — no genome-wide cellular off-target assay exists for them, and the tool says so." },
-          { term: "Finder vs scorer", scale: "genome-wide", meaning: "The engine enumerates candidates itself over GRCh38 (Cas-OFFinder), then scores them — like CRISPOR's search step." },
-          { term: "Nuclease risk / CRISOT", scale: "band + 0–1", meaning: "A mismatch-calibrated risk band from real assay data, plus the real learned CRISOT off-target score (VM)." },
+          { term: "Per-mechanism status", scale: "validated / semi / unvalidated", meaning: "Nuclease is VALIDATED (the CRISOT score beats a homology baseline on four independent assays; enumeration recovers the documented off-target set). Integrase, bridge and CAST are mechanism-based and honestly labelled unvalidated where no genome-wide cellular off-target assay exists for them yet." },
+          { term: "Genome-wide search", scale: "you give a guide", meaning: "The engine enumerates the candidate sites itself across GRCh38 (within the mismatch tolerance), then scores and ranks them — you do not have to supply the candidate sites." },
+          { term: "Nuclease risk / CRISOT", scale: "band + 0–1", meaning: "A mismatch-calibrated risk band from real assay data, plus the learned CRISOT off-target score." },
           { term: "CAST untargeted", scale: "tier", meaning: "The guide-INDEPENDENT untargeted-transposition background — the distinctive CAST off-target mode (Type V-K high, Type I-F low), a documented per-system property." },
         ]}
         caveats={[
-          "Enumeration runs on the VM; the app replays the committed cache or abstains for a novel input — it never fabricates sites.",
-          "You cannot make bridge/CAST off-target 'work like CRISPOR' — that needs validation data the field does not yet have for these ~2-year-old technologies. The honest answer is a mechanism-based scan with a truthful 'unvalidated' label.",
+          "The genome scan runs on the VM; this page replays the committed results or abstains for a novel input — it never fabricates sites.",
+          "Bridge and CAST off-target cannot yet be validated to the nuclease standard — the field has no genome-wide cellular off-target assay for these recent technologies — so the tool runs a mechanism-based scan with a truthful 'unvalidated' label rather than an over-confident number.",
           "The engine nominates and ranks; it does NOT clear a design — wet-lab confirmation with the recommended assay is required.",
         ]} />
 

@@ -2,8 +2,8 @@
 
 ## The gap
 
-Genome **editing** (Cas9, base, and prime editors) is mature and well-benchmarked: CRISPOR, GUIDE-seq,
-DeepCRISPR, off-target predictors, and many guide-design tools all answer *how to change a base in place*.
+Genome **editing** (Cas9, base, and prime editors) is mature and well-benchmarked: established guide-design
+tools, off-target predictors, and unbiased assays (GUIDE-seq) all answer *how to change a base in place*.
 Genome **writing** - installing new information: inserting genes, flipping or excising kilobases, placing
 programmable landing pads with serine integrases and RNA-guided bridge recombinases - is the harder, more
 clinically transformative modality, and it has **no canonical reference layer and no benchmark**. Each lab
@@ -23,7 +23,7 @@ benchmark for the writing side. It is deliberately complementary, not competitiv
 | Question | how to change a base in place | where to write, what writer, how to design, what risk |
 | Unit | a guide / edit at a target | a site x writer x cargo x delivery plan |
 | Tasks | on-target efficiency, off-target cleavage | site selection, writer selection, within-locus, off-target, intent, no-fabrication |
-| Off-target | Cas9 cleavage (CRISPOR-class) | bridge-recombinase insertion (the unoccupied gap) |
+| Off-target | Cas9 cleavage (mature sequence-similarity predictors) | bridge-recombinase insertion (the unoccupied gap) |
 | Agents | rarely scored | a grounded LLM-agent leaderboard with a no-fabrication hard gate |
 
 ## Design commitments (why it is trustworthy)

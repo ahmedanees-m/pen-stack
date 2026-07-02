@@ -18,7 +18,7 @@ export const NAV = [
   { path: "/twin", id: "twin", label: "Digital Twin", group: "Assess", icon: "twin",
     tip: "Calibrated, OOD-gated outcome prediction bounded by the structure-to-phenotype boundary." },
   { path: "/offtarget", id: "offtarget", label: "Off-Target", group: "Assess", icon: "offtarget",
-    tip: "A genome-wide off-target FINDER: give a guide, get the ranked genome-wide off-target set (like CRISPOR), with a real-data risk band, CRISOT score, and the confirming assay. Enumeration runs on the VM; the app replays the cache or abstains. Nomination is NOT a clearance." },
+    tip: "A genome-wide off-target finder: give a guide or target, get the ranked genome-wide off-target sites with a real-data risk band, the learned CRISOT score, and the confirming lab assay. The genome scan runs on the VM; the app replays the cache or abstains. A result is NOT a clearance." },
   { path: "/guardian", id: "guardian", label: "Guardian", group: "Assess", icon: "guardian",
     tip: "The biosecurity / dual-use screen: clear / flag / escalate / refuse, with an audit note." },
 

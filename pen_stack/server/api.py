@@ -379,8 +379,8 @@ def offtarget_endpoint(req: dict):
 
     v7.2 (finder): for a nuclease guide with NO ``candidate_sites``, enumerates the genome-wide off-target set
     over GRCh38 (Cas-OFFinder, replayed from the committed cache) and ranks it by the real CRISOT-Score +
-    mismatch-calibrated risk + chromatin annotation - the CRISPOR-like default. Supplying ``candidate_sites``
-    keeps the v6.10 score-my-candidates path. Abstains (never fabricates) for a novel guide with no VM scan."""
+    mismatch-calibrated risk + chromatin annotation - the default. Supplying ``candidate_sites`` keeps the v6.10
+    score-my-candidates path. Abstains (never fabricates) for a novel guide with no VM scan."""
     from pen_stack.wgenome.offtarget_predict import nominate_offtargets
     return nominate_offtargets(
         req.get("writer_family", ""), guide=req.get("guide"), candidate_sites=req.get("candidate_sites"),

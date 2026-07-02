@@ -3,6 +3,20 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.2.3] - 2026-07-02 - Off-Target: professional wording (self-contained, no external-tool comparisons) + a plain-language explainer
+
+### Changed
+- **Removed all external-tool comparisons** ("like CRISPOR / CHOPCHOP", "CRISPOR-class", "CRISPOR-comparable") from
+  every off-target surface — the Off-Target page, nav, code docstrings, REST docstring, the data card, `positioning.md`,
+  the prereg (re-SHA-locked), paper-4 prereg, and the v7.2.0 CHANGELOG entry. The capability is now described on its
+  own terms: a genome-wide off-target *finder* — given a guide/target it enumerates and ranks the off-target sites
+  itself. No functional change.
+- **Off-Target page now explains off-target effects in plain language**: a new top card covers *what an off-target
+  effect is*, *what you enter* (per writer class), and *what you get back* (ranked genome-wide sites with
+  coordinates + a risk band + the confirming assay), plus a "how it works" line (scan GRCh38 within the mismatch
+  tolerance → score → rank; heavy scan on the VM, replayed or honest-abstain). The per-metric ScoreGuide was
+  reworded to match.
+
 ## [7.2.2] - 2026-07-02 - Integrase: precise capability framing (the negative is about a method, not the biology)
 
 A framing/presentation refinement of the v7.2.1 sealed-negative result — no science changes, the number is
@@ -53,10 +67,10 @@ open, citable sequences (no fabrication) and a **sealed recall benchmark whose r
 
 ## [7.2.0] - 2026-07-01 - PEN-OFFTGT v2: Stage E becomes a genome-wide, per-mechanism off-target FINDER (all 5 writer classes)
 
-Stage E was a candidate *scorer* — it ranked off-target sites you supplied. A real off-target tool (CRISPOR /
-CHOPCHOP) takes a guide/target and *finds* the genome-wide off-target set itself. PEN-OFFTGT v2 closes that
-enumeration gap AND applies the **correct off-target mechanism for each writer class**, each carrying a truthful
-per-mechanism validation status (O-WS0–O-WS9 of the plan).
+Stage E was a candidate *scorer* — it ranked off-target sites you supplied. An off-target *finder* instead takes
+a guide/target and enumerates the genome-wide off-target sites itself. PEN-OFFTGT v2 closes that enumeration gap
+AND applies the **correct off-target mechanism for each writer class**, each carrying a truthful per-mechanism
+validation status (O-WS0–O-WS9 of the plan).
 
 ### Per-mechanism paths (O-WS3–O-WS6)
 - **Serine integrase** (`offtarget_integrase.py`, O-WS3): a genome-wide **pseudo-attP** scan — a fixed-sequence

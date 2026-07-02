@@ -113,5 +113,5 @@ data-gap disclosure (integrase-PhiC31, bridge, CAST) — never a fabricated metr
 **hard-locked** to 🔵 unvalidated in code.
 
 **Honest limits (v7.2):** enumeration recall depends on the mismatch tolerance (≤5 mm nuclease, ≤8 mm integrase
-att window); very divergent off-targets can be missed (a limitation shared with CRISPOR). DNA/RNA bulges are not
+att window); very divergent off-targets can be missed (a limitation inherent to any mismatch-bounded genome search). DNA/RNA bulges are not
 enumerated in v2.0 (substitutions only). The engine nominates and ranks; it does not clear a design.

@@ -222,8 +222,8 @@ def nominate_offtargets(writer_family: str, guide: str | None = None, candidate_
     ``cell_type`` enable the REAL Stage B chromatin-accessibility modifier for nucleases.
 
     v7.2 (O-WS2): for a nuclease guide WITHOUT supplied ``candidate_sites``, this runs the genome-wide FINDER
-    (enumerate GRCh38 -> CRISOT -> risk -> chromatin), the CRISPOR-like default. Supplying ``candidate_sites``
-    keeps the v6.10 score-my-candidates path (backward compatible)."""
+    (enumerate GRCh38 -> CRISOT -> risk -> chromatin) by default. Supplying ``candidate_sites`` keeps the v6.10
+    score-my-candidates path (backward compatible)."""
     from pen_stack.wgenome.offtarget_assay import recommend_assay
     fam = (writer_family or "").lower()
     assay_rec = recommend_assay(writer_family)
