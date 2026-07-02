@@ -1,0 +1,154 @@
+{
+  "analysis": "PA-WS3 GSH-recovery (positives vs background)",
+  "cell_type": "K562",
+  "genome": "hg38",
+  "n_positive": 7,
+  "n_background": 2000,
+  "n_known_unsafe": 5,
+  "n_missing_atlas": 0,
+  "n_bootstrap": 10000,
+  "n_permutation": 10000,
+  "seed": 20260702,
+  "axes": {
+    "writability": {
+      "auroc": 0.36864285714285716,
+      "auroc_ci95": [
+        0.1955660714285714,
+        0.5977142857142856
+      ],
+      "auprc": 0.013510271885282877,
+      "auprc_baseline": 0.003487792725460887,
+      "permutation_p": 0.8871112888711129,
+      "loo_auroc_min": 0.26441666666666663,
+      "loo_auroc_max": 0.41675,
+      "loo_auroc_mean": 0.36864285714285716,
+      "positives_mean": 0.8556524356100742,
+      "background_mean": 0.8591173302569917,
+      "known_unsafe_bg_percentile": {
+        "LMO2": 0.0145,
+        "MECOM": 0.0135,
+        "CCND2": 0.0145,
+        "HMGA2": 0.0,
+        "PRDM16": 0.014
+      }
+    },
+    "safety": {
+      "auroc": 0.5075000000000001,
+      "auroc_ci95": [
+        0.505,
+        0.51025
+      ],
+      "auprc": 0.0035407182599898838,
+      "auprc_baseline": 0.003487792725460887,
+      "permutation_p": 0.9043095690430957,
+      "loo_auroc_min": 0.5075000000000001,
+      "loo_auroc_max": 0.5075000000000001,
+      "loo_auroc_mean": 0.5075000000000002,
+      "positives_mean": 1.0,
+      "background_mean": 0.985,
+      "known_unsafe_bg_percentile": {
+        "LMO2": 0.0,
+        "MECOM": 0.0,
+        "CCND2": 0.0,
+        "HMGA2": 0.0,
+        "PRDM16": 0.0
+      }
+    },
+    "p_durable": {
+      "auroc": 0.35857142857142854,
+      "auroc_ci95": [
+        0.18085714285714286,
+        0.5929321428571428
+      ],
+      "auprc": 0.013470860933507562,
+      "auprc_baseline": 0.003487792725460887,
+      "permutation_p": 0.8997100289971003,
+      "loo_auroc_min": 0.25266666666666665,
+      "loo_auroc_max": 0.40741666666666665,
+      "loo_auroc_mean": 0.35857142857142854,
+      "positives_mean": 0.7113048712201485,
+      "background_mean": 0.7332346605139832,
+      "known_unsafe_bg_percentile": {
+        "LMO2": 0.9545,
+        "MECOM": 0.9265,
+        "CCND2": 0.9865,
+        "HMGA2": 0.013,
+        "PRDM16": 0.933
+      }
+    },
+    "epridict": {
+      "auroc": 0.5923441199684294,
+      "auroc_ci95": [
+        0.390447908445146,
+        0.778689818468824
+      ],
+      "auprc": 0.007703628350356204,
+      "auprc_baseline": 0.003852504127682994,
+      "permutation_p": 0.20167983201679832,
+      "loo_auroc_min": 0.5286372007366482,
+      "loo_auroc_max": 0.6736648250460405,
+      "loo_auroc_mean": 0.5923441199684294,
+      "positives_mean": 41.56634276253836,
+      "background_mean": 38.26486393562956,
+      "known_unsafe_bg_percentile": {
+        "LMO2": 0.9850828729281768,
+        "MECOM": 0.6734806629834255,
+        "CCND2": 0.9679558011049724,
+        "HMGA2": 0.41823204419889504,
+        "PRDM16": 0.14972375690607734
+      }
+    }
+  },
+  "paired_writability_vs_epridict": {
+    "delta_auroc_writability_minus_epridict": -0.21241865035516966,
+    "delta_auroc_ci95": [
+      -0.40308405682715076,
+      -0.025649171270718283
+    ],
+    "note": "bootstrap paired \u0394AUROC (positives+background resampled together); CI excluding 0 => distinguishable"
+  },
+  "decision": "NULL",
+  "inputs": {
+    "sets": "gsh_sets.csv",
+    "sets_sha256": "1d22828a7125c95333b75247f8940942fc65a361e1608e862670f8fa5c8ee5b5",
+    "atlas": "G:/My Drive/PEN-STACK/Final_Part_v3.0/phase_1/out/atlas_k562.parquet"
+  },
+  "positive_vs_known_unsafe": {
+    "writability": {
+      "auroc": 1.0,
+      "auroc_ci95": [
+        1.0,
+        1.0
+      ],
+      "positives_mean": 0.8556524356100742,
+      "known_unsafe_mean": 0.40636149145582945
+    },
+    "safety": {
+      "auroc": 1.0,
+      "auroc_ci95": [
+        1.0,
+        1.0
+      ],
+      "positives_mean": 1.0,
+      "known_unsafe_mean": 0.0
+    },
+    "p_durable": {
+      "auroc": 0.3142857142857142,
+      "auroc_ci95": [
+        0.0,
+        0.6571428571428571
+      ],
+      "positives_mean": 0.7113048712201485,
+      "known_unsafe_mean": 0.8127229829116589
+    },
+    "epridict": {
+      "auroc": 0.42857142857142855,
+      "auroc_ci95": [
+        0.11428571428571425,
+        0.8
+      ],
+      "positives_mean": 41.56634276253836,
+      "known_unsafe_mean": 42.899401092529295
+    }
+  }
+}

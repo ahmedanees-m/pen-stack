@@ -15,7 +15,7 @@ integration** (safety × durability × reachability). Stance: *complementarity a
 | **PA-WS1-A** distinctness | ePRIDICT (efficiency) | is the durability axis distinct from efficiency, or re-deriving it? | ✅ **done** | **DISTINCT** — ρ=0.21, R²=0.04 (96% unexplained), n=7,295 |
 | PA-WS1-B added value | ePRIDICT | does durability predict silencing-over-time beyond efficiency? | 🔵 data-gated | needs an independent silencing set (not TRIP) |
 | PA-WS2 concordance | GEG-SH | does the integrated score agree with an established safe-harbor score? | ⏳ pending | — |
-| PA-WS3 GSH-recovery | validated GSH set | does the integrated score recover experimentally-validated safe harbors? | ⏳ pending | — |
+| **PA-WS3** GSH-recovery | validated GSH set | does the integrated score recover validated safe harbors above background? | ✅ **done** | **NULL** above background (AUROC 0.37, p=0.89); but rejects known-unsafe perfectly (GSH-vs-oncogene AUROC 1.0) |
 | IntQuery positioning | IntQuery | cryptic-attB nomination | ⛔ not runnable (paper-only) | qualitative only |
 
 ## PA-WS1-A — durability vs ePRIDICT (independently substantiated)
@@ -38,6 +38,21 @@ wording); proceed to GSH-recovery (PA-WS3) + GEG-SH concordance (PA-WS2).
 
 Deposit: [`benchmarks/priorart/epridict/`](../../benchmarks/priorart/epridict/) (metrics JSON, scatter,
 7,295 paired scores, raw ePRIDICT output, SHA256SUMS).
+
+## PA-WS3 — GSH-recovery (reported verbatim, incl. the null)
+Frozen sets (independently verified): 7 validated GSH positives (AAVS1; Pansio-1/Olônne-18/Keppel-19, Autio
+*eLife* 2024; SHS231/229/253, Pellenz 2019 hg19→hg38), 5 known-unsafe oncogene loci (LMO2/MECOM/CCND2/HMGA2/PRDM16),
+2,000 random background bins. Score = integrated **writability** from the K562 atlas.
+
+- **Primary (positive vs background): NULL** — writability AUROC **0.369** [0.196, 0.598], permutation p=0.887.
+  The integrated score does not enrich validated GSH above the random genome (a random locus is already mostly
+  safe). ePRIDICT efficiency also fails (AUROC 0.59, p=0.20).
+- **Known-unsafe control: perfect** — all 5 oncogene loci at the **0th percentile** of background; validated GSH
+  separate from oncogenes with **AUROC 1.0** (safety-driven). Durability does *not* separate them (0.31 —
+  oncogenes are active, hence durable), reinforcing PA-WS1-A (durability ≠ generic "goodness").
+- **Interpretation:** the integrated score's safe-harbor value is in **rejecting unsafe loci**, not in ranking
+  validated GSH above the generically-safe genome. A gene-density-matched background would only strengthen the
+  null. Deposit: [`benchmarks/priorart/gsh_recovery/`](../../benchmarks/priorart/gsh_recovery/).
 
 ## Honest limits (state in the paper)
 - **Endpoint mismatch** — efficiency vs durability: distinctness, not superiority.

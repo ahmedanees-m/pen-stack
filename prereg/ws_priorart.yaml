@@ -117,6 +117,44 @@ analysis_B:
   acceptance: significant added value (CI excludes 0) OR reported as data-gated/complementary — never forced
 
 # ---------------------------------------------------------------------------------------------------------------
+# PA-WS3 — GSH-recovery enrichment (feasible now; load-bearing). AMENDED 2026-07-02 (added after PA-WS1-A DISTINCT).
+# The atlas lookup is the MEASUREMENT and is done AFTER this block is SHA-locked; the frozen coordinate sets
+# (positives/known-unsafe/background) are hashed here and carry no scores yet.
+# ---------------------------------------------------------------------------------------------------------------
+analysis_WS3:
+  question: >
+    Does the PEN-STACK integrated score (writability = 0.5*safety + 0.5*p_durable, from atlas_k562.parquet)
+    rank experimentally-validated genomic safe harbors ABOVE the random genomic background, and rank known
+    insertional-oncogenesis loci LOW?
+  score: PEN-STACK integrated writability (atlas_k562.parquet); also reported per-axis (safety, p_durable)
+  frozen_sets:
+    file: data/priorart/gsh_sets.csv
+    sha256: "1d22828a7125c95333b75247f8940942fc65a361e1608e862670f8fa5c8ee5b5"
+    positives_n: 7        # AAVS1, Pansio-1, Olonne-18, Keppel-19 (Autio eLife2024), SHS231/229/253 (Pellenz2019 liftOver)
+    known_unsafe_n: 5     # LMO2, MECOM, CCND2, HMGA2, PRDM16 (insertional-oncogenesis TSS)
+    background_n: 2000    # uniform random atlas bins, seed 20260702, excluding +/-10 bins of any pos/unsafe
+    coordinate_verification: >
+      every positive DOI verified via Crossref; Pellenz hg19->hg38 and AAVS1 canonical site lifted via Ensembl
+      REST GRCh37->GRCh38; Autio coords read from eLife Table 1 (Pansio-1 corrected from an agent's wrong 113,289,036
+      to the paper's 113,339,961). Rogi1/Rogi2 (Aznauryan) OMITTED: exact bp exist only in Fig 1D/Table S1 — not
+      fabricated.
+  statistics:
+    - auroc_auprc        # positives vs background, for writability / safety / p_durable
+    - permutation_test   # 10,000 label shuffles; p-value that AUROC(writability) exceeds chance
+    - leave_one_gsh_out  # recompute AUROC dropping each positive (small-n robustness)
+    - bootstrap_ci       # 95% CI on AUROC (resample positives + background), seed 20260702
+    - paired_delong      # AUROC(writability) vs AUROC(ePRIDICT efficiency) on the same loci (does a SAFE-harbor score recover GSH better than an EFFICIENCY score?)
+  decision_rule:
+    RECOVERY_SUPPORTED: "AUROC(writability, pos-vs-bg) CI excludes 0.5 AND permutation p < 0.05"
+    NULL:               "otherwise — reported verbatim as no recovery above background"
+  acceptance: >
+    recovery reported with a permutation CI and a paired method comparison (Gate PA-G2). Null reported verbatim.
+  honest_limits_ws3:
+    - "small positive set (n=7) -> limited power; leave-one-out + permutation + full CIs, conclusions caveated."
+    - "validated GSH were characterized in various lines (hESC/HEK293T/Jurkat), scored here on the K562 atlas as a proxy; safety axis is largely cell-type-general, durability is K562-specific."
+    - "known-unsafe = oncogene TSS as hard negatives; a coarse proxy for insertional-oncogenesis risk."
+
+# ---------------------------------------------------------------------------------------------------------------
 # Honest limits (state in the paper)
 # ---------------------------------------------------------------------------------------------------------------
 honest_limits:
@@ -127,4 +165,5 @@ honest_limits:
 
 deliverables:
   - "benchmarks/priorart/epridict/ : shared-loci merged scores, correlation + variance-partition metrics JSON, orthogonality scatter, SHA256SUMS"
+  - "benchmarks/priorart/gsh_recovery/ : scored loci, AUROC/AUPRC + permutation + LOO + DeLong metrics JSON, recovery figure, SHA256SUMS"
   - "docs/cards/priorart.md : per-analysis status + the decision outcome"
