@@ -133,11 +133,21 @@ export default function OffTarget() {
       {/* INTEGRASE pseudo-attP */}
       {res && res.family === "serine_integrase" && (
         <Card title="Pseudo-attP" subtitle={res.abstain ? "" : `core ${res.att_core} · ${res.integrase}`}>
-          <div className="mb-2"><StatusBadge status={res.status} /></div>
+          {/* capability badge: precise about WHAT can't be predicted (not a bare red flag) */}
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            {res.capability
+              ? <Pill color="var(--warn)">{res.capability.badge}</Pill>
+              : <StatusBadge status={res.status} />}
+          </div>
+          {/* plain-language capability disclosure — what's known vs what the tool honestly can't predict */}
+          {res.capability && (
+            <p className="mb-2 text-[11px] leading-relaxed text-fg-dim">{res.capability.microcopy}</p>
+          )}
           {/* the sealed PhiC31 recall benchmark verdict (the key honest finding) — shown for both integrases */}
           {res.sealed_recall_benchmark && (
             <p className="mb-2 rounded border border-warn/25 bg-warn/5 px-3 py-2 text-[11px] leading-relaxed text-amber-300/80">
-              <b>Sealed recall benchmark:</b> {res.sealed_recall_benchmark.verdict}
+              <b>Sealed recall benchmark (negative):</b> {res.sealed_recall_benchmark.verdict}{" "}
+              {res.capability && <span className="text-fg-faint">The signal is real (φC31 recognition is sequence-guided) — a learned/DMS model is the indicated next step, which is exactly what this negative motivates.</span>}
             </p>
           )}
           {res.abstain ? (

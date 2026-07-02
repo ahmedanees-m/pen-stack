@@ -19,7 +19,7 @@
     "recovered_above_background": false,
     "verdict": "NEGATIVE — attP-sequence-similarity does NOT recover the documented pseudo-attP above background (positives sit at the background median). Sequence identity alone is not a validated PhiC31 pseudo-attP predictor."
   },
-  "interpretation": "Honest negative, reported verbatim (O-G2). Consistent with the field: PhiC31 pseudo-attP recognition depends on palindromic architecture (Chalberg 2006, DOI 10.1016/j.jmb.2005.11.098) / a learned model (IntQuery, 410,776 cryptic attB), not raw attP identity. The integrase genome-wide pseudo-attP SIMILARITY ranking is therefore unvalidated; the verified att and documented pseudosites remain grounded facts.",
+  "interpretation": "Honest negative, reported verbatim (O-G2). PRECISE claim: what failed is a specific METHOD - attP sequence-SIMILARITY scanning - NOT the existence of predictable pseudosites. The signal is REAL (Chalberg 2006's ~30-bp palindromic consensus, DOI 10.1016/j.jmb.2005.11.098; IntQuery's success on 410,776 cryptic attB), just not capturable by simple sequence identity. So the honest, narrow claim is 'sequence similarity is insufficient', never 'pseudosites are unpredictable'. This negative is the empirical justification for a learned / DMS model (the indicated next step, as IntQuery uses), not a dead end. The verified att and documented pseudosites remain grounded facts.",
   "honest_limits": [
     "N=3 (the open GenBank subset; the full Chalberg 19-site set is in the paywalled J Mol Biol 2006 supplementary).",
     "Tests sequence-identity-to-attP only; a palindrome-architecture or learned model was not evaluated here.",

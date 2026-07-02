@@ -3,6 +3,24 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.2.2] - 2026-07-02 - Integrase: precise capability framing (the negative is about a method, not the biology)
+
+A framing/presentation refinement of the v7.2.1 sealed-negative result — no science changes, the number is
+unchanged and the negative stands.
+
+### Changed
+- **Precise claim, everywhere:** what the sealed PhiC31 benchmark showed is that a specific *method* (attP
+  sequence-similarity scanning) is insufficient — **NOT** that pseudosites are unpredictable. The signal is real
+  (Chalberg's palindromic consensus; IntQuery's success on 410,776 cryptic attB), just not capturable by simple
+  identity. So the honest, narrow claim is "sequence similarity is insufficient," and this negative is the
+  empirical justification for a learned/DMS model (the indicated next step). Sharpened in `offtarget_integrase.py`,
+  `phic31_recall_metrics.json`, and the data card so nothing reads as "unpredictable."
+- **App presentation:** `nominate_integrase` now returns a `capability` disclosure (badge + plain microcopy). The
+  Off-Target page shows a badge reading **"mechanism-based · not predictive by sequence alone"** (not a bare red
+  flag) plus one line — *"φC31 pseudosite activity is sequence-guided but not predictable from similarity alone
+  (sealed benchmark, negative); confirm empirically"* — separating the grounded facts (verified att + documented
+  pseudo-attP with GenBank accessions) from the honest capability limit. A trust-building disclosure, not an alarm.
+
 ## [7.2.1] - 2026-07-02 - PhiC31 integrase: close the O-WS3/O-G2 data gap with verified data + a sealed recall benchmark (honest NEGATIVE)
 
 Closes the one genuine open item from v7.2.0 — the PhiC31 integrase data gap — with independently-verified,

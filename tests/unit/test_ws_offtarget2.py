@@ -114,6 +114,10 @@ def test_integrase_phic31_encoded_with_sealed_negative_recall_benchmark():
     assert len(p["documented_pseudo_attP"]) == 3  # psiA (chr8) / psiC (chr16) / psiD (chr15)
     assert p["sealed_recall_benchmark"]["recovered_above_background"] is False  # honest negative
     assert p["similarity_ranking_validated"] is False and p["documented_doi"]
+    # v7.2.2: precise capability disclosure — the negative is about a METHOD, not "pseudosites are unpredictable"
+    assert "not predictive by sequence alone" in p["capability"]["badge"]
+    assert "NOT the existence of predictable" in p["capability"]["what_failed"]
+    assert "learned" in p["capability"]["indicated_next_step"].lower()
 
 
 @pytest.mark.skipif(
