@@ -1,2 +1,2 @@
 """PEN-STACK v3.0 - open infrastructure for genome writing."""
-__version__ = "7.2.0"
+__version__ = "7.2.1"

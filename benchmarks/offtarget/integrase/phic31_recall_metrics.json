@@ -1,0 +1,28 @@
+{
+  "benchmark": "PhiC31 pseudo-attP recall / enrichment (O-G2)",
+  "question": "Does attP-sequence-similarity recover the documented human pseudo-attP sites above random genomic background?",
+  "query_attP_30bp": "AACTGGGGTAACCTTTGAGTTCTCTCAGTT",
+  "query_source": "phage phiC31 attP, PDB 9U2T (attP60), central 30 bp",
+  "positives": {
+    "source": "Thyagarajan et al. 2001, Mol Cell Biol 21(12), PMID 11359900, DOI 10.1128/MCB.21.12.3926-3934.2001",
+    "sites": [
+      {"name": "psiA", "genbank": "AF333429", "chrom": "chr8",  "best_attP_mm_30bp": 14, "identity_pct": 53.3},
+      {"name": "psiC", "genbank": "AF333430", "chrom": "chr16", "best_attP_mm_30bp": 14, "identity_pct": 53.3},
+      {"name": "psiD", "genbank": "AF333431", "chrom": "chr15", "best_attP_mm_30bp": 14, "identity_pct": 53.3}
+    ]
+  },
+  "background": {"n_per_site": 1000, "sampling": "GC/N-filtered length-matched random GRCh38 windows",
+                 "median_best_mm_30bp": 14, "min_best_mm_30bp": 10},
+  "result": {
+    "frac_background_as_or_more_similar": {"psiA": 0.606, "psiC": 0.770, "psiD": 0.824},
+    "combined_product_of_percentiles": 0.3845,
+    "recovered_above_background": false,
+    "verdict": "NEGATIVE — attP-sequence-similarity does NOT recover the documented pseudo-attP above background (positives sit at the background median). Sequence identity alone is not a validated PhiC31 pseudo-attP predictor."
+  },
+  "interpretation": "Honest negative, reported verbatim (O-G2). Consistent with the field: PhiC31 pseudo-attP recognition depends on palindromic architecture (Chalberg 2006, DOI 10.1016/j.jmb.2005.11.098) / a learned model (IntQuery, 410,776 cryptic attB), not raw attP identity. The integrase genome-wide pseudo-attP SIMILARITY ranking is therefore unvalidated; the verified att and documented pseudosites remain grounded facts.",
+  "honest_limits": [
+    "N=3 (the open GenBank subset; the full Chalberg 19-site set is in the paywalled J Mol Biol 2006 supplementary).",
+    "Tests sequence-identity-to-attP only; a palindrome-architecture or learned model was not evaluated here.",
+    "seed=20260701, pysam over GRCh38 (penstack:phase1.5)."
+  ]
+}

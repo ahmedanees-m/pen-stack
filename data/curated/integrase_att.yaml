@@ -2,8 +2,13 @@
 #
 # A serine integrase recombines a donor attB with a genomic pseudo-attP resembling the phage attP. The off-target
 # scan enumerates genomic sites similar to the attP core region (a fixed-sequence Cas-OFFinder scan over GRCh38,
-# tolerating mismatches), then scores each by att-arm similarity. Status: SEMI-VALIDATED (documented pseudosites as
-# partial ground truth). Confirming assay: Cryptic-seq / HIDE-seq.
+# tolerating mismatches), then scores each by att-arm similarity. Confirming assay: Cryptic-seq / HIDE-seq.
+#
+# HONEST STATUS (v7.2.1): the att sequences and the documented human pseudo-attP are VERIFIED grounded facts, but a
+# SEALED recall benchmark on the best-documented pseudosites (PhiC31 psiA/psiC/psiD) is NEGATIVE — att-sequence-
+# similarity does NOT recover them above random background (see PhiC31.recall_benchmark below). So the genome-wide
+# pseudo-attP SIMILARITY RANKING is a mechanism-based scan that is NOT validated as a predictor; it is honestly
+# labelled as such, not "semi-validated." The documented pseudosites are surfaced as verified known-off-target loci.
 #
 # DEVIATION (disclosed): the prereg named `att_pwm.json`. A position-weight MATRIX requires many aligned pseudosite
 # sequences to estimate per-position tolerance; that alignment does not exist at genome scale for these integrases.
@@ -27,17 +32,35 @@ integrases:
     source: "FlyBase FBto0000359/358; Ghosh, Kim & Hatfull, Mol Cell 2003"
     doi: "10.1016/S1097-2765(03)00444-1"
 
-# PhiC31 — DISCLOSED DATA GAP (reported, not fabricated): PhiC31 is the integrase with the best-documented human
-# pseudo-attP set (~19 sites, Chalberg et al. 2006), which would make the strongest semi-validation benchmark.
-# Its exact minimal attB/attP arm sequences and the pseudo-attP genomic coordinates could not be verified from an
-# open, citable source in this build (the central crossover is a documented TT dinucleotide; the minimal attB is
-# ~34 bp). Rather than fabricate the arm sequence or the pseudosite coordinates, PhiC31 is NOT encoded here; the
-# integrase scan abstains for PhiC31 with this disclosure. Encoding the verified PhiC31 att + the Chalberg-2006
-# pseudo-attP table is the follow-up that would upgrade O-G2 from "stated" to a sealed recall benchmark.
-phic31_disclosure:
-  status: "not_encoded_data_gated"
-  documented_fact: "PhiC31 has ~19 characterised human pseudo-attP sites (a promiscuous serine integrase)."
-  central_dinucleotide: "TT"
-  minimal_attB_length_bp: 34
-  reference: "Chalberg et al., J Mol Biol 2006 (PhiC31 human pseudo-attP mapping); Thyagarajan et al., Mol Cell Biol 2001"
-  doi: "10.1016/j.jmb.2005.11.108"
+  # PhiC31 — now ENCODED with independently-verified sequences (v7.2.1, closes the O-WS3 data gap). att from the
+  # phiC31 integrase-attB-attP synaptic-complex structure (PDB 9U2T attP60 / 9U2S attB53; the canonical Groth-2000
+  # 34 bp attB is present in attB53); documented human pseudo-attP from Thyagarajan 2001 (GenBank AF333429/30/31).
+  PhiC31:
+    origin: "phage phiC31 (Streptomyces)"
+    attB: "GTGCCAGGGCGTGCCCTTGGGCTCCCCGGGCGCG"  # canonical 34 bp minimal attB (verified inside PDB 9U2S attB53)
+    attP: "CGGGAGTAGTGCCCCAACTGGGGTAACCTTTGAGTTCTCTCAGTTGGGGGCGTAGGGTCG"  # PDB 9U2T attP60 (60 bp)
+    core: "TTG"
+    central_dinucleotide: "TT"
+    scan_window: "AACTGGGGTAACCTTTGAGTTCTCTCAGTT"  # attP central 30 bp (localises to the psiA recombination core)
+    scan_max_mismatch: 8
+    source: "Groth et al., PNAS 2000; PDB 9U2T/9U2S (phiC31 integrase-attB-attP synaptic complex)"
+    doi: "10.1073/pnas.090527097"
+    pdb: ["9U2T", "9U2S"]
+    # documented human pseudo-attP positive set (verified GenBank; the integration loci)
+    pseudo_attP_positive_set:
+      - {name: psiA, genbank: AF333429, chrom: chr8}
+      - {name: psiC, genbank: AF333430, chrom: chr16}
+      - {name: psiD, genbank: AF333431, chrom: chr15}
+    positive_set_source: "Thyagarajan et al., Mol Cell Biol 21(12), 2001"
+    positive_set_doi: "10.1128/MCB.21.12.3926-3934.2001"
+    # SEALED recall benchmark (O-G2) — result reported VERBATIM: benchmarks/offtarget/integrase/phic31_recall_metrics.json
+    recall_benchmark:
+      recovered_above_background: false
+      verdict: "NEGATIVE — attP-sequence-similarity does NOT recover the documented pseudo-attP above random
+        background (all 3 sites at 14 mm / 30 bp = the background median; 60.6/77.0/82.4% of background as-or-more
+        similar). Sequence identity alone is not a validated PhiC31 pseudo-attP predictor; recognition depends on
+        palindromic architecture (Chalberg 2006, 10.1016/j.jmb.2005.11.098) / a learned model (IntQuery)."
+      metrics: "benchmarks/offtarget/integrase/phic31_recall_metrics.json"
+    specificity_note: "PhiC31 is a PROMISCUOUS serine integrase with documented human pseudo-attP (unlike Bxb1).
+      The sealed recall benchmark (above) is NEGATIVE: the att-similarity scan does not distinguish the documented
+      pseudosites from background, so the genome-wide similarity RANKING is unvalidated (honest negative)."

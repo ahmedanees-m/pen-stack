@@ -84,7 +84,14 @@ acceptance_gates:
     guide: EMX1 (GAGTCCGAGCAGAAGAAGAA, NGG)
   O-G2:
     workstream: O-WS3
-    claim: integrase path recovers documented pseudosites above background OR ships semi_validated with that stated
+    claim: integrase path recovers documented pseudosites above background OR ships with that stated
+    sealed_benchmark: benchmarks/offtarget/integrase/phic31_recall_metrics.json
+    result: "NEGATIVE (v7.2.1). The PhiC31 recall benchmark (verified GenBank psiA/psiC/psiD, AF333429/30/31, vs
+      length-matched GRCh38 background) shows att-sequence-similarity does NOT recover the documented pseudo-attP
+      above background: all three at 14 mm / 30 bp = the background median (60.6/77.0/82.4% of background as-or-more
+      similar). Reported VERBATIM. The integrase pseudo-attP similarity ranking is therefore mechanism_based_
+      unvalidated WITH a sealed-negative benchmark - a stronger, more honest outcome than an untested semi_validated
+      claim; the verified att + documented pseudosites remain grounded facts."
   O-G3:
     workstream: O-WS8
     claim: every mechanism has EITHER a sealed benchmark OR an explicit no-ground-truth disclosure — never a fabricated metric

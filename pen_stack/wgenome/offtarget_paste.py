@@ -26,7 +26,7 @@ def nominate_paste(guide: str | None = None, integrase: str = "Bxb1", max_mismat
                                "note": "provide the pegRNA spacer (guide) for the Cas9-nickase off-target scan"})
     integ = nominate_integrase(integrase, top=top)
     statuses = {"nuclease_component": nuclease.get("status", "validated"),
-                "integrase_component": integ.get("status", "semi_validated")}
+                "integrase_component": integ.get("status", "mechanism_based_unvalidated")}
     return {"family": "paste", "available": True, "abstain": False, "status": "composite",
             "component_statuses": statuses,
             "nuclease_component": nuclease,   # Cas9-nickase off-targets (pegRNA-directed) — validated finder

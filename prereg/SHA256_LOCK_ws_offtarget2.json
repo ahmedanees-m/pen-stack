@@ -2,7 +2,8 @@
   "cycle": "v7.2",
   "workstream": "PEN-OFFTGT-v2",
   "prepared": "2026-07-01",
+  "amended": "2026-07-02 (v7.2.1: O-G2 sealed PhiC31 recall benchmark, result NEGATIVE)",
   "sha256": {
-    "prereg/ws_offtarget2.yaml": "45fe78018307df9816dca4c3c5c3e9bdfe1022109044f599b09c5dd6b9e6357b"
+    "prereg/ws_offtarget2.yaml": "6cf66e9cd972e638366e585072464287c7bfacca9b9575ac91a6a9317a7e22df"
   }
 }

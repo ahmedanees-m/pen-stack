@@ -3,6 +3,36 @@
 All notable changes to PEN-STACK are documented here. This file follows
 [Keep a Changelog](https://keepachangelog.com/).
 
+## [7.2.1] - 2026-07-02 - PhiC31 integrase: close the O-WS3/O-G2 data gap with verified data + a sealed recall benchmark (honest NEGATIVE)
+
+Closes the one genuine open item from v7.2.0 — the PhiC31 integrase data gap — with independently-verified,
+open, citable sequences (no fabrication) and a **sealed recall benchmark whose result is reported verbatim**.
+
+### Added
+- **PhiC31 is now encoded** (`data/curated/integrase_att.yaml`), replacing the v7.2.0 abstain-with-disclosure. All
+  data was **independently validated against NCBI/RCSB** (which caught two errors in the completion pack's
+  citations, since corrected): att from **PDB 9U2T/9U2S** ("PhiC31 integrase-attB-attP synaptic complex"; the
+  canonical Groth-2000 34 bp attB is present in attB53); the documented human pseudo-attP **ψA/ψC/ψD** from
+  **GenBank AF333429/AF333430/AF333431** (Thyagarajan 2001, *Mol Cell Biol* 21(12), PMID 11359900,
+  DOI `10.1128/MCB.21.12.3926-3934.2001`; chr8/16/15). Corrected DOIs: Groth 2000 `10.1073/pnas.090527097`,
+  Chalberg 2006 `10.1016/j.jmb.2005.11.098` (was `...11.108`).
+- **Sealed PhiC31 pseudo-attP recall benchmark** (`benchmarks/offtarget/integrase/`, O-G2): does attP-sequence-
+  similarity recover the documented pseudo-attP above length-matched GRCh38 background? **Result — NEGATIVE,
+  reported verbatim:** all three sites score 14 mm / 30 bp (53.3% identity), exactly the background **median**
+  (60.6% / 77.0% / 82.4% of random windows are as-or-more attP-similar). Sequence identity to attP is **not** a
+  validated PhiC31 pseudo-attP predictor — φC31 recognition depends on palindromic architecture (Chalberg 2006) /
+  a learned model (IntQuery), not raw identity.
+
+### Changed
+- **Integrase status corrected: `semi_validated` → `mechanism_based_unvalidated` (with a sealed-NEGATIVE benchmark).**
+  The v7.2.0 "semi-validated (documented pseudosites as partial ground truth)" implied the sites validated the
+  method; the sealed benchmark shows they do not. This is a *stronger, more honest* outcome — a tested negative
+  rather than an untested claim. The verified att + documented pseudosites remain grounded facts and are surfaced
+  as verified known off-target loci. `nominate_integrase` PhiC31 returns the documented pseudo-attP + the sealed
+  benchmark; Bxb1 returns genome-wide similarity candidates carrying the same `similarity_ranking_validated: false`
+  caveat. Prereg O-G2 amended + re-SHA-locked; data card + deviations ledger updated; Off-Target page shows the
+  documented sites + the benchmark verdict.
+
 ## [7.2.0] - 2026-07-01 - PEN-OFFTGT v2: Stage E becomes a genome-wide, per-mechanism off-target FINDER (all 5 writer classes)
 
 Stage E was a candidate *scorer* — it ranked off-target sites you supplied. A real off-target tool (CRISPOR /

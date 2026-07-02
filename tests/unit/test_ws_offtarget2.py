@@ -104,13 +104,16 @@ def test_bridge_hard_locked_unvalidated_with_disclosure():
     assert "0.88" in r["ranker"] and r["nomination_is_not_clearance"] is True
 
 
-def test_integrase_phic31_is_a_disclosed_data_gap():
-    # O-WS3: PhiC31's att/pseudo-attP is a DISCLOSED data gap (not verifiable from an open source in this build) —
-    # it abstains with the disclosure + DOI, never fabricates a sequence or a pseudosite coordinate.
+def test_integrase_phic31_encoded_with_sealed_negative_recall_benchmark():
+    # v7.2.1: PhiC31 is now ENCODED (verified GenBank pseudo-attP AF333429/30/31 + PDB 9U2T/9U2S att). The sealed
+    # recall benchmark is NEGATIVE — att-similarity does not recover the documented sites above background — and is
+    # reported verbatim (a stronger, more honest O-G2 outcome than "semi-validated"). No fabrication.
     from pen_stack.wgenome.offtarget_integrase import nominate_integrase
-    phic31 = nominate_integrase("PhiC31")
-    assert phic31["abstain"] and phic31["status"] == "semi_validated" and "disclosure" in phic31
-    assert phic31["disclosure"].get("doi")
+    p = nominate_integrase("PhiC31")
+    assert p["available"] and p["status"] == "mechanism_based_unvalidated"
+    assert len(p["documented_pseudo_attP"]) == 3  # psiA (chr8) / psiC (chr16) / psiD (chr15)
+    assert p["sealed_recall_benchmark"]["recovered_above_background"] is False  # honest negative
+    assert p["similarity_ranking_validated"] is False and p["documented_doi"]
 
 
 @pytest.mark.skipif(
@@ -121,9 +124,10 @@ def test_integrase_bxb1_pseudo_attp_finder_reflects_high_specificity():
     # scan honestly returns very few candidates (the validated property) — each with a coordinate + att similarity.
     from pen_stack.wgenome.offtarget_integrase import nominate_integrase
     r = nominate_integrase("Bxb1")
-    assert r["available"] and r["status"] == "semi_validated" and r["mode"] == "finder"
+    assert r["available"] and r["status"] == "mechanism_based_unvalidated" and r["mode"] == "finder"
     assert r["att_core"] == "GCGGTCTC" and r["n_sites_genome_wide"] >= 1
     assert r["specificity_note"] and "position" in r["nominations"][0] and "arm_similarity" in r["nominations"][0]
+    assert r["similarity_ranking_validated"] is False  # sealed PhiC31 recall benchmark is negative
 
 
 def test_paste_composes_nuclease_and_integrase_components():
@@ -132,7 +136,7 @@ def test_paste_composes_nuclease_and_integrase_components():
     r = nominate_paste(guide=EMX1)
     assert r["status"] == "composite"
     assert r["component_statuses"]["nuclease_component"] == "validated"
-    assert r["component_statuses"]["integrase_component"] == "semi_validated"
+    assert r["component_statuses"]["integrase_component"] == "mechanism_based_unvalidated"
     assert set(r["confirm_assay"]) >= {"nuclease", "integrase"}  # dual confirm assay
 
 

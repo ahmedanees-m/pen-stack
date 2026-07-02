@@ -132,13 +132,29 @@ export default function OffTarget() {
 
       {/* INTEGRASE pseudo-attP */}
       {res && res.family === "serine_integrase" && (
-        <Card title="Pseudo-attP nominations" subtitle={res.abstain ? "" : `${res.n_sites_genome_wide} genome-wide · core ${res.att_core} · ${res.integrase}`}>
+        <Card title="Pseudo-attP" subtitle={res.abstain ? "" : `core ${res.att_core} · ${res.integrase}`}>
           <div className="mb-2"><StatusBadge status={res.status} /></div>
-          {res.abstain ? (<>
+          {/* the sealed PhiC31 recall benchmark verdict (the key honest finding) — shown for both integrases */}
+          {res.sealed_recall_benchmark && (
+            <p className="mb-2 rounded border border-warn/25 bg-warn/5 px-3 py-2 text-[11px] leading-relaxed text-amber-300/80">
+              <b>Sealed recall benchmark:</b> {res.sealed_recall_benchmark.verdict}
+            </p>
+          )}
+          {res.abstain ? (
             <p className="text-sm text-fg-dim">{res.note}</p>
-            {res.disclosure && <p className="mt-2 text-[11px] text-amber-300/80">Disclosure: {res.disclosure.documented_fact} (ref {res.disclosure.doi}).</p>}
+          ) : res.documented_pseudo_attP ? (<>
+            <p className="mb-2 text-[11px] text-fg-faint">Verified documented human pseudo-attP ({res.documented_source}, DOI {res.documented_doi}):</p>
+            <div className="overflow-x-auto"><table className="w-full text-sm">
+              <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">
+                <th className="py-2 pr-3">Site</th><th className="py-2 pr-3">GenBank</th><th className="py-2">Chrom</th></tr></thead>
+              <tbody>{res.documented_pseudo_attP.map((s, i) => (
+                <tr key={i} className="border-b border-line/50"><td className="py-2 pr-3 font-medium">{s.name}</td>
+                  <td className="py-2 pr-3 font-mono text-xs">{s.genbank}</td><td className="py-2">{s.chrom}</td></tr>))}</tbody>
+            </table></div>
+            <p className="mt-2 text-[11px] text-fg-faint">{res.method}</p>
           </>) : (<>
             {res.specificity_note && <p className="mb-2 text-[11px] text-fg-faint">{res.specificity_note}</p>}
+            <p className="mb-2 text-[11px] text-fg-faint">{res.n_sites_genome_wide} genome-wide similarity candidate(s):</p>
             <div className="overflow-x-auto"><table className="w-full text-sm">
               <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">
                 <th className="py-2 pr-3">Locus</th><th className="py-2 pr-3">Str</th><th className="py-2 pr-3">Att mismatch</th><th className="py-2">Arm similarity</th></tr></thead>
