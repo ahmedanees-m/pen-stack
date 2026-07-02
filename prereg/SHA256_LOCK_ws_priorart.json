@@ -1,0 +1,9 @@
+{
+  "cycle": "v7.x",
+  "workstream": "WS-PRIORART",
+  "prepared": "2026-07-02",
+  "note": "Locked BEFORE ePRIDICT efficiency scores computed; loci + p_durable frozen (see inputs.sha256 inside).",
+  "sha256": {
+    "prereg/ws_priorart.yaml": "fa55cb709fb90c60d0a55ee4530529cf452ba7a6d56e54a220e52e92890929fb"
+  }
+}

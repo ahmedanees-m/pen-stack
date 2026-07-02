@@ -1,0 +1,130 @@
+# WS-PRIORART — head-to-head positioning against prior art — PRE-REGISTRATION
+# Locks the sets, endpoints, statistics, and acceptance thresholds BEFORE any comparison is run, per the standing
+# "pre-register + SHA-lock" discipline. This file is written while the ePRIDICT efficiency scores are still UNSEEN:
+# the locus set and the PEN-STACK durability values (p_durable) are frozen and hashed here; the ePRIDICT scores
+# are computed afterwards on the VM. The correlation is therefore genuinely blind at lock time.
+#
+# Stance (from the execution plan §1): the defensible contribution is (i) the learned durability axis and
+# (ii) the three-way integration. We test whether the durability axis is a DISTINCT/COMPLEMENTARY signal
+# (not a better efficiency predictor). A null (redundancy) is reported verbatim — a complementary-or-null axis
+# is a legitimate finding; a fabricated "we beat ePRIDICT" is not.
+
+version: "1.0"
+codename: WS-PRIORART
+base_version: "7.2.3"
+deposit: phase_7.x/priorart
+
+invariants:
+  - pre_registration          # sets, endpoints, tests, thresholds SHA-locked before any comparison is run
+  - complementarity_not_superiority  # endpoints differ (efficiency vs durability); we measure distinctness only
+  - report_verbatim_including_nulls  # a redundant-or-null result ships as reported; thresholds never relaxed post hoc
+  - no_fabrication            # every reported number maps to a committed metrics JSON
+
+# ---------------------------------------------------------------------------------------------------------------
+# PA-WS1 Analysis A — DISTINCTNESS of the durability axis vs ePRIDICT efficiency (feasible now, no new ground truth)
+# ---------------------------------------------------------------------------------------------------------------
+analysis_A:
+  question: >
+    On a shared set of K562 loci, are the PEN-STACK durability score (p_durable) and the ePRIDICT efficiency
+    score orthogonal (distinct, complementary axes), or is durability largely re-deriving ePRIDICT's efficiency?
+  cell_type: K562            # ePRIDICT is K562-only; the PEN-STACK atlas includes K562 -> the shared context
+  genome: hg38
+
+  # ---- The two per-locus scores ----
+  score_x_epridict:
+    tool: ePRIDICT (light)   # Mathis et al., Nat Biotechnol 2025, 10.1038/s41587-024-02268-2
+    endpoint: prime-editing efficiency from K562 chromatin context
+    model: models/epridict_slim_xgboost_model.json  # gradient-boosted, 6 ENCODE K562 tracks
+    tool_image: "epridict:tools"   # VM Docker image (light model, 6 bigWig tracks)
+    tracks_light:                  # the 6 K562 ENCODE bigWigs the light model reads (4 bin sizes each)
+      - {mark: DNase,    accession: ENCFF972GVB}
+      - {mark: HDAC2,    accession: ENCFF954LGE}
+      - {mark: H3K4me1,  accession: ENCFF834SEY}
+      - {mark: H3K9me3,  accession: ENCFF601JGK}
+      - {mark: H3K27me3, accession: ENCFF139KZL}
+      - {mark: H3K4me2,  accession: ENCFF959YJV}
+    output_column: "ePRIDICT score (light model)"
+  score_y_pen_stack:
+    tool: PEN-STACK durability atlas
+    endpoint: expression-robustness  p_durable = 1 - P(silenced)   # single-timepoint (see gate note below)
+    model: phase_1/out/durability.pkl   # LightGBM clf+reg, TRIP-trained (mouse mESC), 5 histone marks
+    features: [H3K27ac, H3K4me1, H3K4me3, H3K9me3, H3K27me3]
+    source_atlas: phase_1/out/atlas_k562.parquet   # authoritative hg38 1-kb K562 durability atlas
+    provenance: >
+      p_durable is read directly from atlas_k562.parquet at each sampled bin (bin = position_hg38 // 1000).
+      No re-scoring at analysis time; the atlas is the committed model output.
+
+  # ---- HONEST feature-overlap disclosure (this is the exact overlap the review flags) ----
+  feature_overlap:
+    shared_marks: [H3K4me1, H3K9me3, H3K27me3]     # 3 marks common to both models
+    epridict_only: [DNase, HDAC2, H3K4me2]
+    pen_stack_only: [ATAC/DNase-accessibility, H3K27ac, H3K4me3]
+    note: >
+      Both models derive from the ENCODE K562 chromatin lineage and share 3 of their marks. A distinctness
+      result is therefore a conservative, meaningful test: if the scores still diverge despite shared inputs,
+      the durability axis is capturing something the efficiency model does not.
+
+  # ---- Frozen inputs (hashed here, before ePRIDICT is run) ----
+  inputs:
+    loci_csv:
+      path_vm: "~/priorart/loci_gen.csv"
+      n: 8000
+      columns: [chromosome, position_hg38]
+      sampling: >
+        uniform random without replacement from atlas_k562.parquet bins, seed=20260702, edge-trimmed 6 bins/chrom
+        so position_hg38 = bin*1000+500 falls inside ePRIDICT's valid range [5000, chrom_len-5000].
+      sha256: "0401edb56bf1999c3808416b3e12123de72dc9844346adbd96f76b7c65f192a0"
+    pdurable_parquet:
+      path_vm: "~/priorart/loci_pdurable_gen.parquet"
+      columns: [chromosome, position_hg38, bin, p_durable, safety, writability]
+      sha256: "d84c68abf5e1d7ffa419b200d92ed6199c3c1c87f13412259e128247b8d039b2"
+
+  # ---- Pre-registered statistics (execution plan §6) ----
+  statistics:
+    - spearman_rho          # + two-sided p
+    - pearson_r             # + two-sided p
+    - variance_partition    # OLS p_durable ~ epridict_efficiency; report R^2 and unexplained fraction (1 - R^2)
+    - bootstrap_ci          # bootstrap-over-loci 95% CI, >=10,000 resamples, seed=20260702, for rho, r, R^2
+  analysis_population: >
+    loci scorable by BOTH tools: inner-join on (chromosome, position_hg38), then drop rows where ePRIDICT
+    returns no score (missing/low chromatin features). Achieved n reported verbatim.
+
+  # ---- Pre-registered DECISION RULE (thresholds locked; never relaxed post hoc) ----
+  decision_rule:
+    DISTINCT:   "|spearman_rho| < 0.30 AND variance_partition.R2 < 0.10"
+    REDUNDANT:  "|spearman_rho| > 0.50 OR  variance_partition.R2 > 0.25"
+    AMBIGUOUS:  "otherwise (report both statistics with CI; do not force a call)"
+    rationale: >
+      Cohen conventions: |r| < 0.3 negligible/weak, 0.3-0.5 moderate, > 0.5 strong. R^2 is the fraction of
+      durability variance the efficiency score explains; < 0.10 means ePRIDICT explains < 10% of the axis.
+
+  # ---- Manuscript consequence of each outcome (locked so the framing is not chosen post hoc) ----
+  manuscript_consequence:
+    DISTINCT:  "keep the durability axis as a distinct/complementary contribution (softened wording); proceed to GSH-recovery (PA-WS3) + GEG-SH concordance (PA-WS2)."
+    REDUNDANT: "drop the durability axis as a novelty claim; lead the paper on the three-way integration; still report the null verbatim."
+    AMBIGUOUS: "retain the axis in softened complementary wording, lead-weight on integration, report both statistics with CI."
+
+  acceptance: >
+    Analysis A reported with CI (distinctness quantified either direction). Result — including a redundancy null —
+    ships verbatim to the 'Positioning against prior art' Results subsection. Gate PA-G1 (Analysis A half).
+
+# ---------------------------------------------------------------------------------------------------------------
+# PA-WS1 Analysis B — added durability prediction (DATA-GATED)
+# ---------------------------------------------------------------------------------------------------------------
+analysis_B:
+  status: data_gated   # requires an INDEPENDENT silencing-over-time set (not TRIP); flagged 🔵 until obtained
+  method: nested models silencing ~ ePRIDICT vs silencing ~ ePRIDICT + p_durable; ΔAUROC (DeLong) / Δρ with bootstrap CI
+  acceptance: significant added value (CI excludes 0) OR reported as data-gated/complementary — never forced
+
+# ---------------------------------------------------------------------------------------------------------------
+# Honest limits (state in the paper)
+# ---------------------------------------------------------------------------------------------------------------
+honest_limits:
+  - endpoint_mismatch: "ePRIDICT predicts efficiency, PEN-STACK predicts durability — this establishes distinctness/complementarity, NOT superiority."
+  - single_timepoint: "p_durable is a single-timepoint expression-robustness endpoint (1 - P(silenced) from a lower-quartile split), not a measured silencing-over-time trajectory (settled gate; see DEVIATIONS ledger)."
+  - shared_lineage: "both models derive from ENCODE K562 chromatin and share 3 marks; the distinctness test is conservative by construction."
+  - training_domain: "the durability model is TRIP-trained on mouse mESC chromatin and applied to human K562 marks; a domain shift that the distinctness test does not correct for."
+
+deliverables:
+  - "benchmarks/priorart/epridict/ : shared-loci merged scores, correlation + variance-partition metrics JSON, orthogonality scatter, SHA256SUMS"
+  - "docs/cards/priorart.md : per-analysis status + the decision outcome"
