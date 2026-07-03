@@ -132,6 +132,22 @@ def test_integrase_bxb1_pseudo_attp_finder_reflects_high_specificity():
     assert r["att_core"] == "GCGGTCTC" and r["n_sites_genome_wide"] >= 1
     assert r["specificity_note"] and "position" in r["nominations"][0] and "arm_similarity" in r["nominations"][0]
     assert r["similarity_ranking_validated"] is False  # sealed PhiC31 recall benchmark is negative
+    # Bug 1 regression: Bxb1 must carry GENERIC capability wording (not phiC31-specific), and the phiC31 sealed
+    # benchmark is flagged CROSS-INTEGRASE evidence — not presented as if it were Bxb1's own.
+    assert "phiC31 pseudosite activity" not in r["capability"]["microcopy"]
+    assert r["benchmark_is_cross_integrase"] is True and r["benchmark_integrase"] == "PhiC31"
+
+
+def test_integrase_system_selector_routes_to_phic31_not_bxb1_default():
+    # Bug 2 regression: system/enzyme="phiC31" must reach the phiC31 branch (documented pseudo-attP), NOT default to
+    # Bxb1. Its own benchmark is not cross-integrase, and the capability wording is phiC31-specific.
+    from pen_stack.wgenome.offtarget_predict import nominate_offtargets
+    r = nominate_offtargets("serine_integrase", enzyme="phiC31")
+    assert r["integrase"] == "PhiC31" and r.get("documented_pseudo_attP")
+    assert r["benchmark_is_cross_integrase"] is False
+    assert "phiC31 pseudosite activity" in r["capability"]["microcopy"]
+    # writer_family="phiC31" resolves the same way
+    assert nominate_offtargets("phiC31")["integrase"] == "PhiC31"
 
 
 def test_paste_composes_nuclease_and_integrase_components():

@@ -13,6 +13,7 @@ import { num } from "../lib/format.js";
 const FAMILIES = [
   { value: "Cas9", label: "Cas9 nuclease — genome-wide finder (validated)" },
   { value: "Bxb1", label: "Bxb1 serine integrase — pseudo-attP scan (semi-validated)" },
+  { value: "phiC31", label: "phiC31 serine integrase — documented pseudo-attP + sealed benchmark (unvalidated)" },
   { value: "bridge_IS110", label: "bridge recombinase IS110 — TBL scan (unvalidated)" },
   { value: "ShCAST", label: "ShCAST (Type V-K) — guide + untargeted (unvalidated)" },
   { value: "PASTE", label: "PASTE / PASSIGE — nuclease + integrase (composite)" },
@@ -181,11 +182,13 @@ export default function OffTarget() {
           {res.capability && (
             <p className="mb-2 text-[11px] leading-relaxed text-fg-dim">{res.capability.microcopy}</p>
           )}
-          {/* the sealed PhiC31 recall benchmark verdict (the key honest finding) — shown for both integrases */}
+          {/* the sealed φC31 recall benchmark — φC31's OWN result for φC31, cited as CROSS-INTEGRASE evidence for others */}
           {res.sealed_recall_benchmark && (
             <p className="mb-2 rounded border border-warn/25 bg-warn/5 px-3 py-2 text-[11px] leading-relaxed text-amber-300/80">
-              <b>Sealed recall benchmark (negative):</b> {res.sealed_recall_benchmark.verdict}{" "}
-              {res.capability && <span className="text-fg-faint">The signal is real (φC31 recognition is sequence-guided) — a learned/DMS model is the indicated next step, which is exactly what this negative motivates.</span>}
+              <b>Sealed φC31 recall benchmark (negative){res.benchmark_is_cross_integrase ? " · cross-integrase evidence" : ""}:</b> {res.sealed_recall_benchmark.verdict}{" "}
+              {res.benchmark_is_cross_integrase
+                ? <span className="text-fg-faint">This is the φC31 result — no {res.integrase}-specific pseudosite benchmark exists — cited as the empirical basis for treating att-similarity ranking as unvalidated across serine integrases.</span>
+                : <span className="text-fg-faint">The signal is real (φC31 recognition is sequence-guided) — a learned/DMS model is the indicated next step, which is exactly what this negative motivates.</span>}
             </p>
           )}
           {res.abstain ? (

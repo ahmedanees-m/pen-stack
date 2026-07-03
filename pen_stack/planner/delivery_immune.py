@@ -28,7 +28,8 @@ def delivery_immune_tradeoff(cargo_form: str, cargo_bp: int | None = None, targe
     """Rank deliverability AND attach each vehicle's Stage G immune profile, surfacing the dose<->immune tradeoff per
     vehicle as a vector. Never collapses deliverability and immunogenicity into one score."""
     from pen_stack.planner.delivery_predict import recommend_delivery_plus
-    rec = recommend_delivery_plus(cargo_form, cargo_bp, target_tissue, safety_weight=safety_weight, in_vivo=in_vivo)
+    rec = recommend_delivery_plus(cargo_form, cargo_bp, target_tissue, safety_weight=safety_weight,
+                                  in_vivo=in_vivo, serotype=serotype)
     coupled = []
     for prof in rec.get("ranked", []) or rec.get("eligible", []) or []:
         veh = prof.get("vehicle") or prof.get("name")

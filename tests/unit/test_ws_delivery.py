@@ -62,6 +62,19 @@ def test_serotype_tropism_grounded_and_distinguishes_rh74_variants():
     assert serotypes_for_tissue("pancreas")["grounded_serotypes"] == [] # no approved prior -> abstains
 
 
+def test_recommender_surfaces_serotype_tropism_prior_for_a_serotype():
+    # Bug 3 regression: recommend_delivery_plus must populate serotype_tropism_prior from a passed ``serotype``
+    # (AAV9 -> CNS/Zolgensma), not only from a target_tissue. It was always null before.
+    from pen_stack.planner.delivery_predict import recommend_delivery_plus
+    r = recommend_delivery_plus("AAV", 4000, serotype="AAV9")
+    prior = r["serotype_tropism_prior"]
+    assert prior and prior["serotype"] == "AAV9" and "CNS" in prior["tissue"]
+    assert prior["confidence"] == "grounded (approved therapy)"
+    # a novel capsid -> known-unknown, never fabricated; no serotype/tissue -> None
+    assert recommend_delivery_plus("AAV", 4000, serotype="AAV_novel_xyz")["serotype_tropism_prior"]["confidence"] == "known-unknown"
+    assert recommend_delivery_plus("AAV", 4000)["serotype_tropism_prior"] is None
+
+
 def test_tropism_provenance_dois_grounded():
     import yaml
 

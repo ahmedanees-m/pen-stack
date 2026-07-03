@@ -28,7 +28,9 @@ _CONFIRM = "Cryptic-seq / HIDE-seq (Tome Biosciences, 2024 preprint)"
 # METHOD (attP sequence-similarity scanning), NOT the existence of predictable pseudosites — the signal is real
 # (Chalberg's ~30-bp palindromic consensus; IntQuery's success on 410,776 cryptic attB), just not capturable by
 # simple similarity. The honest claim is narrow: "sequence similarity is insufficient", never "unpredictable".
-_CAPABILITY = {
+# φC31 carries its OWN sealed benchmark (verified documented pseudosites); other serine integrases (e.g. Bxb1) get
+# the GENERIC wording — the φC31 benchmark is cited as CROSS-INTEGRASE evidence, never as if it were their own.
+_CAPABILITY_PHIC31 = {
     "badge": "mechanism-based · not predictive by sequence alone",
     "microcopy": ("phiC31 pseudosite activity is sequence-guided but NOT predictable from similarity alone "
                   "(sealed benchmark, negative); confirm empirically (Cryptic-seq / HIDE-seq)."),
@@ -39,6 +41,26 @@ _CAPABILITY = {
     "indicated_next_step": ("a learned / DMS model (as IntQuery uses); this sealed negative is the empirical "
                             "justification for it, not evidence that pseudosites are unpredictable."),
 }
+_CAPABILITY_GENERIC = {
+    "badge": "mechanism-based · not predictive by sequence alone",
+    "microcopy": ("Serine-integrase pseudosite activity is sequence-guided but NOT predictable from att-similarity "
+                  "alone, so this genome-wide similarity ranking is unvalidated; confirm empirically "
+                  "(Cryptic-seq / HIDE-seq)."),
+    "what_failed": ("att sequence-SIMILARITY scanning (a specific method) — NOT the existence of predictable "
+                    "pseudosites."),
+    "signal_is_real": ("the pseudosite signal IS real — Chalberg's ~30-bp palindromic consensus and IntQuery's "
+                       "success on 410,776 cryptic attB show it — just not capturable by simple sequence identity."),
+    "indicated_next_step": ("a learned / DMS model (as IntQuery uses)."),
+    "evidence_basis": ("cross-integrase: a sealed φC31 recall benchmark is NEGATIVE — the empirical basis for "
+                       "treating serine-integrase att-similarity ranking as unvalidated. No integrase-specific "
+                       "pseudosite benchmark exists here (Bxb1, for one, is highly specific)."),
+}
+
+
+def _capability(integrase: str) -> dict:
+    """φC31 owns its benchmark → φC31-specific wording; every other serine integrase gets the generic wording that
+    cites the φC31 result as cross-integrase evidence (never as if the benchmark were their own)."""
+    return _CAPABILITY_PHIC31 if integrase == "PhiC31" else _CAPABILITY_GENERIC
 
 
 @lru_cache(maxsize=1)
@@ -85,7 +107,9 @@ def nominate_integrase(integrase: str = "Bxb1", top: int = 20) -> dict:
                 "att_doi": rec["doi"], "pdb": rec.get("pdb"),
                 "documented_pseudo_attP": rec.get("pseudo_attP_positive_set"),
                 "documented_source": rec.get("positive_set_source"), "documented_doi": rec.get("positive_set_doi"),
-                "sealed_recall_benchmark": bench, "similarity_ranking_validated": False, "capability": _CAPABILITY,
+                "sealed_recall_benchmark": bench, "benchmark_integrase": "PhiC31",
+                "benchmark_is_cross_integrase": False,
+                "similarity_ranking_validated": False, "capability": _capability("PhiC31"),
                 "specificity_note": rec.get("specificity_note"),
                 "method": ("PhiC31 documented human pseudo-attP (verified GenBank AF333429/30/31, Thyagarajan 2001) "
                            "are surfaced as verified known off-target loci. Separately, the att-SIMILARITY genome "
@@ -118,7 +142,9 @@ def nominate_integrase(integrase: str = "Bxb1", top: int = 20) -> dict:
             "scan_window": window, "source": enum["source"], "att_doi": rec["doi"],
             "n_sites_genome_wide": len(noms), "nominations": noms[:top],
             "specificity_note": rec.get("specificity_note"),
-            "sealed_recall_benchmark": bench, "similarity_ranking_validated": False, "capability": _CAPABILITY,
+            "sealed_recall_benchmark": bench, "benchmark_integrase": "PhiC31",
+            "benchmark_is_cross_integrase": (key != "PhiC31"),
+            "similarity_ranking_validated": False, "capability": _capability(key),
             "method": ("fixed-sequence Cas-OFFinder scan of the attP core window over GRCh38, scored by att-arm "
                        "similarity. The similarity RANKING is mechanism-based and NOT predictive by sequence alone: "
                        "the sealed PhiC31 recall benchmark is NEGATIVE (sequence similarity is insufficient to "

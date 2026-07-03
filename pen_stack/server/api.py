@@ -386,7 +386,7 @@ def offtarget_endpoint(req: dict):
         req.get("writer_family", ""), guide=req.get("guide"), candidate_sites=req.get("candidate_sites"),
         sequence=req.get("sequence"), accessibility=req.get("accessibility"),
         target_core=req.get("target_core"), assay=req.get("assay", "guideseq"),
-        enzyme=req.get("enzyme"), max_mismatch=int(req.get("max_mismatch", 5)))
+        enzyme=req.get("enzyme") or req.get("system"), max_mismatch=int(req.get("max_mismatch", 5)))
 
 
 @app.get("/offtarget/assay", tags=["v6.10 off-target"])
@@ -469,7 +469,8 @@ def delivery_endpoint(req: dict):
     therapies; known-unknown for novel capsids) + the learned capsid-fitness bench. Never fabricates tropism."""
     from pen_stack.planner.delivery_predict import recommend_delivery_plus
     return recommend_delivery_plus(req.get("cargo_form", ""), req.get("cargo_bp"), req.get("target_tissue"),
-                                   safety_weight=float(req.get("safety_weight", 0.5)), in_vivo=req.get("in_vivo"))
+                                   safety_weight=float(req.get("safety_weight", 0.5)), in_vivo=req.get("in_vivo"),
+                                   serotype=req.get("serotype"))
 
 
 @app.post("/capsid_fitness", tags=["v6.11 delivery"])

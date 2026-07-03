@@ -122,14 +122,22 @@ def capsid_fitness(vp1_sequence: str) -> dict:
 
 
 def recommend_delivery_plus(cargo_form: str, cargo_bp: int | None = None, target_tissue: str | None = None,
-                            *, safety_weight: float = 0.5, in_vivo: bool | None = None) -> dict:
+                            *, safety_weight: float = 0.5, in_vivo: bool | None = None,
+                            serotype: str | None = None) -> dict:
     """The Stage-D recommender: the rule-level safety<->efficacy ranking (recommend_delivery) PLUS a grounded
-    serotype->tissue tropism prior for the target tissue (approved therapies) and the learned capsid-fitness
-    capability. Tropism is a grounded prior for approved serotypes, a known-unknown otherwise. Never fabricates."""
+    serotype->tissue tropism prior and the learned capsid-fitness capability. The tropism prior answers whichever
+    direction the caller asked: a specific ``serotype`` -> its approved-therapy tissue (e.g. AAV9 -> CNS/Zolgensma);
+    otherwise a ``target_tissue`` -> the approved serotypes that reach it. Grounded for approved serotypes, a
+    known-unknown otherwise. Never fabricates."""
     from pen_stack.planner.delivery_immunology import recommend_delivery
     base = recommend_delivery(cargo_form, cargo_bp, safety_weight=safety_weight, in_vivo=in_vivo)
-    tropism = serotypes_for_tissue(target_tissue) if target_tissue else None
-    return {**base, "target_tissue": target_tissue, "serotype_tropism_prior": tropism,
+    if serotype:
+        tropism = serotype_tropism(serotype)          # serotype -> tissue (matches the field name; report path)
+    elif target_tissue:
+        tropism = serotypes_for_tissue(target_tissue)  # tissue -> approved serotypes
+    else:
+        tropism = None
+    return {**base, "serotype": serotype, "target_tissue": target_tissue, "serotype_tropism_prior": tropism,
             "capsid_fitness": {"capability": "learned FLIP-AAV capsid-fitness (call capsid_fitness(vp1_seq))",
                                "bench": _bench_metrics().get("mut_des") or CAPSID_FITNESS_BENCH},
             "honesty": "tropism is a grounded prior for approved serotypes, a known-unknown otherwise; predicted "

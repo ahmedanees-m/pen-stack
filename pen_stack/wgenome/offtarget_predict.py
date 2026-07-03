@@ -244,11 +244,14 @@ def nominate_offtargets(writer_family: str, guide: str | None = None, candidate_
             res = find_nuclease_offtargets(guide or "", enzyme=enzyme or writer_family or "SpCas9",
                                            max_mismatch=max_mismatch, assay=assay, cell_type=cell_type)
     elif fam in _INTEGRASE or "integrase" in fam or "bxb1" in fam or "phic31" in fam:
-        integrase = "PhiC31" if "phic31" in fam else "Bxb1"
+        from pen_stack.wgenome.offtarget_integrase import nominate_integrase, resolve_integrase
+        # honour the explicit integrase/system selector (``enzyme``); fall back to the family string. This is why
+        # system="phiC31" must reach the phiC31 branch instead of defaulting to Bxb1.
+        sel = enzyme or ("PhiC31" if "phic31" in fam else "Bxb1")
+        integrase = resolve_integrase(sel) or "Bxb1"
         if sequence:  # v6.10 path: scan a supplied locus for cryptic pseudo-attB
-            res = pseudo_attb_sites(sequence, "Bxb1")
+            res = pseudo_attb_sites(sequence, integrase)
         else:  # v7.2 genome-wide pseudo-attP scan (O-WS3)
-            from pen_stack.wgenome.offtarget_integrase import nominate_integrase
             res = nominate_integrase(integrase)
     elif fam in _BRIDGE or "bridge" in fam or "is110" in fam or "is621" in fam or "seek" in fam:
         from pen_stack.wgenome.offtarget_bridge import nominate_bridge
