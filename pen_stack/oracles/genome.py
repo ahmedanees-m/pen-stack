@@ -118,15 +118,35 @@ def variant_effect(variant: str, locus: str, in_distribution: bool = True) -> Or
 
 
 def sequence_likelihood(seq: str) -> OracleResult:
-    """Evo2 zero-shot sequence likelihood, a claim-scope scalar (NOT a generated sequence)."""
-    inputs = {"seq_len": len(seq), "seq": seq.upper()}
+    """Evo2 zero-shot sequence likelihood, a claim-scope scalar (NOT a generated sequence).
+
+    When a local `evo2` backend is importable it scores the sequence's mean per-token log-likelihood (a real
+    forward pass, cached for replay). Otherwise the adapter defers OR replays a committed cache entry via
+    `_deferred_or_cached` (value None, contract intact, never fabricated) — consistent with the other genome
+    oracles. The live value, when produced, is tagged source="local_gpu"; a cache replay is tagged
+    source="cache"; so a consumer can always tell a real Evo2 forward pass from a replayed one."""
+    clean = _sanitize_dna(seq)
+    inputs = {"seq_len": len(clean), "seq": clean}
     try:
-        import evo2 # noqa: F401
-    except Exception: # noqa: BLE001
+        import evo2  # noqa: F401
+    except Exception:  # noqa: BLE001 - backend absent -> defer / cache-replay (never fabricate)
         return _deferred_or_cached("genome", "evo2", inputs, output_kind="claim",
-                                   backend_note="Evo2 backend not installed (large; on-demand)")
-    return build_result("genome", "evo2", inputs=inputs, output_kind="claim", available=False,
-                        note="Evo2 present; wire likelihood scoring for the live value")
+                                   backend_note="Evo2 backend not installed (large; on-demand). Live scoring "
+                                                "requires the local evo2 package or a hosted forward endpoint.")
+    key_obj = build_result("genome", "evo2", inputs=inputs, output_kind="claim")
+    try:
+        from evo2 import Evo2  # type: ignore
+
+        model = Evo2("evo2_7b")
+        ll = model.score_sequences([clean])  # mean per-token log-likelihood
+        value = {"mean_loglik": float(ll[0]) if hasattr(ll, "__getitem__") else float(ll), "seq_len": len(clean)}
+        cache_put(key_obj.provenance.cache_key, {"value": value, "native_uncertainty": None})
+        return build_result("genome", "evo2", inputs=inputs, value=value, output_kind="claim",
+                            available=True, source="local_gpu",
+                            note="Evo2 zero-shot mean per-token log-likelihood (local forward pass).")
+    except Exception as e:  # noqa: BLE001 - scoring API/weights unavailable -> defer / cache-replay
+        return _deferred_or_cached("genome", "evo2", inputs, output_kind="claim",
+                                   backend_note=f"Evo2 present but scoring unavailable ({type(e).__name__}); deferred")
 
 
 def generate_dna(prompt: str, n: int = 20) -> OracleResult:
