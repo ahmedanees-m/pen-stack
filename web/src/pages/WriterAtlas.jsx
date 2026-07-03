@@ -23,6 +23,7 @@ export default function WriterAtlas() {
 
   // Stage C surfaces
   const [eff, setEff] = useState(null);
+  const [showAllRecords, setShowAllRecords] = useState(false); // "…30 more rows" -> show all 45 on demand
   const [immune, setImmune] = useState(null); // v7.1.8: the writer's immunogenicity as an antigen (MHC-II + ADA)
   const [rec, setRec] = useState(null);
   const [recForm, setRecForm] = useState({ write_type: "insertion", cargo_bp: 2000, cell_type: "K562" });
@@ -109,7 +110,7 @@ export default function WriterAtlas() {
             <input className="input" value={recForm.cell_type}
                    onChange={(e) => setRecForm((f) => ({ ...f, cell_type: e.target.value }))} />
           </Field>
-          <div className="flex items-end"><Button onClick={() => runRecommend(recForm)} disabled={recBusy}>Recommend</Button></div>
+          <div className="flex items-end"><Button onClick={() => runRecommend(recForm)} loading={recBusy}>{recBusy ? "Ranking…" : "Recommend"}</Button></div>
         </div>
         {recBusy ? <div className="mt-4"><Spinner label="Ranking writers…" /></div> : rec && (
           <div className="mt-4 overflow-x-auto">
@@ -180,7 +181,7 @@ export default function WriterAtlas() {
                 <th className="py-2 pr-3">System</th><th className="py-2 pr-3">Family</th><th className="py-2 pr-3">Locus</th>
                 <th className="py-2 pr-3">Cell</th><th className="py-2 pr-3">Efficiency</th><th className="py-2">DOI</th></tr></thead>
               <tbody>
-                {(eff.records || []).slice(0, 12).map((r, i) => (
+                {(eff.records || []).slice(0, showAllRecords ? undefined : 12).map((r, i) => (
                   <tr key={i} className="border-b border-line/50">
                     <td className="py-1.5 pr-3 font-mono text-xs">{r.system}</td>
                     <td className="py-1.5 pr-3 text-fg-dim">{r.family}</td>
@@ -192,7 +193,12 @@ export default function WriterAtlas() {
                 ))}
               </tbody>
             </table>
-            {(eff.records || []).length > 12 && <p className="mt-1 text-[11px] text-fg-faint">…and {eff.records.length - 12} more measured rows.</p>}
+            {(eff.records || []).length > 12 && (
+              <button type="button" onClick={() => setShowAllRecords((s) => !s)}
+                      className="mt-2 text-[11px] text-brand hover:underline">
+                {showAllRecords ? "Show fewer" : `Show all ${eff.records.length} measured rows`}
+              </button>
+            )}
           </div>
         </Card>
       )}

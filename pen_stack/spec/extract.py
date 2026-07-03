@@ -60,6 +60,27 @@ def _gene_tokens(prose: str) -> list[str]:
     return [g for g in _GENE_RE.findall(prose) if g not in _STOP and g.upper() not in cell_keys]
 
 
+# The EDIT SITE is signalled by a site preposition ("into/at/in/within X") or a suffix ("X locus/site"); the
+# CARGO is what is written ("insert X …"). Preferring a site-anchored token stops a gene-like cargo name from
+# hijacking the target (e.g. "insert a CD19 CAR into TRAC" -> target is TRAC, not CD19).
+_SITE_PREP = re.compile(r"\b(?:into|at|in|to|within|inside)\s+(?:the\s+)?([A-Z][A-Z0-9]{1,7})\b")
+_SITE_SUFFIX = re.compile(r"\b([A-Z][A-Z0-9]{1,7})\b\s+(?:locus|loci|site|safe[- ]?harbou?r)\b")
+
+
+def _pick_target_token(prose: str, gene_toks: list[str]) -> str | None:
+    """Choose the token naming the edit SITE. Prefer a site-anchored token ('into/at X', 'X locus'); otherwise
+    fall back to the first gene token (a bare target like 'knock out PCSK9'). gene_toks is already stop/cell-filtered."""
+    if not gene_toks:
+        return None
+    valid = set(gene_toks)
+    anchored = [(m.start(1), m.group(1)) for m in _SITE_PREP.finditer(prose) if m.group(1) in valid]
+    anchored += [(m.start(1), m.group(1)) for m in _SITE_SUFFIX.finditer(prose) if m.group(1) in valid]
+    if anchored:
+        anchored.sort()
+        return anchored[0][1]
+    return gene_toks[0]
+
+
 def _detect_bp(low: str) -> int | None:
     m = re.search(r"(\d+(?:\.\d+)?)\s*kb", low)
     if m:
@@ -133,14 +154,15 @@ def extract_writespec(prose: str, *, overrides: dict | None = None, allow_llm: b
             att = k.replace(" ", "_").replace("-", "_")
             break
     gene_resolved = None
-    if gene_toks:
-        g = resolve_gene(gene_toks[0])
+    tgt_tok = _pick_target_token(prose, gene_toks)
+    if tgt_tok:
+        g = resolve_gene(tgt_tok)
         if g.resolved:
             gene_resolved = g
         else:
-            unresolved.append(gene_toks[0])
+            unresolved.append(tgt_tok)
     if gene_resolved is not None:
-        loc = resolve_locus(gene_toks[0])
+        loc = resolve_locus(tgt_tok)
         target = Target(kind="gene", gene=gene_resolved, locus=loc if loc.resolved else None)
         prov["target.gene"] = "explicit"
         if pheno is not None and pheno.resolved:  # the disease is the goal, attached to the gene target

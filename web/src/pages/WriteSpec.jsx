@@ -3,7 +3,7 @@
 // assumption; anything underspecified raises a clarifying question rather than a guess; and the feasibility
 // verdict (reachability + deliverability + legality) names any blocking constraint. A WriteSpec is a request,
 // not a claim: the extractor never fabricates intent.
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import ScoreGuide from "../components/ScoreGuide.jsx";
 import { api } from "../api.js";
 import { Card, Button, Spinner, ErrorNote, Field } from "../components/ui.jsx";
@@ -34,10 +34,13 @@ export default function WriteSpec() {
   const [res, setRes] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const resultsRef = useRef(null);
 
   async function run() {
     if (!prose.trim()) return;
     setBusy(true); setError(null); setRes(null);
+    // bring the results/loading area into view so the query clearly "did something" (results render below the fold)
+    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
     try { setRes(await api.writespec(prose)); } catch (e) { setError(e); } finally { setBusy(false); }
   }
 
@@ -61,9 +64,10 @@ export default function WriteSpec() {
         <Field label="Your genome-writing goal">
           <textarea className="input text-sm h-24" value={prose} onChange={(e) => setProse(e.target.value)} />
         </Field>
-        <div className="mt-3"><Button onClick={run} disabled={busy}>Parse to WriteSpec</Button></div>
+        <div className="mt-3"><Button onClick={run} loading={busy}>{busy ? "Parsing…" : "Parse to WriteSpec"}</Button></div>
       </Card>
 
+      <div ref={resultsRef} className="scroll-mt-4 space-y-4">
       {busy && <Card><Spinner label="Parsing to a typed WriteSpec…" /></Card>}
       {error && <Card><ErrorNote error={error} /></Card>}
 
@@ -120,6 +124,7 @@ export default function WriteSpec() {
           )}
         </Card>
       )}
+      </div>
     </div>
   );
 }

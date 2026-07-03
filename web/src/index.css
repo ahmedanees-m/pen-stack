@@ -82,3 +82,7 @@ body {
 
 .dotpulse { animation: dot 1.2s ease-in-out infinite; }
 @keyframes dot { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+/* Inline spinner for button loading states (a bordered ring that rotates). */
+.spin { display: inline-block; border-radius: 9999px; border: 2px solid currentColor; border-top-color: transparent; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

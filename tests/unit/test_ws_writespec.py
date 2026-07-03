@@ -86,6 +86,20 @@ def test_extractor_labels_inferred_and_never_fabricates():
     assert s2.cell_type.id == "CL:0000084" and not s2.clarifications and not s2.unresolved
 
 
+def test_target_is_the_edit_site_not_a_gene_like_cargo():
+    """A gene-like cargo token (CD19, FOXP3) must not hijack the target: the edit SITE is the one anchored by a
+    site preposition ('into/at X') or a 'X locus' suffix. Regression for the brief-input under-parse."""
+    a = extract_writespec("integrate a CD19 CAR into TRAC of primary T cells")
+    assert a.target.kind == "gene" and a.target.gene.id == "TRAC"
+    b = extract_writespec("insert FOXP3 into AAVS1 in HEK293T")
+    assert b.target.gene.id == "PPP1R12C"            # AAVS1 nickname resolves; FOXP3 (cargo) does not win
+    c = extract_writespec("knock in a CD19 CAR at the TRAC locus of CD8 T cells")
+    assert c.target.gene.id == "TRAC"
+    # a bare target with no site preposition still resolves via the first-token fallback
+    d = extract_writespec("knock out PCSK9")
+    assert d.target.gene.id == "PCSK9"
+
+
 def test_satisfiability_feasible_and_infeasible():
     feasible = check_satisfiable(extract_writespec("Insert a 3 kb cassette at AAVS1 in HEK293T"))
     assert feasible.feasible is True

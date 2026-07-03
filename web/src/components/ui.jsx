@@ -22,12 +22,16 @@ export function Card({ title, subtitle, icon, right, hover = false, children, cl
   );
 }
 
-export function Button({ variant = "primary", size, className = "", children, icon, ...p }) {
+export function Button({ variant = "primary", size, className = "", children, icon, loading = false, disabled, ...p }) {
   const v = variant === "primary" ? "btn-primary" : variant === "secondary" ? "btn-secondary" : "btn-ghost";
   const s = size === "sm" ? "px-2.5 py-1.5 text-xs" : "";
+  const dim = size === "sm" ? 13 : 15;
   return (
-    <button className={`${v} ${s} ${className}`} {...p}>
-      {icon && <Icon name={icon} size={16} />}{children}
+    <button className={`${v} ${s} ${className}`} disabled={disabled || loading} aria-busy={loading || undefined} {...p}>
+      {loading
+        ? <span className="spin" style={{ width: dim, height: dim }} aria-hidden="true" />
+        : (icon && <Icon name={icon} size={16} />)}
+      {children}
     </button>
   );
 }

@@ -2,7 +2,7 @@
 // edit intent. Atlas-dependent: only cell types with a measured writability atlas return loci (the rest are a
 // data-gated roadmap, shown but disabled). Cargo size + edit intent shape the ranked PLANS, not the per-locus
 // writability (which is intrinsic to the gene x cell-type context) - the UI says so explicitly.
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { api } from "../api.js";
 import { Card, Button, Spinner, ErrorNote, Field, Badge } from "../components/ui.jsx";
 import ScoreGuide from "../components/ScoreGuide.jsx";
@@ -34,6 +34,7 @@ export default function SiteFinder() {
   const [plans, setPlans] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const resultsRef = useRef(null);
 
   useEffect(() => { api.celltypes().then((r) => r?.cell_types?.length && setCells(r.cell_types)).catch(() => {}); }, []);
 
@@ -50,6 +51,7 @@ export default function SiteFinder() {
   async function run() {
     if (!geneOk) return;
     setBusy(true); setError(null); setLoci(null); setPlans(null);
+    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
     const scored = { gene: gene.trim(), ct, ctLabel: selected?.label || ct };
     try {
       const [w, p] = await Promise.allSettled([
@@ -94,7 +96,7 @@ export default function SiteFinder() {
           </Field>
         </div>
         <div className="mt-4 flex items-center gap-3">
-          <Button onClick={run} disabled={busy || !geneOk}>Score sites</Button>
+          <Button onClick={run} loading={busy} disabled={!geneOk}>{busy ? "Scoring…" : "Score sites"}</Button>
           {selected && <Badge tone={COV_TONE[selected.coverage]}>{selected.label}: {selected.coverage} coverage</Badge>}
         </div>
         <p className="mt-3 text-[11px] leading-relaxed text-fg-faint">
@@ -119,6 +121,7 @@ export default function SiteFinder() {
         ]}
       />
 
+      <div ref={resultsRef} className="scroll-mt-4 space-y-4">
       {busy && <Card><Spinner label="Scanning the writability atlas…" /></Card>}
       {error && <Card><ErrorNote error={error} /></Card>}
 
@@ -171,6 +174,7 @@ export default function SiteFinder() {
           )}
         </Card>
       )}
+      </div>
     </div>
   );
 }

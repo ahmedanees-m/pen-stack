@@ -4,9 +4,9 @@ export const NAV = [
   { path: "/", id: "home", label: "Home", group: "Start", icon: "home",
     tip: "What PEN-STACK is, what it can compute, and where to begin." },
   { path: "/chat", id: "coscientist", label: "Co-Scientist", group: "Start", icon: "chat",
-    tip: "Ask a genome-writing question in plain language; the grounded co-scientist routes the engine and narrates, never a number it invented." },
+    tip: "The conversational front door — a multi-turn chat. Ask anything (a write request, \"is this legal?\", \"what can't you tell me?\"); it routes the engine and narrates a full answer, never a number it invented. For a structured, typed spec instead, use Describe a Write." },
   { path: "/writespec", id: "writespec", label: "Describe a Write", group: "Start", icon: "writespec",
-    tip: "Turn a plain-language goal into a typed, ontology-backed WriteSpec: every field shows its provenance, inferred fields are labelled, ambiguous ones are asked, and a feasibility check names any blocking constraint. A request, not a claim." },
+    tip: "The structured intent parser (not a chat): turn ONE plain-language goal into a typed, ontology-backed WriteSpec — write-type, target, cell type, cargo, constraints, each with its provenance — plus a feasibility check. Deterministic, one-shot. For open-ended questions, use the Co-Scientist." },
 
   { path: "/site-finder", id: "sitefinder", label: "Site Finder", group: "Design", icon: "site",
     tip: "Score loci by safety, durability and reachability for an edit intent." },
