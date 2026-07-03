@@ -126,16 +126,34 @@ def split_aav_penalty(design: Design, rule: Rule) -> RuleResult:
 # --------------------------------------------------------------------------------------------------
 # delivery compatibility (writer output-form <-> vehicle; integration constraint, hard reject)
 # --------------------------------------------------------------------------------------------------
+# write types that install a DNA DONOR cassette (need the donor delivered AS DNA, independent of the writer form)
+_DNA_CASSETTE_WRITES = {"insertion", "replacement", "landing_pad", "landing_pad_install"}
+
+
 @evaluator("delivery_cargo_form")
 def delivery_cargo_form(design: Design, rule: Rule) -> RuleResult:
-    form = writer_output_form(design)
-    if form is None or not design.delivery_vehicle:
-        return _na(rule, "no writer output-form + delivery_vehicle")
+    if not design.delivery_vehicle:
+        return _na(rule, "no delivery_vehicle")
     from pen_stack.planner.delivery_vehicles import vehicle
     veh = vehicle(design.delivery_vehicle)
     if veh is None:
         return _na(rule, f"unknown vehicle {design.delivery_vehicle!r}")
     forms = veh.get("compatible_cargo_form", [])
+    form = writer_output_form(design)
+    # (1) DNA-donor-cassette install <-> vehicle form. A genomic insertion/replacement/landing-pad by a DNA-writing
+    # system (integrase / recombinase / bridge) installs a DNA donor cassette; an mRNA/RNP-only vehicle (e.g.
+    # LNP-mRNA) cannot deliver a DNA donor for STABLE integration. Fires for DNA-form OR unspecified writers (the
+    # report's gap: "insertion via LNP-mRNA" with no writer named). Skipped for an RNP editor whose RNP delivery is
+    # itself valid — that case is governed by the writer-form check below.
+    if (str(design.write_type or "").lower() in _DNA_CASSETTE_WRITES and (design.cargo_bp or 0) > 0
+            and "DNA" not in forms and form in (None, "DNA")):
+        return _result(rule, "violate", f"a genomic {design.write_type} installs a DNA donor cassette "
+                       f"({design.cargo_bp} bp), but {design.delivery_vehicle} carries {forms} — mRNA is transient "
+                       "and cannot deliver a DNA donor for stable integration; use a DNA-capable vehicle "
+                       "(AAV / lentivirus / electroporation)")
+    # (2) writer output-form <-> vehicle. The writer machinery must itself be deliverable by the vehicle.
+    if form is None:
+        return _na(rule, "no writer output-form to check (and no DNA-cassette conflict)")
     if form not in forms:
         return _result(rule, "violate", f"{design.writer_family} delivers {form}, but "
                        f"{design.delivery_vehicle} carries {forms}")

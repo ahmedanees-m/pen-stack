@@ -85,6 +85,7 @@ export default function DesignStudio() {
   const [imm, setImm] = useState(null);     // the /immune response (per-axis profile)
   const [busy, setBusy] = useState(null);   // "verify" | "generate" | "immune" while running
   const [error, setError] = useState(null);
+  const [openRow, setOpenRow] = useState(null);  // index of the candidate whose assembled-cassette detail is open
 
   async function runVerify() {
     setBusy("verify"); setError(null);
@@ -193,15 +194,17 @@ export default function DesignStudio() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">
-                    <th className="py-2 pr-3">Vehicle</th><th className="py-2 pr-3">Writer</th><th className="py-2 pr-3">Cargo bp</th>
-                    <th className="py-2 pr-3">Legal</th><th className="py-2 pr-3">Safety</th><th className="py-2 pr-3 w-48">Confidence</th><th className="py-2">Flags</th>
+                    <th className="py-2 pr-3">Vehicle</th><th className="py-2 pr-3">Writer</th><th className="py-2 pr-3">Site</th><th className="py-2 pr-3">Cargo bp</th>
+                    <th className="py-2 pr-3">Legal</th><th className="py-2 pr-3">Safety</th><th className="py-2 pr-3 w-48">Confidence</th><th className="py-2 pr-3">Flags</th><th className="py-2">Cassette</th>
                   </tr>
                 </thead>
                 <tbody>
                   {survivors.map((s, i) => (
-                    <tr key={i} className="border-b border-line/50 align-middle">
+                    <React.Fragment key={i}>
+                    <tr className="border-b border-line/50 align-middle">
                       <td className="py-2 pr-3 font-medium">{String(s.delivery_vehicle).replace(/_/g, " ")}</td>
                       <td className="py-2 pr-3 text-fg-dim">{s.writer_family ? String(s.writer_family).replace(/_/g, " ") : "—"}</td>
+                      <td className="py-2 pr-3 font-mono text-[11px] text-fg-dim">{s.site ? `${s.site.chrom}:bin${s.site.bin}` : "—"}</td>
                       <td className="py-2 pr-3 tabular-nums text-fg-dim">{s.cargo_bp}</td>
                       <td className="py-2 pr-3">{s.legal ? <span className="text-ok">legal</span> : <span className="text-bad">no</span>}</td>
                       <td className="py-2 pr-3"><SafetyBadge decision={s.safety_decision} compact /></td>
@@ -210,12 +213,30 @@ export default function DesignStudio() {
                           ? <ConfidenceBand lo={s.interval?.[0]} hi={s.interval?.[1]} point={s.confidence} status="grounded" />
                           : <span className="text-fg-faint text-xs" title="This cell type has no measured writability atlas (only K562 / HepG2 / HSPC do), so the planner cannot compute calibrated scores. Legality and biosecurity still ran.">abstained · no measured atlas for this cell type</span>}
                       </td>
-                      <td className="py-2">{s.scope_flags?.length ? <Pill color="var(--warn)">{s.scope_flags.length} scope</Pill> : <span className="text-fg-faint text-xs">none</span>}</td>
+                      <td className="py-2 pr-3">{s.scope_flags?.length ? <Pill color="var(--warn)">{s.scope_flags.length} scope</Pill> : <span className="text-fg-faint text-xs">none</span>}</td>
+                      <td className="py-2">{s.cargo?.elements
+                        ? <button type="button" onClick={() => setOpenRow(openRow === i ? null : i)} className="text-[11px] text-brand hover:underline">{openRow === i ? "hide" : "view"}</button>
+                        : <span className="text-fg-faint text-xs">—</span>}</td>
                     </tr>
+                    {openRow === i && s.cargo?.elements && (
+                      <tr className="border-b border-line/50 bg-ink-900/50">
+                        <td colSpan={9} className="px-3 py-2">
+                          <div className="text-[11px] text-fg-dim">
+                            <span className="font-semibold text-fg">Assembled cassette</span> — payload {s.cargo.payload_bp} bp +{" "}
+                            {Object.entries(s.cargo.elements).map(([k, v]) => `${k.replace(/_/g, " ")} ${v} bp`).join(" · ")}{" "}
+                            = <b className="text-fg">{s.cargo.assembled_bp} bp assembled</b>
+                            {s.cargo.codon_optimised ? <span className="text-ok"> · codon-optimised</span> : null}
+                            {s.cargo.cargo_capacity_bp != null && <span className="text-fg-faint"> · writer capacity {s.cargo.cargo_capacity_bp} bp · {s.cargo.size_ok ? <span className="text-ok">fits</span> : <span className="text-bad">over capacity</span>}</span>}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>
-              <p className="mt-3 text-[11px] text-fg-faint">Each row is a candidate the verifier judged legal and the Guardian cleared, with a calibrated confidence band. None is a claim that it will work in vivo.</p>
+              <p className="mt-3 text-[11px] text-fg-faint">Each row is a candidate the verifier judged legal and the Guardian cleared, with a calibrated confidence band; the <b>Cassette</b> column expands the assembled donor construct (insulators, promoter, polyA + codon-opt). None is a claim that it will work in vivo.</p>
+              <p className="mt-1 text-[11px] text-fg-faint">This sweep covers <b>delivery vehicles × writers</b> for your goal. Engineered novel-capsid variants are a separate capability (the FLIP-AAV capsid-fitness model) that is model-gated and not proposed here — when the capsid-fitness model is not mounted on a deployment, the engine abstains rather than inventing variants.</p>
             </div>
           )}
         </Card>

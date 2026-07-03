@@ -23,6 +23,24 @@ _BENIGN_DUAL = {**_BENIGN_AAV, "delivery_vehicle": "AAV_dual", "writer_activity"
 _HAZARD = {**_BENIGN_AAV, "cargo_function": "ricin-like RIP", "pfam_domains": ["PF00161"]}
 _ILLEGAL_OVERSIZE = {**_BENIGN_AAV, "cargo_bp": 8000, "delivery_vehicle": "AAV_single"}
 _ILLEGAL_FORM = {**_BENIGN_AAV, "delivery_vehicle": "lnp_mrna"} # dsDNA writer can't ship as mRNA
+_ILLEGAL_FORM_NO_WRITER = {k: v for k, v in _BENIGN_AAV.items() if k != "writer_family"}
+_ILLEGAL_FORM_NO_WRITER = {**_ILLEGAL_FORM_NO_WRITER, "delivery_vehicle": "lnp_mrna"} # insertion cassette needs DNA
+
+
+def test_dedup_collapses_identical_writer_vehicle_cargo_candidates():
+    # Bug 1: candidate_space pairs every top site with every vehicle, so same-(writer,vehicle,cargo) candidates
+    # differ only by site and render identically. generate_designs must collapse them.
+    surv = generate_designs(candidates=[_BENIGN_AAV, dict(_BENIGN_AAV), dict(_BENIGN_AAV), _BENIGN_DUAL], keep=10)
+    assert len(surv) == 2
+    assert {s["delivery_vehicle"] for s in surv} == {"AAV_single", "AAV_dual"}
+
+
+def test_insertion_via_mrna_vehicle_is_illegal_even_without_a_named_writer():
+    # Bug 4: a genomic insertion installs a DNA donor cassette; an mRNA-only vehicle (LNP-mRNA) cannot deliver it.
+    # This must fire even when no writer_family is named (the live-test gap).
+    from pen_stack.verify import verify
+    assert verify(dict(_ILLEGAL_FORM_NO_WRITER)).legal is False
+    assert generate_designs(candidates=[_ILLEGAL_FORM_NO_WRITER], keep=10) == []
 
 
 @pytest.fixture(autouse=True)

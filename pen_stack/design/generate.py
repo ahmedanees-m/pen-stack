@@ -56,4 +56,15 @@ def generate_designs(goal: dict | None = None, *, candidates: list[dict] | None 
             "scope_flags": v.scope_flags, "output_kind": "candidate",
         })
     survivors.sort(key=_confidence_key, reverse=True)
-    return survivors[:keep]
+    # Dedupe: candidate_space pairs every top SITE with every vehicle, so several same-(writer, vehicle, cargo)
+    # candidates differ only by site and render identically in the sweep table. Collapse them, keeping the
+    # highest-confidence one (already first after the sort). The site remains available on the survivor.
+    seen: set = set()
+    deduped: list[dict] = []
+    for s in survivors:
+        key = (s.get("write_type"), s.get("writer_family"), s.get("delivery_vehicle"), s.get("cargo_bp"))
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(s)
+    return deduped[:keep]

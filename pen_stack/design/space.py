@@ -98,6 +98,7 @@ def candidate_space(goal: dict, *, n: int = 200, k: int = 8) -> list[dict[str, A
                 "safety": p["safety"], "p_durable": p["durability"], "writer_activity": p["writer_activity"],
                 "on_target": p["on_target"], "reachability_tier": p.get("reachability_tier"),
                 "deliverability": deliverability_score(veh, cargo_bp),
+                "site": p.get("site"), "cargo": p.get("cargo"),  # carry the site + assembled cassette to the survivor
                 "_planner_score": p["score"],
                 "provenance": {**p.get("provenance", {}), "candidate_space": "v5.8 plan_write x delivery palette"},
             })
