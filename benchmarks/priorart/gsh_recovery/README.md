@@ -41,9 +41,15 @@ background writability, and validated GSH separate from known-unsafe loci with *
 
 ## Interpretation (honest, precise)
 The integrated score's safe-harbor value is in **rejecting unsafe loci** (near-oncogene, active), not in ranking
-validated GSH above the generically-safe intergenic genome. A uniform-random background is the *easiest* case
-here (a gene-density-matched background would place both GSH and background in gene-sparse regions, only
-strengthening the null), so the null is robust. This is reported verbatim, not forced.
+validated GSH above the generically-safe *bulk* intergenic genome — against a uniform-random background the
+validated GSH sit mid-distribution (mean 0.856 vs background mean 0.859), so they do not stand out. This is
+specific to the uniform-random negative: the negative matters. The platform's own `blind_gsh_discovery`
+benchmark (`pen_stack/validate/blind_gsh_discovery.py`, prereg `ws_a.yaml`) scores validated GSH against
+**controls matched on distance-to-TSS, distance-to-oncogene, and accessibility** and does recover them above
+those matched controls (AUROC ≈ 0.68). So the complete, reconciled picture is: the integrated score **rejects
+known-unsafe loci** (AUROC 1.0 here; genotoxic-CIS at the ~1st percentile in the atlas card) and **beats
+confounder-matched controls** (~0.68), but does **not** rank validated GSH above the already-safe bulk genome
+(0.37 here) — because most of the genome is, by these axes, already safe. All three results are reported verbatim.
 
 ## Honest limits
 - Small positive set (n=7) → limited power; leave-one-out + permutation + full CIs; conclusions caveated.

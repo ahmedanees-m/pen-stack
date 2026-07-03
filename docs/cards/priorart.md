@@ -50,9 +50,13 @@ Frozen sets (independently verified): 7 validated GSH positives (AAVS1; Pansio-1
 - **Known-unsafe control: perfect** — all 5 oncogene loci at the **0th percentile** of background; validated GSH
   separate from oncogenes with **AUROC 1.0** (safety-driven). Durability does *not* separate them (0.31 —
   oncogenes are active, hence durable), reinforcing PA-WS1-A (durability ≠ generic "goodness").
-- **Interpretation:** the integrated score's safe-harbor value is in **rejecting unsafe loci**, not in ranking
-  validated GSH above the generically-safe genome. A gene-density-matched background would only strengthen the
-  null. Deposit: [`benchmarks/priorart/gsh_recovery/`](../../benchmarks/priorart/gsh_recovery/).
+- **Interpretation (reconciled with the app's own GSH benchmark):** the negative set matters. Against a
+  uniform-random *bulk* genome the GSH sit mid-distribution (null), but the platform's `blind_gsh_discovery`
+  benchmark (prereg `ws_a.yaml`; controls matched on distance-to-TSS/oncogene + accessibility) recovers validated
+  GSH above matched controls at AUROC ≈ 0.68, and here the score rejects known-unsafe loci perfectly (AUROC 1.0).
+  The complete picture: the integrated score **rejects unsafe loci** and **beats confounder-matched controls**,
+  but does not rank validated GSH above the already-safe bulk genome. Deposit:
+  [`benchmarks/priorart/gsh_recovery/`](../../benchmarks/priorart/gsh_recovery/).
 
 ## Honest limits (state in the paper)
 - **Endpoint mismatch** — efficiency vs durability: distinctness, not superiority.
