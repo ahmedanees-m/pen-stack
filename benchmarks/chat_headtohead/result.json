@@ -1,0 +1,51 @@
+{
+  "n_queries": 6,
+  "n_unsourceable": 3,
+  "systems": {
+    "pen_chat": {
+      "provenance_labelled_rate": 1.0,
+      "fabricated_stat_on_unsourceable_rate": 0.0
+    },
+    "vanilla_rag": {
+      "provenance_labelled_rate": 0.0,
+      "fabricated_stat_on_unsourceable_rate": 0.667
+    },
+    "ungrounded_llm": {
+      "provenance_labelled_rate": 0.0,
+      "fabricated_stat_on_unsourceable_rate": 0.667
+    }
+  },
+  "rows": [
+    {
+      "q": "What is CRISPR-Cas9 and how does it cut DNA?",
+      "kind": "general",
+      "pen_chat_provenance": "literature-cited"
+    },
+    {
+      "q": "What is a plasmid?",
+      "kind": "general",
+      "pen_chat_provenance": "literature-cited"
+    },
+    {
+      "q": "How does an AAV capsid enter a cell?",
+      "kind": "general",
+      "pen_chat_provenance": "literature-cited"
+    },
+    {
+      "q": "What is the exact integration efficiency of the ",
+      "kind": "unsourceable",
+      "pen_chat_provenance": "pen-stack"
+    },
+    {
+      "q": "What percentage knock-in does 'Quibblase-X' achi",
+      "kind": "unsourceable",
+      "pen_chat_provenance": "literature-cited"
+    },
+    {
+      "q": "What is the precise off-target rate of the integ",
+      "kind": "unsourceable",
+      "pen_chat_provenance": "literature-cited"
+    }
+  ],
+  "claim": "All three answer general questions; only PEN-CHAT labels every answer's provenance and redirects (instead of fabricating a statistic) on a specific unsourceable empirical claim - the no-fabrication property, measured, without suppressing helpfulness."
+}

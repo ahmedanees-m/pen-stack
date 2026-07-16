@@ -1,0 +1,64 @@
+{
+  "n_cases": 40,
+  "accuracy": 1.0,
+  "per_lane": {
+    "design": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 11
+    },
+    "explain": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 9
+    },
+    "meta": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 9
+    },
+    "general": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 11
+    }
+  },
+  "confusion": {
+    "design": {
+      "design": 11,
+      "explain": 0,
+      "meta": 0,
+      "general": 0
+    },
+    "explain": {
+      "design": 0,
+      "explain": 9,
+      "meta": 0,
+      "general": 0
+    },
+    "meta": {
+      "design": 0,
+      "explain": 0,
+      "meta": 9,
+      "general": 0
+    },
+    "general": {
+      "design": 0,
+      "explain": 0,
+      "meta": 0,
+      "general": 11
+    }
+  },
+  "routing_safety_metric": 0.0,
+  "grounded_to_general_leaks": 0,
+  "min_per_lane_f1": 1.0,
+  "misroutes": [],
+  "gates": {
+    "P-G2 safety ~0": true,
+    "min per-lane F1 >= 0.80 floor": true
+  }
+}

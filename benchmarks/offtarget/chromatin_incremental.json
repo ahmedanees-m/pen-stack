@@ -1,0 +1,22 @@
+{
+  "question": "Does chromatin accessibility add INCREMENTAL value over the CRISOT sequence score for nominating off-targets? (v6.10.4)",
+  "data": "GUIDE-seq (cell-based), 12 guides (>=5 actives), off-targets mapped to hg38, CRISOT-Score + cell-type-matched HEK293T DNase accessibility per off-target",
+  "method": "(A) conditional logistic regression active ~ z(CRISOT) + z(accessibility), bootstrap-over-guides 95% CI on the accessibility coefficient. (B) leave-one-guide-out held-out AUPRC of CRISOT-only vs a CRISOT+accessibility logistic combiner, bootstrap 95% CI on the per-guide gap. Tested at two candidate imbalances.",
+  "result_realistic_imbalance": {
+    "n_offtargets": 48059, "n_actives": 390, "n_guides": 12, "approx_active_rate": "1:123",
+    "conditional_logreg": {"acc_coef": 0.351, "acc_coef_ci95": [0.2385, 0.5584], "crisot_coef": 3.5279, "adds_incremental_signal": true},
+    "logo_heldout_auprc": {"mean_crisot_only": 0.7942, "mean_crisot_plus_acc": 0.7969, "mean_gap": 0.0027, "gap_ci95": [-0.014, 0.0214], "combiner_improves_ranking": false}
+  },
+  "result_downsampled_cross_check": {
+    "n_offtargets": 6385, "approx_active_rate": "1:16",
+    "conditional_logreg": {"acc_coef": 0.3527, "acc_coef_ci95": [0.2023, 0.6314], "adds_incremental_signal": true},
+    "logo_heldout_auprc": {"mean_crisot_only": 0.9424, "mean_crisot_plus_acc": 0.9399, "mean_gap": -0.0025, "gap_ci95": [-0.0111, 0.0051], "combiner_improves_ranking": false}
+  },
+  "verdict": "Accessibility carries a SMALL, REAL conditional signal (coef ~0.35, CI excludes 0 at BOTH imbalances) but adds NO incremental ranking value over the CRISOT sequence score (held-out AUPRC gap CI includes 0 at both imbalances).",
+  "decision": "Chromatin stays a VALIDATED ANNOTATION, NOT a re-ranker. The CRISOT sequence score already captures essentially all the practically-relevant nomination signal; a CRISOT+accessibility combiner does NOT improve held-out ranking, so it is NOT wired into the numeric risk score. The fitted combiner coefficients are recorded below for transparency but are intentionally not applied.",
+  "recorded_combiner_not_applied": {
+    "features": ["z_crisot", "z_accessibility"], "coef": [3.5279, 0.351], "intercept": -5.6776,
+    "crisot_mean": 0.4074, "crisot_std": 0.0971, "acc_mean": 0.1095, "acc_std": 0.1665,
+    "applied": false, "reason": "no demonstrated held-out ranking improvement over CRISOT alone"
+  }
+}

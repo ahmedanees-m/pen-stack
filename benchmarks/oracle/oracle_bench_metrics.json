@@ -1,0 +1,45 @@
+{
+  "bench": "Oracle-Bench (PEN-ORACLE)",
+  "reliability_verbatim": {
+    "n_oracles": 7,
+    "boltz2_affinity_fep_pearson_r": 0.62,
+    "boltz2_affinity_fep_citation": [
+      "10.1101/2025.06.14.659707"
+    ],
+    "all_benchmark_records_cited": true,
+    "disclaimer_present": true,
+    "gate_pass": true
+  },
+  "disagreement_to_interval": {
+    "spreads": [
+      0.0,
+      0.05,
+      0.1,
+      0.2,
+      0.4
+    ],
+    "native_uncertainty": [
+      0.05,
+      0.075,
+      0.1,
+      0.15,
+      0.25
+    ],
+    "monotone_nondecreasing": true,
+    "rule": "native_uncertainty = max(member native uncertainty) + 0.5 * (max - min) over the available numeric oracles",
+    "gate_pass": true
+  },
+  "affinity_contract": {
+    "grounded_example": "4-hydroxytamoxifen / ERT2 (inducible-writer switch)",
+    "grounded_available": true,
+    "grounded_cached": true,
+    "grounded_binder_probability": 0.9853998422622681,
+    "grounded_affinity_pred_value": -2.105919361114502,
+    "grounded_native_uncertainty": 0.3528,
+    "ood_pair_extrapolating": true,
+    "ood_pair_in_scope": false,
+    "uncached_defers": true,
+    "gate_pass": true
+  },
+  "all_gates_pass": true
+}

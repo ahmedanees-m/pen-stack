@@ -1,0 +1,19 @@
+{
+  "benchmark": "TPE-Bench",
+  "version": "v6.7.0",
+  "description": "Position-effect / expression held-out track for the Genome-Writing Challenge. Sealed before model selection.",
+  "datasets": ["TRIP_Akhtar2013"],
+  "label": "measured TRIP integrated-reporter expression (log2) + silenced flag (NON-circular: the measured label, not a submitter claim)",
+  "chrom_holdout": {
+    "test_chroms": ["chr2", "chr5", "chr14", "chrX"],
+    "rationale": "~20% of TRIP integrations held out by whole chromosome (leakage control: nearby integrations share chromatin). Frozen + SHA-locked before model selection.",
+    "approx_n_test": 2257,
+    "approx_n_train": 9176
+  },
+  "celltype_holdout": {
+    "status": "data_gated",
+    "rationale": "leave-one-cell-type-out (the headline transfer track) needs >=2 cell types; activates on PatchMPRA/MPIRE/lentiMPRA/Leemans acquisition. No transfer number is fabricated until then."
+  },
+  "metrics": ["expression_spearman", "silenced_auroc"],
+  "seed": 20260619
+}

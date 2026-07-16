@@ -1,0 +1,115 @@
+{
+  "benchmark": "PhiC31 pseudo-attP learned predictor, full Chalberg 2006 115-site genomic set (O-G2 / P3)",
+  "question": "Does a learned model over sequence/architecture features recover the documented human phiC31 genomic pseudo-attP sites above BOTH (a) canonical-attP sequence-similarity and (b) the palindrome-only feature, on a by-chromosome held-out split?",
+  "provenance": {
+    "note": "Every value in this file is copied verbatim from the sealed P3 result set produced 2026-07-04 on the VM (penstack:phase1.5). This file redistributes those pre-registered, sealed numbers into the pen-stack benchmark tree; it performs no new computation. The pre-registration was sealed BEFORE feature-scoring/fitting and run once (not retuned).",
+    "sources": {
+      "result_json": "P3_RESULT.json",
+      "result_md": "P3_RESULT.md",
+      "prereg_yaml": "p3_prereg.yaml"
+    },
+    "sealed_prereg_sha256": "405d740fe9ccb154a18f69aed9886c87586f2326ee851ed75c7fc8e42904f9fe",
+    "_source": "sealed_prereg_sha256 from P3_RESULT.json line 2 (p3_prereg.sealed.json)"
+  },
+  "dataset": {
+    "name": "Chalberg 2006 genomic phiC31 pseudo-attP sites",
+    "supplement_file": "mmc1.xls",
+    "citation": "Chalberg et al. 2006, J Mol Biol 357:28-48",
+    "pmid": "16414067",
+    "genome_build": "hg17",
+    "genome_source": "sequences extracted directly from hg17.2bit (VM ~/data/external/hg17.2bit), no liftover",
+    "n_positive_sites": 115,
+    "cell_lines": ["293", "D407", "HepG2"],
+    "curated_positives_file": "Chalberg_2006/chalberg2006_pseudo_attp_sites.csv",
+    "_source": "P3_RESULT.md lines 7-9, 50, 58; p3_prereg.yaml lines 11-16"
+  },
+  "positives": {
+    "n": 115,
+    "description": "115 unique genomic phiC31 pseudo-attP sites; all 115 yielded clean +/-50 bp (100 bp) windows",
+    "core_window_bp": 50,
+    "_source": "P3_RESULT.json line 3 (n_pos=115); P3_RESULT.md lines 8-9; p3_prereg.yaml lines 10-16"
+  },
+  "negatives": {
+    "n": 2225,
+    "strategy": "gc_matched_genomic_windows",
+    "gc_match": "GC-matched within +/-2%",
+    "ratio_neg_per_pos": 20,
+    "exclusions": ">=1 kb from any positive; N-containing windows excluded",
+    "_source": "P3_RESULT.json line 4 (n_neg=2225); P3_RESULT.md line 10; p3_prereg.yaml lines 17-23"
+  },
+  "features": {
+    "n_features": 68,
+    "families": [
+      "dyad_symmetry_palindrome_score",
+      "inverted_repeat_stem_length",
+      "central_at_content",
+      "attP_consensus_similarity (sealed-negative method; canonical attP, PDB 9U2T motif)",
+      "kmer_3_composition"
+    ],
+    "_source": "P3_RESULT.md lines 11-12 (68 features); p3_prereg.yaml lines 24-29"
+  },
+  "model": {
+    "estimator": "lightgbm_gbdt",
+    "seed": 20260705,
+    "_source": "P3_RESULT.md line 13; p3_prereg.yaml lines 31-34"
+  },
+  "cross_validation": {
+    "scheme": "leave_one_chromosome_out",
+    "detail": "115 sites across 23 chromosomes; spatial-leakage guard; out-of-fold predictions scored",
+    "_source": "P3_RESULT.md line 13; p3_prereg.yaml lines 32-33"
+  },
+  "baselines": [
+    {
+      "name": "attp_sim_baseline",
+      "description": "canonical-attP consensus sequence-similarity only (the sealed-negative method)"
+    },
+    {
+      "name": "palindrome_baseline",
+      "description": "dyad-symmetry palindrome score only (single mechanistic feature)"
+    }
+  ],
+  "metrics": {
+    "n_positive": 115,
+    "n_negative": 2225,
+    "baseline_prevalence_auprc": 0.0491,
+    "auroc": {
+      "model": 0.6368,
+      "attp_sim_baseline": 0.6317,
+      "palindrome_baseline": 0.5445,
+      "_source": "P3_RESULT.json lines 5-9 (display-rounded to 0.637 / 0.632 / 0.545 in P3_RESULT.md lines 19-21)"
+    },
+    "auprc": {
+      "model": 0.2154,
+      "attp_sim_baseline": 0.0944,
+      "palindrome_baseline": 0.0548,
+      "_source": "P3_RESULT.json lines 10-13 (display-rounded to 0.215 / 0.094 / 0.055 in P3_RESULT.md lines 19-21)"
+    },
+    "ci95_model_minus_baseline": {
+      "n_bootstrap": 2000,
+      "vs_attp_sim_baseline": {
+        "auroc_diff_ci95": [-0.0537, 0.0651],
+        "auprc_diff_ci95": [0.0505, 0.1919],
+        "auroc_includes_zero": true,
+        "auprc_includes_zero": false
+      },
+      "vs_palindrome_baseline": {
+        "auroc_diff_ci95": [0.0174, 0.1698],
+        "auprc_diff_ci95": [0.0926, 0.2399],
+        "auroc_includes_zero": false,
+        "auprc_includes_zero": false
+      },
+      "_source": "P3_RESULT.json lines 16-36; n_bootstrap=2000 from p3_prereg.yaml lines 40-43 / P3_RESULT.md line 14"
+    },
+    "_source": "baseline_prevalence_auprc=0.0491 from P3_RESULT.json line 15; n_positive/n_negative from P3_RESULT.json lines 3-4"
+  },
+  "verdict": "learned_model_null",
+  "verdict_source": "P3_RESULT.json line 38",
+  "honest_reading": {
+    "strict_sealed_rule": "learned_model_validated required beating BOTH baselines on BOTH AUROC and AUPRC with the bootstrap 95% CI of each difference excluding 0 (N>=30, by-chromosome CV). The model does NOT clear this bar because it does not improve AUROC over attP-similarity (AUROC diff CI [-0.0537, 0.0651] includes 0). Sealed verdict: learned_model_null.",
+    "precision_recall_gain": "On AUPRC, the operationally-relevant rare-positive retrieval metric (prevalence 0.0491), the learned model beats BOTH baselines with CI excluding 0: AUPRC 0.2154 vs 0.0944 (attP-similarity) and 0.0548 (palindrome), roughly 2-4x the baselines and >4x prevalence.",
+    "what_the_null_teaches": "At proper power (N=115, GC-matched genomic negatives) canonical-attP sequence similarity is itself a moderate predictor (AUROC 0.6317). So the earlier N=3 open-subset conclusion that sequence identity sits below chance does NOT generalize to the well-powered set; identity carries real ranking signal, and the learned model matches (not beats) it on AUROC while improving precision.",
+    "caveat_gc_only_decoys": "Negatives are GC-matched genomic windows, a relatively easy decoy. A stronger test would use dinucleotide/k-mer-composition-matched or accessibility-matched decoys, or a genome-wide FDR. The AUPRC win is method-comparative separability, not an in-vivo integration-rate model or a genome-wide FDR.",
+    "reported_as": "A truthful negative on the strict both-metrics criterion together with a genuine, CI-clean precision-recall gain. Run once, not retuned.",
+    "_source": "P3_RESULT.md lines 27-59; P3_RESULT.json lines 5-38"
+  }
+}
