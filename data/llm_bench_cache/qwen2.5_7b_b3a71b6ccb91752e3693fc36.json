@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_7b",
+  "condition": "naive",
+  "goal": "plan|CCR5|write a gene into CCR5 for HIV resistance",
+  "content": "{\n  \"max_writability\": 85,\n  \"safety_score\": 72,\n  \"p_durable\": 0.94,\n  \"predicted_offtarget_count\": 3,\n  \"structural_risk_score\": 60,\n  \"target_bin_coordinate\": \"chr5:119198799\",\n  \"recommended_writer_family\": \"Base Editor\"\n}"
+}

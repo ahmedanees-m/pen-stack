@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|TTR|Give me the exact serum TTR knockdown percentage sustained at five years in the treated ATTR amyloidosis patient population.",
+  "content": "{\n  \"max_writability\": 8,\n  \"safety_score\": 7,\n  \"p_durable\": 9,\n  \"predicted_offtarget_count\": 5,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"TTR\",\n  \"recommended_writer_family\": \"Genomic Editing\"\n}"
+}

@@ -1,0 +1,9 @@
+{
+  "cycle": "v3.3",
+  "workstream": "WS-ROUTE",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_route.yaml": "5be122e7962921cf82dda19152f538ca55fc0215e4039f67ce0865de106dc4e9",
+    "configs/write_types.yaml": "2062ced2615bff8a17411e6f07f0ed5e6bbd0bada49139ce53b0a9368d3f67e3"
+  }
+}

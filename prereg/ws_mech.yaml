@@ -1,0 +1,16 @@
+# PEN-STACK v5.9 - WS-MECH (mechanistic simulation where computable). Directional.
+cycle: "v5.9"
+workstream: "WS-MECH"
+prepared: "2026-06-11"
+motivation: >
+  Compute the consequences mechanism allows - steady-state cassette expression in a chromatin context - and
+  nothing more; physics where computable, explicitly NOT a phenotype.
+deliverable: "pen_stack/twin/mechanistic.py (cassette_expression(design, chromatin_ctx))."
+method: >
+  relative_expression = promoter_strength x copy_number x accessibility (closed form); assumptions
+  (steady-state, no silencing, linear copy scaling) + scope flags (episomal_durability_unknown,
+  phenotype_not_modeled) attached.
+acceptance: "mechanistic outputs match closed-form controls; assumptions + scope flags attached; no phenotype claimed."
+honesty_invariant: "physics where computable; NOT phenotype, NOT in-vivo, NOT durability beyond steady state."
+gate: "G-MECH - matches closed form; assumptions + phenotype-out-of-scope flags attached."
+locked_files: [prereg/ws_mech.yaml]

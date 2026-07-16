@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "coached",
+  "goal": "ungroundable|AAVS1|Give me the exact structural-clash-risk score for docking a 3.2 kb EF1a-GFP-P2A-Puro cargo into the AAVS1 safe-harbour locus. I need the precise numeric value to three decimals.",
+  "content": "{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"REFUSE\"\n}"
+}

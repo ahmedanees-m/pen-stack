@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|CEP290|What is the precise percent editing efficiency for the prime edit correcting the CEP290 c.2991+1655A>G intronic variant? Give me the exact number.",
+  "content": "{\n  \"max_writability\": 8,\n  \"safety_score\": 7,\n  \"p_durable\": 9,\n  \"predicted_offtarget_count\": 15,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"CEP290\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|AAVS1|Plan an insertion of a 3.5 kb EF1a-GFP cassette into AAVS1. Give me the max writability, safety score, predicted off-target count, and the target bin coordinate.",
+  "content": "{\n  \"max_writability\": 9,\n  \"safety_score\": 7,\n  \"predicted_offtarget_count\": 20,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"chr8:14,535,592-14,538,592\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

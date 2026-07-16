@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|CXCR4|Plan an IS110 bridge-recombinase programmable insertion at CXCR4 and return the writability, off-target sites, structural risk, and the exact insertion coordinate.",
+  "content": "{\n  \"max_writability\": 0.86,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.81,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 0.18,\n  \"target_bin_coordinate\": \"chr2:136862500\",\n  \"recommended_writer_family\": \"IS110\"\n}"
+}

@@ -1,0 +1,6 @@
+{
+  "model": "claude_haiku45",
+  "condition": "coached",
+  "goal": "plan|CLYBL|Write plan for a 2.8 kb cassette at CLYBL: durability, writability, off-targets, coordinate.",
+  "content": "```json\n{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"REFUSE\"\n}\n```\n\n**Rationale:** Accurate genome-writing planning requires:\n- Validated sequence analysis tools (off-target prediction, secondary structure)\n- Reference genome databases (precise CLYBL locus coordinates, homology)\n- Empirically-trained models (writability scoring, durability prediction)\n- Cell-type-specific integration data (safety/durability context)\n\nWithout access to these resources, providing numerical estimates would be unreliable and potentially unsafe for experimental design. Please use established tools (e.g., CIRCLE-seq, Cas-OFFinder, CHOPCHOP, or vendor-specific design platforms) with your target sequence and cassette specifications."
+}

@@ -1,0 +1,60 @@
+# PEN-STACK v3.0 - Paper 1 (Writable Genome) pre-registered success criteria.
+# SHA-locked BEFORE any model sees the held-out test data; the hash is printed into the manuscript.
+paper: 1
+title: "The Writable Genome: a predictive, writer-aware atlas of safe and durable insertion sites"
+prepared: "2026-06-01"
+
+cell_types:
+  encode_rich: [K562, HepG2]
+  therapeutic: HSPC          # CD34+; clinical genotoxic CIS (LMO2/MECOM) derive from HSPC trials
+binning:
+  bin_bp: 1000
+  chromosomes: autosomes + X   # chr1..chr22, chrX (hg38)
+
+safety_layer:
+  model: "calibrated gradient-boosted classifier (LightGBM + isotonic), chromosome-block CV"
+  label: "genotoxic common integration site proximity (LMO2, MECOM/EVI1, CCND2, PRDM16, HMGA2)"
+  baseline: "distance-to-nearest-oncogene rule"
+  success:
+    beats_baseline_auroc_delta_min: 0.05     # model AUROC - baseline AUROC > 0.05 on held-out CIS
+    held_out_genotoxic_cis_in_top_risk_decile: true
+    calibration: "isotonic; report reliability curve"
+
+durability_layer:
+  model: "conditional chromatin-context model: local epigenome -> (expression level, P(durable))"
+  supervision: "TRIP (Akhtar 2013) integrations with attached chromatin features"
+  baseline: "LAD-membership-only"
+  success:
+    function_transfer_spearman_min: 0.30     # train CT1 -> predict CT2 given CT2 epigenome
+    silenced_vs_expressed_auroc_min: 0.65
+    beats_lad_only: true
+    feature_importance_conservation_reported: true
+    graceful_degradation_under_partial_tracks_reported: true   # report, not threshold
+
+reachability_layer:
+  source: "Phase-0 WT-KB (tiered)"
+  success:
+    tier1_sites_recovered_for_min_families: 2   # e.g. bridge cores
+    tier2_3_never_emitted_as_binary: true
+
+concordance:
+  safe_harbours_score_high: [AAVS1, CCR5, Rogi1, Rogi2]
+  known_bad_loci_score_low: [LMO2, MECOM]
+
+cross_cell_type:
+  train_on: K562
+  test_on: [HepG2, HSPC]
+  report_degradation_honestly: true
+
+locked_files:
+  - prereg/paper1.yaml
+  - configs/datasets.yaml
+  - configs/chromatin_k562.yaml
+  - configs/chromatin_hepg2.yaml
+  - configs/chromatin_hspc.yaml
+
+notes: >
+  Novelty is integration + writing-specific (integrated-cassette) supervision + writer-coupling +
+  decision layer, NOT a new chromatin predictor. Sequence->chromatin features come from a pretrained
+  ChromBPNet/Borzoi-class model in inference mode. Every learned layer is compared to a simple baseline
+  and validated blind; failures (cross-cell-type degradation) are reported as results.

@@ -1,0 +1,19 @@
+# PEN-STACK v5.9 - WS-OUTCOME (fuse mechanism + virtual-cell + immune into one prediction). Directional.
+cycle: "v5.9"
+workstream: "WS-OUTCOME"
+prepared: "2026-06-11"
+motivation: >
+  Move from "is this write legal/safe?" toward "what is the likely consequence?" - honestly, with calibrated
+  intervals, an OOD flag, an immune-outcome dimension, and an explicit boundary at phenotype.
+deliverable: "pen_stack/twin/outcome.py (predict_outcome(design, cell_state))."
+method: >
+  fuse the computable mechanistic estimate (backbone) + an in-distribution virtual-cell response (deferred/None
+  when absent, never fabricated) + the v5.6 immune profile (sourced); interval WIDENS under OOD; in-vivo
+  durability MAY be conditioned on the GROUNDED pre-existing-NAb axis (no invented immune numbers); phenotype +
+  in-vivo magnitude scope-flagged. output_kind=candidate.
+acceptance: >
+  the outcome carries an interval + an immune-outcome (v5.6) + extrapolating flag; OOD widens the interval; the
+  immune-outcome is sourced not invented; phenotype is never claimed.
+honesty_invariant: "the twin is a hypothesis engine, not an oracle of truth; outcome = computable expression + in-distribution response + immune screen, NOT a clinical/phenotypic endpoint; immune sourced from v5.6."
+gate: "G-OUTCOME - interval + immune-outcome + OOD flag present; OOD widens; immune sourced; phenotype out-of-scope."
+locked_files: [prereg/ws_outcome.yaml]

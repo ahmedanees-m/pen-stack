@@ -1,0 +1,43 @@
+# PEN-STACK v6.8 - WS-WRITER (PEN-WRITER: cross-family writer-efficiency engine + guide design). Pre-registered.
+cycle: "v6.8"
+workstream: "WS-WRITER"
+prepared: "2026-06-20"
+motivation: >
+  Writer selection is a curated-KB RANKING (Writer Atlas, 8 families), retrieval, not prediction: no predicted
+  efficiency, no uncertainty, no guide design. Quantitative human-cell writer-efficiency data now exists but is
+  scattered across a dozen papers with no unified resource. Build the first curated writer-efficiency benchmark +
+  a learned cross-family efficiency predictor + integrated guide/att design, wrapping the Atlas + v4.0
+  writer-verification, not rebuilding them.
+deliverable: >
+  pen_stack/atlas/writer_efficiency.py (curated dataset, every row DOI + verbatim quote + source-access grade) +
+  data/writer_efficiency.parquet (SHA-locked) + benchmarks/writer_efficiency/ (Writer-Efficiency Bench, sealed
+  held-out-family + held-out-locus splits) + pen_stack/atlas/writer_predict.py (learned predictor + conformal) +
+  pen_stack/atlas/guide_design.py (bridge-RNA TBL/DBL, pegRNA+attB, orthogonal att-pairs) +
+  pen_stack/design/writer_variants.py (serine-integrase hyperactive-mutant critique, extends v4.0) +
+  pen_stack/atlas/writer_recommend.py (the recommender surface) + docs/cards/writer_efficiency_data.md.
+baseline_to_beat: >
+  the curated-KB ranking, operationalised as the family-mean efficiency prior. Splits are leakage-controlled:
+  leave-one-WRITER-FAMILY-out AND leave-one-LOCUS-out. Metrics: MAE + Spearman + paired-bootstrap CI on the MAE
+  reduction vs the baseline.
+method: >
+  interpretable features (family, variant-is-evolved, log cargo, cell-type class, delivery) -> HistGradientBoosting
+  (small/regularized, appropriate for N~42; ESM/Evo2 embeddings withheld here to avoid overfit, variant SCORING
+  uses them separately). Family-blocked LOO OOF -> split-conformal interval (% scale), candidate-flagged. Guide
+  design from the DOCUMENTED reprogramming rules (Durrant 2024 bridge RNA; Yarnall 2023 pegRNA+attB; Roelle 2023
+  orthogonal att central dinucleotides) with round-trip + invariant recovery tests. Variant critique extends
+  writer_verify with the Hew NAR 2024 / Keravala 2009 hyperactive-mutant frozen panel.
+acceptance: >
+  C-G1: dataset has per-source provenance + checksum; bench sealed + SHA-locked. C-G2: the learned predictor SHIPS
+  as the authoritative ranking ONLY if it beats the KB baseline on held-out family AND held-out locus (CI excludes
+  0); else RETAIN the KB ranking, ship the predictor as a candidate advisory, and report the negative. Guide
+  designs reproduce published constructs (round-trip + documented invariants). Variant critique recovers known
+  hyperactive mutants (retrospective panel); the LM-vs-conservation blind claim is reported verbatim (deferred
+  when the model server is absent, LM naturalness != engineered hyperactivity is an honest limitation).
+honesty_invariant: >
+  every efficiency is a real published number with a DOI + verbatim quote (no fabrication); range values stored as
+  midpoints with the raw string retained; secondary-source rows flagged + droppable (strict). Predicted efficiencies
+  are candidates with intervals, never asserted measured activity; efficiencies are NOT extrapolated to families
+  absent from the curated dataset (KB-only there). The dataset + benchmark are the contribution; a non-both-axes
+  win does not become a manufactured headline. 4 families is the binding statistical limit, reported not hidden.
+gate: "G-WRITER - dataset+bench sealed (C-G1); learned predictor beats KB on both axes or negative reported + KB retained (C-G2); guide recovery passes; variant critique recovers hyperactive panel; no fabricated/extrapolated efficiency."
+locked_files: [prereg/ws_writer.yaml]

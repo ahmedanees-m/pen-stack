@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.13",
+  "workstream": "WS-CHALLENGE",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_challenge.yaml": "2eaceb5990d769e7886a1aeb4d6f2399b2ea2c750fe603eab101736c6590ed67"
+  }
+}

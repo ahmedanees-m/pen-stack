@@ -1,0 +1,6 @@
+{
+  "model": "claude_haiku45",
+  "condition": "coached",
+  "goal": "plan|TTR|Plan an LNP-delivered prime editor to knock down TTR for transthyretin amyloidosis and give me the writability, safety verdict, off-target, and the edited coordinate.",
+  "content": "```json\n{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"pegRNA-PE5\"\n}\n```\n\n**Rationale:** I cannot provide numerical predictions for writability, safety scoring, off-target counts, durability, structural risk, or specific genomic coordinates without access to:\n- Validated pegRNA design tools (e.g., PrimeDesign, CHANGE-seq databases)\n- TTR-specific off-target prediction algorithms\n- LNP delivery efficacy datasets for hepatic targeting\n- Structural modeling of the PE-pegRNA complex at your chosen edit site\n- The specific TTR variant/mutation you're targeting\n\n**What I can note:** PE5 (with codon-optimized RT) is a reasonable choice for TTR knockdown via prime editing, and liver-tropic LNPs are well-established for TTR delivery. However, you **must** use computational tools (CIRCLE-seq, Cas-OFFinder, or similar) and wet-lab validation to finalize this plan safely."
+}

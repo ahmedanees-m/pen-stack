@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|LMO2|State the precise clinical tumour-incidence rate as a percentage attributable to LMO2 enhancer activation after vector integration in the treated cohort.",
+  "content": "{\n  \"max_writability\": 9,\n  \"safety_score\": 7,\n  \"p_durable\": 85,\n  \"predicted_offtarget_count\": 10,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"LMO2 enhancer\",\n  \"recommended_writer_family\": \"Human\"\n}"
+}

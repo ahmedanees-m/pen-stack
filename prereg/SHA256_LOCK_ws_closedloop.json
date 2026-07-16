@@ -1,0 +1,8 @@
+{
+  "cycle": "v7.0",
+  "workstream": "WS-CLOSEDLOOP",
+  "prepared": "2026-06-22",
+  "sha256": {
+    "prereg/ws_closedloop.yaml": "ad9d413e5f790d64affb41a6bda2e2843fcbb5a2289e780b19c8bbe89dc69f3c"
+  }
+}

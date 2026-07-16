@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.3",
+  "workstream": "WS-EPITOPE",
+  "prepared": "2026-06-10",
+  "sha256": {
+    "prereg/ws_epitope.yaml": "d69f145f8cfe80ae2c0bccbde17dc85ccdff31f354b0db0a6a9a10910d6b31e3"
+  }
+}

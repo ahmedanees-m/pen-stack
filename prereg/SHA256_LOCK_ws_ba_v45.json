@@ -1,0 +1,8 @@
+{
+  "cycle": "v4.5",
+  "workstream": "WS-BA-graph",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_ba_v45.yaml": "1b731ab3256f5c523a08a705caff345f98b86d0790af4f0eee59a9fdf3cdf7e8"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "phase": 3,
+  "paper": 3,
+  "prepared": "2026-06-02",
+  "sha256": {
+    "prereg/paper3.yaml": "0eed1c8188e2e96d77fb428fbca8ffd52db7d303886d88ff1972a98e6ea716d3",
+    "data/benchmark_panel.csv": "60d33f60081b7d0d08f0f66e0610746412d39e0c1f00f1febf71dccc33a4f801",
+    "configs/intent_weights.yaml": "a392204c6b78a6b4560334e3ac9770cf75ec62f7925e8b3498c2f92d12c0a46a",
+    "configs/delivery_rules.yaml": "145075175c83994a9fadef7d17979be9ab54f5043c8ee077bbe9abc650d3db82"
+  }
+}

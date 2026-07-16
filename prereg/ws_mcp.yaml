@@ -1,0 +1,14 @@
+# PEN-STACK v6.1 - WS-MCP (polished, discoverable MCP surface). Directional.
+cycle: "v6.1"
+workstream: "WS-MCP"
+prepared: "2026-06-11"
+motivation: "Clean, discoverable MCP tools + the self-describing capabilities/scope RESOURCES; a structured refusal an agent can branch on."
+deliverable: >
+  pen_stack/agent/mcp_server.py: resources pen-stack://capabilities + pen-stack://scope; tools safety_screen /
+  immune_profile / generate_designs / predict_outcome / suggest_experiment / co_scientist_session (+ existing
+  verify_write / graph_query / plan_write*); examples/{external_agent,mcp_client,agent_tools}.py.
+method: "register the engine tools + the two manifest resources on the fastmcp server; structured returns; a hazardous design returns SafetyVerdict.decision == refuse; a framework wrapper builds tool specs FROM the manifest."
+acceptance: "an MCP client lists the tools + resources, calls verify_write -> structured Verdict (safety+immune+scope); a hazardous design -> structured refusal; the framework wrapper dispatches to the validated engine; examples run."
+honesty_invariant: "wraps the engine; structured refusals are first-class; numbers only from tool results."
+gate: "G-MCP - tools + capabilities/scope resources registered; structured refusal on hazard; framework wrapper dispatches; examples runnable."
+locked_files: [prereg/ws_mcp.yaml]

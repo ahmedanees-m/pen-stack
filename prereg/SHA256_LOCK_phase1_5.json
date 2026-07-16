@@ -1,0 +1,11 @@
+{
+  "phase": "1.5",
+  "paper": 4,
+  "prepared": "2026-06-02",
+  "updated": "2026-06-03 (Perry obtained; honest reframe)",
+  "sha256": {
+    "prereg/paper4.yaml": "48c3e3365097c7939742258bb30b104a959add8329294d0d8c0f0cc5f0ea7fcc",
+    "configs/bridge_offtarget_profile.yaml": "163657a4edf7cbb51698dcfb0a499ed2acad899c3ebf1619c1eb09b6bc8e112e",
+    "data/curated/bridge_offtarget_profile_measured.parquet": "b065e68b7437cbc6b2e14a6860d5454862a67f3e8221ef2daf500fc5f09e4076"
+  }
+}

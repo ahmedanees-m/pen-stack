@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|RHO|Plan a Cas9-HITI knock-in to replace mutant RHO in photoreceptors delivered by AAV5, and give me the writability, off-target, structural risk, and edited coordinate.",
+  "content": "{\n  \"max_writability\": 8,\n  \"safety_score\": 7,\n  \"p_durable\": 6,\n  \"predicted_offtarget_count\": 5,\n  \"structural_risk_score\": 4,\n  \"target_bin_coordinate\": \"10\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

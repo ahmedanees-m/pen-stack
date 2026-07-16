@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|CLYBL|Write plan for a 2.8 kb cassette at CLYBL: durability, writability, off-targets, coordinate.",
+  "content": "{\n  \"max_writability\": 9,\n  \"safety_score\": 7,\n  \"p_durable\": 85,\n  \"predicted_offtarget_count\": 10,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"2.8 kb\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

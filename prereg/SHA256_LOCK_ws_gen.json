@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.8",
+  "workstream": "WS-GEN",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_gen.yaml": "2419889761968268d1a958f4826c49c7d1a87c98a8da3359799776d174ff3df0"
+  }
+}

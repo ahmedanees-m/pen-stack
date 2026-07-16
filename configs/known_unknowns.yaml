@@ -1,0 +1,110 @@
+# PEN-STACK v3.2, Known-Unknowns Registry (WS-EP / EP2).
+# A STRUCTURED list of what PEN-STACK does NOT model. The scope matcher (pen_stack/agent/scope.py) matches an
+# incoming question against these entries and the agent answers "this requires X, which PEN-STACK does not
+# model" rather than guessing. This makes the EDGE of the system's knowledge legible (docs/scope.md).
+#
+# These are the *unknown parts of the funnel* (PEN-STACK_v3_2_EXECUTION_PLAN §3 principle 3): the biology is
+# beyond any tool here, so it stays EXPLICITLY out of scope, surfaced, not faked. v3.2 makes the boundary
+# legible; it does not close it (no amount of feeding equations closes it, for anyone, today).
+#
+# Each entry: id, title, what it would require, why PEN-STACK cannot ground it, and match terms (substrings,
+# lowercased) + optional regex patterns. A question matching any entry is deferred (zero fabrication).
+
+known_unknowns:
+  - id: structure_to_phenotype
+    title: "structure → function → phenotype mapping"
+    requires: "a validated map from protein/genome structure to organismal phenotype"
+    why: "the structure→function→phenotype map is an open problem in biology; no tool in PEN-STACK predicts
+      phenotype from a structural or sequence edit, and none exists field-wide today"
+    match_terms: ["phenotype", "phenotypic outcome", "what trait", "clinical outcome", "patient outcome",
+                  "will it cure", "therapeutic effect", "disease severity", "symptom"]
+    patterns: ["\\bwhat (will|would) the (phenotype|trait|outcome) be\\b"]
+
+  - id: in_vivo_immunogenicity
+    title: "in-vivo immunogenicity of a writer or cargo"
+    requires: "in-vivo / clinical immunogenicity assays (anti-Cas/anti-AAV immune response, T-cell response)"
+    why: "PEN-STACK scores deliverability + sequence-level immunogenicity heuristics, NOT the in-vivo immune
+      response of a patient to a writer protein or capsid, that needs wet-lab/clinical immunology"
+    match_terms: ["immune response", "immunogenicity in patients", "anti-cas antibod", "anti-aav antibod",
+                  "t-cell response", "will the patient react", "in-vivo immune", "in vivo immune"]
+    patterns: ["\\bimmune (response|reaction) (in|of) (a |the )?(patient|human|person|animal)\\b"]
+
+  - id: long_term_clinical_durability
+    title: "long-term in-vivo / clinical durability of an integrated cassette"
+    requires: "longitudinal in-vivo / clinical follow-up of expression over months, years in a living organism"
+    why: "the durability model is a CONDITIONAL chromatin-context model (position effect on an integrated
+      cassette in a given epigenome), it does NOT predict multi-year in-vivo persistence, immune clearance,
+      or clonal dynamics in a patient"
+    match_terms: ["long-term in-vivo", "long term in vivo", "years of expression", "clinical durability",
+                  "persist in the patient", "how long will it last in", "in-vivo persistence", "clonal",
+                  "how long will expression last", "how long will it last", "how long will the cassette",
+                  "expression duration", "half-life", "half life", "will it persist", "how durable",
+                  "durability magnitude", "how long does"]
+    patterns: ["\\bhow long\\b[^?]{0,60}\\b(last|persist|express|stay expressed|remain)\\b",
+               "\\bduration of (expression|the cassette|the transgene)\\b"]
+
+  - id: in_vivo_expression_magnitude
+    title: "absolute in-vivo expression magnitude / functional titer"
+    requires: "an in-vivo expression / pharmacokinetic measurement (functional titer, % of normal, ng/mL) in a
+      living organism"
+    why: "PEN-STACK computes a RELATIVE, dimensionless mechanistic expression proxy (promoter × copy ×
+      accessibility) and the immune context, it does NOT predict an absolute in-vivo functional titer, a
+      percent-of-normal level, or a protein concentration; that is a measured clinical endpoint, never predicted"
+    match_terms: ["titer", "titre", "percent of normal", "% of normal", "percent normal", "iu/ml", "ng/ml",
+                  "absolute expression", "expression level in vivo", "how much protein", "how much will it express",
+                  "what level of expression", "protein concentration", "serum level", "plasma level"]
+    patterns: ["\\bwhat (functional )?titer\\b", "\\b\\d+\\s*% of normal\\b"]
+
+  - id: higher_order_epistasis
+    title: "higher-order epistasis / multi-edit interaction beyond the translocation screen"
+    requires: "a model of combinatorial edit interactions (epistasis) beyond pairwise translocation risk"
+    why: "the multiplex module screens pairwise translocation risk only; it does NOT model functional
+      epistasis among 3+ edits, regulatory cross-talk, or compensatory effects"
+    match_terms: ["epistasis", "epistatic", "interaction between edits", "combine these edits",
+                  "third edit", "multi-edit interaction", "edit interaction effect"]
+    patterns: []
+
+  - id: polygenic_effects
+    title: "polygenic / quantitative-trait effects"
+    requires: "polygenic / GWAS-scale trait architecture and quantitative genetics"
+    why: "PEN-STACK is a single-locus / per-write design tool; it does NOT model polygenic trait architecture,
+      GWAS effect sizes, or population-level quantitative-trait prediction"
+    match_terms: ["polygenic", "gwas", "quantitative trait", "heritability", "many genes contribute",
+                  "trait architecture", "complex trait"]
+    patterns: []
+
+  - id: germline_or_heritable
+    title: "germline / heritable editing outcomes"
+    requires: "germline-transmission and developmental-biology models (and the ethical/regulatory framework)"
+    why: "PEN-STACK is a somatic genome-WRITING design tool; it does NOT model germline transmission,
+      embryonic development, or heritable outcomes, and takes no position on germline editing"
+    match_terms: ["germline", "heritable", "pass to offspring", "embryo", "inherited by children",
+                  "future generations"]
+    patterns: []
+
+  # v5.6 WS-EXT, immune axes that are mechanistically distinct from what the v5.2-v5.6 oracles compute, and
+  # for which PEN-STACK has no grounded model: declared known-unknowns rather than faked.
+  - id: cd4_mhcii_help
+    title: "CD4 / MHC-II helper-epitope load"
+    requires: "MHC-II binding prediction over the capsid/transgene + a model linking CD4 help to antibody/memory formation"
+    why: "the v5.3 capsid-epitope oracle computes CD8 / MHC-I presentation ONLY; CD4 / MHC-II helper epitopes
+      (which drive antibody formation and durable memory) are NOT modelled, a distinct, ungrounded axis here"
+    match_terms: ["cd4", "mhc-ii", "mhc class ii", "helper t", "helper epitope", "th cell", "t-helper"]
+    patterns: []
+
+  - id: preexisting_capsid_tcell
+    title: "pre-existing capsid-specific memory T-cell immunity"
+    requires: "population prevalence of capsid-specific memory T cells (distinct from neutralizing-antibody serosurveys)"
+    why: "v5.5 seroprevalence is anti-vector ANTIBODY (B-cell) prevalence; pre-existing capsid-specific
+      memory T-CELL immunity is a separate dimension PEN-STACK does NOT model (sparse, assay-dependent data)"
+    match_terms: ["pre-existing t-cell", "preexisting t cell", "capsid-specific t cell", "memory t cell",
+                  "t-cell immunity to capsid", "cellular pre-existing immunity"]
+    patterns: []
+
+  - id: complement_carpa
+    title: "complement activation / CARPA (complement-activation-related pseudoallergy)"
+    requires: "a model of complement activation by the vector/LNP surface (C3/C5 turnover, anaphylatoxins) and infusion-reaction risk"
+    why: "complement/CARPA is mechanistically distinct from the cargo CpG/dsRNA innate axis (v5.4) and the
+      capsid epitope axis; PEN-STACK does NOT model complement activation or infusion-reaction risk"
+    match_terms: ["complement", "carpa", "c3a", "c5a", "anaphylatox", "infusion reaction", "pseudoallergy"]
+    patterns: []

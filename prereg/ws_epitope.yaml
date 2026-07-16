@@ -1,0 +1,47 @@
+# PEN-STACK v5.3 - WS-EPITOPE (computed capsid CD8 T-cell epitope-load oracle). Directional.
+cycle: "v5.3"
+workstream: "WS-EPITOPE"
+prepared: "2026-06-10"
+
+motivation: >
+  User: "continue. Also, we need to cover ALL the vectors." v5.2 computed genotoxicity only meaningfully
+  touches integrating vectors (lentivirus). The IMMUNE axis is where the rest of the palette has computable
+  signal. This adds the NetMHC-style calculation (the user's reference) for the adaptive (CD8 / MHC-I) axis,
+  covering every vehicle.
+
+deliverable: >
+  scripts/p53_build_epitope_oracle.py (VM, dedicated penstack:mhcflurry image) -> committed
+  configs/capsid_epitope_oracle.yaml; pen_stack/planner/capsid_epitope_oracle.py (OracleResult); wired into
+  delivery_immunology.safety_efficacy_profile adaptive axis; scope card `capsid_epitope`;
+  configs/capsid_sequences.fasta (UniProt-sourced, committed).
+
+method: >
+  For each VIRAL vector's capsid/envelope antigen, slide overlapping 9-mers and predict MHCflurry 2.0 affinity
+  percentile rank PER allele across a frequent HLA-I panel (12 alleles, Sidney 2008 supertypes); a 9-mer is a
+  STRONG binder for an allele at %rank <= 0.5; epitope_fraction_strong = residues covered by >=1 strong-binder
+  9-mer / length; capsid_immune_score = 1 - epitope_fraction_strong. Sequences (UniProt, verified): AAV2 VP1
+  P03135; Ad5 hexon P04133; VSV-G Indiana P03522 (lentivirus pseudotyping antigen); HSV-1 gD P57083 + gB P06437
+  (averaged). Population-level (panel-averaged), NOT patient-HLA-specific. MHCflurry [10.1016/j.cels.2020.06.010];
+  HLA-I supertypes [10.1186/1471-2172-9-1]. Committed sequences -> reproducible, no network at build. v4.0
+  OracleResult (output_kind="baseline").
+
+  INTRINSIC vs REALIZED: the computed score is INTRINSIC antigen presentability. It is folded into the adaptive
+  axis ONLY for IN-VIVO vehicles (host is exposed to the capsid). For EX-VIVO-only viral vectors (lentivirus,
+  whose VSV-G envelope is intrinsically epitope-dense but barely seen ex vivo) the score is REPORTED but NOT
+  folded (adaptive_source = computed_ex_vivo_muted); the documented tier is kept.
+
+acceptance: >
+  (1) every VIRAL vector gets a computed capsid_immune_score from MHCflurry x HLA panel; non-viral vectors are
+  1.0 by mechanism; ALL 8 vehicles covered (available). (2) the computed ordering is consistent with the
+  documented tiers (AAV2 capsid less epitope-dense than Ad5 hexon -> AAV less immunogenic than HDAd). (3) the
+  computed score folds into the adaptive axis for in-vivo vehicles and is muted (reported, not folded) for
+  ex-vivo lentivirus. (4) the oracle ABSTAINS for an unknown / sequence-less vehicle (never fabricates).
+  (5) provenance + accessions verified (UniProt) / curated (DOIs).
+
+honesty_invariant: >
+  Population-level, sequence-intrinsic PRESENTATION signal (does the capsid contain HLA binders) - NOT the
+  realized in-vivo / PATIENT-HLA-specific T-cell response (a known-unknown), and CD8 / MHC-I ONLY (not antibody
+  / neutralizing-antibody / B-cell). The immune MAGNITUDE stays `in_vivo_immunogenicity`. No magnitude predicted.
+
+gate: "all 8 vehicles covered (5 viral computed + 3 non-viral by mechanism); AAV<Ad epitope ordering; in-vivo folds / ex-vivo muted; abstains not fabricates; provenance verified; no-fabrication intact."
+locked_files: [prereg/ws_epitope.yaml]

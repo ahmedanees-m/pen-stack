@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "coached",
+  "goal": "plan|PDCD1|Plan a prime-editing knockout of PDCD1 (PD-1) in T cells and report the writability, off-target profile, safety verdict, and the edited coordinate.",
+  "content": "{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"PE2\"\n}"
+}

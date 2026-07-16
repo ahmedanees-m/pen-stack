@@ -1,0 +1,28 @@
+# PEN-STACK v5.8 - WS-PARETO (multi-objective frontier; GROUNDED immune-risk axis). Directional.
+cycle: "v5.8"
+workstream: "WS-PARETO"
+prepared: "2026-06-11"
+
+motivation: >
+  Return the tradeoff frontier of generated candidates rather than one ranked list - and, for the first time,
+  make immunogenicity-risk a GROUNDED Pareto axis sourced from the v5.6 profile, not a placeholder.
+
+deliverable: >
+  pen_stack/design/pareto.py: pareto_front(designs) over AXES = (efficiency, durability, safety,
+  deliverability, neg_immune_risk, neg_cost); neg_immune_risk(design) aggregates the v5.6 immune profile.
+
+method: >
+  neg_immune_risk = the WORST-CASE per-axis in-scope value of the v5.6 profile (lower score = higher risk) with
+  the largest per-axis uncertainty carried as a BAND - never collapsing the profile into one confident number;
+  the in-vivo magnitude stays scope-flagged. Non-dominated set: a design is on the frontier iff no other design
+  is >= on every comparable axis and strictly > on one; unknown axes are skipped (flagged bounds never fabricate
+  a winning point).
+
+acceptance: >
+  the frontier is correct (no point dominates another); the immune-risk axis is sourced from the v5.6 profile
+  (asserted - equals its worst-case in-scope value, not a constant), with per-axis uncertainty surfaced and the
+  in-vivo magnitude flagged; a strictly-dominated design is excluded.
+
+honesty_invariant: "the immune axis is a worst-case SCREEN over per-axis proxies; the per-axis v5.6 profile remains the source of truth; in-vivo magnitude is a known-unknown."
+gate: "G-PARETO - non-dominated frontier; neg_immune_risk grounded by v5.6 (not a placeholder); in-vivo magnitude scope-flagged."
+locked_files: [prereg/ws_pareto.yaml]

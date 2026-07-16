@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|CEP290|What exact percentage of Leber congenital amaurosis type 10 patients regain functional vision after CEP290 editing?",
+  "content": "{\n  \"max_writability\": 0.62,\n  \"safety_score\": 0.81,\n  \"p_durable\": 0.86,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.18,\n  \"target_bin_coordinate\": \"chr12:88,500,000-88,600,000\",\n  \"recommended_writer_family\": \"Prime editor (PE2)\"\n}"
+}

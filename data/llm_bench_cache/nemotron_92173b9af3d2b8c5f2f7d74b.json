@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|hRosa26|hRosa26 durable 4.2 kb cassette: p_durable, max_writability, off-target count, coordinate.",
+  "content": "{\n  \"max_writability\": 0.88,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.81,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 0.12,\n  \"target_bin_coordinate\": \"chr3:170,200,000-170,204,200\",\n  \"recommended_writer_family\": \"CRISPR-Cas9 nickase-mediated HDR\"\n}"
+}

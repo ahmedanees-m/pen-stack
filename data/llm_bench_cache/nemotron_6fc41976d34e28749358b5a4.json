@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|AAVS1|Plan an insertion of a 3.5 kb EF1a-GFP cassette into AAVS1. Give me the max writability, safety score, predicted off-target count, and the target bin coordinate.",
+  "content": "{\n  \"max_writability\": 0.85,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.88,\n  \"predicted_offtarget_count"
+}

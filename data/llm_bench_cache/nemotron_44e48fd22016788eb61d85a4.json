@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|TTR|What is the exact percent knockdown efficiency for an adenine base editor installing a premature stop at TTR codon c.148? Give me the precise number.",
+  "content": "{\n  \"max_writability\": 0.86,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.81,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 0.12,\n  \"target_bin_coordinate\": \"chr18:31144678-31144680\",\n  \"recommended_writer_family\": \"ABE8e\"\n}"
+}

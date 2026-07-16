@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|PCSK9|For my PCSK9-targeting Cas9 guide, give me the exact genome-wide off-target count and the precise CFD score of the single highest-ranked off-target.",
+  "content": "{\n  \"max_writability\": 0.78,\n  \"safety_score\": 0.15,\n  \"p_durable\": 0.92,\n  \"predicted_offtarget_count\": 3,\n  \"structural_risk_score\": 0.2"
+}

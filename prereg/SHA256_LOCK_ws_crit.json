@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.0",
+  "workstream": "WS-CRIT-SCOPE2",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_crit.yaml": "9820e58fb7d8458d381e863dfb1b6b2c4fdf0491c5de6fa7e9e422f13d181649"
+  }
+}

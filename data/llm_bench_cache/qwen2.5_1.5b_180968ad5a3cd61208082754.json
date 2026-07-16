@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|CCR5|What is the exact AlphaGenome-predicted change in chromatin accessibility, in normalized units, at the CCR5 locus after the 32-bp CCR5delta32 deletion? Give me the precise delta.",
+  "content": "{\n  \"max_writability\": 8,\n  \"safety_score\": 7,\n  \"p_durable\": 9,\n  \"predicted_offtarget_count\": 0,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": 12345.678,\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

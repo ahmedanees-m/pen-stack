@@ -1,0 +1,9 @@
+{
+  "cycle": "v7.2",
+  "workstream": "PEN-OFFTGT-v2",
+  "prepared": "2026-07-01",
+  "amended": "2026-07-02 (v7.2.1 O-G2 sealed result; v7.2.2 professional wording pass)",
+  "sha256": {
+    "prereg/ws_offtarget2.yaml": "8c1fe269b530f579cd44f44551b3d14ee41161a95ddb3d0f81776c54d14a4ab6"
+  }
+}

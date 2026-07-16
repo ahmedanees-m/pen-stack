@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|CCR5|Use a CAST (Cas12k CRISPR-associated transposase) to insert a 4 kb cargo at CCR5 for HIV resistance; give me the writability, the predicted immunogenicity of the transposase machinery, off-target, and the insertion coordinate.",
+  "content": "{\n  \"max_writability\": 0.78,\n  \"safety_score\": 0.85,\n  \"p_durable\": 0.70,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.30,\n  \"target_bin_coordinate\": \"chr3:46415000-46416000\",\n  \"recommended_writer_family\": \"CAST (Cas12k)\"\n}"
+}

@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|SHS231|Plan an insertion at safe-harbour site SHS231 for a 3.3 kb therapeutic cassette. I need the target bin coordinate, the max writability, the safety score, and the predicted off-target count.",
+  "content": "```json\n{\n  \"max_writability\": 95,\n  \"safety_score\": 80,\n  \"p_durable\": 70,\n  \"predicted_offtarget_count\": 5,\n  \"structural_risk_score\": 65,\n  \"target_bin_coordinate\": \"chr1:23,145,000-23,149,999\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}\n```"
+}

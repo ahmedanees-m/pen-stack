@@ -1,0 +1,9 @@
+{
+  "cycle": "v5.7",
+  "workstream": "WS-REDTEAM",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_redteam.yaml": "1272713c6070eda46fd5d5316a96a7c564bff9fdb9bc5e7788007feb792b4ca4",
+    "configs/safety/probes.yaml": "18ec55e1bb78ce5e808d8b4ecd38d756bc421fafe9c20c6117e2ce21d7df1d9d"
+  }
+}

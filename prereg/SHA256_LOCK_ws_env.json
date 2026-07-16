@@ -1,0 +1,8 @@
+{
+  "cycle": "v3.4",
+  "workstream": "WS-ENV",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_env.yaml": "b5a051fe6f7bf7c8da785023f0670ac405c4c5792dc4d2de07ddd7cbeae155be"
+  }
+}

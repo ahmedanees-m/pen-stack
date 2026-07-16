@@ -1,0 +1,19 @@
+# PEN-STACK v4.5 - WS-G (world-model knowledge graph) pre-registered. Builds on v4.0.x.
+# NOTE: filename ws_graph.yaml (the v3.1 prereg/ws_g.yaml is a different, earlier "WS-G").
+cycle: "v4.5"
+workstream: "WS-G (knowledge graph)"
+prepared: "2026-06-09"
+
+G1_schema_build:
+  deliverable: "pen_stack/graph/{schema,build,query}.py + configs/cell_types.yaml; docs/world_model.md"
+  schema: "typed nodes {writer, locus, cargo, vehicle, cell_type, write_type, outcome}; typed edges {reaches, deliverable_by, performs, durable_in, carries, used_writer, observed_at}; EVERY edge carries evidence_kind in {measured>curated>predicted} + confidence + scope + provenance (Principle 2)."
+  build: "deterministic, from the v4.0 curated tables (WT-KB, delivery_vehicles, write_types, GSH loci, writer_panel, cell-type coverage cards); pure-Python store serialisable to JSON (Docker-friendly, no graph-DB dependency); no network/model."
+  acceptance: "graph builds offline; summary reports nodes/edges by type + by evidence; JSON round-trip lossless."
+
+G2_queries_parity:
+  deliverable: "multi-hop queries (query.py) + REST POST /graph/query + MCP graph_query; atlas/crosslink become graph VIEWS."
+  acceptance: "PARITY - the graph's deliverable_by edges reproduce the v3.3 rule-grounded verifier's cargo-form legality on a control set (0 mismatches, asserted); table-view queries (vehicles_for_writer / writers_for_locus) match the v4.0 joins; THEN multi-hop design queries (writers reaching a locus AND deliverable by a cargo-form-compatible vehicle) return fully PROVENANCED paths (no-fabrication: the answer IS the path)."
+  scope: "the graph is bookkeeping (queryability + currency + provenance), NOT a new predictor; reachability edges are locus-level + predicted + scope-flagged (per-site element check stays Planner work)."
+
+gate: "graph parity with v4.0 joins before extension; every edge provenance+uncertainty+scope-tagged; no-fabrication over graph answers."
+locked_files: [prereg/ws_graph.yaml]

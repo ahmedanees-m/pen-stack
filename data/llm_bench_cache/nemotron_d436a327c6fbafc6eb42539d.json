@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|CLYBL|place a durable transgene at the CLYBL safe harbour",
+  "content": "{\n  \"max_writability\": 0.86,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.89,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.13,\n  \"target_bin_coordinate\": \"chr13:71,052,300-71,053,300\",\n  \"recommended_writer_family\": \"CRISPR-Cas9 nuclease with AAV6 donor (HDR-mediated integration)\"\n}"
+}

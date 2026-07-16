@@ -1,0 +1,41 @@
+# PEN-STACK v5.2 - WS-GENOTOX (computed integration-site genotoxicity oracle). Directional.
+cycle: "v5.2"
+workstream: "WS-GENOTOX"
+prepared: "2026-06-10"
+
+motivation: >
+  Follow-up to v5.1 (user): "do we have the option of getting an actual CALCULATION from the datasets /
+  databases, like we used to with NetMHC / ENCODE / COSMIC?" The v5.1 genotoxicity axis was a documented
+  ordinal tier; for INTEGRATING vectors the signal is in fact computable from data the stack already holds.
+
+deliverable: >
+  scripts/p52_build_genotox_oracle.py (VM build) -> configs/genotoxicity_oracle.yaml (committed summary);
+  pen_stack/planner/genotoxicity_oracle.py (OracleResult); wired into delivery_immunology.safety_efficacy_profile
+  (computed genotox_score preferred, documented tier fallback); scope card `delivery_genotoxicity`.
+
+method: >
+  For each integrating vector CLASS, compute from real data the observed enrichment of its integration sites
+  near COSMIC Cancer-Gene-Census oncogenes: risk = P(site within 50 kb of an oncogene) over the class's VISDB
+  catalogue; enrichment = risk / genome_background_frac; genotox_score = min(1, 1/enrichment). HIV ~ lentiviral
+  (-> lentivirus vehicle); MLV ~ gammaretroviral (the LMO2 / SCID-X1 comparator, NOT in the palette). Inputs:
+  VISDB per-virus hg38 catalogues [10.1093/nar/gkz867] x the Phase-1 oncogene annotation from COSMIC CGC v104
+  [10.1038/s41568-018-0060-1]; integration biology [HIV 10.1016/S0092-8674(02)00864-4; MLV 10.1126/science.1083413].
+  Answers through the v4.0 OracleResult contract (output_kind="baseline"); raw catalogues stay on the VM, only
+  the auditable summary ships (CI-safe).
+
+acceptance: >
+  (1) the integrating in-palette vehicle (lentivirus) gets a COMPUTED genotox_score from VISDB x COSMIC, with a
+  native uncertainty and an in-scope OracleResult; (2) the computation reproduces the lentivirus-safer-than-
+  gammaretrovirus ordering FROM DATA (lentiviral enrichment < gammaretroviral enrichment); (3) the computed
+  lentivirus score VALIDATES the v5.1 documented "moderate" tier (within +/-0.1 of 0.5), i.e. the prior is
+  confirmed not contradicted; (4) non-integrating vehicles are 1.0 by mechanism; (5) the oracle ABSTAINS
+  (available=False, no number) when it has no computed class - never fabricates; (6) small-n classes are flagged
+  extrapolating; (7) provenance DOIs resolve in the curated set.
+
+honesty_invariant: >
+  This is a RELATIVE, integration-PREFERENCE signal. The in-vivo clonal-expansion / leukemogenesis OUTCOME in a
+  patient is NOT modelled and stays a known-unknown (scope card `delivery_genotoxicity.not_valid_for`); the
+  immune MAGNITUDE likewise stays `in_vivo_immunogenicity`. No magnitude is predicted.
+
+gate: "lentivirus genotox computed from VISDBxCOSMIC; LV<gammaretro ordering reproduced; computed validates the documented tier; non-integrating=1.0 by mechanism; oracle abstains not fabricates; provenance curated; no-fabrication intact."
+locked_files: [prereg/ws_genotox.yaml]

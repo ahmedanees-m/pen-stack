@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.13",
+  "workstream": "WS-COSCI2",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_cosci2.yaml": "9e9b5bbe82e8ef555c6f50af153669f39de5679878de6d8149f43fc1fd9d6439"
+  }
+}

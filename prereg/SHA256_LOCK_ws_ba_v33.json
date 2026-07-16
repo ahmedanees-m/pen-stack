@@ -1,0 +1,9 @@
+{
+  "cycle": "v3.3",
+  "workstream": "WS-BA",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_ba_v33.yaml": "234ed9de5d1e91529ad039fbc1e95afe030f735dd763bdb3aab20d5f3cade576",
+    "benchmarks/genome_writing_bench/tasks.yaml": "1242bdc091219e42af7b74ca8b397190af60a52d7be3d0e4048d5a0fe5ca191c"
+  }
+}

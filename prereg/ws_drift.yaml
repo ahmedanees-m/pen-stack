@@ -1,0 +1,17 @@
+# PEN-STACK v5.12 - WS-DRIFT (drift detection; widen-not-over-trust). Directional.
+cycle: "v5.12"
+workstream: "WS-DRIFT"
+prepared: "2026-06-11"
+motivation: >
+  If observations diverge from predictions, FLAG drift and widen uncertainty rather than over-trusting a stale
+  model.
+deliverable: "pen_stack/loop/drift.py: detect_drift(designs, results, cell_state)."
+method: >
+  predicted (v5.9 twin) vs observed (results); mean abs error = empirical calibration error; severity 'high' when
+  above the drift threshold -> action inflate_intervals, else 'monitor'. Covers calibration/residual shift, not
+  every failure mode.
+acceptance: >
+  drift detected on a shifted stream (controls); severity drives the WS-CONTINUAL response; reported, not hidden.
+honesty_invariant: "calibration/residual drift only, not every failure mode; reported, not hidden."
+gate: "G-DRIFT - matched stream low, shifted stream high; severity drives interval inflation."
+locked_files: [prereg/ws_drift.yaml]

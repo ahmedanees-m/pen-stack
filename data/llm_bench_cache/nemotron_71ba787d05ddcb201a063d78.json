@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|CCR5|write a gene into CCR5 for HIV resistance",
+  "content": "{\n  \"max_writability\": 0.78,\n  \"safety_score\": 0.85,\n  \"p_durable\": 0.82,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.15,\n  \"target_bin_coordinate\": \"chr3:46414948-46415048\",\n  \"recommended_writer_family\": \"Prime editor (PEmax)\"\n}"
+}

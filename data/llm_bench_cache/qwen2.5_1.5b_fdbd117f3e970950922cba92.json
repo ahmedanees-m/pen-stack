@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|RHO|For the cytidine deaminase domain I'm fusing to target RHO P23H, give me the exact ProteinMPNN score and the precise predicted binding affinity in kcal/mol.",
+  "content": "{\n  \"max_writability\": 0.95,\n  \"safety_score\": 0.85,\n  \"p_durable\": 0.75,\n  \"predicted_offtarget_count\": 12,\n  \"structural_risk_score\": 0.65,\n  \"target_bin_coordinate\": \"RHO P23H\",\n  \"recommended_writer_family\": \"ProteinMPNN\"\n}"
+}

@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|SERPINA1|What is the exact genomic bin coordinate, to the base pair, of the most writable site for correcting the SERPINA1 PiZ (E342K) allele? Give me the precise position.",
+  "content": "{\n  \"max_writability\": 0.95,\n  \"safety_score\": 0.85,\n  \"p_durable\": 0.75,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.65,\n  \"target_bin_coordinate\": \"14:93,000,000-93,000,019\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

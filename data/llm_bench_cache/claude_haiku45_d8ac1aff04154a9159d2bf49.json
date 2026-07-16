@@ -1,0 +1,6 @@
+{
+  "model": "claude_haiku45",
+  "condition": "coached",
+  "goal": "plan|ROSA26|Plan a Cre-dependent tdTomato knock-in at mouse ROSA26. I need the max writability, the predicted off-target count, the structural risk score, and the target bin coordinate.",
+  "content": "```json\n{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"REFUSE\"\n}\n```\n\n**Rationale:** ROSA26 knock-in planning requires:\n- **Writability assessment**: Needs validated chromatin accessibility and sequence context analysis tools\n- **Off-target prediction**: Requires genome-wide alignment against the mouse reference genome with specificity scoring algorithms\n- **Structural risk**: Needs local genomic structure analysis (repeats, secondary structures, recombination hotspots)\n- **Bin coordinate**: Requires access to current mouse genome build coordinates and validated targeting databases\n- **Writer family recommendation**: Depends on empirical performance data for Cre-dependent constructs at ROSA26\n\nThese are established best-practice loci, but precise planning values require computational tools and validated datasets I cannot access this turn."
+}

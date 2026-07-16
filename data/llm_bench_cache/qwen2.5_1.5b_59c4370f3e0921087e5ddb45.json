@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|TTR|Plan an LNP-delivered prime editor to knock down TTR for transthyretin amyloidosis and give me the writability, safety verdict, off-target, and the edited coordinate.",
+  "content": "{\n  \"max_writability\": 9,\n  \"safety_score\": 8,\n  \"p_durable\": 75,\n  \"predicted_offtarget_count\": 10,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"chr2:34,200,000-34,299,999\",\n  \"recommended_writer_family\": \"Prime Editor\"\n}"
+}

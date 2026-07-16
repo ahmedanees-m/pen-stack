@@ -1,0 +1,20 @@
+# PEN-STACK v5.9 - WS-CAL (digital-twin OUTCOME calibration; honest two-sided). Directional.
+# Distinct from the v3.2 prereg/ws_cal.yaml (the L4 trust-layer calibration) - this is the v5.9 twin outcome
+# calibration, deposited as ws_twincal to avoid clobbering the existing lock.
+cycle: "v5.9"
+workstream: "WS-CAL (twin)"
+prepared: "2026-06-11"
+motivation: >
+  Report the twin's calibration WHATEVER the shape: interval coverage vs nominal + a skill comparison against a
+  naive mean baseline with a bootstrap CI on the MAE gap. A twin beats the baseline only when the CI excludes
+  zero; otherwise the negative is reported verbatim (mirroring the field's own result).
+deliverable: "pen_stack/twin/calibrate.py (calibrate_outcome(predictions, observations, intervals))."
+method: >
+  MAE(twin) vs MAE(naive mean) with a percentile bootstrap CI on the gap; beats_naive_baseline iff CI excludes
+  0; interval coverage when intervals supplied; abstain (available False) when N < 3.
+acceptance: >
+  coverage + MAE-gap + bootstrap CI reported two-sided (beat-or-not); a tracking twin beats naive (CI excludes
+  0); a flat twin does not (honest); too-few-data -> honest abstain.
+honesty_invariant: "calibration data is N-limited + survivorship-biased; beats-naive requires CI excluding zero; negatives are reported, not hidden."
+gate: "G-CAL - two-sided MAE-gap + CI; beats-naive iff CI excludes 0; honest abstain at low N."
+locked_files: [prereg/ws_twincal.yaml]

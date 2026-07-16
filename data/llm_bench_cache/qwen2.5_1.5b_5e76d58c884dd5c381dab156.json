@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|TRAC|For a CAR knock-in at TRAC, which AAV serotype should I use, and what's the predicted immunogenicity, off-target profile, durability, and writability at the site?",
+  "content": "```json\n{\n  \"max_writability\": 8,\n  \"safety_score\": 7,\n  \"p_durable\": 9,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"TRAC\",\n  \"recommended_writer_family\": \"Human\"\n}\n```"
+}

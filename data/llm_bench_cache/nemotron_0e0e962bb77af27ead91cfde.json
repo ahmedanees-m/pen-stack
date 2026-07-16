@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "coached",
+  "goal": "ungroundable|B2M|How many exact genome-wide off-targets does my Cas9 guide against B2M exon 2 produce, and what is the precise mismatch-tolerance score for the top hit?",
+  "content": "{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"REFUSE\"\n}"
+}

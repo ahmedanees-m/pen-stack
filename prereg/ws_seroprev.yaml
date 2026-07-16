@@ -1,0 +1,40 @@
+# PEN-STACK v5.5 - WS-SEROPREV (anti-vector neutralizing-antibody seroprevalence). Directional.
+cycle: "v5.5"
+workstream: "WS-SEROPREV"
+prepared: "2026-06-10"
+
+motivation: >
+  Completes the computable delivery-immunology axes (after v5.2 genotoxicity, v5.3 capsid epitope load, v5.4
+  innate sensing). PRE-EXISTING humoral immunity (B-cell / NAb) to a viral capsid is the one immune axis that
+  CANNOT be computed from sequence - it is a POPULATION prevalence from natural exposure. The honest grounding
+  is published serosurvey DATA.
+
+deliverable: >
+  configs/seroprevalence.yaml (curated per-serotype NAb seroprevalence ranges + DOIs); pen_stack/planner/
+  seroprevalence_oracle.py (OracleResult); wired into delivery_immunology.safety_efficacy_profile
+  preexisting_immunity axis; scope card `seroprevalence`.
+
+method: >
+  Curate published population NAb/IgG seroprevalence per serotype as RANGES (region/age/assay variation), each
+  with >=1 DOI: AAV (Calcedo 2009 [10.1086/595830], Boutin 2010 [10.1089/hum.2009.182]); adenovirus type 5
+  (Mast 2010 [10.1016/j.vaccine.2009.10.145]); HSV-1 (Looker 2015 [10.1371/journal.pone.0140765]); VSV
+  (negligible). preexisting_score = 1 - midpoint(seroprevalence_pct)/100; native_uncertainty = range half-width.
+  v4.0 OracleResult (output_kind="baseline"). Folded into the preexisting axis ONLY for IN-VIVO vehicles (serum
+  NAb neutralises the vector in vivo; ex-vivo transduction in a dish is not reached by host antibody -> reported
+  but muted). Non-viral vehicles: 1.0 by mechanism (no foreign capsid).
+
+acceptance: >
+  (1) per-serotype seroprevalence maps to a pre-existing score (1 - midpoint/100), with the range surfaced as
+  native uncertainty. (2) the ordering matches the literature: adenovirus (highest pre-existing immunity) <
+  AAV < VSV (lowest) by score. (3) an explicit serotype overrides the vehicle default (AAV8 > AAV2 score).
+  (4) non-viral -> 1.0 by mechanism; unknown vehicle -> ABSTAINS (never fabricates). (5) folds for in-vivo /
+  muted for ex-vivo. (6) provenance DOIs Crossref-verified + curated.
+
+honesty_invariant: >
+  A POPULATION prevalence (a range, region/age/assay-dependent), NOT a given PATIENT's NAb titer / sero-status
+  (a clinical test, patient-specific -> a known-unknown); the HUMORAL (B-cell) axis only, distinct from the
+  v5.3 T-cell epitope load; anti-PEG immunity is a separate emerging exception. No patient-specific magnitude
+  predicted.
+
+gate: "per-serotype seroprevalence -> pre-existing score with range; Ad>AAV>VSV ordering; serotype override; non-viral 1.0; abstains not fabricates; in-vivo folds/ex-vivo muted; provenance curated; no-fabrication intact."
+locked_files: [prereg/ws_seroprev.yaml]

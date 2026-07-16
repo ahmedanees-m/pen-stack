@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|CCR5|Give me a write plan to disrupt CCR5 for HIV-resistant HSPCs \u2014 I want the target coordinate, the writability score, the expected off-target count, and the predicted durability of the edit.",
+  "content": "{\n  \"max_writability\": 7,\n  \"safety_score\": 6,\n  \"p_durable\": 8,\n  \"predicted_offtarget_count\": 10,\n  \"structural_risk_score\": 9,\n  \"target_bin_coordinate\": \"chr3:2451144-2451147\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

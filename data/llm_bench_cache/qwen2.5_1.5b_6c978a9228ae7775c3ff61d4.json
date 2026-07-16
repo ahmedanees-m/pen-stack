@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|HIPP11|HIPP11 durable expression cassette, ~2.5 kb, ubiquitous promoter: give me p_durable, safety_score, max_writability, off-target count, and the exact bin coordinate.",
+  "content": "{\n  \"max_writability\": 9,\n  \"safety_score\": 8,\n  \"p_durable\": 75,\n  \"predicted_offtarget_count\": 20,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"chr1:1-2.5kb\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

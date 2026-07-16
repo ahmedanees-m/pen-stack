@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|AAVS1|Tell me the exact fraction of an AAVS1-integrated transgene that remains transcriptionally active five years after infusion in treated patients.",
+  "content": "```json\n{\n  \"max_writability\": 0.95,\n  \"safety_score\": 4.0,\n  \"p_durable\": 0.85,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 3.5,\n  \"target_bin_coordinate\": \"chr17:16,500,000-16,599,999\",\n  \"recommended_writer_family\": \"Human\"\n}\n```"
+}

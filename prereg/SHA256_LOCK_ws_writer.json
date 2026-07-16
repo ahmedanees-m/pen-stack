@@ -1,0 +1,8 @@
+{
+  "cycle": "v6.8",
+  "workstream": "WS-WRITER",
+  "prepared": "2026-06-20",
+  "sha256": {
+    "prereg/ws_writer.yaml": "8997a447b35aa1b78e43dcd40cd6893b4c083a9b54bb4d70286c91cd185db4f4"
+  }
+}

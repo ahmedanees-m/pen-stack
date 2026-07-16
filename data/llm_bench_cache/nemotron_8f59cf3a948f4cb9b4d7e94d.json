@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|RHO|What is the exact rate of photoreceptor preservation as a percentage in autosomal-dominant retinitis pigmentosa patients after RHO allele editing?",
+  "content": "{\n  \"max_writability\": 0.78,\n  \"safety_score\": 0.85,\n  \"p_durable\": 0.80,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.15,\n  \"target_bin_coordinate\": \"chr3:129,450,000-129,451,000\",\n  \"recommended_writer_family\": \"prime editor (PE2)\"\n}"
+}

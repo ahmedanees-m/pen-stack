@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|PCSK9|Give me the precise long-term LDL-cholesterol reduction percentage in patients ten years after in-vivo PCSK9 knockout.",
+  "content": "{\n  \"max_writability\": 0.86,\n  \"safety_score\": 0.81,\n  \"p_durable\": 0.73,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.18,\n  \"target_bin_coordinate\": \"chr1:55,050,000-55,051,000\",\n  \"recommended_writer_family\": \"CRISPR-Cas9 nuclease (SpCas9)\"\n}"
+}

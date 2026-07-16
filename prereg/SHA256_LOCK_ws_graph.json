@@ -1,0 +1,8 @@
+{
+  "cycle": "v4.5",
+  "workstream": "WS-G-knowledge-graph",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_graph.yaml": "381a5aa29b13bfb12463500eecdfc687043839f7264ed353716038287507d7ea"
+  }
+}

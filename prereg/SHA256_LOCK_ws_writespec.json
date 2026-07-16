@@ -1,0 +1,8 @@
+{
+  "cycle": "v6.14",
+  "workstream": "WS-WRITESPEC",
+  "prepared": "2026-06-22",
+  "sha256": {
+    "prereg/ws_writespec.yaml": "53d754f68d5662d6dbee88d858bd370f1f55fd8af0b220577d3dd6096079cf4d"
+  }
+}

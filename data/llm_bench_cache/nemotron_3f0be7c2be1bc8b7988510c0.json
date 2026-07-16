@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "coached",
+  "goal": "plan|hRosa26|I want to target the human ROSA26 (hRosa26) locus with a 3 kb payload. Full write plan please: writability, safety score, durability, off-target count, structural risk score, and the target bin coordinate.",
+  "content": "{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"CRISPR-Cas9 mediated HDR\"\n}"
+}

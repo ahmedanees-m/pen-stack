@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.12",
+  "workstream": "WS-DRIFT",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_drift.yaml": "747801c9e2ba31af088308f9aa4e784d4c62f1b17325f7135a8c6d7e0caa8c0b"
+  }
+}

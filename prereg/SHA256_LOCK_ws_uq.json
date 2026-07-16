@@ -1,0 +1,9 @@
+{
+  "cycle": "v3.2",
+  "workstream": "WS-UQ",
+  "prepared": "2026-06-08",
+  "sha256": {
+    "prereg/ws_uq.yaml": "b25473910dde1081ef0c8317cbbc3dad01b3d79c0888d639b874f518419fbe03",
+    "prereg/ws_b.yaml": "d7a4f275360e4e53e3ebdc805270f76438d20e09202ef3cc556c9bd5840810cc"
+  }
+}

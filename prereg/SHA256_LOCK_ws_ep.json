@@ -1,0 +1,9 @@
+{
+  "cycle": "v3.2",
+  "workstream": "WS-EP",
+  "prepared": "2026-06-08",
+  "sha256": {
+    "prereg/ws_ep.yaml": "1ee89f9d43aff331c320b431b515d675a8b6efa9ed533c998fd02ae83c853447",
+    "configs/known_unknowns.yaml": "2c6d33ed3f6a0e03f59615ca9314595c607001882b6dff9114225d85dadc5cc7"
+  }
+}

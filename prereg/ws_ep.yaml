@@ -1,0 +1,40 @@
+# PEN-STACK v3.2 - WS-EP (epistemic scoping: first-class "I don't know") pre-registered acceptance.
+# Locked criteria; results reported verbatim. WS-EP is a thin, high-trust layer over the WS-UQ signals + the
+# existing grounding/refusal machinery. It makes trustworthiness LEGIBLE.
+cycle: "v3.2"
+workstream: "WS-EP"
+prepared: "2026-06-08"
+depends_on: "WS-UQ (gate G-UQ PASS) - the OOD/confidence signals drive the epistemic status."
+
+EP1_epistemic_taxonomy:
+  deliverable: "pen_stack/agent/epistemic.py (classify/classify_step/summarize); integrated into
+    pen_stack/agent/pen_agent.py + pen_stack/agent/guardrails.py."
+  taxonomy: "three tiers, driven by the UQ/OOD/grounding signals, NEVER hand-set: grounded-confident
+    (tool-grounded, in-distribution, calibrated, above abstention threshold); grounded-extrapolating
+    (tool-grounded but OOD-flagged or low-confidence / wide interval); not-computable (no tool can ground it:
+    refused, out-of-scope, or abstained)."
+  acceptance: "every agent output carries EXACTLY ONE status; statuses track the UQ/OOD signals (OOD factor
+    >= 1.5 -> extrapolating; confidence < 0.5 -> abstain/not-computable; out-of-scope -> not-computable);
+    a test asserts the correct status on in-distribution vs OOD vs out-of-scope inputs."
+
+EP2_known_unknowns:
+  deliverable: "configs/known_unknowns.yaml (registry); pen_stack/agent/scope.py (matcher); docs/scope.md;
+    pen_stack/validate/out_of_scope_refusal.py -> out/out_of_scope_refusal.json."
+  registry: "the unknown parts of the funnel PEN-STACK does NOT model: structure->phenotype, in-vivo
+    immunogenicity, long-term clinical durability, higher-order epistasis, polygenic effects, germline/
+    heritable. The matcher defers ('this requires X, which PEN-STACK does not model') rather than guessing."
+  acceptance: "on a curated set of out-of-scope probes the matcher DEFERS 100% (zero fabrication); on a
+    curated set of in-scope genome-writing questions it FALSE-defers 0% (no over-refusal). Deterministic."
+
+EP3_abstention:
+  deliverable: "abstention policy in pen_stack/agent/pen_agent.py (plan_confidence + abstained), reusing the
+    WS-UQ propagate_plan_confidence; surfaced per session."
+  acceptance: "the agent abstains (flags) when plan-level confidence is below the WS-UQ threshold; the
+    no-fabrication HARD GATE still passes (every grounded step carries provenance; nothing invented)."
+
+gate_G_EP: "every agent output carries an epistemic status driven by the UQ/OOD signals; out-of-scope probes
+  are deferred (zero fabrication); the inherited no-fabrication gate (T6) remains 0 fabricated."
+
+locked_files:
+  - prereg/ws_ep.yaml
+  - configs/known_unknowns.yaml

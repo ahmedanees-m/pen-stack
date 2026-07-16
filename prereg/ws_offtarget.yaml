@@ -1,0 +1,42 @@
+# PEN-STACK v6.10 - WS-OFFTARGET (PEN-OFFTGT: cross-writer-family off-target nomination). Pre-registered.
+cycle: "v6.10"
+workstream: "WS-OFFTARGET"
+prepared: "2026-06-19"
+motivation: >
+  Off-target prediction was a single-family bridge pseudosite scan (pen_stack/bridge/offtarget.py) that abstains
+  for nucleases and integrases. Move it to a CROSS-WRITER-FAMILY, chromatin-aware nomination engine grounded in
+  unbiased genome-wide assays, returning ranked CANDIDATE off-targets with a calibrated risk band and an honest
+  abstention when inputs are missing. Completes the safety triad (site B + writer C + off-target E).
+deliverable: >
+  pen_stack/wgenome/offtarget_data.py (curated real off-target ground-truth + provenance), offtarget_predict.py
+  (cross-family nominator: nuclease mismatch-homology + real CRISOT learned score + mismatch-calibrated risk +
+  chromatin reweight; integrase pseudo-attB cryptic scan; bridge delegates to the existing engine; abstains
+  without inputs), offtarget_assay.py (validation-assay recommender), benchmarks/offtarget/ (Off-Target-Bench:
+  sealed fixture + held-out-guide split + per-assay provenance + checksums).
+method: >
+  Ground truth = harmonized published unbiased assays: GUIDE-seq (Tsai 2015 Nat Biotechnol 10.1038/nbt.3117,
+  cell-based) and CIRCLE-seq (Tsai 2017 Nat Methods 10.1038/nmeth.4278, in vitro), canonical Cas9 guides
+  (EMX1/VEGFA1-3/FANCF/HEK293) with experimentally validated off-targets (Active label). Baseline = sequence-
+  homology nomination (ascending mismatch count, Hamming over the 20-nt protospacer). Learned tool = the REAL
+  CRISOT-Score predictor (Chen et al. Nat Commun 2023 10.1038/s41467-023-42695-4; XGBoost RNA-DNA interaction
+  fingerprint) run locally on the VM (CC-BY-NC -> binaries/weights NEVER redistributed; only derived scores
+  cached, exactly like the licensed MHC tools). Risk band = empirical active-fraction calibration by mismatch
+  count (grounded on the full real data). Integrase pseudo-attB scan uses the real documented Bxb1 attB core
+  (GCGGTCTC / central GT; FlyBase FBto0000359, Ghosh 2003). Bridge/serine-integrase off-target has NO published
+  genome-wide unbiased assay or predictor (verified) -> nomination uses the existing Perry-DMS pseudosite ranker
+  and the assay recommender flags the absence; IntQuery (Tome Biosciences, bioRxiv 2024.10.10.617699) is a
+  paper-only reference (no public weights), NOT claimed as runnable.
+acceptance: >
+  E-G1 (dataset+bench): frozen Off-Target-Bench with leakage-clean held-out-guide split, per-assay provenance +
+  checksum; a nominated off-target is a CANDIDATE, never a claim. E-G2 (nomination): the real learned predictor
+  BEATS the sequence-homology baseline at recovering validated off-targets (per-guide AUPRC, held-out-guide
+  bootstrap CI on mean(learned - homology) excludes 0) on >=1 assay, OR the homology scan is retained and the
+  negative is reported verbatim; risk is mismatch-calibrated; the engine ABSTAINS without inputs. E-G3 (assay
+  rec): the recommended validation assay matches documented assay-applicability rules per writer family.
+honesty_invariant: >
+  Nomination is NOT a safety clearance, every candidate ships with the assay that would confirm it. Bridge/
+  integrase off-target is data-thin / unmodeled (verified) and is flagged extrapolative or abstained, never
+  over-claimed. The licensed CRISOT predictor runs only on the VM; only derived scores are cached/committed
+  (CI-safe), the weights are never distributed. No fabricated off-target sites; abstain without inputs.
+gate: "E-OFFTGT - cross-family nomination beats homology on real held-out guides (CI) or reports the negative; mismatch-calibrated risk; assay recommender grounded; abstains without inputs; nomination != clearance."
+locked_files: [prereg/ws_offtarget.yaml]

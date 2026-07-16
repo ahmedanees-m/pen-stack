@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.9",
+  "workstream": "WS-VCELL",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_vcell.yaml": "a2e02b1ab9a46c802ff3867bd0fccf8849ce1f87667c6af49ad43b7f8202ae63"
+  }
+}

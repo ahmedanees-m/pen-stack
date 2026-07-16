@@ -1,0 +1,8 @@
+{
+  "cycle": "v6.3",
+  "workstream": "WS-HYBRID",
+  "prepared": "2026-06-12",
+  "sha256": {
+    "prereg/ws_hybrid.yaml": "98b8b816bfbb322e70f6cd6edb173218a6aa3a7c7fbaba1ebbf8d5d05dba47de"
+  }
+}

@@ -1,0 +1,50 @@
+# PEN-STACK v3.1 - WS-B (durability baselines + safety primary-metric switch) pre-registered acceptance.
+# Locked criteria; results reported verbatim including negatives. The point of WS-B is to surround the
+# durability/safety claims with honest baselines: a strong endogenous-expression proxy (B1), a multi-mark
+# ablation that earns the multi-track supervision (B2), and a published GSH rule-set that the learned
+# safety model must beat on the ONLY non-circular safety metric - safe-harbour discrimination (B3).
+cycle: "v3.1"
+workstream: "WS-B"
+prepared: "2026-06-04"
+
+B1_endogenous_expression_baseline:
+  deliverable: "pen_stack/validate/durability_baselines.py::endogenous_expression_baseline -> out/durability_baselines.json"
+  baseline: "AlphaGenome endogenous RNA_SEQ at each TRIP integration locus, used DIRECTLY as a durability
+    predictor (no writing-specific training), via pen_stack/wgenome/providers.py (cached)."
+  acceptance: "report TRIP-trained-model vs endogenous-proxy expression Spearman on the SAME chromosome-grouped
+    folds. The TRIP supervision must beat the proxy by a pre-registered margin (delta Spearman >= 0.05) to
+    claim writing-specific durability signal."
+  downgrade: "if the proxy is not beaten by the margin, reframe the durability novelty around integration-site
+    genotoxicity rather than expression prediction; do not tune to the test."
+  depends_on: "AlphaGenome package + key + per-locus expression cache (WS-C1). Until present, B1 is reported
+    as pending; B2 and B3 are independent and run now."
+
+B2_multimark_ablation:
+  deliverable: "pen_stack/validate/durability_baselines.py::multimark_ablation -> out/durability_baselines.json"
+  design: "TRIP (mESC ES-Bruce4) chromatin -> {silenced, integrated-cassette expression}; LightGBM with
+    chromosome-grouped GroupKFold out-of-fold predictions. Subsets: H3K9me3_only, H3K27ac_only, all_marks.
+    The supervision carries five histone marks and no ATAC/DNase, so this is honestly a five-mark ablation."
+  acceptance: "all_marks out-of-fold silenced-AUROC >= best single-mark AUROC (multi-track supervision earns
+    its place), reported with the per-subset table."
+  downgrade: "if a single mark matches all_marks, report it and simplify the durability feature set."
+
+B3_gsh_ruleset_baseline:
+  deliverable: "pen_stack/wgenome/gsh_baseline.py -> out/gsh_baseline.json"
+  baseline: "published multi-criterion GSH rule (Papapetrou/Sadelain/Pellenz style) as a graded safety score
+    from existing per-bin distances: outside-gene + min distances to TSS / oncogene / essential gene."
+  primary_metric_switch: "safe-harbour DISCRIMINATION (validated GSH vs matched controls, reusing WS-A3) is
+    now the PRIMARY safety metric. The genotoxic_cis AUROC is DEMOTED to a labeled diagnostic - its label is
+    proximity to five oncogenes, i.e. the distance baseline's own definition (circular)."
+  acceptance: "learned writability AUROC > GSH rule-set AUROC on the held-out GSH/controls; report the delta.
+    If the rule matches or beats the learned model, say so - it is a strong, interpretable baseline and the
+    added value of learning is correspondingly small."
+
+gate_G_B: "Durability/safety claims in README + manuscripts may only cite (a) the B2 ablation table, (b) the
+  B3 discrimination delta, and (c) B1 once unblocked. No durability/safety headline may rest on genotoxic_cis
+  AUROC alone."
+
+locked_files:
+  - prereg/ws_b.yaml
+  - prereg/ws_a.yaml          # WS-B3 reuses the SHA-locked A3 GSH/controls
+  - data/gsh_matched_controls.parquet
+  - configs/gsh_validated_heldout.yaml

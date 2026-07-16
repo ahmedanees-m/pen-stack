@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.9",
+  "workstream": "WS-MECH",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_mech.yaml": "28201949c0713ed5a10eda00d8a38ccf6e43d2c1bffb9b5951ae94f7eba3491a"
+  }
+}

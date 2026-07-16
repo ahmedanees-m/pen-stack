@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|H11|Plan a Bxb1 landing-pad integration of a 6 kb cargo at the H11 safe-harbour delivered by LNP; give me the writability, durability, structural risk, and coordinate.",
+  "content": "```json\n{\n  \"max_writability\": 9,\n  \"safety_score\": 8,\n  \"p_durable\": 75,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"H11\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}\n```"
+}

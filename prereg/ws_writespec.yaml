@@ -1,0 +1,50 @@
+# PEN-STACK v6.14 - WS-WRITESPEC (Stage A, the typed WriteSpec intent layer). Pre-registered.
+cycle: "v6.14"
+workstream: "WS-WRITESPEC"
+prepared: "2026-06-22"
+motivation: >
+  The front-end is a keyword parser that emits an ad-hoc dict (web/tools.parse_goal): brittle (synonyms, implicit
+  fields), lossy (no machine-checkable structure), and uncomposable (no stable contract for downstream stages or
+  an external agent). Stage A replaces it with a typed, ontology-backed, machine-checkable WriteRequest (an SBOL3
+  profile), a grounded prose-to-spec extractor that surfaces its own assumptions and never fabricates intent, and
+  a feasibility (satisfiability) check, so every downstream stage consumes one contract and an agent can compose,
+  critique and repair a write. The contribution is the profile plus the grounding discipline plus the SAT layer
+  plus the first prose-to-write-spec benchmark, not a new format.
+deliverable: >
+  pen_stack/spec/writespec.py (the typed WriteRequest, JSON + optional SBOL3 round-trip), pen_stack/spec/resolvers/
+  (gene/cell/feature/phenotype/chem/locus, each returning a canonical id + confidence + candidate set, unresolved
+  stays null), pen_stack/spec/extract.py + clarify.py (grounded extractor: every inferred field labelled
+  provenance=inferred, clarifying questions on underspecification, no fabrication), benchmarks/writespec/ (a curated
+  prose-to-WriteSpec gold corpus with an ambiguity subset + a sealed held-out, SO-Bench-style scoring), pen_stack/
+  spec/satisfy.py (reachability + deliverability + legality feasibility, named blocking constraints + repair hints),
+  and surfaces (typed fn + MCP writespec_parse + REST POST /api/writespec + a web builder page).
+method: >
+  Wrap, do not rebuild. The WriteRequest is a pydantic model with a per-field provenance map (explicit | inferred |
+  user | unresolved); fields bind to controlled vocabularies (Sequence Ontology roles, Cellosaurus/Cell Ontology
+  cell types, HGNC genes via the existing resolve_gene, MONDO/HPO phenotype, ChEBI molecules, GRCh38 coordinates)
+  via offline curated caches that degrade to unresolved, never invent. The extractor has a DETERMINISTIC backbone
+  (extends parse_goal) so the benchmark is reproducible and CI-safe; an LLM pass is optional and never required.
+  Three grounding safeguards are mandatory: every field not explicit in the prose is tagged inferred; a required
+  field that is unspecified or ambiguous emits a clarifying question rather than a guess; unresolved stays null.
+  The SAT check wraps the existing atlas (reachability), Stage D (deliverability) and Stage F rules (legality), and
+  closes the loop with Stage F's repair-oriented proof object. SBOL3 export uses the real sbol3 library (optional
+  [spec] extra); the JSON round-trip is always available.
+acceptance: >
+  A-G (writespec): (1) WriteRequest round-trips losslessly to JSON on a fixture set, and to SBOL3 when the sbol3
+  extra is installed; every resolved field validates against its ontology id format. (2) On the sealed WriteSpec-
+  Bench held-out the deterministic extractor's schema adherence / structural fidelity / value accuracy are reported
+  VERBATIM (including failures), and it beats the raw keyword-dict baseline; targets are reported, not tuned to the
+  test. (3) Inferred-field labelling recall = 100% on the ambiguity subset (no silent inference); clarifying
+  questions fire on underspecified inputs; 0 fabricated fields. (4) The SAT check's verdict matches the labelled
+  feasible/infeasible set; infeasible specs always name the blocking constraint(s) and are repairable. (5) Every
+  downstream stage adapter can consume WriteRequest.
+honesty_invariant: >
+  A WriteSpec is a REQUEST, not a claim. The extractor never invents intent: every inferred field is labelled
+  inferred with its rationale, unresolved terms stay null (never a hallucinated id), and ambiguous required fields
+  trigger a clarifying question instead of a guess. Feasibility is necessary-conditions only (unreachable /
+  undeliverable / illegal), NOT efficacy, which stays the downstream stages' calibrated prediction. WriteSpec-Bench
+  is small and curated, grounded in real published experiments; its value is bounded by curation quality, reported
+  honestly, with a leakage-controlled sealed held-out. The extractor backbone is deterministic so the benchmark is
+  reproducible; the LLM pass is optional and adds no ground truth.
+gate: "A-WRITESPEC - WriteRequest round-trips (JSON always, SBOL3 when installed); extractor accuracy reported verbatim on a sealed held-out and beats the keyword-dict baseline; 100% inferred-field labelling on the ambiguity subset; clarifying questions fire; SAT names blocking constraints and is repairable; 0 fabricated fields."
+locked_files: [prereg/ws_writespec.yaml]

@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "coached",
+  "goal": "plan|CLYBL|I'm worried about genotoxicity for a durable 6 kb cassette at CLYBL. Give me the structural risk score, the predicted off-target count, the safety score, the durability probability, and the target bin coordinate.",
+  "content": "{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"REFUSE\"\n}"
+}

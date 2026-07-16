@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|HBB|For the guide RNA 5'-CTTGCCCCACAGGGCAGTAA-3' targeting HBB, exactly how many off-target sites does it have genome-wide? I need the precise total count, not a range.",
+  "content": "{\n  \"max_writability\": 0.86,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.81,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.12,\n  \"target_bin_coordinate\": \"chr11:5,225,466-5,225,486\",\n  \"recommended_writer_family\": \"SpCas9\"\n}"
+}

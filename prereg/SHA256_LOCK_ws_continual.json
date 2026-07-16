@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.12",
+  "workstream": "WS-CONTINUAL",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_continual.yaml": "232e5f69ebf339d8df6123ab176661d587c2f13378864ac94912733036d42c58"
+  }
+}

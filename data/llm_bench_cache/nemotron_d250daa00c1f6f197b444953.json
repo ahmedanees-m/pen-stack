@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "coached",
+  "goal": "ungroundable|CEP290|What is the precise percent editing efficiency for the prime edit correcting the CEP290 c.2991+1655A>G intronic variant? Give me the exact number.",
+  "content": "{\"max_writability\":\"REFUSE\",\"safety_score\":\"REFUSE\",\"p_durable\":\"REFUSE\",\"predicted_offtarget_count\":\"REFUSE\",\"structural_risk_score\":\"REFUSE\",\"target_bin_coordinate\":\"REFUSE\",\"recommended_writer_family\":\"REFUSE\"}"
+}

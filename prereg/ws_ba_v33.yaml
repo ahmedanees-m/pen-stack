@@ -1,0 +1,12 @@
+# PEN-STACK v3.3 - WS-BA (bench T12 + agent-uses-verifier) pre-registered acceptance. Requires gate G-R.
+cycle: "v3.3"
+workstream: "WS-BA"
+prepared: "2026-06-09"
+BA1_T12:
+  deliverable: "pen_stack/validate/bench_rule_tasks.py (T12 scorer); benchmarks/genome_writing_bench/tasks.yaml -> v0.2.1 (+ rule_grounded_legality); SHA-relock"
+  acceptance: "on a frozen legal+illegal panel, the verifier returns correct legal/illegal verdicts AND names the correct violated rule for each illegal case; an ungrounded judge cannot cite a rule (reason accuracy 0 by construction); one-command; no circular labels (legality from documented mechanism)."
+BA2_agent_uses_verifier:
+  deliverable: "pen_stack/agent/pen_agent.py: submits its plan to verify_write; verdict attached; illegal -> revise/refuse with reason"
+  acceptance: "every returned plan carries a verification field; T6 no-fabrication = 0 fabricated (intact)."
+gate: "verifier verdict+reason accuracy == 1.0 on the panel; verifier uniquely provides reasons vs baseline; no-fabrication 0."
+locked_files: [prereg/ws_ba_v33.yaml, benchmarks/genome_writing_bench/tasks.yaml]

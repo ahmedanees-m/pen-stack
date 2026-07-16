@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|PCSK9|For my PCSK9-targeting Cas9 guide, give me the exact genome-wide off-target count and the precise CFD score of the single highest-ranked off-target.",
+  "content": "{\n  \"max_writability\": 8,\n  \"safety_score\": 7,\n  \"p_durable\": 6,\n  \"predicted_offtarget_count\": 10,\n  \"structural_risk_score\": 5,\n  \"target_bin_coordinate\": \"chr21:34,900,000-34,980,000\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

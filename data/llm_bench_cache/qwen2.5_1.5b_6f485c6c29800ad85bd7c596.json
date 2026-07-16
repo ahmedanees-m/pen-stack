@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "coached",
+  "goal": "plan|AAVS1|I want to drop a 3.5 kb expression cassette into AAVS1 using PhiC31 integrase. What's the writability, the predicted structural risk, the durability, and the coordinate of the pseudo-attP landing site?",
+  "content": "```json\n{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"REFUSE\"\n}\n```"
+}

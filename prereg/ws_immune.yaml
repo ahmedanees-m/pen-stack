@@ -1,0 +1,43 @@
+# PEN-STACK v5.1 - WS-IMMUNE (delivery safety<->efficacy balance over documented immune priors). Directional.
+cycle: "v5.1"
+workstream: "WS-IMMUNE"
+prepared: "2026-06-10"
+
+motivation: >
+  User (v5.1): "For delivery/cargo, add neutralizing antibody, immune responses, etc., so we can give a good
+  balance between safety and efficacy. AAV is safe but has neutralizing antibodies / pre-existing immunity;
+  lentivirus is highly efficacious at integrating but its safety is bad." The substrate should make the
+  safety<->efficacy tradeoff of the WHOLE delivery palette legible and user-weightable.
+
+WS_IMMUNE_config:
+  deliverable: "configs/delivery_vehicles.yaml: an `immune_safety` block on all 8 vehicles (preexisting_immunity, neutralizing_antibody, innate_immune, adaptive_immune, genotoxicity, efficacy, tradeoff, immune_dois)."
+  method: "DOCUMENTED, CITED, ORDINAL (low/moderate/high) literature priors per vehicle. Every immune_doi is verified against Crossref before locking. These are documented priors, NOT a predicted immune magnitude."
+  acceptance: "all 8 vehicles carry a complete immune_safety block; every immune_doi resolves on Crossref AND is in the curated-DOI set (cite.curated_dois), so the priors are auditable and citations resolve by construction."
+
+WS_IMMUNE_profile:
+  deliverable: "pen_stack/planner/delivery_immunology.py: safety_efficacy_profile(vehicle) + recommend_delivery(cargo_form, cargo_bp, safety_weight, in_vivo)."
+  method: >
+    immune_score = 1 - mean(immune-burden axes)/2; genotox_score = 1 - genotoxicity/2; efficacy_score =
+    efficacy/2; headline safety_score = min(immune_score, genotox_score) (precautionary worst-axis). The two
+    safety sub-axes are kept SEPARATE and never collapsed, because immunogenicity (reversible; eligibility /
+    re-dosing) and genotoxicity (permanent; insertional/oncogenic) are different KINDS of risk. recommend_delivery
+    ranks the eligible palette by balance = safety_weight*safety_score + (1-safety_weight)*efficacy_score.
+  acceptance: >
+    (1) every score is a transparent, reproducible function of the documented ordinal tiers (no learned/predicted
+    immunogenicity); (2) AAV's headline safety is driven by immunogenicity (immune_score < genotox_score) and
+    lentivirus's by genotoxicity (genotox_score < immune_score) - the user's stated tradeoff is reproduced;
+    (3) safety_weight=1 ranks by safety, safety_weight=0 ranks by efficacy (the frontier moves with the weight);
+    (4) cargo-capacity and in/ex-vivo filters exclude incompatible vehicles.
+
+WS_IMMUNE_verify:
+  deliverable: "verify(design).delivery_profile + a delivery_immune_profile scope flag, when the design names a delivery_vehicle."
+  method: "verify() surfaces the documented profile + tradeoff and ALWAYS attaches the standing scope flag that the in-vivo immune MAGNITUDE is a known-unknown (in_vivo_immunogenicity). It never adds confidence and never predicts a magnitude."
+  acceptance: "a design with a delivery_vehicle returns a non-null delivery_profile carrying the magnitude scope flag; no confidence is derived from the immune priors; no-fabrication holds."
+
+honesty_invariant: >
+  The in-vivo immune MAGNITUDE (how strongly a given patient/construct reacts) stays a declared known-unknown
+  (configs/known_unknowns.yaml: in_vivo_immunogenicity) and is NEVER predicted. v5.1 exposes only documented
+  ordinal priors plus a transparent, user-weighted ranking - it makes the tradeoff legible, it does not close it.
+
+gate: "8 vehicles documented + Crossref-verified DOIs in the curated set; the AAV(immune)/LV(genotox) tradeoff reproduced; ranking moves with safety_weight; verify surfaces the profile + magnitude scope flag; no-fabrication intact."
+locked_files: [prereg/ws_immune.yaml]

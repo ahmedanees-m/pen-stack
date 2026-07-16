@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.6",
+  "workstream": "WS-PROFILE",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_profile.yaml": "357c3683bf25f6d48d44d7fe1130be29b224d1c67b0dcf509def8b50b41f1bff"
+  }
+}

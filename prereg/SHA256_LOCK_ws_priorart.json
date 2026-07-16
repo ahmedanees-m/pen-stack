@@ -1,0 +1,10 @@
+{
+  "cycle": "v7.x",
+  "workstream": "WS-PRIORART",
+  "prepared": "2026-07-02",
+  "amended": "2026-07-02 (PA-WS3 GSH-recovery sets+test added after PA-WS1-A DISTINCT; frozen sets hashed before atlas lookup)",
+  "note": "PA-WS1 locked before ePRIDICT scores; PA-WS3 sets locked before atlas lookup.",
+  "sha256": {
+    "prereg/ws_priorart.yaml": "cde61c7046a5343ce31a98ed09f12255861b4358bec85917b32aec0afde10d15"
+  }
+}

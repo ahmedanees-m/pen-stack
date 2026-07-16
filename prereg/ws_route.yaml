@@ -1,0 +1,9 @@
+# PEN-STACK v3.3 - WS-ROUTE (write-type router) pre-registered acceptance.
+cycle: "v3.3"
+workstream: "WS-ROUTE"
+prepared: "2026-06-09"
+ROUTE1_router:
+  deliverable: "pen_stack/planner/router.py (route / route_and_evaluate) + configs/write_types.yaml"
+  acceptance: "each listed write type (insertion, excision, inversion, replacement, regulatory_rewrite, landing_pad_install, multiplex) routes to its correct rule-category sub-graph + steps; route_and_evaluate runs ONLY the routed categories; an unsupported/ambiguous write type DEFERS (scope flag), never guesses."
+  scope: "breadth-first: rarer types are legality/reachability coverage (status coverage_only) before full optimisation; stated as such."
+locked_files: [prereg/ws_route.yaml, configs/write_types.yaml]

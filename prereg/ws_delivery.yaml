@@ -1,0 +1,39 @@
+# PEN-STACK v6.11 - WS-DELIVERY (PEN-DELIVER: cross-modality deliverability + learned capsid-fitness). Pre-registered.
+cycle: "v6.11"
+workstream: "WS-DELIVERY"
+prepared: "2026-06-20"
+motivation: >
+  Delivery was an 8-vehicle rule palette that cannot predict capsid fitness/tropism or rank novel capsids. Move it to
+  a cargo-form-aware, tropism-prior recommender across viral + VLP + nonviral with a LEARNED, calibrated AAV
+  capsid-fitness model and an immune-coupled dose tradeoff. The data exists to learn the capsid-fitness axis (FLIP-AAV
+  / Bryant 2021), and approved AAV therapies give grounded serotype->tissue tropism PRIORS.
+deliverable: >
+  configs/aav_serotype_tropism.yaml (serotype->tissue priors from APPROVED therapies, real DOIs/FDA), extended
+  configs/delivery_vehicles.yaml (engineered-AAV serotypes + VLP modalities, cited), pen_stack/planner/delivery_predict.py
+  (cargo form/size/cell/dose -> ranked vehicles + tropism prior + learned capsid-fitness + interval),
+  pen_stack/planner/delivery_immune.py (dose<->immunogenicity tradeoff fused with the Stage G immune profile, never
+  collapsed), pen_stack/design/capsid_generate.py (verify-gated generative capsid candidates), benchmarks/delivery/
+  (Delivery-Bench: FLIP-AAV capsid-fitness sub-task, held-out splits).
+method: >
+  Capsid-fitness: a learned model (windowed one-hot over the mutagenized VP1 561-588 region + gradient boosting)
+  trained/evaluated on the FLIP-AAV benchmark (Dallago et al. 2021, NeurIPS D&B; built on Bryant et al. 2021 Nat
+  Biotechnol 10.1038/s41587-020-00793-4, packaging fitness; Ogden et al. 2019 Science 10.1126/science.aaw2900 is the
+  foundational landscape) on the `sampled` (random 80/20, in-distribution) AND `mut_des` (mutant->designed, hard
+  generalization) splits. Baseline = mutation burden (Hamming from the consensus). Serotype->tissue priors from
+  approved AAV therapies (AAV9->CNS Zolgensma; AAVrh74->skeletal muscle Elevidys; AAV5->liver Hemgenix/Roctavian;
+  AAVRh74var->liver Beqvez; AAV2->retina Luxturna / putamen Upstaza, route-dependent). Ex-vivo cell therapies
+  (Casgevy non-viral CRISPR, Lyfgenia lentiviral) carry NO serotype->tissue prior (not-AAV controls).
+acceptance: >
+  D-G1 (capsid-fitness): the learned model BEATS the mutation-burden baseline on held-out FLIP-AAV (Spearman, bootstrap
+  CI on the gap excludes 0) on >=1 split, OR the negative is reported verbatim and the rule palette is retained.
+  Tropism is a grounded PRIOR for approved serotypes and a known-unknown (candidate, never claimed) for novel capsids.
+  Generative candidates pass verify() + a fitness threshold and are flagged candidate (). The dose<->immune tradeoff
+  is surfaced as a vector, NEVER collapsed. Abstains without inputs; 0 fabricated tropism.
+honesty_invariant: >
+  Predicted capsid-fitness is a CANDIDATE, strongest for the MEASURED axis (packaging viability / assembly), and is
+  extrapolative for in-vivo human tissue tropism (a known-unknown  except the approved-therapy priors). VLP/LNP
+  coverage is thinner than AAV (per-modality uncertainty; do not over-rank low-N modalities); alpha-retro-VLP is
+  exploratory. Manufacturing/CMC is out of scope. The dose<->immune tradeoff is informative, not a clinical directive.
+  Licensed datasets stay on the VM; only the learned model + derived metrics ship. No fabricated tropism.
+gate: "D-DELIVER - learned capsid-fitness beats the mutation-burden baseline on held-out FLIP-AAV (CI) or reports the negative + retains rules; serotype->tissue tropism is a grounded prior (approved therapies) else known-unknown; dose<->immune tradeoff surfaced, never collapsed; generative candidates verify-gated."
+locked_files: [prereg/ws_delivery.yaml]

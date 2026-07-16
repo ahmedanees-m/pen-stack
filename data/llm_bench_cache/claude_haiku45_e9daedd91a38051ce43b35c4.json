@@ -1,0 +1,6 @@
+{
+  "model": "claude_haiku45",
+  "condition": "coached",
+  "goal": "plan|hRosa26|hRosa26 durable 4.2 kb cassette: p_durable, max_writability, off-target count, coordinate.",
+  "content": "```json\n{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"REFUSE\"\n}\n```\n\n**Rationale:** Accurate prediction of these parameters for a 4.2 kb cassette at hRosa26 requires:\n- Validated off-target prediction tools (e.g., CIRCLE-seq data, computational off-target models)\n- Empirical writability datasets specific to cassette size and locus chromatin context\n- Durability models trained on integration stability data\n- Precise hRosa26 genomic coordinates and structural annotations\n- Writer-family-specific performance benchmarks\n\nWithout access to these tools and databases, providing numerical estimates would be unreliable and potentially misleading for genome writing design."
+}

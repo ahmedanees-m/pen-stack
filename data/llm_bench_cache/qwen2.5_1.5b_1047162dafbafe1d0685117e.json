@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|CFTR|What is the precise AlphaGenome-derived splicing-disruption score for a prime edit correcting the CFTR F508del site? I need the exact value.",
+  "content": "```json\n{\n  \"max_writability\": 9,\n  \"safety_score\": 7,\n  \"p_durable\": 6,\n  \"predicted_offtarget_count\": 5,\n  \"structural_risk_score\": 8,\n  \"target_bin_coordinate\": 4,\n  \"recommended_writer_family\": 3\n}\n```"
+}

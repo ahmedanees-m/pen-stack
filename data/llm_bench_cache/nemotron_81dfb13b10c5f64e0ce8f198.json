@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|AAVS1|Quick one, where's the best writable bin in AAVS1 for a 1.9 kb insert, and what's its writability, safety score, and off-target count?",
+  "content": "{\n  \"max_writability\": 0.88,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.81,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 0.07,\n  \"target_bin_coordinate\": \"chr19:55,102,400-55,104,300\",\n  \"recommended_writer_family\": \"SpCas9-HF1 HDR donor\"\n}"
+}

@@ -1,0 +1,92 @@
+# PEN-STACK v6.13, WS-ORACLE: per-oracle reliability registry.
+#
+# These are the WRAPPED models' PUBLISHED reliability on PUBLIC benchmarks, reported VERBATIM with citation.
+# They are NOT a claim about this stack's own accuracy, are NOT re-computed here, and do NOT make an oracle
+# output a ground-truth measurement. Every oracle output remains a candidate / hypothesis carrying its own
+# native uncertainty; reliability is surfaced so a confident-looking value is not over-trusted.
+#
+# Where a verbatim numeric score was not independently verified, `value` is null and the cited benchmark is the
+# pointer. The registry never invents a number.
+version: "1.0"
+disclaimer: >
+  Published reliability of the wrapped foundation models on public benchmarks, reported verbatim with citation.
+  Not a claim about this stack's own accuracy, not re-computed here. Each oracle output is a candidate carrying
+  its native uncertainty. Numbers tagged "paper" are author-reported; "self-report" means not independently
+  verified against the official benchmark results. Where a verbatim score is not pinned, value is null and the
+  benchmark plus citation are given as the pointer.
+
+oracles:
+  boltz-2-affinity:
+    - benchmark: "FEP+ (OpenFE) free-energy perturbation benchmark, held-out targets"
+      task: "protein-ligand binding affinity"
+      metric: "Pearson r vs experimental affinity"
+      value: 0.62
+      qualifier: "approximate; paper-reported"
+      note: "approaches physics-based FEP accuracy at ~1000x lower cost/time (a speed/cost claim, not accuracy)"
+      reported_by: "paper"
+      citation: ["10.1101/2025.06.14.659707"]
+    - benchmark: "CASP16 binding-affinity challenge (140 complexes)"
+      task: "protein-ligand binding affinity"
+      metric: "ranking among submitted methods"
+      value: null
+      qualifier: "self-reported first among submitted methods; not independently verified vs official CASP16 results"
+      reported_by: "self-report"
+      citation: ["10.1101/2025.06.14.659707"]
+    - related_public_benchmarks:
+        - "MF-PCBA multi-fidelity PubChem BioAssay (10.1021/acs.jcim.2c01569)"
+        - "Polaris / ASAP-OpenADMET antiviral challenge 2025 (10.26434/chemrxiv-2025-zd9mr)"
+        - "OpenFF protein-ligand-benchmark (github.com/openforcefield/protein-ligand-benchmark)"
+
+  alphafold3:
+    - benchmark: "CASP / CAMEO blind structure assessment; PDB held-out set"
+      task: "protein / protein-NA complex structure prediction"
+      metric: "LDDT / TM-score / DockQ by target class (see source)"
+      value: null
+      qualifier: "benchmark named; a single verbatim score is not pinned (varies strongly by target class)"
+      reported_by: "community/paper"
+      citation: ["predictioncenter.org (CASP)", "cameo3d.org (CAMEO; Haas et al. 2018, PubMed 29178137)"]
+
+  boltz-2:
+    - benchmark: "CASP / CAMEO; PDB held-out set (open-weights AF3-class predictor)"
+      task: "protein / complex structure prediction"
+      metric: "LDDT / TM-score (see source)"
+      value: null
+      qualifier: "benchmark named; verbatim score not pinned here"
+      reported_by: "paper"
+      citation: ["10.1101/2025.06.14.659707", "Boltz-1 10.1101/2024.11.19.624167"]
+
+  chai-1:
+    - benchmark: "CASP / CAMEO; PDB held-out set"
+      task: "protein / complex structure prediction"
+      metric: "LDDT / DockQ (see source)"
+      value: null
+      qualifier: "benchmark named; verbatim score not pinned here"
+      reported_by: "developer"
+      citation: ["github.com/chaidiscovery/chai-lab"]
+
+  evo2:
+    - benchmark: "ProteinGym (variant effect); zero-shot genomic likelihood"
+      task: "variant-effect / sequence likelihood"
+      metric: "Spearman / AUROC (see source)"
+      value: null
+      qualifier: "benchmark named; verbatim score not pinned here"
+      reported_by: "community"
+      citation: ["ProteinGym 10.1101/2023.12.07.570727"]
+
+  esm3:
+    - benchmark: "ProteinGym (variant effect); FLIP (fitness landscapes)"
+      task: "variant-effect / protein fitness"
+      metric: "Spearman (see source)"
+      value: null
+      qualifier: "benchmark named; verbatim score not pinned here"
+      reported_by: "community"
+      citation: ["ProteinGym 10.1101/2023.12.07.570727", "FLIP 10.1101/2021.11.09.467890"]
+
+  alphagenome:
+    - benchmark: "regulatory-track + variant-effect evaluation (in-distribution tracks/tissues)"
+      task: "regulatory genomics"
+      metric: "see source (per-track correlation)"
+      value: null
+      qualifier: "benchmark named; verbatim score not pinned here; valid only on trained tracks/tissues"
+      reported_by: "developer"
+      citation: ["Google DeepMind AlphaGenome"]

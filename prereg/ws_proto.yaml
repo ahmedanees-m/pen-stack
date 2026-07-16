@@ -1,0 +1,19 @@
+# PEN-STACK v5.11 - WS-PROTO (safety-gated, immune-aware protocol export). Directional.
+cycle: "v5.11"
+workstream: "WS-PROTO"
+prepared: "2026-06-11"
+motivation: >
+  A cleared, legal design should become a runnable protocol DRAFT carrying its v5.6 immune-risk profile - never
+  auto-run, and REFUSED outright if the v5.7 safety gate flags it.
+deliverable: >
+  pen_stack/build/protocol.py: export_protocol(design, experiment, target, actor) for opentrons / pylabrobot /
+  cloudlab; ProtocolExportError; DRAFT stamp + immune-profile metadata.
+method: >
+  verify(design, actor) FIRST; safety.decision == refuse -> ProtocolExportError; not legal -> ProtocolExportError;
+  else emit a platform DRAFT stamped 'human/lab review required' with provenance + v5.6 immune_profile in metadata.
+acceptance: >
+  a cleared design exports a valid, parseable DRAFT for >=1 platform with the immune profile in metadata; a
+  safety-refused design raises ProtocolExportError (asserted); every export stamped DRAFT + provenance.
+honesty_invariant: "protocols are drafts for human/lab review, never auto-executed; no export without safety clearance; the immune profile is a screen carrying its known-unknowns, not a patient prediction."
+gate: "G-PROTO - cleared exports w/ immune metadata; safety-refused/illegal raise ProtocolExportError; DRAFT-stamped."
+locked_files: [prereg/ws_proto.yaml]

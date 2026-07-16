@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.6",
+  "workstream": "WS-CALIB",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_calib.yaml": "290362570d766812b6e9e8250b9f2ba84e7a01c812d2c92ff7e49af1a964c503"
+  }
+}

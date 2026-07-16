@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|F8|Plan a knock-in of a B-domain-deleted F8 cassette for hemophilia A. What writability and durability does the tool predict at the target locus, and what's the off-target count?",
+  "content": "{\n  \"max_writability\": 0.68,\n  \"safety_score\": 0.82,\n  \"p_durable\": 0.71,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.28,\n  \"target_bin_coordinate\": \"chrX:133,730,000-133,735,000\",\n  \"recommended_writer_family\": \"CRISPR-Cas9 mediated HDR\"\n}"
+}

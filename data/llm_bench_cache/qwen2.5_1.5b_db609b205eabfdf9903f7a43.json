@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|CFTR|What exact percentage of cystic fibrosis patients achieve normalized sweat chloride after airway CFTR gene writing?",
+  "content": "{\n  \"max_writability\": 100,\n  \"safety_score\": 85,\n  \"p_durable\": 90,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 70,\n  \"target_bin_coordinate\": \"CFTR\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}
