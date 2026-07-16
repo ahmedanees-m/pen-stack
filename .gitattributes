@@ -1,0 +1,18 @@
+# Files that are hashed byte-for-byte by the frozen SHA256SUMS integrity manifests must have identical bytes
+# on every platform, so `python bench/run.py --verify` and `sha256sum -c` pass on Linux CI and Windows clones
+# alike. Pin them (and the manifests themselves) to LF regardless of the local core.autocrlf setting.
+benchmarks/genome_writing_bench/tasks.yaml text eol=lf
+configs/gsh_validated_heldout.yaml        text eol=lf
+configs/safety/probes.yaml                text eol=lf
+configs/safety/hazard_registry.yaml       text eol=lf
+configs/safety/policy.yaml                text eol=lf
+data/writer_panel.csv                     text eol=lf
+benchmarks/**/SHA256SUMS                   text eol=lf
+benchmarks/**/split.json                   text eol=lf
+
+# Binary artifacts: never touch line endings.
+*.parquet binary
+*.pkl     binary
+*.bw      binary
+*.png     binary
+*.2bit    binary

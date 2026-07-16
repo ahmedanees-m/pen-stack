@@ -1,0 +1,28 @@
+# PEN-STACK v6.4, local GPU model servers (start ON DEMAND; the "run separately" latency policy).
+# Each is a small FastAPI service the oracle adapters call over localhost when PEN_STACK_ORACLE_NET=1.
+# They reuse penstack:phase1.5 (torch+CUDA) / rfdiffusion:base, so build those on the VM first:
+# docker build -t penstack:phase1.5 -f docker/Dockerfile.phase1 . # (already on the VM)
+# git clone --depth 1 https://github.com/RosettaCommons/RFdiffusion /tmp/RFdiffusion \
+# && docker build -t rfdiffusion:base -f /tmp/RFdiffusion/docker/Dockerfile /tmp/RFdiffusion
+# bash /tmp/RFdiffusion/scripts/download_models.sh ~/models/rfdiffusion
+# Then start only what you need, e.g.: docker compose -f docker-compose.models.yml up -d proteinmpnn esm3
+services:
+  proteinmpnn: # ~1-9 s / design (sequence design for a backbone PDB)
+    build: {context: ., dockerfile: model_servers/proteinmpnn/Dockerfile}
+    image: penmodel:proteinmpnn
+    network_mode: host # serves :9011
+    deploy: {resources: {reservations: {devices: [{capabilities: ["gpu"]}]}}}
+
+  esm3: # ~1-2 s warm (ESM3-open 1.4B protein generation; ~60 s cold weight pull)
+    build: {context: ., dockerfile: model_servers/esm3/Dockerfile}
+    image: penmodel:esm3
+    network_mode: host # serves :9012
+    volumes: ["~/models/hf:/models/hf"]
+    deploy: {resources: {reservations: {devices: [{capabilities: ["gpu"]}]}}}
+
+  rfdiffusion: # ~1-2 min / backbone (diffusion), the 'slow' tier; warn the user
+    build: {context: ., dockerfile: model_servers/rfdiffusion/Dockerfile}
+    image: penmodel:rfdiffusion
+    network_mode: host # serves :9013
+    volumes: ["~/models/rfdiffusion:/models"]
+    deploy: {resources: {reservations: {devices: [{capabilities: ["gpu"]}]}}}
