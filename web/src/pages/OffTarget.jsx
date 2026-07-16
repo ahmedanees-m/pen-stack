@@ -1,0 +1,323 @@
+// Off-Target finder (v7.2), genome-wide, per-writer-mechanism. Given a guide/target for a writer, it scans the
+// human genome for every site the writer could also act on, then scores and ranks them, applying the CORRECT
+// off-target mechanism per writer class: nuclease cleavage, integrase pseudo-attP, bridge target-specificity,
+// CAST guide + untargeted transposition, PASTE composition. Each carries a truthful validation status. Genome-wide
+// enumeration runs on the VM; the app replays the committed cache or abstains. A result is a CANDIDATE, never a
+// clearance, wet-lab confirmation with the named assay is required.
+import React, { useEffect, useRef, useState } from "react";
+import WhatYouGet from "../components/WhatYouGet.jsx";
+import ScoreGuide from "../components/ScoreGuide.jsx";
+import { api } from "../api.js";
+import { Card, Button, Spinner, ErrorNote, Field, Select, Pill, SeqWarning } from "../components/ui.jsx";
+import { num } from "../lib/format.js";
+
+const FAMILIES = [
+  { value: "Cas9", label: "Cas9 nuclease, genome-wide finder (validated)" },
+  { value: "Cas12a", label: "Cas12a (AsCas12a), enumeration supported; scorer is SpCas9-specific (unvalidated)" },
+  { value: "Bxb1", label: "Bxb1 serine integrase, pseudo-attP scan (semi-validated)" },
+  { value: "phiC31", label: "phiC31 serine integrase, documented pseudo-attP + sealed benchmark (unvalidated)" },
+  { value: "bridge_IS110", label: "bridge recombinase IS110, TBL scan (unvalidated)" },
+  { value: "ShCAST", label: "ShCAST (Type V-K), guide + untargeted (unvalidated)" },
+  { value: "PASTE", label: "PASTE / PASSIGE, nuclease + integrase (composite)" },
+];
+const EMX1 = "GAGTCCGAGCAGAAGAAGAAGGG";
+const BAND = { high: "text-red-400", medium: "text-amber-400", low: "text-emerald-400", minimal: "text-fg-faint", uncalibrated: "text-fg-faint" };
+const STATUS_COLOR = { validated: "var(--ok)", semi_validated: "var(--warn)", mechanism_based_unvalidated: "var(--warn)", composite: "var(--warn)" };
+const fmtStatus = (s) => String(s || "").replace(/_/g, " ");
+function StatusBadge({ status }) {
+  return <Pill color={STATUS_COLOR[status] || "var(--muted)"}>{fmtStatus(status)}</Pill>;
+}
+
+export default function OffTarget() {
+  const [family, setFamily] = useState("Cas9");
+  const [guide, setGuide] = useState(EMX1);
+  const [targetCore, setTargetCore] = useState("");
+  const [cached, setCached] = useState([]);
+  const [res, setRes] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
+  const resultsRef = useRef(null);   // scroll the result into view (this page was missing the shared pattern)
+  const reqId = useRef(0);            // ignore a slow previous-family response so it can't clobber the current one
+
+  useEffect(() => { api.offtargetEnumerated().then((r) => setCached(r.guides || [])).catch(() => {}); }, []);
+  // when a result / spinner / error appears, bring it into view, the finder sits below tall explainer cards, so
+  // otherwise the output renders off-screen and reads as "nothing happened" (the intermittent first-click report).
+  useEffect(() => {
+    // NOTE: instant (not behavior:"smooth"), smooth scrollIntoView silently no-ops on this app's scroll container.
+    if (busy || res || error) setTimeout(() => resultsRef.current?.scrollIntoView({ block: "start" }), 60);
+  }, [busy, res, error]);
+
+  const needsGuide = family === "Cas9" || family === "PASTE";
+  const isCast = family === "ShCAST";
+  const isBridge = family === "bridge_IS110";
+  const canRun = needsGuide ? guide.trim().length >= 20 : true;
+
+  async function run() {
+    if (!canRun) return;
+    const myId = ++reqId.current;   // only the latest request may write state (guards rapid family-switch races)
+    setBusy(true); setError(null); setRes(null);
+    try {
+      const body = { writer_family: family };
+      if (family === "Cas9") { body.enzyme = "SpCas9"; body.guide = guide; }
+      else if (family === "Cas12a") body.enzyme = "AsCas12a";  // finder abstains (SpCas9-specific scorer)
+      else if (family === "PASTE") body.guide = guide;
+      else if (isCast) { body.enzyme = "ShCAST"; if (guide.trim()) body.guide = guide.trim(); }
+      else if (isBridge && targetCore.trim()) body.target_core = targetCore.trim();
+      const data = await api.offtarget(body);
+      if (myId === reqId.current) setRes(data);
+    } catch (e) { if (myId === reqId.current) setError(e); }
+    finally { if (myId === reqId.current) setBusy(false); }
+  }
+
+  const assay = res?.recommended_assay;
+
+  return (
+    <div className="space-y-4">
+      <WhatYouGet
+        intro="Give a guide or target for a writer class and get the other places in the genome it could act on, found, scored and ranked, each with the wet-lab assay that would confirm it. A result is a candidate, never a clearance."
+        features={[
+          { name: "Genome-wide sites", tells: "the off-target loci for your guide across GRCh38", output: "ranked coordinates + risk band" },
+          { name: "Per-mechanism status", tells: "the correct mechanism + a truthful validation label per writer class", output: "validated / semi / unvalidated" },
+          { name: "Nuclease risk / CRISOT", tells: "mismatch-calibrated risk + the learned CRISOT score", output: "band + 0–1" },
+          { name: "Chromatin annotation", tells: "whether an off-target sits in open vs closed chromatin (validated annotation, HEK293T DNase)", output: "accessibility note (annotation-only, not a re-ranker)" },
+          { name: "CAST untargeted background", tells: "the guide-independent transposition mode (V-K high, I-F low)", output: "tier + per-system note" },
+          { name: "Confirming assay", tells: "the wet-lab assay that would confirm a nomination", output: "GUIDE / CHANGE / CIRCLE / SITE-seq / Cryptic-seq" },
+        ]}
+        example="Pick Cas9 + the EMX1 guide → its genome-wide off-targets ranked by CRISOT and a real-data risk band, with GUIDE/CHANGE/CIRCLE/SITE-seq as the confirming assays. Cas12a is offered too, but its validated scorer is SpCas9-specific so the finder says so rather than mis-scoring. A novel guide → an abstain (the genome scan runs on the VM), never fabricated sites."
+      />
+      {/* plain-language explainer: what an off-target is, what to enter, what you get back */}
+      <Card title="Off-target effects, and how this finder works">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div>
+            <div className="text-sm font-semibold text-fg">What an off-target is</div>
+            <p className="mt-1 text-[12px] leading-relaxed text-fg-dim">
+              A genome-writing enzyme is aimed at one intended site, but it can also act at <em>other</em> places in
+              the genome that resemble the target. Those unintended edits are <b>off-targets</b>, the central safety
+              question for any writer.
+            </p>
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-fg">What you enter</div>
+            <p className="mt-1 text-[12px] leading-relaxed text-fg-dim">
+              Pick the writer class, then give it what defines the target: a <b>guide</b> (protospacer + PAM) for a
+              nuclease or a PASTE pegRNA; a <b>bridge-RNA target</b> for a bridge recombinase; a system (± spacer)
+              for CAST. A serine integrase (Bxb1 / phiC31) needs no input, it reports its documented sites.
+            </p>
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-fg">What you get back</div>
+            <p className="mt-1 text-[12px] leading-relaxed text-fg-dim">
+              A ranked list of genome-wide off-target sites with their <b>coordinates</b> (chromosome:position), a
+              <b> risk band</b>, and the <b>lab assay</b> that would confirm them. Every result is a candidate to
+              test, never a clearance.
+            </p>
+          </div>
+        </div>
+        <p className="mt-3 rounded border border-line bg-ink-900 px-3 py-2 text-[11px] leading-relaxed text-fg-faint">
+          <b className="text-fg-dim">How it works:</b> the engine scans the whole human genome (GRCh38) for every
+          site within the enzyme's mismatch tolerance, then scores and ranks each one, so you supply a guide and
+          get the off-target sites back, rather than having to supply the candidate sites yourself. The genome scan
+          is heavy, so it runs on the VM; this page replays the committed results for the built-in guides and
+          abstains for a novel guide rather than inventing sites.
+        </p>
+      </Card>
+
+      <ScoreGuide
+        intro="Each writer class uses the correct off-target mechanism and carries a truthful validation status. A result is a candidate, never a clearance; every one ships with the empirical assay that would confirm it."
+        items={[
+          { term: "Per-mechanism status", scale: "validated / semi / unvalidated", meaning: "Nuclease is VALIDATED (the CRISOT score beats a homology baseline on four independent assays; enumeration recovers the documented off-target set). Integrase, bridge and CAST are mechanism-based and labelled unvalidated where no genome-wide cellular off-target assay exists for them yet." },
+          { term: "Genome-wide search", scale: "you give a guide", meaning: "The engine enumerates the candidate sites itself across GRCh38 (within the mismatch tolerance), then scores and ranks them, you do not have to supply the candidate sites." },
+          { term: "Nuclease risk / CRISOT", scale: "band + 0–1", meaning: "A mismatch-calibrated risk band from real assay data (grounded on four unbiased assays, GUIDE/CHANGE/CIRCLE/SITE-seq), plus the learned CRISOT off-target score." },
+          { term: "Chromatin annotation", scale: "annotation-only", meaning: "Open chromatin predicts higher realized off-target activity for the same sequence match (validated: GUIDE-seq AUROC 0.671, cell-type-matched HEK293T DNase). It is surfaced per-site when the accessibility track is mounted and does NOT change the CRISOT-driven ranking, a validated annotation, not a re-ranker." },
+          { term: "CAST untargeted", scale: "tier", meaning: "The guide-INDEPENDENT untargeted-transposition background, the distinctive CAST off-target mode (Type V-K high, Type I-F low), a documented per-system property." },
+        ]}
+        caveats={[
+          "The genome scan runs on the VM; this page replays the committed results or abstains for a novel input, it never fabricates sites.",
+          "Bridge and CAST off-target cannot yet be validated to the nuclease standard, the field has no genome-wide cellular off-target assay for these recent technologies, so the tool runs a mechanism-based scan with a truthful 'unvalidated' label rather than an over-confident number.",
+          "Cas12a is offered for enumeration (TTTV PAM), but the validated CRISOT scorer and the mismatch-risk calibration are SpCas9-specific, the finder abstains for Cas12a rather than mis-scoring its sites with a SpCas9 model (a validated Cas12a scorer is future work).",
+          "The engine nominates and ranks; it does NOT clear a design, wet-lab confirmation with the recommended assay is required.",
+        ]} />
+
+      <Card title="Off-target finder" subtitle="Pick a writer class; the correct off-target mechanism and status are applied automatically.">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Writer class"><Select value={family} onChange={(v) => { setFamily(v); setRes(null); }} options={FAMILIES} /></Field>
+        </div>
+        {needsGuide && (
+          <div className="mt-3 grid gap-3">
+            <Field label={family === "PASTE" ? "pegRNA spacer (protospacer + PAM)" : "Guide (protospacer + PAM, SpCas9 NGG)"}>
+              <input className="input font-mono text-xs" value={guide} onChange={(e) => setGuide(e.target.value.toUpperCase())} />
+              <SeqWarning seq={guide} />
+            </Field>
+            {cached.length > 0 && (
+              <div className="text-[11px] text-fg-faint">Cached guides (instant genome-wide replay):{" "}
+                {cached.map((c) => (
+                  <button key={c.guide} onClick={() => setGuide(c.guide + "GGG")}
+                          className="mr-1 mb-1 rounded border border-line px-1.5 py-0.5 font-mono hover:border-brand/50 hover:text-brand">{c.name}</button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        {isCast && (
+          <div className="mt-3"><Field label="crRNA spacer (optional, for guide-directed sites; the untargeted background always shows)">
+            <input className="input font-mono text-xs" value={guide} onChange={(e) => setGuide(e.target.value.toUpperCase())} placeholder="optional Cas12k spacer…" />
+            <SeqWarning seq={guide} /></Field></div>
+        )}
+        {isBridge && (
+          <div className="mt-3"><Field label="Bridge-RNA target core (optional, a genome scan needs the VM genome; otherwise the engine explains how to run it)">
+            <input className="input font-mono text-xs" value={targetCore} onChange={(e) => setTargetCore(e.target.value.toUpperCase())} placeholder="bipartite ~14-nt target (central CT)…" />
+            <SeqWarning seq={targetCore} /></Field></div>
+        )}
+        <div className="mt-4 flex items-center gap-3">
+          <Button onClick={run} disabled={busy || !canRun}>Find off-targets</Button>
+          {needsGuide && !canRun && <span className="text-[11px] text-fg-faint">Enter a ≥20-nt guide (or pick a cached one).</span>}
+        </div>
+      </Card>
+
+      <div ref={resultsRef} />
+      {busy && <Card><Spinner label="Finding off-targets…" /></Card>}
+      {error && <Card><ErrorNote error={error} /></Card>}
+
+      {/* NUCLEASE finder */}
+      {res && res.family === "nuclease" && (res.abstain ? (
+        <Card title="Abstained (no fabrication)"><p className="text-sm text-fg-dim">{res.note}</p>
+          {res.cached_guides?.length > 0 && <p className="mt-2 text-[11px] text-fg-faint">Cached: {res.cached_guides.join(", ")}.</p>}</Card>
+      ) : (
+        <Card title="Genome-wide off-targets" subtitle={`${res.n_sites_genome_wide} sites · ${res.n_on_target} on-target · ${res.n_offtargets} off-targets · source ${res.source}`}>
+          <div className="mb-2 flex items-center gap-2"><StatusBadge status={res.status} />
+            {res.bench && <span className="text-[11px] text-fg-faint">CRISOT AUPRC {num(res.bench.crisot_auprc)} vs homology {num(res.bench.homology_auprc)} (beats homology).</span>}</div>
+          <div className="overflow-x-auto"><table className="w-full text-sm">
+            <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">
+              <th className="py-2 pr-3">Locus</th><th className="py-2 pr-3">Str</th><th className="py-2 pr-3">MM</th><th className="py-2 pr-3">Emp. active</th><th className="py-2 pr-3">Risk</th><th className="py-2 pr-3">CRISOT</th>{res.chromatin_available && <th className="py-2">Chromatin</th>}</tr></thead>
+            <tbody>{(res.nominations || []).map((n, i) => (
+              <tr key={i} className={`border-b border-line/50 ${n.n_mismatch === 0 ? "bg-emerald-500/5" : ""}`}>
+                <td className="py-2 pr-3 font-mono text-xs">{n.chrom}:{n.position}{n.n_mismatch === 0 ? " (on-target)" : ""}</td>
+                <td className="py-2 pr-3 tabular-nums">{n.strand}</td><td className="py-2 pr-3 tabular-nums">{n.n_mismatch}</td>
+                <td className="py-2 pr-3 tabular-nums">{n.empirical_active_fraction == null ? "n/a" : num(n.empirical_active_fraction)}</td>
+                <td className={`py-2 pr-3 font-medium ${BAND[n.risk_band] || ""}`}>{n.risk_band}</td>
+                <td className="py-2 pr-3 tabular-nums text-brand">{n.crisot_score == null ? "VM-only" : num(n.crisot_score)}</td>
+                {res.chromatin_available && <td className="py-2 text-xs text-fg-dim">{n.chromatin == null ? "-" : (n.chromatin.raises_realized_risk ? "open" : "closed")}</td>}</tr>))}</tbody>
+          </table></div>
+          <p className="mt-2 text-[11px] text-fg-faint">{res.method}</p>
+          {/* chromatin annotation: explicit about presence (track not always mounted) + the standalone validation evidence */}
+          {res.chromatin_note && (
+            <p className="mt-2 rounded border border-line bg-ink-900 px-3 py-2 text-[11px] leading-relaxed text-fg-faint">
+              <b className="text-fg-dim">Chromatin accessibility:</b> {res.chromatin_note}
+              {res.chromatin_validation && (
+                <span className="text-fg-faint"> Validation: {res.chromatin_validation.verdict}, accessibility predicts cell-based off-target activity, GUIDE-seq AUROC {num(res.chromatin_validation.guideseq_auroc)} ({res.chromatin_validation.matched_track}); annotation-only, not a re-ranker.</span>
+              )}
+            </p>
+          )}
+        </Card>
+      ))}
+
+      {/* INTEGRASE pseudo-attP */}
+      {res && res.family === "serine_integrase" && (
+        <Card title="Pseudo-attP" subtitle={res.abstain ? "" : `core ${res.att_core} · ${res.integrase}`}>
+          {/* capability badge: precise about WHAT can't be predicted (not a bare red flag) */}
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            {res.capability
+              ? <Pill color="var(--warn)">{res.capability.badge}</Pill>
+              : <StatusBadge status={res.status} />}
+          </div>
+          {/* plain-language capability disclosure, what's known vs what the tool can't predict */}
+          {res.capability && (
+            <p className="mb-2 text-[11px] leading-relaxed text-fg-dim">{res.capability.microcopy}</p>
+          )}
+          {/* the sealed φC31 recall benchmark, φC31's OWN result for φC31, cited as CROSS-INTEGRASE evidence for others */}
+          {res.sealed_recall_benchmark && (
+            <p className="mb-2 rounded border border-warn/25 bg-warn/5 px-3 py-2 text-[11px] leading-relaxed text-amber-300/80">
+              <b>Sealed φC31 recall benchmark (negative){res.benchmark_is_cross_integrase ? " · cross-integrase evidence" : ""}:</b> {res.sealed_recall_benchmark.verdict}{" "}
+              {res.benchmark_is_cross_integrase
+                ? <span className="text-fg-faint">This is the φC31 result, no {res.integrase}-specific pseudosite benchmark exists, cited as the empirical basis for treating att-similarity ranking as unvalidated across serine integrases.</span>
+                : <span className="text-fg-faint">The signal is real (φC31 recognition is sequence-guided), a learned/DMS model is the indicated next step, which is exactly what this negative motivates.</span>}
+            </p>
+          )}
+          {res.abstain ? (
+            <p className="text-sm text-fg-dim">{res.note}</p>
+          ) : res.documented_pseudo_attP ? (<>
+            <p className="mb-2 text-[11px] text-fg-faint">Verified documented human pseudo-attP ({res.documented_source}, DOI {res.documented_doi}):</p>
+            <div className="overflow-x-auto"><table className="w-full text-sm">
+              <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">
+                <th className="py-2 pr-3">Site</th><th className="py-2 pr-3">GenBank</th><th className="py-2">Chrom</th></tr></thead>
+              <tbody>{res.documented_pseudo_attP.map((s, i) => (
+                <tr key={i} className="border-b border-line/50"><td className="py-2 pr-3 font-medium">{s.name}</td>
+                  <td className="py-2 pr-3 font-mono text-xs">{s.genbank}</td><td className="py-2">{s.chrom}</td></tr>))}</tbody>
+            </table></div>
+            <p className="mt-2 text-[11px] text-fg-faint">{res.method}</p>
+          </>) : (<>
+            {res.specificity_note && <p className="mb-2 text-[11px] text-fg-faint">{res.specificity_note}</p>}
+            <p className="mb-2 text-[11px] text-fg-faint">{res.n_sites_genome_wide} genome-wide similarity candidate(s):</p>
+            <div className="overflow-x-auto"><table className="w-full text-sm">
+              <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">
+                <th className="py-2 pr-3">Locus</th><th className="py-2 pr-3">Str</th><th className="py-2 pr-3">Att mismatch</th><th className="py-2">Arm similarity</th></tr></thead>
+              <tbody>{(res.nominations || []).map((n, i) => (
+                <tr key={i} className="border-b border-line/50"><td className="py-2 pr-3 font-mono text-xs">{n.chrom}:{n.position}</td>
+                  <td className="py-2 pr-3 tabular-nums">{n.strand}</td><td className="py-2 pr-3 tabular-nums">{n.n_mismatch}</td>
+                  <td className="py-2 tabular-nums text-brand">{num(n.arm_similarity)}</td></tr>))}</tbody>
+            </table></div>
+            <p className="mt-2 text-[11px] text-fg-faint">{res.method}</p>
+          </>)}
+        </Card>
+      )}
+
+      {/* BRIDGE */}
+      {res && res.family === "bridge" && (
+        <Card title="Bridge off-target" subtitle={`IS110 target-specificity scan · ${res.ranker}`}>
+          <div className="mb-2"><StatusBadge status={res.status} /></div>
+          {res.engine?.status === "scanned" ? (
+            <p className="text-sm text-fg-dim">{res.engine.n_candidates} candidate pseudosites ({res.engine.n_exact_matches} exact). Ranked by the measured DMS specificity.</p>
+          ) : (
+            <p className="text-sm text-fg-dim">{res.engine?.note || "Provide a bridge-RNA target core + the VM genome for a genome-wide scan."}</p>
+          )}
+          <p className="mt-2 rounded border border-warn/25 bg-warn/5 px-3 py-2 text-[11px] leading-relaxed text-amber-300/80">{res.no_ground_truth_disclosure}</p>
+        </Card>
+      )}
+
+      {/* CAST */}
+      {res && res.family === "cast" && (
+        <Card title={`CAST off-target · ${res.system} (Type ${res.cast_type})`}>
+          <div className="mb-2"><StatusBadge status={res.status} /></div>
+          <div className="rounded-lg border border-line bg-ink-900 p-3">
+            <div className="flex flex-wrap items-center gap-2 text-sm"><span className="font-semibold text-fg">Guide-independent untargeted transposition</span>
+              <Pill color={res.untargeted_background.tier === "high" ? "var(--bad)" : res.untargeted_background.tier === "low" ? "var(--ok)" : "var(--warn)"}>{res.untargeted_background.tier}</Pill>
+              {res.untargeted_background.at_biased && <span className="chip">AT-biased</span>}</div>
+            <p className="mt-1.5 text-[11px] text-fg-dim">{res.untargeted_background.fidelity_note}</p>
+            <p className="mt-1 text-[11px] text-fg-faint">{res.untargeted_background.note}</p>
+          </div>
+          {res.guide_directed && (res.guide_directed.available
+            ? <p className="mt-2 text-sm text-fg-dim">Guide-directed: {res.guide_directed.n_offtargets} off-targets ({res.guide_directed.source}).</p>
+            : <p className="mt-2 text-[11px] text-fg-faint">Guide-directed: {res.guide_directed.note}</p>)}
+          <p className="mt-2 text-[11px] text-fg-faint">{res.method}</p>
+        </Card>
+      )}
+
+      {/* PASTE composite */}
+      {res && res.family === "paste" && (
+        <Card title="PASTE off-target (composite)" subtitle="Two independent components: the Cas9-nickase and the installed-att integrase.">
+          <div className="mb-2 flex items-center gap-2"><StatusBadge status={res.status} /></div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border border-line bg-ink-900 p-3">
+              <div className="mb-1 flex items-center gap-2 text-sm"><span className="font-semibold text-fg">Nuclease (nickase)</span><StatusBadge status={res.component_statuses.nuclease_component} /></div>
+              <p className="text-[11px] text-fg-dim">{res.nuclease_component.abstain ? res.nuclease_component.note : `${res.nuclease_component.n_offtargets} genome-wide off-targets for the pegRNA spacer.`}</p>
+            </div>
+            <div className="rounded-lg border border-line bg-ink-900 p-3">
+              <div className="mb-1 flex items-center gap-2 text-sm"><span className="font-semibold text-fg">Integrase (installed att)</span><StatusBadge status={res.component_statuses.integrase_component} /></div>
+              <p className="text-[11px] text-fg-dim">{res.integrase_component.abstain ? res.integrase_component.note : `${res.integrase_component.n_sites_genome_wide} genome-wide pseudo-attP candidates.`}</p>
+            </div>
+          </div>
+          <p className="mt-2 text-[11px] text-amber-300/80">{res.confirm_assay.note}</p>
+        </Card>
+      )}
+
+      {assay && assay.available && (
+        <Card title="Recommended validation assay" subtitle={assay.writer_class}>
+          <ul className="space-y-1 text-sm">{(assay.recommended || []).map((a, i) => (
+            <li key={i}><b>{a.assay}</b> <span className="text-fg-dim">({a.setting})</span>, {a.use}</li>))}</ul>
+          <p className="mt-2 text-[11px] text-fg-faint">{assay.strategy}</p>
+          {assay.note && <p className="mt-1 text-[11px] text-amber-300/80">{assay.note}</p>}
+        </Card>
+      )}
+    </div>
+  );
+}
