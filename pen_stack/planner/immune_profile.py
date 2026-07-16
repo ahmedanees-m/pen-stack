@@ -1,0 +1,292 @@
+"""Unified per-design immune-risk PROFILE.
+
+One object across every immune-risk axis (genotoxicity, CD8 epitope load, innate sensing, pre-existing
+anti-vector NAb, anti-PEG), each carrying its OWN value + native uncertainty + scope + calibration validation
+label. The axes are reported as a VECTOR, never fused into a single number, which would fake confidence and
+is forbidden (asserted by test). Abstaining axes report ``None``, not a guess. The in-vivo response magnitude
+and the patient-specific titer are listed as declared known-unknowns.
+
+This is the "immune-risk screen" the closed-loop arc consumes, a relative screen across axes,
+not a patient-level prediction.
+"""
+from __future__ import annotations
+
+from pen_stack.planner.antipeg_oracle import antipeg_oracle
+from pen_stack.planner.ada_risk import ada_risk
+from pen_stack.planner.capsid_epitope_oracle import capsid_epitope_oracle
+from pen_stack.planner.genotoxicity_oracle import genotoxicity_oracle
+from pen_stack.planner.immune_mhc2 import mhc2_epitope_load, writer_family_to_sequence, writer_sequences
+from pen_stack.planner.innate_sensing import innate_sensing
+from pen_stack.planner.seroprevalence_oracle import seroprevalence_oracle
+from pen_stack.validate.immune_calibration import axis_label
+
+# magnitude and patient-level state are NEVER predicted, listed so every consumer sees the boundary.
+# Also registers cd4_mhcii_help / preexisting_capsid_tcell / complement_carpa as known-unknowns
+# (configs/known_unknowns.yaml), mechanistically distinct axes PEN-STACK does not model.
+KNOWN_UNKNOWNS = ["patient_specific_titer", "in_vivo_response_magnitude", "induced_immunity_post_dose1",
+                  "cd4_mhcii_help", "preexisting_capsid_tcell", "complement_carpa"]
+
+# Route/dose modifier. Immune-privileged delivery sites (eye, CNS) materially LOWER the realized
+# immunogenicity of the SAME vector vs systemic delivery (Streilein 2003, 10.1038/nri1224). This is a
+# DOCUMENTED, QUALITATIVE modifier on the realized response, never a fabricated magnitude.
+_IMMUNE_PRIVILEGED = {"subretinal", "intravitreal", "intraocular", "cns", "intrathecal", "intracranial",
+                      "intraparenchymal", "eye", "retina", "brain"}
+ROUTE_MODIFIER_DOI = "10.1038/nri1224" # Streilein 2003, ocular/CNS immune privilege
+
+
+def _route_modifier(route: str | None) -> dict | None:
+    if not route:
+        return None
+    r = str(route).strip().lower()
+    privileged = any(k in r for k in _IMMUNE_PRIVILEGED)
+    return {"route": route,
+            "immune_privileged": privileged,
+            "effect": ("immune-privileged site: realized immunogenicity is materially LOWER than systemic "
+                       "delivery of the same vector (qualitative)" if privileged
+                       else "systemic / non-privileged route: no immune-privilege reduction applied"),
+            "doi": "10.1038/nri1224",
+            "note": "DOCUMENTED qualitative modifier on the realized response, NOT a quantified magnitude "
+                    "(the magnitude stays a known-unknown)."}
+
+
+# Administration-context (in-vivo vs ex-vivo) modifier on the VECTOR-FACING immune axes.
+# Ex-vivo delivery (cells transduced in a dish and washed before transplant) does NOT expose the vector to the
+# patient's circulating antibodies, so the pre-existing anti-vector NAb axis - a humoral, bloodstream eligibility
+# barrier - does not gate ex-vivo use (it is muted to "no barrier"). The systemic anti-capsid CD8 response is also
+# muted ex vivo (the host barely sees the capsid), but transduced cells can still present capsid epitopes (a real,
+# residual concern), so that axis is FLAGGED muted without overwriting its intrinsic value. This is the SAME
+# in-vivo/ex-vivo distinction the delivery_immunology profile already encodes ("computed_ex_vivo_muted").
+# A DOCUMENTED, mechanistic modifier - never a fabricated magnitude; the realized response stays a known-unknown.
+_EX_VIVO_MUTED_AXES = ("preexisting_nab", "cd8_epitope")
+
+
+def _is_ex_vivo(in_vivo) -> bool:
+    return str(in_vivo).strip().lower() in ("false", "0", "no", "ex_vivo", "ex vivo", "exvivo")
+
+
+def _administration_modifier(in_vivo) -> dict | None:
+    """Documented administration-context modifier (in-vivo / ex-vivo) on the vector-facing axes, or None when the
+    design does not state an administration context. Qualitative, never a fabricated magnitude."""
+    if in_vivo is None:
+        return None
+    if _is_ex_vivo(in_vivo):
+        return {"context": "ex_vivo", "muted_axes": list(_EX_VIVO_MUTED_AXES),
+                "effect": "ex-vivo administration: the vector contacts cells in a dish and is washed before "
+                          "transplant, so it is not exposed to the patient's circulating antibodies. Pre-existing "
+                          "anti-vector NAb does not gate eligibility (humoral barrier bypassed); the systemic "
+                          "anti-capsid CD8 response is muted, though transduced cells may still present capsid "
+                          "epitopes (a residual, separate consideration).",
+                "note": "DOCUMENTED qualitative administration modifier (the same in-vivo/ex-vivo distinction as the "
+                        "delivery profile); the realized immune MAGNITUDE remains a known-unknown."}
+    return {"context": "in_vivo", "muted_axes": [],
+            "effect": "in-vivo (systemic / local) administration: the vector is exposed to the patient's "
+                      "circulating antibodies and immune system, so the pre-existing NAb and anti-capsid CD8 "
+                      "axes apply as reported.",
+            "note": "DOCUMENTED qualitative administration modifier; the realized magnitude is a known-unknown."}
+
+
+def _apply_administration(axes: dict, admin: dict | None) -> None:
+    """Mutate the vector-facing axes in place for an ex-vivo administration context. Pre-existing NAb is muted to
+    'no barrier' (eligibility not gated when the vector never meets circulating antibody); CD8 capsid is flagged
+    muted but its intrinsic value is kept (transduced cells can still present). No-op for in-vivo / unspecified."""
+    if not admin or admin.get("context") != "ex_vivo":
+        return
+    na = axes.get("preexisting_nab")
+    if na and na.get("available") and na.get("value") is not None:
+        na["pre_admin_value"] = na["value"]
+        na["value"] = 1.0
+        na["uncertainty"] = 0.0
+        na["administration_muted"] = True
+        na["note"] = (f"ex-vivo administration: pre-existing circulating anti-vector antibodies do not reach the "
+                      f"vector (transduction in a dish), so pre-existing NAb does not gate eligibility "
+                      f"(muted from {na['pre_admin_value']} to 1.0 = no barrier). " + (na.get("note") or ""))
+    cd = axes.get("cd8_epitope")
+    if cd and cd.get("available") and cd.get("value") is not None:
+        cd["administration_muted"] = True
+        cd["note"] = ("ex-vivo administration: the systemic anti-capsid CD8 response is muted (minimal host capsid "
+                      "exposure); transduced cells may still present capsid epitopes, so the intrinsic value is "
+                      "kept. " + (cd.get("note") or ""))
+
+# headline score key inside each oracle's value dict, per axis.
+_SCORE_KEY = {"genotoxicity": "genotox_score", "cd8_epitope": "capsid_immune_score",
+              "innate": "innate_score", "preexisting_nab": "preexisting_score",
+              "anti_peg": "preexisting_antipeg_score"}
+
+# Canonical cargo nucleic-acid FORM per delivery vehicle, used to drive the innate-sensing pathway (DNA -> TLR9
+# CpG; mRNA -> TLR7/8 + RIG-I/MDA5; RNP -> transient) when a design does not state ``cargo_form`` explicitly.
+# This is the vehicle's defining cargo class, NOT a fabricated quantity: an LNP-mRNA vehicle delivers mRNA, a
+# DNA-virus / electroporated-plasmid vehicle delivers DNA, an (e)VLP delivers a transient ribonucleoprotein. A
+# lentivirus is packaged as RNA but the persistent, innate-relevant cassette is the integrated proviral DNA.
+# An unknown vehicle returns None so the innate axis ABSTAINS rather than guesses a form.
+_VEHICLE_CARGO_FORM = {
+    "lnp_mrna": "mRNA",
+    "aav_single": "DNA", "aav_dual": "DNA", "lentivirus": "DNA",
+    "helper_dependent_adenovirus": "DNA", "hsv_amplicon": "DNA", "electroporation": "DNA",
+    "evlp": "RNP", "vlp": "RNP",
+}
+
+
+def _vehicle_cargo_form(vehicle: str | None) -> str | None:
+    """Derive the cargo nucleic-acid form (DNA / mRNA / RNP) from the delivery vehicle, or None when unknown.
+    Used only when the design does not supply ``cargo_form`` / ``writer_output_form`` explicitly."""
+    if not vehicle:
+        return None
+    v = str(vehicle).strip().lower()
+    if v in _VEHICLE_CARGO_FORM:
+        return _VEHICLE_CARGO_FORM[v]
+    if "mrna" in v or "lnp" in v:
+        return "mRNA"
+    if "vlp" in v:
+        return "RNP"
+    return None
+
+
+def _axis(result, axis: str) -> dict:
+    """One axis record: value (headline score or None when abstaining) + native uncertainty + scope + the
+    calibration validation label. Never fabricates, an abstaining oracle yields value None."""
+    val = None
+    if result.available and result.value:
+        val = result.value.get(_SCORE_KEY[axis])
+    return {"value": val,
+            "uncertainty": result.native_uncertainty,
+            "in_scope": result.in_scope,
+            "available": result.available,
+            "validation": axis_label(axis), # 'mechanistic/population proxy' until calibration validates
+            "scope_card": result.scope_card,
+            "note": result.note}
+
+
+def _proxy_axis(value, note: str, axis: str = "mhc2_writer") -> dict:
+    """An axis record for the sequence-intrinsic proxies (MHC-II / ADA). Value None = abstained (no writer
+    sequence). Population-level proxy until calibration validates, never a patient magnitude."""
+    return {"value": value, "uncertainty": None, "in_scope": value is not None, "available": value is not None,
+            "validation": axis_label(axis), "scope_card": axis, "note": note}
+
+
+def _writer_antigen_card(design: dict) -> dict | None:
+    """The WRITER enzyme as a distinct antigen: MHC-II epitope load + ADA-risk over the writer's real
+    sequence. Returns None when no representative writer sequence is bundled (axis then abstains)."""
+    wf = design.get("writer_family") or design.get("writer")
+    rec = writer_family_to_sequence(wf) if wf else None
+    if not rec or not rec.get("seq"):
+        return None
+    nm = rec.get("name")
+    el = mhc2_epitope_load(rec["seq"], nm) # real NetMHCIIpan-4.0 when cached, else proxy
+    ad = ada_risk(rec["seq"], rec.get("origin"), name=nm)
+    return {"writer_family": wf, "representative": rec.get("name"), "accession": rec.get("accession"),
+            "origin": rec.get("origin"), "is_foreign": rec.get("origin") == "foreign",
+            "mhc2_immune_score": el["mhc2_immune_score"], "epitope_density": el["epitope_density"],
+            "ada_risk_score": ad["ada_risk_score"], "ada_immune_score": ad["ada_immune_score"],
+            "foreignness": ad.get("foreignness"),
+            "self_match_human_proteome": ad.get("self_match_human_proteome"),
+            "ada_backend": ad.get("backend"), "mhc2_backend": el.get("backend"),
+            "note": "the WRITER enzyme scored as a distinct antigen (real NetMHCIIpan-4.0 MHC-II/CD4 + ADA, "
+                    "origin-authoritative foreignness with a real human-proteome 9-mer self-match cross-check); "
+                    "bacterial/phage writers are foreign -> ADA-driving (Cas9 MHC-II: Simhadri 2021). "
+                    "Population-level proxy; realized CD4 response / ADA titer is a known-unknown."}
+
+
+# Genome-WRITER families surfaced in the Writer Atlas immunogenicity view: the bundled writers that are actual
+# genome writers (integrase / recombinase), each with a committed real NetMHCIIpan-4.0 MHC-II load + ADA-risk cache.
+# The Cas9 nuclease (an editor, not a large-cargo writer) is excluded; the human self control IS surfaced as a
+# labelled reference row (see below).
+_WRITER_IMMUNE_FAMILIES = ("serine_integrase", "bridge_IS110")
+_SELF_CONTROL = "HumanAlbumin"  # a human self protein: MHC-II epitopes present, yet tolerated (foreignness 0)
+
+
+def writer_immunogenicity_table() -> list[dict]:
+    """Per-writer immunogenicity (MHC-II/CD4 epitope load + ADA risk) for the bundled genome-writer families, read
+    from the committed NetMHCIIpan-4.0 cache (no recomputation). Surfaced in the Writer Atlas as the writer's
+    antigen profile, PLUS the human self control as a labelled reference row: a self protein carries MHC-II
+    epitopes (density > 0) yet is TOLERATED (origin=self -> foreignness 0 -> ADA-risk 0), so ADA decouples from the
+    MHC-II load, the row that shows ADA-risk = MHC-II density x foreignness(origin) is genuinely multiplicative and
+    not a pass-through of the load. Excludes the Cas9 nuclease."""
+    out = []
+    for fam in _WRITER_IMMUNE_FAMILIES:
+        card = _writer_antigen_card({"writer_family": fam})
+        if card:
+            out.append({"writer_family": fam, **card})
+    ctrl = writer_sequences().get(_SELF_CONTROL)
+    if ctrl and ctrl.get("seq"):
+        el = mhc2_epitope_load(ctrl["seq"], _SELF_CONTROL)
+        ad = ada_risk(ctrl["seq"], ctrl.get("origin"), name=_SELF_CONTROL)
+        out.append({"writer_family": ctrl.get("family"), "representative": _SELF_CONTROL,
+                    "accession": ctrl.get("accession"), "origin": ctrl.get("origin"),
+                    "is_foreign": ctrl.get("origin") == "foreign", "is_control": True,
+                    "mhc2_immune_score": el["mhc2_immune_score"], "epitope_density": el["epitope_density"],
+                    "ada_risk_score": ad["ada_risk_score"], "ada_immune_score": ad["ada_immune_score"],
+                    "foreignness": ad.get("foreignness"),
+                    "self_match_human_proteome": ad.get("self_match_human_proteome"),
+                    "ada_backend": ad.get("backend"), "mhc2_backend": el.get("backend"),
+                    "note": ("human self control (reference): a self protein carries MHC-II epitopes (density > 0) "
+                             "yet is TOLERATED, origin=self makes foreignness 0, so ADA-risk = density x 0 = 0 "
+                             "(central tolerance). This is the row that shows the foreignness term does real "
+                             "multiplicative work, not a pass-through of the MHC-II load.")})
+    return out
+
+
+def immune_profile(design: dict) -> dict:
+    """Per-design immune-risk profile across all axes. ``design`` keys: ``delivery_vehicle`` (or ``vehicle``),
+    ``serotype``, ``cargo_seq``, ``writer_output_form`` (or ``cargo_form``), ``pegylated``.
+
+    Returns the axes vector with per-axis uncertainty + validation label, an explicit ``collapsed_score: None``
+    (no fused number), the known-unknowns, and ``no_fabrication: True``."""
+    veh = design.get("delivery_vehicle") or design.get("vehicle")
+    sero = design.get("serotype")
+    cargo_seq = design.get("cargo_seq") or ""
+    # cargo form: honour an explicit design field, else derive it from the vehicle's defining cargo class so the
+    # innate axis computes for any caller (chat / MCP / REST) once a cargo sequence is supplied. Still abstains
+    # with no sequence and for an unknown vehicle (form None) - never fabricates.
+    form = (design.get("writer_output_form") or design.get("cargo_form")
+            or _vehicle_cargo_form(veh) or "")
+    peg = design.get("pegylated")
+
+    capsid_cd8 = capsid_epitope_oracle(veh)
+    writer_card = _writer_antigen_card(design) # the writer enzyme as a distinct antigen
+
+    axes = {
+        "genotoxicity": _axis(genotoxicity_oracle(veh), "genotoxicity"),
+        "cd8_epitope": _axis(capsid_cd8, "cd8_epitope"), # capsid CD8/MHC-I
+        "innate": _axis(innate_sensing(cargo_seq, form), "innate"),
+        "preexisting_nab": _axis(seroprevalence_oracle(veh, sero), "preexisting_nab"),
+        "anti_peg": _axis(antipeg_oracle(veh, peg), "anti_peg"),
+        # CD4/MHC-II + ADA over the WRITER enzyme (the dominant immunogenicity driver, previously omitted)
+        "mhc2_writer": _proxy_axis(writer_card["mhc2_immune_score"] if writer_card else None,
+                                   (writer_card or {}).get("note", "no bundled writer sequence -> abstains"),
+                                   "mhc2_writer"),
+        "ada_writer": _proxy_axis(writer_card["ada_immune_score"] if writer_card else None,
+                                  "ADA-risk (higher ada_immune_score = safer) over the writer enzyme, self-"
+                                  "tolerance filtered; population proxy" if writer_card else
+                                  "no bundled writer sequence -> abstains", "ada_writer"),
+    }
+
+    # Administration context: ex-vivo delivery bypasses the patient's circulating antibodies, so the
+    # vector-facing axes (pre-existing NAb, capsid CD8) are muted - documented, not a fabricated magnitude.
+    admin = _administration_modifier(design.get("in_vivo"))
+    _apply_administration(axes, admin)
+
+    # writer-as-antigen comparison: for non-viral delivery (no foreign capsid) or a foreign writer outscoring the
+    # capsid, the WRITER is the dominant antigen, never collapsed into the other axes.
+    dominant = None
+    writer_dominant_risk = False
+    if writer_card:
+        capsid_present = bool(capsid_cd8.available and capsid_cd8.value
+                              and (capsid_cd8.value.get("capsid_immune_score") or 1.0) < 1.0)
+        writer_risk = writer_card["ada_risk_score"]
+        capsid_risk = (1.0 - (capsid_cd8.value or {}).get("capsid_immune_score", 1.0)) if capsid_present else 0.0
+        writer_dominant_risk = bool(writer_card["is_foreign"] and (not capsid_present or writer_risk >= capsid_risk))
+        dominant = "writer" if writer_dominant_risk else ("capsid" if capsid_present else "writer")
+
+    return {
+        "axes": axes,
+        "collapsed_score": None, # deliberately None, a profile, never a fused number
+        "writer_as_antigen": ({**writer_card, "dominant_antigen": dominant,
+                               "writer_dominant_risk": writer_dominant_risk} if writer_card else None),
+        "route_modifier": _route_modifier(design.get("route")), # documented route modifier (or None)
+        "administration_modifier": admin, # in-vivo / ex-vivo documented modifier on the vector-facing axes
+        "known_unknowns": KNOWN_UNKNOWNS,
+        "no_fabrication": True,
+        "note": ("relative immune-risk SCREEN across axes (now incl. CD4/MHC-II + ADA over the writer enzyme); each "
+                 "axis keeps its own value + uncertainty + scope + validation label; NEVER fused. NOT a patient-"
+                 "level prediction. The realized CD4 response / ADA titer / in-vivo magnitude are known-unknowns."),
+    }
