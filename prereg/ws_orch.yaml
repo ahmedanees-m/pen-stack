@@ -1,0 +1,26 @@
+# PEN-STACK v5.8 - WS-ORCH (live foundation-model orchestration; replayable). Directional.
+cycle: "v5.8"
+workstream: "WS-ORCH"
+prepared: "2026-06-11"
+
+motivation: >
+  Orchestrate the biomolecular foundation models LIVE to drive grounded generation - the agent picks WHICH
+  oracle to call; the NUMBER always comes from the oracle, and a seed-locked replay reproduces the run.
+
+deliverable: >
+  pen_stack/agent/orchestrator_live.py: orchestrate(goal) - plan -> generate grounded candidates -> call an
+  oracle (cache-first/replayable) for a critique signal -> dispose via verify() -> refine -> return design + trace.
+
+method: >
+  the oracle critique value comes from an OracleResult (e.g. structure.consistency), cache-keyed + version-pinned;
+  absent input -> abstain (no fabricated value). Each round verifies the top candidate (safety + legality +
+  immune) and completes when it is legal and clear/flag. Deterministic given inputs + seed: replay reproduces the
+  trace from the committed cache (replay is the CI default).
+
+acceptance: >
+  a documented goal is solved by a run whose every number traces to an oracle/tool; a seed-locked replay
+  reproduces the run (identical trace); no-fabrication holds across orchestration.
+
+honesty_invariant: "live calls are cache-first + version-pinned + replayable; the agent never invents a value; novelty bounded by oracle validity + the rules."
+gate: "G-ORCH - every number tool-sourced; seed-locked replay reproduces the trace; no fabrication."
+locked_files: [prereg/ws_orch.yaml]

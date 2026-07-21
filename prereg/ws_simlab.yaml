@@ -1,0 +1,17 @@
+# PEN-STACK v5.11 - WS-SIMLAB (simulated-lab harness). Directional.
+cycle: "v5.11"
+workstream: "WS-SIMLAB"
+prepared: "2026-06-11"
+motivation: >
+  Let the closed loop (v5.12) run end-to-end before any hardware exists: execute a protocol in silico by sampling
+  an 'observed' result from the v5.9 twin + measurement noise, clearly labelled SIMULATED.
+deliverable: "pen_stack/build/simlab.py: run_simulated(protocol_ir, design, cell_state, seed)."
+method: >
+  truth = predict_outcome(design, cell_state); readout = truth + measurement noise (seeded); return a schema-valid
+  result with provenance {source: simlab, seed, label: SIMULATED}.
+acceptance: >
+  sim-lab returns schema-valid results labelled SIMULATED, never entering the curated world-model as measured truth;
+  the loop (export -> sim-run -> ingest) completes.
+honesty_invariant: "sim outcomes inherit the twin's limits; development/loop-validation only; NEVER a substitute for real data."
+gate: "G-SIMLAB - SIMULATED-labelled + schema-valid; export->sim->ingest completes; never treated as measured truth."
+locked_files: [prereg/ws_simlab.yaml]

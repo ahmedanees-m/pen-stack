@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|TRAC|I'm making allogeneic CAR-T cells and need to knock out TRAC. Give me a concrete write plan: the target cut coordinate, the writability score at that site, how many off-target sites I should expect, and whether the safety gate clears it.",
+  "content": "```json\n{\n  \"max_writability\": 7,\n  \"safety_score\": 5,\n  \"p_durable\": 0.98,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 3,\n  \"target_bin_coordinate\": \"chr21:164,444,100-164,444,500\",\n  \"recommended_writer_family\": \"TALEN\"\n}\n```"
+}

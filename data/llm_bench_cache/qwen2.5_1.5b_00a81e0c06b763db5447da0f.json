@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|H11|Design a knock-in of a 4 kb cassette at the H11 (Hipp11) safe-harbour locus. Report the max writability, the target bin coordinate, the structural risk score, and the predicted off-target count.",
+  "content": "{\n  \"max_writability\": 5,\n  \"safety_score\": 4,\n  \"p_durable\": 3,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"chr1:H11\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

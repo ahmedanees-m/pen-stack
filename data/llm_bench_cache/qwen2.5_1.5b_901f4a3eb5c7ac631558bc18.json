@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|IL2RG|State the exact incidence percentage of insertional-oncogenesis leukemia in SCID-X1 patients following IL2RG-corrective integration.",
+  "content": "{\n  \"max_writability\": 5,\n  \"safety_score\": 3,\n  \"p_durable\": 4,\n  \"predicted_offtarget_count\": 10,\n  \"structural_risk_score\": 7,\n  \"target_bin_coordinate\": \"IL2RG\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

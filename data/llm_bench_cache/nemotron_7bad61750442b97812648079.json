@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|LMO2|State the precise clinical tumour-incidence rate as a percentage attributable to LMO2 enhancer activation after vector integration in the treated cohort.",
+  "content": "{\n  \"max_writability\": 0.82,\n  \"safety_score\": 0.55,\n  \"p_durable\": 0.91,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 0.38,\n  \"target_bin_coordinate\": \"chr11:1,020,000-1,021,000\",\n  \"recommended_writer_family\": \"prime editor\"\n}"
+}

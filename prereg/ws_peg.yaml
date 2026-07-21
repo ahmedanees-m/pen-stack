@@ -1,0 +1,31 @@
+# PEN-STACK v5.6 - WS-PEG (anti-PEG immunity for PEGylated LNP). Directional.
+cycle: "v5.6"
+workstream: "WS-PEG"
+prepared: "2026-06-11"
+
+motivation: >
+  The one delivery-immunology axis missing from v5.1-v5.5: pre-existing/induced anti-PEG antibodies, which gate
+  RE-DOSING of PEGylated LNP. Flagged in v5.5 as "a separate emerging exception"; now grounded.
+
+deliverable: "configs/antipeg.yaml (population anti-PEG prevalence range + serosurvey DOIs); pen_stack/planner/antipeg_oracle.py (OracleResult); scope card `antipeg`."
+
+method: >
+  Same honest pattern as the v5.5 seroprevalence oracle. Anti-PEG is a property of the PEGylation chemistry,
+  not an encoded sequence -> curated from serosurveys as a population prevalence RANGE.
+  preexisting_antipeg_score = 1 - midpoint(anti_PEG_prevalence_pct)/100; range half-width surfaced as
+  native_uncertainty. v4.0 OracleResult (output_kind="baseline"). DOIs Crossref-verified: Chen 2016
+  [10.1021/acs.analchem.6b03109], Yang&Lai 2015 [10.1002/wnan.1339], Armstrong 2007 [10.1002/cncr.22739],
+  Kozma 2020 [10.1016/j.addr.2020.07.024].
+
+acceptance: >
+  PEGylated LNP -> score with the prevalence range surfaced; non-PEGylated vehicles -> ABSTAIN (available=False,
+  value=None); >=1 serosurvey DOI (curated); re-dosing relevance noted; NO patient-specific titer predicted
+  (asserted). `pegylated` argument overrides the config vehicle list.
+
+honesty_invariant: >
+  A POPULATION prevalence (range, region/age/assay-dependent), NOT a given patient's anti-PEG titer (a
+  known-unknown); INDUCED anti-PEG after dose 1 (esp. post mRNA-LNP) is a separate, larger dynamic, noted not
+  modelled. No patient-specific magnitude predicted.
+
+gate: "PEG-LNP scored with range; non-PEG abstains; serosurvey DOI curated; re-dosing noted; patient titer known-unknown; no-fabrication intact."
+locked_files: [prereg/ws_peg.yaml]

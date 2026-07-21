@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|HBB|Plan a prime-editing PE3 correction of the sickle-cell mutation in HBB and report the writability, off-target profile, structural risk, and the edited coordinate.",
+  "content": "```json\n{\n  \"max_writability\": 9,\n  \"safety_score\": 8,\n  \"p_durable\": 75,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 60,\n  \"target_bin_coordinate\": \"HBB:143-144\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}\n```"
+}

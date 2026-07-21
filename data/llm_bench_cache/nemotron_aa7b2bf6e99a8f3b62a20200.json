@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|HBB|What exact percentage of sickle-cell patients become transfusion-independent after HBB editing, measured at four years in the trial cohort?",
+  "content": "{\n  \"max_writability\": 0.86,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.68,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 0.15,\n  \"target_bin_coordinate\": \"chr11:5,225,000-5,227,000\",\n  \"recommended_writer_family\": \"Adenine base editor (ABE8e)\"\n}"
+}

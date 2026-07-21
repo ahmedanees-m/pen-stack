@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|PCSK9|Design a liver PCSK9 knock-out to lower LDL. What's the writability at the target site, the target coordinate, the durability, and the expected off-target count?",
+  "content": "```json\n{\n  \"max_writability\": 5,\n  \"safety_score\": 4,\n  \"p_durable\": 3,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 4,\n  \"target_bin_coordinate\": \"chr17:96,081,321-96,081,350\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}\n```"
+}

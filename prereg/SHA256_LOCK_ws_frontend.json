@@ -1,0 +1,8 @@
+{
+  "cycle": "v6.2",
+  "workstream": "WS-FRONTEND",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_frontend.yaml": "983be0d5b0e7016685fa675db82ea6586df3c20673e5723ecb09f84a0a56fe6a"
+  }
+}

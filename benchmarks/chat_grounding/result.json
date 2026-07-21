@@ -1,0 +1,21 @@
+{
+  "n_cases": 14,
+  "citation_coverage": 1.0,
+  "unsupported_claims_through_guard": 0,
+  "false_grounding_rate": 0.0,
+  "helpful_answer_rate": 1.0,
+  "abstention_on_specific_unsourceable": 1.0,
+  "per_gold_pass": {
+    "cited": "6/6",
+    "general": "4/4",
+    "social": "2/2",
+    "abstain": "2/2"
+  },
+  "retrieval": "lexical (CI); semantic in production",
+  "gates": {
+    "P-G3 citation_coverage == 1.0": true,
+    "P-G3 0 unsupported claims": true,
+    "false_grounding == 0": true,
+    "general+social answered (no regression)": true
+  }
+}

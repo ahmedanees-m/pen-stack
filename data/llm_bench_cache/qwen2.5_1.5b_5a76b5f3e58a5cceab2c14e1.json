@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|CLYBL|I'm worried about genotoxicity for a durable 6 kb cassette at CLYBL. Give me the structural risk score, the predicted off-target count, the safety score, the durability probability, and the target bin coordinate.",
+  "content": "{\n  \"max_writability\": 5,\n  \"safety_score\": 3,\n  \"p_durable\": 70,\n  \"predicted_offtarget_count\": 12,\n  \"structural_risk_score\": 4,\n  \"target_bin_coordinate\": \"CLYBL\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

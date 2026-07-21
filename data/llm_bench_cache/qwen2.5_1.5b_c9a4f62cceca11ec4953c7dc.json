@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|CCR5|What is the precise percentage of HIV-1 patients who achieve durable viral remission after CCR5 disruption in their hematopoietic stem cells? I need the exact clinical figure.",
+  "content": "{\n  \"max_writability\": 0.9,\n  \"safety_score\": 4.0,\n  \"p_durable\": 0.8,\n  \"predicted_offtarget_count\": 123,\n  \"structural_risk_score\": 5.0,\n  \"target_bin_coordinate\": \"CCR5\",\n  \"recommended_writer_family\": \"Human Genome Editing\"\n}"
+}

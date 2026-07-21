@@ -1,0 +1,18 @@
+# PEN-STACK v4.0 - WS-ATLAS (mesh-upgraded atlas + delivery oracle) pre-registered. Needs gate G-O.
+cycle: "v4.0"
+workstream: "WS-ATLAS"
+prepared: "2026-06-09"
+
+A1_atlas_mesh:
+  deliverable: "pen_stack/wgenome/mesh_features.py: attach_oracle_features() (OOD-gated) + revalidate_atlas()"
+  method: "augment v3.x sequence-derived features with AlphaGenome variant-effect / structure-based reachability WHERE COMPUTABLE + in-scope; keep ChromBPNet/Borzoi as baselines; re-run the BLIND atlas validation (validated GSH recovered, clinical genotoxic loci non-writable) and report the delta vs v3.x."
+  acceptance: "re-validation reported with the v3.x baseline (blind-GSH AUROC 0.68); any change stated plainly (improvement/parity/regression); OOD-gating applied - a locus outside an oracle's scope card is NOT scored without an extrapolating flag. Backends deferred (offline/CI) -> features unchanged -> PARITY (delta 0.0), reported honestly; the live re-source runs on the VM."
+  scope: "oracles do not generalize to unseen loci (Evo2/AlphaGenome) - the atlas inherits and LABELS that limit; cross-cell-type remains heuristic."
+
+A2_delivery_oracle:
+  deliverable: "configs/rules/delivery.yaml + rules/evaluators.py: delivery.aav_packaging_margin (evaluator delivery_aav_packaging)"
+  method: "add a computable AAV-specific check: packaging efficiency / titre drops as cargo approaches the capsid limit (cargo_bp vs vehicle capacity), a soft penalty distinct from the existing over-capacity HARD reject and the generic sequence scan."
+  acceptance: "directional controls - a cargo within the packaging margin (>= 90% of capacity) FLAGS; a comfortably-sized cargo does not; immunogenicity MAGNITUDE stays a scope flag (never predicted)."
+
+gate: "atlas re-validation reported honestly with N/CI + OOD-gated; delivery refinement directional; immunogenicity magnitude out-of-scope; no-fabrication intact."
+locked_files: [prereg/ws_atlas.yaml]

@@ -1,0 +1,27 @@
+{
+  "benchmark": "TPE-Bench-Human",
+  "track": "human_k562_position_effect_head",
+  "version": "v7.3.0",
+  "description": "Fresh, untouched held-out split for the human K562 position-effect expression head. Sealed via SHA-locked prereg and run ONCE before scoring (not a within-dataset re-selection).",
+  "datasets": ["Leemans2019_human_K562_TRIP"],
+  "label": "measured Leemans 2019 K562 TRIP steady-state integrated-reporter expression (NON-circular: the measured label, not a model claim)",
+  "chrom_holdout": {
+    "test_chroms": ["chr3", "chr8", "chr12"],
+    "rationale": "held out by whole chromosome (leakage control: nearby integrations share chromatin); this split was never used as a test set before the fresh sealed run.",
+    "n_test": 1506
+  },
+  "prereg_sealed_sha256": "9a928f8c3129d07fdd427292663921fefb9dd59304838b2525a715329e4c05f5",
+  "acceptance": {
+    "tau": 0.2,
+    "delta": 0.05,
+    "rule": "the circularity-clean independent variant must beat the best LEARNED heterochromatin baseline by delta>=0.05 with the bootstrap 95% CI of the margin excluding 0"
+  },
+  "baselines": ["heterochromatin_multifeature (learned LightGBM on lad + LMNB1-DamID + H3K9me3 + H3K27me3)", "lad_single_feature"],
+  "metrics": ["expression_spearman"],
+  "provenance": {
+    "prereg_file": "p2_head_prereg.sealed.json",
+    "result_file": "P2_HEAD_FRESH_RESULT.json",
+    "run": "sealed and run once (per the sealed execution record changelog, 2026-07-05d); RNG seed not recorded in the available source files",
+    "note_distinct_split": "the pre-registered mouse-axis validated_null used a DIFFERENT held-out split {chr2,chr9,chr16} (prereg 2a4c722a...); this file documents ONLY the fresh human-head split {chr3,chr8,chr12}"
+  }
+}

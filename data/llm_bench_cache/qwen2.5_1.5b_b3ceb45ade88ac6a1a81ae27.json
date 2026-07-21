@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|ALB|Design a PASTE (twin prime editing plus Bxb1 landing pad) insertion of a Factor IX cassette into the albumin ALB locus and give me the writability, durability, off-target, and coordinate numbers.",
+  "content": "{\n  \"max_writability\": 8,\n  \"safety_score\": 7,\n  \"p_durable\": 9,\n  \"predicted_offtarget_count\": 20,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"14:35,14:36\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

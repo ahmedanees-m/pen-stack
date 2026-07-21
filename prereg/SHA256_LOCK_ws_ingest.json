@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.11",
+  "workstream": "WS-INGEST",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_ingest.yaml": "3e95dc975010d8b83f25babb8fdc5a6839a88725b063f2d6c7163925e35d10a3"
+  }
+}

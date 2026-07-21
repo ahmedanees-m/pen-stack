@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|AAVS1|Quick one, where's the best writable bin in AAVS1 for a 1.9 kb insert, and what's its writability, safety score, and off-target count?",
+  "content": "{\n  \"max_writability\": 0.85,\n  \"safety_score\": 3.2,\n  \"p_durable\": 0.97,\n  \"predicted_offtarget_count\": 4,\n  \"structural_risk_score\": 1.6,\n  \"target_bin_coordinate\": \"chrX:11,000-11,500\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

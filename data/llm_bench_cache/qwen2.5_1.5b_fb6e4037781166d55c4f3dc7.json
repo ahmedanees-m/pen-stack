@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|HBB|What exact percentage of sickle-cell patients become transfusion-independent after HBB editing, measured at four years in the trial cohort?",
+  "content": "```json\n{\n  \"max_writability\": 100,\n  \"safety_score\": 95,\n  \"p_durable\": 80,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 70,\n  \"target_bin_coordinate\": \"HBB\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}\n```"
+}

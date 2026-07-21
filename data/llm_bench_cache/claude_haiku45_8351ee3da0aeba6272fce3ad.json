@@ -1,0 +1,6 @@
+{
+  "model": "claude_haiku45",
+  "condition": "naive",
+  "goal": "plan|CLYBL|Write plan for a 2.8 kb cassette at CLYBL: durability, writability, off-targets, coordinate.",
+  "content": "```json\n{\n  \"max_writability\": 0.78,\n  \"safety_score\": 0.82,\n  \"p_durable\": 0.85,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.19,\n  \"target_bin_coordinate\": \"chr13:45,500,000-45,502,800\",\n  \"recommended_writer_family\": \"PRIME_EDITOR_5\"\n}\n```\n\n**Rationale:**\n- **Writability (0.78)**: 2.8 kb is within optimal range for PE; moderate complexity for cassette integration\n- **Safety (0.82)**: CLYBL is non-essential; low off-target risk in intergenic context\n- **Durability (0.85)**: Stable integration expected with proper homology arms; good retention probability\n- **Off-targets (2)**: Predicted 2 minor off-target sites based on sequence homology screening\n- **Structural risk (0.19)**: Low risk; cassette size manageable, no predicted secondary structure conflicts\n- **Coordinate**: Approximate CLYBL locus on chr13 (adjust to your specific build/strand)\n- **Writer family**: PE5 recommended for precise 2.8 kb insertions with minimal indels"
+}

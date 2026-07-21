@@ -1,0 +1,85 @@
+version: '1.0'
+built: '2026-06-10'
+description: 'computed capsid/envelope CD8 T-cell epitope-load oracle: fraction of
+  the antigen presentable (MHCflurry %rank<=0.5) across a frequent HLA-I panel. capsid_immune_score
+  = 1 - epitope_fraction_strong. Patient-HLA-specific response is NOT modelled (known-unknown);
+  this is a population-level sequence-intrinsic signal.'
+method:
+  predictor: MHCflurry 2.0 Class1AffinityPredictor (per-allele %rank)
+  peptide_len: 9
+  strong_rank: 0.5
+  binder_rank: 2.0
+  hla_panel:
+  - HLA-A*01:01
+  - HLA-A*02:01
+  - HLA-A*03:01
+  - HLA-A*11:01
+  - HLA-A*24:02
+  - HLA-A*26:01
+  - HLA-B*07:02
+  - HLA-B*08:01
+  - HLA-B*15:01
+  - HLA-B*40:01
+  - HLA-B*44:03
+  - HLA-B*58:01
+provenance_dois:
+- 10.1016/j.cels.2020.06.010
+- 10.1186/1471-2172-9-1
+proteins:
+  AAV2_VP1:
+    length: 735
+    n_9mers: 727
+    epitope_fraction_strong: 0.7197
+    epitope_fraction_binder: 0.9755
+    strong_binder_density: 0.01433
+  Ad5_hexon:
+    length: 952
+    n_9mers: 944
+    epitope_fraction_strong: 0.8204
+    epitope_fraction_binder: 0.979
+    strong_binder_density: 0.02127
+  VSVg_Indiana:
+    length: 511
+    n_9mers: 503
+    epitope_fraction_strong: 0.8356
+    epitope_fraction_binder: 0.9922
+    strong_binder_density: 0.0174
+  HSV1_gD:
+    length: 394
+    n_9mers: 386
+    epitope_fraction_strong: 0.7893
+    epitope_fraction_binder: 0.9822
+    strong_binder_density: 0.01619
+  HSV1_gB:
+    length: 904
+    n_9mers: 896
+    epitope_fraction_strong: 0.7965
+    epitope_fraction_binder: 0.979
+    strong_binder_density: 0.01851
+vehicles:
+  AAV_single:
+    antigens:
+    - AAV2_VP1
+    epitope_fraction_strong: 0.7197
+    capsid_immune_score: 0.2803
+  AAV_dual:
+    antigens:
+    - AAV2_VP1
+    epitope_fraction_strong: 0.7197
+    capsid_immune_score: 0.2803
+  lentivirus:
+    antigens:
+    - VSVg_Indiana
+    epitope_fraction_strong: 0.8356
+    capsid_immune_score: 0.1644
+  helper_dependent_adenovirus:
+    antigens:
+    - Ad5_hexon
+    epitope_fraction_strong: 0.8204
+    capsid_immune_score: 0.1796
+  hsv_amplicon:
+    antigens:
+    - HSV1_gD
+    - HSV1_gB
+    epitope_fraction_strong: 0.7929
+    capsid_immune_score: 0.2071

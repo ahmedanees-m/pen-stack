@@ -1,0 +1,14 @@
+{
+  "value": {
+    "affinity_pred_value": -2.105919361114502,
+    "binder_probability": 0.9853998422622681,
+    "units": "Boltz-2 affinity_pred_value: log(IC50) on a micromolar scale, lower = stronger binder (a prediction, not a measured Kd/IC50)",
+    "heads": {
+      "affinity_pred_value1": -2.4587392807006836,
+      "affinity_pred_value2": -1.7530996799468994
+    },
+    "native_uncertainty_source": "half the spread between the two Boltz-2 affinity heads",
+    "source_file": "affinity_affinity_input.json"
+  },
+  "native_uncertainty": 0.3528
+}

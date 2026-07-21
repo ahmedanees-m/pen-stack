@@ -1,0 +1,27 @@
+# PEN-STACK v5.7 - WS-POLICY (refusal taxonomy, escalation, tamper-evident audit). Directional.
+cycle: "v5.7"
+workstream: "WS-POLICY"
+prepared: "2026-06-11"
+
+motivation: >
+  Turn screen hits into principled, logged decisions: ambiguous dual-use must ESCALATE to human review, not
+  silently pass or blanket-refuse; every decision must be accountable and tamper-evident.
+
+deliverable: >
+  pen_stack/safety/{policy,gate,audit}.py + configs/safety/policy.yaml; SafetyVerdict {clear,flag,refuse,
+  escalate}; safety_gate(design) = screen -> decide -> append-only hash-chained audit_log; verify_chain().
+
+method: >
+  highest-severity hit governs (high->refuse, medium->escalate, low->flag, none->clear); gain-of-function /
+  enhanced-transmissibility -> escalate (HHS P3CO/DURC human pathway), a regulated taxon still dominating to
+  refuse. Framing/justification fields are stripped before screening (the artifact decides, not the wording).
+  Audit stores a design DIGEST (not the design), each record's hash chaining to the previous one.
+
+acceptance: >
+  every design -> a logged SafetyVerdict; high -> refuse; ambiguous -> escalate; audit tamper-evident
+  (hash-chain test breaks on any altered record); re-framing a hazardous design as "defensive research" does
+  NOT flip refuse -> clear.
+
+honesty_invariant: "conservative thresholds; escalation assumes a human reviewer; the gate is a documented, audited safeguard - not a guarantee."
+gate: "G-SAFE - logged SafetyVerdict per design; refuse on high; escalate on ambiguous; audit tamper-evident."
+locked_files: [prereg/ws_policy.yaml, configs/safety/policy.yaml]

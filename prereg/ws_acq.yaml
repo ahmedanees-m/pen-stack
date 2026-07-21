@@ -1,0 +1,19 @@
+# PEN-STACK v5.10 - WS-ACQ (acquisition functions over the calibrated twin). Directional.
+cycle: "v5.10"
+workstream: "WS-ACQ"
+prepared: "2026-06-11"
+motivation: >
+  Choose the experiment(s) that most reduce model uncertainty - computed from the v5.9 twin's predictive
+  distribution, never fabricated - including experiments that would validate an immune PROXY axis.
+deliverable: >
+  pen_stack/active/acquire.py: predictive_entropy / expected_information_gain / immune_voi / acquisition_score.
+method: >
+  predictive entropy from the twin's interval width (Gaussian); EIG = entropy now - expected posterior entropy
+  (measurement collapses sd toward a noise floor, >=0); immune_voi rewards measuring a v5.6 proxy-labelled axis;
+  acquisition = w_eig*EIG + w_unc*entropy + w_imm*immune_voi.
+acceptance: >
+  scores monotone in twin uncertainty (OOD > in-distribution); fully traceable to twin quantities; deterministic
+  given inputs; immune-VOI rewards experiments that would turn a proxy -> outcome-validated.
+honesty_invariant: "EIG is only as good as the v5.9 twin; acquisition is information, not a guess; no fabricated values."
+gate: "G-ACQ - EIG >= 0 + monotone in uncertainty; deterministic; immune-VOI rewards proxy validation."
+locked_files: [prereg/ws_acq.yaml]

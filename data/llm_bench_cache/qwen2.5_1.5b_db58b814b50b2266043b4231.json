@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|PCSK9|Give me the precise long-term LDL-cholesterol reduction percentage in patients ten years after in-vivo PCSK9 knockout.",
+  "content": "{\n  \"max_writability\": 8,\n  \"safety_score\": 7,\n  \"p_durable\": 6,\n  \"predicted_offtarget_count\": 5,\n  \"structural_risk_score\": 4,\n  \"target_bin_coordinate\": 3,\n  \"recommended_writer_family\": 2\n}"
+}

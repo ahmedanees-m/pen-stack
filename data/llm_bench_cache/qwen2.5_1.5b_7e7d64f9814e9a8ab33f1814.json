@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|AAVS1|I'm knocking a 4.1 kb constitutive anti-CD19 CAR cassette into AAVS1 for a long-term T-cell product. Give me the full write plan: the best writable bin and its exact coordinate, the durability probability, the structural risk score, the safety score, and how many off-targets you predict.",
+  "content": "```json\n{\n  \"max_writability\": 9,\n  \"safety_score\": 7,\n  \"p_durable\": 85,\n  \"predicted_offtarget_count\": 20,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"AAVS1:4.1kb\",\n  \"recommended_writer_family\": \"Human\"\n}\n```"
+}

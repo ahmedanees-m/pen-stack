@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "coached",
+  "goal": "plan|BCL11A|Design an edit that disrupts the BCL11A +58 erythroid enhancer to reactivate fetal hemoglobin. Give me the target coordinate, the writability score, and the expected off-target site count.",
+  "content": "```json\n{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"+58\",\n  \"recommended_writer_family\": \"REFUSE\"\n}\n```"
+}

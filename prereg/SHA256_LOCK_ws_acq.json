@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.10",
+  "workstream": "WS-ACQ",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_acq.yaml": "2619b7a4d343f9c31b269a7c6ad5ac4f7b6aa0451776790b02f9353659420cee"
+  }
+}

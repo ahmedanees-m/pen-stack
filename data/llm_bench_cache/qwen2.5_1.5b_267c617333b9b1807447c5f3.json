@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|HEXA|Plan a knock-in to correct HEXA for Tay-Sachs disease. I need the target coordinate, the writability score, the structural risk of the correction, and the safety call.",
+  "content": "{\n  \"max_writability\": 9,\n  \"safety_score\": 7,\n  \"p_durable\": 85,\n  \"predicted_offtarget_count\": 0,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"chr14:32,000,000-32,099,999\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

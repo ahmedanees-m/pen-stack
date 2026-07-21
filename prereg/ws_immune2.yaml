@@ -1,0 +1,36 @@
+# PEN-STACK v6.9 - WS-IMMUNE2 (PEN-IMMUNE: MHC-II/CD4 + ADA + writer-as-antigen). Pre-registered.
+cycle: "v6.9"
+workstream: "WS-IMMUNE2"
+prepared: "2026-06-20"
+motivation: >
+  The dominant immunogenicity driver is MHC-II/CD4 help -> anti-drug antibodies (ADA), exactly what the v5.x
+  immune profile omitted (CD8/MHC-I via MHCflurry only). And the WRITER enzyme itself is immunogenic (Cas9 MHC-II
+  CD4 responses, Simhadri Nat Commun 2021; bridge recombinases / serine integrases are bacterial/phage), yet
+  Stage G scored only the capsid. Add a CD4/MHC-II epitope-load axis + an ADA-risk axis with a self-tolerance
+  filter, scored over the WRITER as a distinct antigen, still population-level, OOD-gated, never collapsed.
+deliverable: >
+  pen_stack/planner/immune_mhc2.py (grounded promiscuous MHC-II binder-density method + bundled real writer/control
+  sequences configs/writer_sequences.fasta) + pen_stack/planner/ada_risk.py (ADA-risk = MHC-II density x foreignness
+  with a JanusMatrix-style self-tolerance k-mer filter) + immune_profile.py extended (mhc2_writer + ada_writer axes;
+  writer_as_antigen card with dominant_antigen + writer_dominant_risk; collapsed_score=None) +
+  benchmarks/immuno/ (immunogenic-vs-tolerated recovery).
+method: >
+  MHC-II 9-mer core promiscuous-binder density via the documented P1 hydrophobic anchor (M/F/Y/W/L/I/V; Stern &
+  Wiley Nature 1994) + P4/P6/P9 secondary pockets (Southwood 1998), allele-agnostic, dependency-free,
+  sequence-intrinsic. ADA-risk = epitope_density x foreignness; foreignness from the AUTHORITATIVE protein origin
+  (self vs bacterial/viral/phage) when known, else 1 - self_match_fraction from a human-proteome k-mer filter
+  (seeded by the bundled human self reference; full proteome substitutable on the VM). Real UniProt sequences only
+  (Cas9 Q99ZW2, ISCro4 D2TGM5, Bxb1 Q9B086, self control albumin P02768).
+acceptance: >
+  G-G1 (MHC-II axis): recovers immunogenic-vs-tolerated, foreign writers (Cas9/ISCro4/Bxb1) rank ABOVE the human
+  self control by ADA-risk; labelled mechanistic/population proxy (). G-G2 (ADA axis): correlation vs a public ADA
+  set reported via the EXISTING calibrate_axis gate, flips to  ONLY if N>=6 AND the bootstrap Spearman CI
+  excludes 0; else stays  (no manufactured ). G-G3 (writer-as-antigen): writer_dominant_risk fires on a foreign
+  writer (especially non-viral delivery, no capsid antigen); axes NEVER collapsed (collapsed_score=None, asserted).
+honesty_invariant: >
+  every axis is a population-level proxy, never a patient-specific ADA titer / realized CD4 magnitude (declared
+  known-unknowns); the MHC-II method is sequence-intrinsic presentation potential, NOT a trained allele-specific
+  predictor; the self-tolerance filter's authoritative signal is the protein origin (the k-mer filter is a
+  demonstrator that scales on the VM); axes reported as a vector and NEVER fused. No fabricated sequence.
+gate: "G-IMMUNE - MHC-II + ADA axes added (never collapsed); foreign writers recover above self; ADA calibrate_axis reported honestly (stays  at public-data power); writer-as-antigen dominant-risk flag fires."
+locked_files: [prereg/ws_immune2.yaml]

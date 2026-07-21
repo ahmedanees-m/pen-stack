@@ -1,0 +1,28 @@
+# PEN-STACK v3.0 - Phase 0 pre-registered success criteria.
+# Written before downstream analysis; SHA-lock the file set and print the hash into any report.
+phase: 0
+title: "Harden the Writer Core (the Reachability Backbone)"
+prepared: "2026-06-01"
+
+success_criteria:
+  wtkb_min_families: 6                 # >=6 writer families fully specified with reachability tiers
+  every_row_has_doi: true             # sourcing rule: each targeting field >=1 DOI
+  all_tiers_assigned: true
+  tier1_families_min: 2               # reachability Tier-1 recoverable for >=2 families (feeds Phase 1)
+  no_handset_score_overrides: true    # zero hand-set constants (e.g. the ISCro4 s_prog=1.0 patch)
+  cross_module_universe_consistent: true  # one canonical universe; classifier/scorer/scorecard agree
+  scorecard_no_named_enzyme: true     # no prereg/prediction names a specific enzyme; concordance reported
+
+baselines:
+  scorecard: "descriptive tiers (not a circular certification); blind concordance reported, not asserted"
+
+locked_files:
+  - configs/wtkb_curated.yaml
+  - pen_stack/atlas/schema.py
+  - configs/score_axes.yaml           # added in Step 0.3
+  - prereg/phase0.yaml
+
+notes: >
+  Phase 0 is the disciplined completion of the defensible part of Pillar A. It produces the WT-KB
+  (the reachability backbone), re-grounded scoring axes, one canonical universe, and a descriptive
+  (non-circular) scorecard. No wet-lab needed.

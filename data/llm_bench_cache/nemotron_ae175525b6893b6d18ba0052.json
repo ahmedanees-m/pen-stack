@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|CCR5|Give me a write plan to disrupt CCR5 for HIV-resistant HSPCs \u2014 I want the target coordinate, the writability score, the expected off-target count, and the predicted durability of the edit.",
+  "content": "{\n  \"max_writability\": 0.88,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.96,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 0.07,\n  \"target_bin_coordinate\": \"chr3:46,414,900-46,415,000\",\n  \"recommended_writer_family\": \"SpCas9-HF1\"\n}"
+}

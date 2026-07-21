@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|AAVS1|I'm knocking a 4.1 kb constitutive anti-CD19 CAR cassette into AAVS1 for a long-term T-cell product. Give me the full write plan: the best writable bin and its exact coordinate, the durability probability, the structural risk score, the safety score, and how many off-targets you predict.",
+  "content": "{\n  \"max_writability\": 0.86,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.89,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 0.13,\n  \"target_bin_coordinate\":"
+}

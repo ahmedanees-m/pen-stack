@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|CIITA|I'm knocking out CIITA to silence MHC-II in universal-donor cells. Plan it for me: writability, target coordinate, durability, and the safety verdict.",
+  "content": "```json\n{\n  \"max_writability\": 9,\n  \"safety_score\": 7,\n  \"p_durable\": 85,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"chr14:30,000,000-30,001,000\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}\n```"
+}

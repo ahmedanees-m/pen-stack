@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|HBB|Plan a prime-editing PE3 correction of the sickle-cell mutation in HBB and report the writability, off-target profile, structural risk, and the edited coordinate.",
+  "content": "{\n  \"max_writability\": 0.78,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.85,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.15,\n  \"target_bin_coordinate\": \"chr11:5,225,486\",\n  \"recommended_writer_family\": \"PE3b\"\n}"
+}

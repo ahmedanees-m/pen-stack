@@ -1,0 +1,20 @@
+# PEN-STACK v3.4 - WS-ENV (genome-writing environment) pre-registered MDP + reward. Builds on v3.3.0.
+cycle: "v3.4"
+workstream: "WS-ENV"
+prepared: "2026-06-09"
+
+ENV0_contract:
+  observation_space: "Box(low=0, high=1, shape=(8,)): [stage_frac, write_type_frac, site_safety, site_p_durable, writer_activity, cargo_frac, delivery_capacity_frac, legal_flag]"
+  action_space: "Discrete(max_stage_options + 1); the last index is the reserved ABSTAIN action available at every stage"
+  episode: "5 sequential decisions - write_type -> site -> writer_family -> cargo_bucket -> delivery_vehicle - then terminate via the verifier; OR the agent takes ABSTAIN at any stage to end with a justified refusal."
+  step_validity: "the terminal design is checked by pen_stack.verify.verify (the v3.3 rule-grounded verifier); an unsupported write type defers (router) and is treated as a refusal."
+  reward:
+    illegal: "-1.0 (committing to a rule-illegal plan is the worst outcome)"
+    refusal: "+0.05 (a justified refusal beats an illegal plan; loses to a good legal plan)"
+    legal: "base * (0.5 + 0.5*confidence) - 0.1*n_soft_flags - 0.1*[cargo_bucket < target]; base = intent-weighted (safety, durability, activity); confidence = L4 calibrated plan confidence from the verifier"
+  reference_policies: "random_policy (uniform incl. abstain); greedy_planner_policy (deterministic optimum, assembles a legal plan)"
+  acceptance: "a second reader reproduces the MDP from prereg + code; conforms to gymnasium.utils.env_checker.check_env; random + greedy run end-to-end; greedy(planner) >= random on episode reward on a frozen seed set (0..7) AND greedy's plan is rule-legal (sanity, NOT a learning claim)."
+  scope: "near-one-shot decision; the env is an INTERFACE + EVALUATION HARNESS, not evidence that RL beats the deterministic planner (stated explicitly)."
+
+gate: "check_env passes; greedy >= random and greedy-legal on the frozen seed set; no RL-superiority claim."
+locked_files: [prereg/ws_env.yaml]

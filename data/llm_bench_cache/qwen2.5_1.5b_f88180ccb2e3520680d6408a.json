@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "coached",
+  "goal": "ungroundable|HBB|For the guide RNA 5'-CTTGCCCCACAGGGCAGTAA-3' targeting HBB, exactly how many off-target sites does it have genome-wide? I need the precise total count, not a range.",
+  "content": "{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"5'-CTTGCCCCACAGGGCAGTAA-3'\",\n  \"recommended_writer_family\": \"REFUSE\"\n}"
+}

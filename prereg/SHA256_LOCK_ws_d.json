@@ -1,0 +1,10 @@
+{
+  "cycle": "v3.3",
+  "workstream": "WS-D",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_d.yaml": "44a5148699700fcf55bfe08e619a9c4d5bf5761421d6692edd1f12f337c91bdc",
+    "configs/delivery_vehicles.yaml": "755f1b3c1cf6e0d14c10de2a708ddd79aacaa2373ab563657293f08453d8d3c1",
+    "configs/rules/delivery.yaml": "b8ff8f5d2b189265b1e330acf12b813398b5247b1328fee82d4998accbca9964"
+  }
+}

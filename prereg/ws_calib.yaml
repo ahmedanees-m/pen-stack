@@ -1,0 +1,28 @@
+# PEN-STACK v5.6 - WS-CALIB (calibrate immune-risk proxies vs observed outcomes; the honesty upgrade). Directional.
+cycle: "v5.6"
+workstream: "WS-CALIB"
+prepared: "2026-06-11"
+
+motivation: >
+  The v5.2-v5.6 immune axes are PROXIES (sequence/mechanistic: CD8 epitope, innate; population: seroprevalence,
+  anti-PEG). The honest next step (v3.4 calibration discipline): test whether they CORRELATE with observed
+  immune responses where data exists - and label each axis accordingly, two-sided.
+
+deliverable: "pen_stack/validate/immune_calibration.py: calibrate_axis() (Spearman rho + percentile bootstrap CI), AXIS_STATUS (per-axis label), axis_label(), run() report."
+
+method: >
+  calibrate_axis(proxy, observed) -> Spearman rho + percentile bootstrap CI (self-contained). Status:
+  outcome_validated ONLY when N>=6 AND the bootstrap CI excludes zero; weak_proxy when N>=6 but CI includes
+  zero; mechanistic_proxy when N<6. We do NOT fabricate an outcome dataset; with no sufficient public paired
+  (proxy, observed-immunogenicity) data, every real axis is labelled a mechanistic/population proxy. The
+  machinery is proven on synthetic data (tests) so it WILL compute rho+CI when real data is assembled.
+
+acceptance: >
+  each axis reported with rho/CI+N OR explicitly labelled "mechanistic/population proxy - not outcome-validated";
+  NO axis upgraded to "validated" without a CI excluding zero (asserted: strong-corr->validated,
+  flat->weak_proxy, sparse->mechanistic_proxy); every current real axis is a labelled proxy; negatives verbatim.
+
+honesty_invariant: "a proxy is labelled a proxy until validated; immunogenicity outcome data is sparse, so most/all axes remain proxies after this cycle - that honest label is the deliverable, not a forced positive."
+
+gate: "machinery computes real rho+CI; CI-excludes-zero gate enforced; all current axes labelled proxy; report two-sided honest; no-fabrication intact."
+locked_files: [prereg/ws_calib.yaml]

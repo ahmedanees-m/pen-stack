@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|SHS231|For long-term expression at SHS231, design a 5.4 kb multi-gene cassette and report the durability probability, the structural risk score, the writability, the safety score, and the best bin coordinate.",
+  "content": "{\n  \"max_writability\": 90,\n  \"safety_score\": 75,\n  \"p_durable\": 85,\n  \"predicted_offtarget_count\": 4,\n  \"structural_risk_score\": 60,\n  \"target_bin_coordinate\": \"chr1:23,000-28,000\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

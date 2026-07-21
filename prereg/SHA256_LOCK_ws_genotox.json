@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.2",
+  "workstream": "WS-GENOTOX",
+  "prepared": "2026-06-10",
+  "sha256": {
+    "prereg/ws_genotox.yaml": "4cd8534034fd42986708345eb911bdf62200d0a9c528f80378b29920b4ce434b"
+  }
+}

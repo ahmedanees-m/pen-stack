@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|TTR|Give me the exact serum TTR knockdown percentage sustained at five years in the treated ATTR amyloidosis patient population.",
+  "content": "{\n  \"max_writability\": 0.88,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.81,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 0.15,\n  \"target_bin_coordinate\": \"chr18:12345678-12345900\",\n  \"recommended_writer_family\": \"CRISPR-Cas9 prime editor (PE2)\"\n}"
+}

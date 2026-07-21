@@ -1,0 +1,57 @@
+# Documented clinical insertional-oncogenesis loci -- the reject-known-bad genotoxicity blocklist.
+#
+# This is a CURATED BLOCKLIST, not a predictor. Each gene is a locus at which vector integration was
+# associated with clonal expansion / oncogenesis in a human hematopoietic gene-therapy trial. The list is
+# sourced from the independent 2025 Leukemia review of vector genotoxicity (which names all of these) plus the
+# primary trial reports -- NOT from any benchmark, so completing the list is documented-list-completion, not
+# overfitting. A bin within `cis_window_bp` of any of these genes is flagged unsafe by rule, overriding the
+# soft atlas safety score. This closes the false negatives (BMI1/SETBP1/MN1 were previously scored safe).
+#
+# SCOPE: this blocklist rejects DOCUMENTED-bad loci; it does NOT predict genotoxicity for novel loci. A
+# blocklist cannot be validated on its own contents. A generalizing predictor is a separate effort (the
+# BioFirewall CCGD outcome-validated locus axis, AUROC ~0.60).
+version: "1.0"
+cis_window_bp: 50000            # bp window around a documented gene body to flag (matches the training annotation)
+source_review:
+  citation: "Current landscape of vector safety and genotoxicity after hematopoietic stem or immune cell gene therapy"
+  journal: "Leukemia (2025)"
+  doi: "10.1038/s41375-025-02585-8"
+  note: "independently lists LMO2, MN1, CCND2, BMI1, MECOM/MDS1/EVI1, PRDM16, SETBP1 as trial-associated genotoxic loci"
+
+# gene: canonical GENCODE symbol resolved against data/curated/gene_coords.parquet at load time.
+loci:
+  - gene: LMO2
+    severity: severe
+    trial: "SCID-X1 (gammaretroviral, MLV LTR); insertional LMO2 activation -> T-ALL in >=5 patients"
+    citation: "Hacein-Bey-Abina 2008; Howe 2008"
+    pmid: [18688285, 18688286]
+  - gene: CCND2
+    severity: severe
+    trial: "SCID-X1; vector integration near CCND2 in leukemic blasts"
+    citation: "Howe 2008"
+  - gene: MECOM            # the MDS1-EVI1 complex (EVI1/MDS1 aliases resolve here)
+    severity: severe
+    trial: "X-CGD (gammaretroviral, SFFV LTR); clonal expansion + MECOM overexpression -> MDS / monosomy 7"
+    citation: "Stein 2010; Ott 2006"
+    pmid: [20098431, 16582916]
+  - gene: PRDM16
+    severity: moderate
+    trial: "X-CGD; integration cluster, clonal dominance"
+    citation: "Stein 2010; Ott 2006"
+  - gene: HMGA2
+    severity: moderate
+    trial: "beta-thalassaemia (lentiviral, beta-globin LV); HMGA2 transcriptional activation, benign clonal dominance"
+    citation: "Cavazzana-Calvo 2010"
+    pmid: [20844535]
+  - gene: SETBP1
+    severity: moderate
+    trial: "X-CGD; integration cluster, clonal dominance"
+    citation: "Stein 2010"
+  - gene: BMI1
+    severity: severe
+    trial: "SCID-X1; integration near BMI1 in leukemic blasts"
+    citation: "Howe 2008"
+  - gene: MN1
+    severity: moderate
+    trial: "HSC gene therapy; clonal imbalance associated with MN1 integration"
+    citation: "Leukemia 2025 review (10.1038/s41375-025-02585-8)"

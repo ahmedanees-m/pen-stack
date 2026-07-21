@@ -1,0 +1,8 @@
+{
+  "cycle": "v6.10",
+  "workstream": "WS-OFFTARGET",
+  "prepared": "2026-06-19",
+  "sha256": {
+    "prereg/ws_offtarget.yaml": "60122b82869d13c0265db61d56b6fe3a4c5e62e39cf796b2315ecfa9a39b558b"
+  }
+}

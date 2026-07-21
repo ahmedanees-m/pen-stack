@@ -1,0 +1,15 @@
+{
+  "description": "The ten pre-registered claims in Table 3 (the honesty ledger), each mapped to the committed, SHA-locked pre-registration that fixed it before scoring. The SHA-256 of each prereg_file is recorded in the companion prereg/SHA256_LOCK_*.json and is asserted from the committed bytes by scripts/prereg_manifest.py. Several claims share a workstream pre-registration that registers more than one sub-hypothesis. Where a finer per-claim seal exists, it is a *.sealed.json in the Zenodo deposit (not committed to this repository) and is referenced for provenance in the benchmark's metrics.json; the committed workstream pre-registration cited here is the object a reviewer can re-hash from a clone.",
+  "claims": [
+    {"n": 1, "claim": "Human K562 head, exact-site resolution", "verdict": "PASS", "benchmark": "benchmarks/position_effect_human", "prereg_file": "prereg/ws_expr2.yaml"},
+    {"n": 2, "claim": "Mouse-trained axis transfers to human", "verdict": "NULL", "benchmark": "benchmarks/position_effect_human (mouse_to_human_sealed_null)", "prereg_file": "prereg/ws_expr2.yaml"},
+    {"n": 3, "claim": "Validated head realisable at served resolution", "verdict": "FAIL", "benchmark": "benchmarks/position_effect_human (served resolution)", "prereg_file": "prereg/ws_expr2.yaml"},
+    {"n": 4, "claim": "Positional-silencing classifier", "verdict": "NULL", "benchmark": "benchmarks/position_effect_human (silencing)", "prereg_file": "prereg/ws_expr2.yaml"},
+    {"n": 5, "claim": "Locus score ranks harbours above bulk genome", "verdict": "NULL", "benchmark": "benchmarks/priorart/gsh_recovery", "prereg_file": "prereg/ws_priorart.yaml"},
+    {"n": 6, "claim": "Locus score vs confounder-matched controls", "verdict": "PASS (weak)", "benchmark": "benchmarks/genotox_panel (companion axis)", "prereg_file": "prereg/ws_a.yaml"},
+    {"n": 7, "claim": "Locus score predicts clinical genotoxicity", "verdict": "FALSE NEGATIVES", "benchmark": "benchmarks/genotox_panel", "prereg_file": "prereg/ws_priorart.yaml"},
+    {"n": 8, "claim": "Writer model beats baseline across families", "verdict": "GATE FAILED", "benchmark": "benchmarks/writer_efficiency", "prereg_file": "prereg/ws_writer.yaml"},
+    {"n": 9, "claim": "Serine-integrase learned model (both metrics)", "verdict": "NULL (strict)", "benchmark": "benchmarks/offtarget/integrase_chalberg", "prereg_file": "prereg/ws_offtarget2.yaml"},
+    {"n": 10, "claim": "Expected-information-gain beats random", "verdict": "SPANS ZERO", "benchmark": "benchmarks/loop", "prereg_file": "prereg/ws_closedloop.yaml"}
+  ]
+}

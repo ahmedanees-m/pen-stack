@@ -1,0 +1,9 @@
+{
+  "cycle": "v3.1",
+  "workstream": "WS-C",
+  "prepared": "2026-06-04",
+  "sha256": {
+    "prereg/ws_c.yaml": "d07a011aa576dd8ae35de18455e4d61eb30b1dfd96055f6a1c235d2394e16587",
+    "docs/alphagenome_feasibility.md": "3baca6a482ee958b23e5b791534291324a0beb084ebf7de35149db1ef9667bf0"
+  }
+}

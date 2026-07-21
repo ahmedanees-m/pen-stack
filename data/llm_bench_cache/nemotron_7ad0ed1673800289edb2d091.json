@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|RHO|Plan a Cas9-HITI knock-in to replace mutant RHO in photoreceptors delivered by AAV5, and give me the writability, off-target, structural risk, and edited coordinate.",
+  "content": "{\n  \"max_writability\": 0.46,\n  \"safety_score\": 0.71,\n  \"p_durable\": 0.62,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.28,\n  \"target_bin_coordinate\": \"chr3:129450000-129460000\",\n  \"recommended_writer_family\": \"SpCas9-HITI\"\n}"
+}

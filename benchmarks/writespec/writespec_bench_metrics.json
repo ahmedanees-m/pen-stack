@@ -1,0 +1,26 @@
+{
+  "bench": "WriteSpec-Bench (Stage A)",
+  "n_pairs": 24,
+  "test_sealed": {
+    "n": 6,
+    "schema_adherence": 1.0,
+    "structural_fidelity": 1.0,
+    "value_accuracy": 0.9643,
+    "baseline_value_accuracy": 0.4643
+  },
+  "train": {
+    "n": 18,
+    "schema_adherence": 1.0,
+    "structural_fidelity": 1.0,
+    "value_accuracy": 0.9877,
+    "baseline_value_accuracy": 0.4074
+  },
+  "beats_baseline_on_test": true,
+  "ambiguity": {
+    "n": 3,
+    "clarifying_questions_fire": true,
+    "inferred_write_type_labelled": true
+  },
+  "inferred_field_labelling_recall": 1.0,
+  "all_gates_pass": true
+}

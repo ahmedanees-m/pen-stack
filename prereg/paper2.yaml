@@ -1,0 +1,74 @@
+# PEN-STACK v3.0 - Paper 2 (Writer Atlas + Unified Stack) pre-registered success criteria.
+# SHA-locked; the hash is printed into the manuscript. Paper 2 is a Database/Webserver/software paper:
+# the criteria are coverage + correctness + grounding, not a single learned metric.
+paper: 2
+title: "PEN-STACK: unified open infrastructure for non-destructive genome writing"
+prepared: "2026-06-02"
+
+writer_atlas:
+  source: "UniProt orthologs (IS110 superfamily PF01548&PF02371, CAST/TnsC, serine integrase, Cas12a, TnpB) + 8 curated cores"
+  success:
+    target_families_represented_min: 6          # achieved 8
+    every_row_has_confidence_and_source: true    # confidence tag + >=1 DOI on every row
+    is110_is1111_orthologs_min: 1000             # "thousands" - achieved 31,885
+
+mechanism_at_scale:
+  classifier: "audited 18-family Pfam whitelist v1.2.1 (composite co-occurrence rules)"
+  success:
+    core_agreement_with_audited_labels: 1.0      # on the curated 8-family core
+    low_confidence_flagged_not_hidden: true       # conflicting/none -> review queue
+
+therapeutic_readiness:
+  axes: [deliv_class, S_Deliv, S_Cargo, S_HumanCell, S_DSBfree, readiness]
+  success:
+    deliverability_matches_known_facts: true      # ISCro4 326aa -> AAV; SpCas9 1368aa -> split-AAV
+    components_always_retrievable: true            # never collapsed to one opaque number
+
+variant_proposal:
+  method: "single/double point mutations ranked by a pluggable VariantEffectModel; NO chimeras"
+  success:
+    zero_chimera_outputs: true
+    recovers_known_enhancers: "DONE (2026-06-03) - the real Perry 2025 DMS model (DMSVariantEffectModel)
+      recovers the known enhancing ISCro4 mutations N322P (rank 1) / H50K (rank 2) / R278M in the top
+      proposals. Honest framing: recovers KNOWN enhancers from the measured DMS (a catalogue feature), not
+      a blind sequence prediction and not a generative method (EVOLVEpro is the engine to wrap)."
+
+crosslink:
+  success:
+    bridge_family_to_bridge_reachable_loci_correct: true
+    validated_safe_harbour_writable_and_reachable: true   # AAVS1/PPP1R12C -> high writability + bridge-reachable
+
+pen_monitor:
+  source: "Europe PMC REST (+ bioRxiv/PubMed)"
+  success:
+    backtest_surfaces_isppu10: true               # PPR1218813, March 2026
+    never_auto_edits_atlas: true                   # status=pending_review, human-reviewed queue
+    every_candidate_carries_citation: true
+
+rag_qa:
+  success:
+    quantitative_answers_trace_to_tool_call: true  # no LLM-guessed numbers
+    factual_claims_carry_citation: true
+    refuses_clinical_directives: true
+    llm_is_presentation_only: true                 # Ollama/Qwen rephrases; numbers/citations stay tool-derived
+
+platform:
+  success:
+    pip_install_works: true
+    cli_api_ui_functional: true
+    docs_site_builds: true
+    atlas_doi_minted: "on author Zenodo upload"
+
+locked_files:
+  - prereg/paper2.yaml
+  - configs/atlas_families.yaml
+  - configs/monitor_queries.yaml
+  - configs/score_axes.yaml
+  - pen_stack/mech/pfam_whitelist.yaml
+
+notes: >
+  Paper 2 packages the broad infrastructure and carries forward most of the prior five-repo work,
+  broadened and re-grounded. The genuinely new modelling piece is the DMS-grounded variant proposal
+  (framework + retrospective harness here; the DMS-trained predictor lands in Phase 1.5). The
+  differentiator from single-family tools is the writer<->locus cross-link. PEN-MONITOR keeps the
+  atlas current; all LLM services are grounded, cited, defer-to-tools, decision-support, auditable.

@@ -1,0 +1,10 @@
+{
+  "cycle": "v3.2",
+  "workstream": "WS-MC",
+  "prepared": "2026-06-08",
+  "sha256": {
+    "prereg/ws_mc.yaml": "bc38a5bbdb460b0f73aba307942c985b05b98d74c8785d0deffb894aa15b004d",
+    "configs/target_sites.yaml": "cfc0bc484866cbaaeaf2b6f10f586af2e75dc4ceab1d5b18fee4d1f42aff8dd6",
+    "configs/delivery_constraints.yaml": "92c07644cf044106d9abf6b116dee3e981be0e35605efafb566a0af988e4fad6"
+  }
+}

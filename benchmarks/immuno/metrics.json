@@ -1,0 +1,122 @@
+{
+  "bench": "Immuno-Bench (Stage G, immunogenicity)",
+  "scope": "Stage G ships as a mechanism-grounded axis, not an outcome-validated one. This record exists so that status is a checkable artifact rather than prose.",
+  "preregistration": {
+    "file": "prereg/ws_immune2.yaml",
+    "note": "Cited, not amended. The pre-registration names this directory as the deliverable."
+  },
+  "G-G1_tolerance_filter_consistency": {
+    "criterion": "G-G1: foreign writers rank above the human self control on the ADA-risk axis.",
+    "outcome": "CONSISTENT, BUT NOT A TEST",
+    "why_not_a_test": "ada_risk = epitope_density x foreignness, and foreignness is 0.0 for any protein labelled self (pen_stack/planner/ada_risk.py). Every self control therefore scores exactly 0.0 whatever its measured epitope density, so min(foreign) > max(self) holds for any panel in which no foreign protein has a density of exactly zero. The criterion cannot be failed by any measurement and must not be read as a validation.",
+    "separation_is_arithmetically_forced": true,
+    "label_and_predictor_share_a_field": "The label (origin == foreign) and the foreignness multiplier both read the same FASTA field, so a predictor that returns the origin label alone would score a perfect rank separation.",
+    "measured_quantity": {
+      "what": "NetMHCIIpan-4.0 class-II epitope densities for the four bundled proteins.",
+      "densities": {
+        "Bxb1": 0.6467,
+        "SpCas9": 0.636,
+        "ISCro4": 0.5644,
+        "HumanAlbumin": 0.3186
+      },
+      "n_foreign": 3,
+      "n_self": 1,
+      "min_foreign_density_minus_max_self_density": 0.2458,
+      "interval": null,
+      "reason_no_interval": "n = 1 self control; no interval is computable at this panel size."
+    },
+    "derived_quantity": {
+      "what": "ada_risk = density x foreignness, foreignness in {self: 0.0, foreign: 1.0}.",
+      "panel": [
+        {
+          "name": "Bxb1",
+          "family": "serine_integrase",
+          "origin": "foreign",
+          "ada_risk_score": 0.6467,
+          "mhc2_density": 0.6467,
+          "foreignness": 1.0
+        },
+        {
+          "name": "SpCas9",
+          "family": "Cas9",
+          "origin": "foreign",
+          "ada_risk_score": 0.636,
+          "mhc2_density": 0.636,
+          "foreignness": 1.0
+        },
+        {
+          "name": "ISCro4",
+          "family": "bridge_IS110",
+          "origin": "foreign",
+          "ada_risk_score": 0.5644,
+          "mhc2_density": 0.5644,
+          "foreignness": 1.0
+        },
+        {
+          "name": "HumanAlbumin",
+          "family": "human_control",
+          "origin": "self",
+          "ada_risk_score": 0.0,
+          "mhc2_density": 0.3186,
+          "foreignness": 0.0
+        }
+      ]
+    }
+  },
+  "G-G2_ada_calibration": {
+    "criterion": "G-G2: the ADA axis correlates with a public observed-incidence set, promoted only if N >= 6 and the bootstrap Spearman CI excludes 0.",
+    "outcome": "NOT MET",
+    "axis_promoted": false,
+    "n_paired_points_available": 0,
+    "min_n_to_validate": 6,
+    "calibrate_axis_output": {
+      "axis": "ada_writer",
+      "status": "mechanistic_proxy",
+      "n": 0,
+      "reason": "insufficient paired outcome data (N=0 < 6)",
+      "label": "ada_writer: mechanistic/population proxy, NOT outcome-validated"
+    },
+    "interpretation": "This is the load-bearing entry. No paired (proxy, observed ADA incidence) dataset exists at the pre-registered power, so the gate refuses to promote the axis and it ships as a mechanistic proxy. The refusal is the result: it is a recorded null, not a pending run."
+  },
+  "G-G3_no_collapse_writer_antigen": {
+    "criterion": "G-G3: writer_dominant_risk fires on a foreign writer and the axes are never collapsed into a single score.",
+    "outcome": "MET",
+    "collapsed_score": null,
+    "axes_reported": [
+      "ada_writer",
+      "anti_peg",
+      "cd8_epitope",
+      "genotoxicity",
+      "innate",
+      "mhc2_writer",
+      "preexisting_nab"
+    ],
+    "writer_as_antigen": {
+      "writer_family": "bridge_IS110",
+      "representative": "ISCro4",
+      "accession": "D2TGM5",
+      "origin": "foreign",
+      "is_foreign": true,
+      "mhc2_immune_score": 0.4356,
+      "epitope_density": 0.5644,
+      "ada_risk_score": 0.5644,
+      "ada_immune_score": 0.4356,
+      "foreignness": 1.0,
+      "self_match_human_proteome": {
+        "human_9mer_match_fraction": 0.0,
+        "n_9mers": 318,
+        "reference": "UniProt reviewed human reference proteome UP000005640 (20431 proteins)"
+      },
+      "ada_backend": "real",
+      "mhc2_backend": "netmhciipan_cache",
+      "note": "the WRITER enzyme scored as a distinct antigen (real NetMHCIIpan-4.0 MHC-II/CD4 + ADA, origin-authoritative foreignness with a real human-proteome 9-mer self-match cross-check); bacterial/phage writers are foreign -> ADA-driving (Cas9 MHC-II: Simhadri 2021). Population-level proxy; realized CD4 response / ADA titer is a known-unknown.",
+      "dominant_antigen": "writer",
+      "writer_dominant_risk": true
+    }
+  },
+  "summary": "One criterion is met (G-G3), one is arithmetically forced and therefore not a test (G-G1), and the one that could have promoted the axis is not met for want of data (G-G2). No aggregate pass flag is emitted, because averaging a structural check with a documented null would misrepresent both.",
+  "inputs_sha256": {
+    "configs/writer_sequences.fasta": "f9c6785ac18405a039b1fd842cdb4852f9c54918a85164a111304a1b0f2d0378",
+    "configs/mhc_epitope_oracle.yaml": "c847bcb026f4653b77052865aeaff7ddada945b24747100483bd40ae9c7f7ac1"
+  }
+}

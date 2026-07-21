@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "plan|PCSK9|Design a liver PCSK9 knock-out to lower LDL. What's the writability at the target site, the target coordinate, the durability, and the expected off-target count?",
+  "content": "{\n  \"max_writability\": 0.82,\n  \"safety_score\": 0.91,\n  \"p_durable\": 0.88,\n  \"predicted_offtarget_count\": 3,\n  \"structural_risk_score\": 0.07,\n  \"target_bin_coordinate\": \"chr1:55,050,000-55,060,000\",\n  \"recommended_writer_family\": \"ABE8e\"\n}"
+}

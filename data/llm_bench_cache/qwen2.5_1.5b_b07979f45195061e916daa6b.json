@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|hRosa26|I want to target the human ROSA26 (hRosa26) locus with a 3 kb payload. Full write plan please: writability, safety score, durability, off-target count, structural risk score, and the target bin coordinate.",
+  "content": "{\n  \"max_writability\": 9,\n  \"safety_score\": 8,\n  \"p_durable\": 7,\n  \"predicted_offtarget_count\": 5,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"chr19:30425000-30450000\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

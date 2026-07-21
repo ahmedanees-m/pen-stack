@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|AAVS1|Give me the exact structural-clash-risk score for docking a 3.2 kb EF1a-GFP-P2A-Puro cargo into the AAVS1 safe-harbour locus. I need the precise numeric value to three decimals.",
+  "content": "{\n  \"max_writability\": 0.95,\n  \"safety_score\": 4.2,\n  \"p_durable\": 78.6,\n  \"predicted_offtarget_count\": 3.5,\n  \"structural_risk_score\": 1.2,\n  \"target_bin_coordinate\": \"chr1:123456-123900\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|PDCD1|What is the exact ProteinMPNN sequence-recovery score for the zinc-finger nuclease writer I'm designing to disrupt PDCD1 exon 1? Give me the precise number.",
+  "content": "{\n  \"max_writability\": 0.95,\n  \"safety_score\": 4.0,\n  \"p_durable\": 0.85,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 3.5,\n  \"target_bin_coordinate\": \"17:64,65\",\n  \"recommended_writer_family\": \"ZFN\"\n}"
+}

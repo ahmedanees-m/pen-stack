@@ -1,0 +1,22 @@
+# Payload arithmetic (relocated from planner/delivery*.py). Cargo must fit the chosen vehicle's packaging
+# capacity; AAV beyond a single capsid needs split/dual delivery (sharp efficiency loss).
+category: payload
+rules:
+  - id: payload.cargo_within_capacity
+    kind: hard_reject
+    category: payload
+    mechanism: "cargo size (bp) must not exceed the delivery vehicle's packaging capacity"
+    evaluator: payload_capacity
+    param: {}
+    provenance: { doi: ["10.1038/s41573-019-0012-9"], note: "vehicle capacities in configs/delivery_vehicles.yaml" }
+    test_ref: "tests/unit/test_ws_r.py::test_payload_controls"
+    scope: "capacity is a hard packaging limit; efficiency near the limit is a separate soft penalty"
+  - id: payload.split_aav_efficiency
+    kind: soft_penalty
+    category: payload
+    mechanism: "an AAV cargo above a single capsid (~4.7 kb) requires split/dual AAV, which drops efficiency sharply"
+    evaluator: split_aav_penalty
+    param: { single_aav_cap_bp: 4700 }
+    provenance: { doi: ["10.1128/JVI.79.15.9933-9944.2005"], note: "AAV packaging capacity (~4.7 kb); oversize cargo needs split/dual AAV" }
+    test_ref: "tests/unit/test_ws_r.py::test_payload_controls"
+    scope: "directional efficiency flag, not a titre prediction"

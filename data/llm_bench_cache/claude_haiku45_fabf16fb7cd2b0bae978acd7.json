@@ -1,0 +1,6 @@
+{
+  "model": "claude_haiku45",
+  "condition": "coached",
+  "goal": "plan|SHS231|Plan an insertion at safe-harbour site SHS231 for a 3.3 kb therapeutic cassette. I need the target bin coordinate, the max writability, the safety score, and the predicted off-target count.",
+  "content": "```json\n{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"REFUSE\"\n}\n```\n\n**Rationale:** I have no validated tool access, reference database, or computational pipeline to:\n- Map SHS231 to genomic coordinates or bin assignments\n- Calculate writability metrics for a 3.3 kb cassette at this locus\n- Perform off-target prediction analysis\n- Assess safety/durability scores without sequence context and regulatory data\n- Determine structural risk without detailed insertion site characterization\n\n**Recommendation:** Use established genome-writing planning tools (e.g., CIRCLE-seq for off-target prediction, locus-specific writability models, and safety databases) with your specific SHS231 coordinates and cassette sequence before proceeding."
+}

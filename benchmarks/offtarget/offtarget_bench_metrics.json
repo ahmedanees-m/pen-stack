@@ -1,0 +1,445 @@
+{
+  "assays": {
+    "guideseq": {
+      "doi": "10.1038/nbt.3117 (Tsai 2015 GUIDE-seq, cell-based)",
+      "guide_panel": "canonical",
+      "n_guides": 8,
+      "guides": {
+        "HEK293_site2": {
+          "n_candidates": 11830,
+          "n_active": 2,
+          "crisot_auprc": 0.75,
+          "homology_auprc": 1.0,
+          "crisot_recall_at_1pct_fpr": 1.0,
+          "homology_recall_at_1pct_fpr": 1.0
+        },
+        "VEGFA_site2": {
+          "n_candidates": 17540,
+          "n_active": 135,
+          "crisot_auprc": 0.6186,
+          "homology_auprc": 0.2153,
+          "crisot_recall_at_1pct_fpr": 0.7926,
+          "homology_recall_at_1pct_fpr": 0.3852
+        },
+        "EMX1": {
+          "n_candidates": 31712,
+          "n_active": 16,
+          "crisot_auprc": 0.414,
+          "homology_auprc": 0.4963,
+          "crisot_recall_at_1pct_fpr": 0.875,
+          "homology_recall_at_1pct_fpr": 1.0
+        },
+        "FANCF": {
+          "n_candidates": 10298,
+          "n_active": 8,
+          "crisot_auprc": 0.8254,
+          "homology_auprc": 0.4339,
+          "crisot_recall_at_1pct_fpr": 1.0,
+          "homology_recall_at_1pct_fpr": 0.875
+        },
+        "HEK293_site4": {
+          "n_candidates": 30368,
+          "n_active": 112,
+          "crisot_auprc": 0.4101,
+          "homology_auprc": 0.4387,
+          "crisot_recall_at_1pct_fpr": 0.6964,
+          "homology_recall_at_1pct_fpr": 0.6161
+        },
+        "HEK293_site3": {
+          "n_candidates": 8331,
+          "n_active": 5,
+          "crisot_auprc": 0.9429,
+          "homology_auprc": 0.5324,
+          "crisot_recall_at_1pct_fpr": 1.0,
+          "homology_recall_at_1pct_fpr": 1.0
+        },
+        "VEGFA_site1": {
+          "n_candidates": 15263,
+          "n_active": 22,
+          "crisot_auprc": 0.6716,
+          "homology_auprc": 0.3441,
+          "crisot_recall_at_1pct_fpr": 1.0,
+          "homology_recall_at_1pct_fpr": 0.5
+        },
+        "VEGFA_site3": {
+          "n_candidates": 33813,
+          "n_active": 46,
+          "crisot_auprc": 0.5338,
+          "homology_auprc": 0.2735,
+          "crisot_recall_at_1pct_fpr": 0.913,
+          "homology_recall_at_1pct_fpr": 0.7609
+        }
+      },
+      "mean_crisot_auprc": 0.6458,
+      "mean_homology_auprc": 0.4668,
+      "auprc_gap_crisot_minus_homology": 0.179,
+      "gap_ci95": [
+        0.0136,
+        0.3292
+      ],
+      "crisot_beats_homology": true
+    },
+    "circleseq": {
+      "doi": "10.1038/nmeth.4278 (Tsai 2017 CIRCLE-seq, in vitro)",
+      "guide_panel": "canonical",
+      "n_guides": 8,
+      "guides": {
+        "HEK293_site2": {
+          "n_candidates": 11783,
+          "n_active": 35,
+          "crisot_auprc": 0.5243,
+          "homology_auprc": 0.3374,
+          "crisot_recall_at_1pct_fpr": 0.6857,
+          "homology_recall_at_1pct_fpr": 0.7143
+        },
+        "VEGFA_site2": {
+          "n_candidates": 17438,
+          "n_active": 1574,
+          "crisot_auprc": 0.7561,
+          "homology_auprc": 0.2855,
+          "crisot_recall_at_1pct_fpr": 0.493,
+          "homology_recall_at_1pct_fpr": 0.1353
+        },
+        "EMX1": {
+          "n_candidates": 15816,
+          "n_active": 86,
+          "crisot_auprc": 0.3208,
+          "homology_auprc": 0.2444,
+          "crisot_recall_at_1pct_fpr": 0.6279,
+          "homology_recall_at_1pct_fpr": 0.4651
+        },
+        "FANCF": {
+          "n_candidates": 10250,
+          "n_active": 52,
+          "crisot_auprc": 0.5363,
+          "homology_auprc": 0.2051,
+          "crisot_recall_at_1pct_fpr": 0.7115,
+          "homology_recall_at_1pct_fpr": 0.3462
+        },
+        "HEK293_site4": {
+          "n_candidates": 30191,
+          "n_active": 709,
+          "crisot_auprc": 0.3349,
+          "homology_auprc": 0.3327,
+          "crisot_recall_at_1pct_fpr": 0.2779,
+          "homology_recall_at_1pct_fpr": 0.3188
+        },
+        "HEK293_site3": {
+          "n_candidates": 8294,
+          "n_active": 80,
+          "crisot_auprc": 0.4572,
+          "homology_auprc": 0.1776,
+          "crisot_recall_at_1pct_fpr": 0.5875,
+          "homology_recall_at_1pct_fpr": 0.2875
+        },
+        "VEGFA_site1": {
+          "n_candidates": 15165,
+          "n_active": 463,
+          "crisot_auprc": 0.6478,
+          "homology_auprc": 0.1915,
+          "crisot_recall_at_1pct_fpr": 0.5594,
+          "homology_recall_at_1pct_fpr": 0.1685
+        },
+        "VEGFA_site3": {
+          "n_candidates": 33449,
+          "n_active": 674,
+          "crisot_auprc": 0.5802,
+          "homology_auprc": 0.3574,
+          "crisot_recall_at_1pct_fpr": 0.5786,
+          "homology_recall_at_1pct_fpr": 0.319
+        }
+      },
+      "mean_crisot_auprc": 0.5197,
+      "mean_homology_auprc": 0.2664,
+      "auprc_gap_crisot_minus_homology": 0.2533,
+      "gap_ci95": [
+        0.1463,
+        0.3704
+      ],
+      "crisot_beats_homology": true
+    },
+    "changeseq": {
+      "doi": "10.1038/s41587-020-0555-7 (Lazzarotto 2020 CHANGE-seq, in vitro)",
+      "guide_panel": "independent_broad",
+      "n_guides": 20,
+      "guides": {
+        "changeseq_GAACAAGG": {
+          "n_candidates": 5460,
+          "n_active": 133,
+          "crisot_auprc": 0.4977,
+          "homology_auprc": 0.1327,
+          "crisot_recall_at_1pct_fpr": 0.4586,
+          "homology_recall_at_1pct_fpr": 0.1353
+        },
+        "changeseq_GAAGAAAC": {
+          "n_candidates": 29445,
+          "n_active": 38,
+          "crisot_auprc": 0.4174,
+          "homology_auprc": 0.2087,
+          "crisot_recall_at_1pct_fpr": 0.9474,
+          "homology_recall_at_1pct_fpr": 0.5263
+        },
+        "changeseq_GAAGATGA": {
+          "n_candidates": 26908,
+          "n_active": 299,
+          "crisot_auprc": 0.5217,
+          "homology_auprc": 0.194,
+          "crisot_recall_at_1pct_fpr": 0.6054,
+          "homology_recall_at_1pct_fpr": 0.2742
+        },
+        "changeseq_GAAGCATG": {
+          "n_candidates": 6404,
+          "n_active": 11,
+          "crisot_auprc": 0.9074,
+          "homology_auprc": 0.2757,
+          "crisot_recall_at_1pct_fpr": 1.0,
+          "homology_recall_at_1pct_fpr": 0.6364
+        },
+        "changeseq_GAAGCGTG": {
+          "n_candidates": 12721,
+          "n_active": 49,
+          "crisot_auprc": 0.4547,
+          "homology_auprc": 0.1368,
+          "crisot_recall_at_1pct_fpr": 0.7959,
+          "homology_recall_at_1pct_fpr": 0.4286
+        },
+        "changeseq_GAAGGCTG": {
+          "n_candidates": 21785,
+          "n_active": 1215,
+          "crisot_auprc": 0.6422,
+          "homology_auprc": 0.2538,
+          "crisot_recall_at_1pct_fpr": 0.4165,
+          "homology_recall_at_1pct_fpr": 0.1704
+        },
+        "changeseq_GAAGGTGG": {
+          "n_candidates": 6157,
+          "n_active": 65,
+          "crisot_auprc": 0.5392,
+          "homology_auprc": 0.2572,
+          "crisot_recall_at_1pct_fpr": 0.7231,
+          "homology_recall_at_1pct_fpr": 0.4154
+        },
+        "changeseq_GAAGTTGA": {
+          "n_candidates": 13009,
+          "n_active": 18,
+          "crisot_auprc": 0.3732,
+          "homology_auprc": 0.2104,
+          "crisot_recall_at_1pct_fpr": 1.0,
+          "homology_recall_at_1pct_fpr": 0.6667
+        },
+        "changeseq_GACACCTT": {
+          "n_candidates": 16066,
+          "n_active": 143,
+          "crisot_auprc": 0.6312,
+          "homology_auprc": 0.1677,
+          "crisot_recall_at_1pct_fpr": 0.8182,
+          "homology_recall_at_1pct_fpr": 0.3077
+        },
+        "changeseq_GACATTAA": {
+          "n_candidates": 12776,
+          "n_active": 9,
+          "crisot_auprc": 0.4765,
+          "homology_auprc": 0.4838,
+          "crisot_recall_at_1pct_fpr": 1.0,
+          "homology_recall_at_1pct_fpr": 0.7778
+        },
+        "changeseq_GAGAAGGT": {
+          "n_candidates": 20407,
+          "n_active": 1456,
+          "crisot_auprc": 0.5407,
+          "homology_auprc": 0.2483,
+          "crisot_recall_at_1pct_fpr": 0.2562,
+          "homology_recall_at_1pct_fpr": 0.1367
+        },
+        "changeseq_GAGAATCA": {
+          "n_candidates": 10544,
+          "n_active": 6,
+          "crisot_auprc": 0.5749,
+          "homology_auprc": 0.3965,
+          "crisot_recall_at_1pct_fpr": 1.0,
+          "homology_recall_at_1pct_fpr": 0.8333
+        },
+        "changeseq_GAGACCCT": {
+          "n_candidates": 9563,
+          "n_active": 62,
+          "crisot_auprc": 0.5547,
+          "homology_auprc": 0.2602,
+          "crisot_recall_at_1pct_fpr": 0.6774,
+          "homology_recall_at_1pct_fpr": 0.4355
+        },
+        "changeseq_GAGCAGGG": {
+          "n_candidates": 51104,
+          "n_active": 1772,
+          "crisot_auprc": 0.4873,
+          "homology_auprc": 0.2832,
+          "crisot_recall_at_1pct_fpr": 0.3668,
+          "homology_recall_at_1pct_fpr": 0.1981
+        },
+        "changeseq_GAGCCACA": {
+          "n_candidates": 7008,
+          "n_active": 67,
+          "crisot_auprc": 0.4005,
+          "homology_auprc": 0.1782,
+          "crisot_recall_at_1pct_fpr": 0.4925,
+          "homology_recall_at_1pct_fpr": 0.2537
+        },
+        "changeseq_GAGGGCTC": {
+          "n_candidates": 12832,
+          "n_active": 189,
+          "crisot_auprc": 0.5364,
+          "homology_auprc": 0.2725,
+          "crisot_recall_at_1pct_fpr": 0.5556,
+          "homology_recall_at_1pct_fpr": 0.3228
+        },
+        "changeseq_GAGTAGCG": {
+          "n_candidates": 4363,
+          "n_active": 34,
+          "crisot_auprc": 0.4312,
+          "homology_auprc": 0.1476,
+          "crisot_recall_at_1pct_fpr": 0.5588,
+          "homology_recall_at_1pct_fpr": 0.1765
+        },
+        "changeseq_GATAACTA": {
+          "n_candidates": 7369,
+          "n_active": 9,
+          "crisot_auprc": 0.7746,
+          "homology_auprc": 0.4647,
+          "crisot_recall_at_1pct_fpr": 1.0,
+          "homology_recall_at_1pct_fpr": 1.0
+        },
+        "changeseq_GATGCAGA": {
+          "n_candidates": 11193,
+          "n_active": 86,
+          "crisot_auprc": 0.4113,
+          "homology_auprc": 0.1585,
+          "crisot_recall_at_1pct_fpr": 0.6047,
+          "homology_recall_at_1pct_fpr": 0.314
+        },
+        "changeseq_GATGTGGG": {
+          "n_candidates": 14387,
+          "n_active": 227,
+          "crisot_auprc": 0.6468,
+          "homology_auprc": 0.2408,
+          "crisot_recall_at_1pct_fpr": 0.6608,
+          "homology_recall_at_1pct_fpr": 0.3304
+        }
+      },
+      "mean_crisot_auprc": 0.541,
+      "mean_homology_auprc": 0.2486,
+      "auprc_gap_crisot_minus_homology": 0.2924,
+      "gap_ci95": [
+        0.2349,
+        0.3477
+      ],
+      "crisot_beats_homology": true
+    },
+    "siteseq": {
+      "doi": "10.1038/nmeth.4284 (Cameron 2017 SITE-seq, in vitro)",
+      "guide_panel": "independent_broad",
+      "n_guides": 11,
+      "guides": {
+        "siteseq_AGAGTCTC": {
+          "n_candidates": 13293,
+          "n_active": 202,
+          "crisot_auprc": 0.6266,
+          "homology_auprc": 0.3692,
+          "crisot_recall_at_1pct_fpr": 0.6337,
+          "homology_recall_at_1pct_fpr": 0.4901
+        },
+        "siteseq_ATAGGAGA": {
+          "n_candidates": 21254,
+          "n_active": 310,
+          "crisot_auprc": 0.434,
+          "homology_auprc": 0.2124,
+          "crisot_recall_at_1pct_fpr": 0.5065,
+          "homology_recall_at_1pct_fpr": 0.3387
+        },
+        "siteseq_CCAGGTGA": {
+          "n_candidates": 13066,
+          "n_active": 104,
+          "crisot_auprc": 0.5888,
+          "homology_auprc": 0.2563,
+          "crisot_recall_at_1pct_fpr": 0.8173,
+          "homology_recall_at_1pct_fpr": 0.4038
+        },
+        "siteseq_GCAAAACT": {
+          "n_candidates": 9259,
+          "n_active": 98,
+          "crisot_auprc": 0.496,
+          "homology_auprc": 0.1769,
+          "crisot_recall_at_1pct_fpr": 0.5408,
+          "homology_recall_at_1pct_fpr": 0.2755
+        },
+        "siteseq_GCATACAG": {
+          "n_candidates": 21763,
+          "n_active": 126,
+          "crisot_auprc": 0.6329,
+          "homology_auprc": 0.2708,
+          "crisot_recall_at_1pct_fpr": 0.8333,
+          "homology_recall_at_1pct_fpr": 0.5
+        },
+        "siteseq_GCTGATGT": {
+          "n_candidates": 8599,
+          "n_active": 44,
+          "crisot_auprc": 0.4271,
+          "homology_auprc": 0.1556,
+          "crisot_recall_at_1pct_fpr": 0.6591,
+          "homology_recall_at_1pct_fpr": 0.3864
+        },
+        "FANCF": {
+          "n_candidates": 12073,
+          "n_active": 108,
+          "crisot_auprc": 0.5969,
+          "homology_auprc": 0.2279,
+          "crisot_recall_at_1pct_fpr": 0.7407,
+          "homology_recall_at_1pct_fpr": 0.3241
+        },
+        "siteseq_GGGGCCAC": {
+          "n_candidates": 13892,
+          "n_active": 626,
+          "crisot_auprc": 0.5491,
+          "homology_auprc": 0.2513,
+          "crisot_recall_at_1pct_fpr": 0.3882,
+          "homology_recall_at_1pct_fpr": 0.1981
+        },
+        "VEGFA_site1": {
+          "n_candidates": 17992,
+          "n_active": 299,
+          "crisot_auprc": 0.5948,
+          "homology_auprc": 0.1806,
+          "crisot_recall_at_1pct_fpr": 0.6087,
+          "homology_recall_at_1pct_fpr": 0.214
+        },
+        "siteseq_GGTGGACA": {
+          "n_candidates": 9765,
+          "n_active": 57,
+          "crisot_auprc": 0.3449,
+          "homology_auprc": 0.2321,
+          "crisot_recall_at_1pct_fpr": 0.6316,
+          "homology_recall_at_1pct_fpr": 0.4386
+        },
+        "siteseq_TACCCACC": {
+          "n_candidates": 5637,
+          "n_active": 83,
+          "crisot_auprc": 0.4364,
+          "homology_auprc": 0.2324,
+          "crisot_recall_at_1pct_fpr": 0.494,
+          "homology_recall_at_1pct_fpr": 0.3253
+        }
+      },
+      "mean_crisot_auprc": 0.5207,
+      "mean_homology_auprc": 0.2332,
+      "auprc_gap_crisot_minus_homology": 0.2874,
+      "gap_ci95": [
+        0.2388,
+        0.3354
+      ],
+      "crisot_beats_homology": true
+    }
+  },
+  "method": {
+    "predictor_real": "CRISOT-Score (Chen et al., Nat Commun 2023, 10.1038/s41467-023-42695-4; MD-physics RNA-DNA interaction scoring function, ASSAY-AGNOSTIC / not fit on these labels -> leakage-clean; CC-BY-NC, run locally, only derived scores cached)",
+    "baseline": "homology nomination = ascending mismatch count (Hamming over the 20-nt protospacer)",
+    "metric": "per-guide AUPRC + recall@1%FPR; held-out-guide bootstrap (1000) CI on mean(CRISOT-homology) AUPRC; GUIDE/CIRCLE-seq use canonical guides, CHANGE/SITE-seq use independent broad guide panels (cross-assay)"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|TTR|What is the exact percent knockdown efficiency for an adenine base editor installing a premature stop at TTR codon c.148? Give me the precise number.",
+  "content": "{\n  \"max_writability\": 0.95,\n  \"safety_score\": 0.92,\n  \"p_durable\": 0.97,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 0.85,\n  \"target_bin_coordinate\": \"chr14:36,761,771-36,761,824\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

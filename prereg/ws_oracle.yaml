@@ -1,0 +1,45 @@
+# PEN-STACK v6.13 - WS-ORACLE (PEN-ORACLE: unified oracle-mesh contract + affinity + per-oracle reliability). Pre-registered.
+cycle: "v6.13"
+workstream: "WS-ORACLE"
+prepared: "2026-06-21"
+motivation: >
+  The oracle mesh has one OracleResult contract and a cross-oracle disagreement mechanism that widens the
+  interval, but the structure oracles are held, there is no binding-affinity dimension, and per-oracle reliability
+  is not surfaced. Stage I hardens the mesh into a unified, scope-carded contract spanning structure, sequence,
+  regulatory and affinity, adds the affinity dimension (Boltz-2), and makes per-oracle reliability a first-class
+  output reported from published benchmarks. The contribution is the contract plus reliability plus
+  disagreement-to-uncertainty, not the models, which are commodity.
+deliverable: >
+  pen_stack/oracles/affinity.py (binding-affinity oracle: writer-att, capsid-receptor, cargo-protein, under the
+  OracleResult contract, with native uncertainty, candidate/OOD-flagged, cache-or-abstain), pen_stack/oracles/
+  reliability.py (a per-oracle reliability registry sourced from public benchmarks and reported verbatim, plus a
+  check that cross-oracle disagreement widens the interval monotonically), pen_stack/oracles/structure_run.py (a
+  runner for the held structure oracles over writer-substrate and att-site complexes, off the request path,
+  cache-or-abstain), configs/oracles/reliability.yaml (the cited reliability numbers), benchmarks/oracle/ (a
+  reliability + disagreement report harness), and surfaces (GET /api/oracles extended with reliability, MCP
+  oracle.query, a web oracle dashboard).
+method: >
+  Wrap, do not rebuild. Affinity is a new oracle family returning {affinity, units, binder_probability} with the
+  model's native uncertainty; absent backend -> cache-or-abstain (never request-path), generative/extrapolative
+  outputs flagged candidate/OOD. Reliability is a registry of per-oracle numbers taken VERBATIM from public
+  benchmarks (Boltz-2 on the affinity sets; AlphaFold3/Chai-1 on PDB-holdout/CASP/CAMEO; Evo2/ESM3 on
+  ProteinGym/FLIP), each carrying its benchmark name, metric, value, n, date and citation; nothing is recomputed
+  or invented here, it is reported as published. Disagreement-to-interval reuses the existing consensus()
+  mechanism (native uncertainty + half the cross-oracle spread) and a check confirms it widens monotonically with
+  the spread. The held structure oracles execute off-request on separate GPU/cloud and cache; the request path
+  only ever replays the cache or abstains.
+acceptance: >
+  I-G (oracle): the affinity dimension returns a value with native uncertainty and is candidate/OOD-flagged;
+  cross-oracle disagreement widens the interval MONOTONICALLY (or the mechanism is reported broken); per-oracle
+  reliability is surfaced in GET /api/oracles and reported verbatim from the public benchmarks with citations;
+  held oracles are cache-or-abstain (never request-path); 0 fabricated oracle outputs. Where a backend or
+  benchmark number is not available, the oracle abstains and the gap is stated, never filled with a guess.
+honesty_invariant: >
+  Every oracle output is a CANDIDATE / hypothesis, never ground truth; reliability is surfaced precisely so the
+  output is not over-trusted. Reliability numbers are published benchmark values reported verbatim with their
+  source, NOT re-computed here and NOT a claim about this stack's own accuracy. Affinity is strongest where the
+  public benchmarks cover and extrapolative elsewhere (OOD-flagged). Deferred / held oracles are cache-or-abstain
+  and never enter the request path. Training new foundation models is out of scope (wrap, never retrain). License
+  tags are carried per oracle; the affinity core is the MIT-licensed Boltz-2.
+gate: "I-ORACLE - affinity dimension returns native uncertainty (candidate/OOD-flagged); cross-oracle disagreement widens the interval monotonically; per-oracle reliability surfaced in GET /api/oracles, reported verbatim from public benchmarks with citations; held oracles cache-or-abstain (never request-path); 0 fabricated outputs."
+locked_files: [prereg/ws_oracle.yaml]

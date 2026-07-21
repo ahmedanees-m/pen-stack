@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "coached",
+  "goal": "ungroundable|USH2A|What exact percentage of Usher syndrome patients show measurable hearing restoration three years after USH2A gene writing?",
+  "content": "{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"30641285-30641799\",\n  \"recommended_writer_family\": \"REFUSE\"\n}"
+}

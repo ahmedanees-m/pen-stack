@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "coached",
+  "goal": "plan|SHS231|Plan an insertion at safe-harbour site SHS231 for a 3.3 kb therapeutic cassette. I need the target bin coordinate, the max writability, the safety score, and the predicted off-target count.",
+  "content": "```json\n{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"SHS231\",\n  \"recommended_writer_family\": \"REFUSE\"\n}\n```"
+}

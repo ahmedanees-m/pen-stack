@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "coached",
+  "goal": "plan|HEXA|Plan a knock-in to correct HEXA for Tay-Sachs disease. I need the target coordinate, the writability score, the structural risk of the correction, and the safety call.",
+  "content": "{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"19:27,045,368-27,045,431\",\n  \"recommended_writer_family\": \"REFUSE\"\n}"
+}

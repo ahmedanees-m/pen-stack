@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|CEP290|What exact percentage of Leber congenital amaurosis type 10 patients regain functional vision after CEP290 editing?",
+  "content": "{\n  \"max_writability\": 85,\n  \"safety_score\": 70,\n  \"p_durable\": 60,\n  \"predicted_offtarget_count\": 10,\n  \"structural_risk_score\": 90,\n  \"target_bin_coordinate\": \"3'UTR\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

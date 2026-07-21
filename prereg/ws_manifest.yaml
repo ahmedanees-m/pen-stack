@@ -1,0 +1,20 @@
+# PEN-STACK v6.1 - WS-MANIFEST (self-describing capability + scope manifests). Directional.
+cycle: "v6.1"
+workstream: "WS-MANIFEST"
+prepared: "2026-06-11"
+motivation: >
+  Make PEN-STACK self-describing INCLUDING its limits: a machine-readable capability manifest (what it does) and
+  - the differentiator - a machine-readable scope manifest (what it REFUSES to answer), so an external agent can
+  route on data, not prose.
+deliverable: "pen_stack/api/manifest.py: capability_manifest() + scope_manifest(); served over REST + MCP."
+method: >
+  capability_manifest = the stable public tools (each input/output/fabricates=False/entrypoint) + guarantees +
+  version; scope_manifest = the L4 known-unknowns registry (agent/scope.load_registry, public fields only) + the
+  oracle scope cards (oracles/cache.load_scope_cards: valid_for/not_valid_for/generalizes) + the policy. Generated
+  from the LIVE registry/scope cards, never hand-written.
+acceptance: >
+  both manifests valid typed JSON; scope lists every known-unknown + every oracle scope card; an agent can fetch
+  both and route; manifests versioned; no internal matcher fields leaked.
+honesty_invariant: "scope is DATA not a disclaimer; the manifest describes the contract, it does not expand capability; nothing fabricates."
+gate: "G-MANIFEST - capability + scope manifests typed + complete + versioned; scope exposes KUs + scope cards as data."
+locked_files: [prereg/ws_manifest.yaml]

@@ -1,0 +1,12 @@
+{
+  "phase": 2,
+  "paper": 2,
+  "prepared": "2026-06-02",
+  "sha256": {
+    "prereg/paper2.yaml": "9ca9dc5e9446cf84db82fb611f1b5d8b9b0c6d49adf9dc7143f27d4001096fe8",
+    "configs/atlas_families.yaml": "de374812909c8b153d4c6199bd1c9afb27f48d5f596947a69ea0790c07f64d08",
+    "configs/monitor_queries.yaml": "38c934b3c61e7e7b7b6a4336d735d2f527d737b7760fe2ae106492495b07e86c",
+    "configs/score_axes.yaml": "c913a2c33d9882c25fc460158b643b4ed1a439d0dc72cd800779353ab9ed1957",
+    "pen_stack/mech/pfam_whitelist.yaml": "52e789566054a517368b3d31fc8b578c5482a0de29d611a0625f0699c9af0845"
+  }
+}

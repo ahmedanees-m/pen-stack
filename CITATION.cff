@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use PEN-STACK, please cite it as below."
+title: "PEN-STACK: open infrastructure for genome writing"
+version: 0.1.0
+date-released: 2026-07-21
+# The concept DOI is minted when the Zenodo record is published; add it here and in the manuscript:
+# identifiers:
+#   - type: doi
+#     value: 10.5281/zenodo.XXXXXXX
+#     description: Concept DOI (all versions)
+authors:
+  - family-names: "Mahaboob Ali"
+    given-names: "Anees Ahmed"
+    affiliation: "VIT University, Vellore"
+    email: ahmedaneesm@gmail.com
+repository-code: "https://github.com/ahmedanees-m/pen-stack"
+license: MIT
+keywords:
+  - genome writing
+  - writable genome
+  - writer atlas
+  - bridge recombinase
+  - safe harbor
+  - write planner

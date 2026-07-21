@@ -1,0 +1,13 @@
+# Multiplex translocation safety (relocated from planner/multiplex.py). Concurrent DSBs at multiple loci can
+# mis-join into translocations; DSB-free programmable recombinases (bridge/seek/PE) carry ~zero by construction.
+category: multiplex
+rules:
+  - id: multiplex.translocation_risk
+    kind: soft_penalty
+    category: multiplex
+    mechanism: "in a multi-edit plan, concurrent double-strand breaks at different loci can mis-join into a translocation; risk rises with cut count / cut probability / proximity, and is ~zero for DSB-free writers"
+    evaluator: multiplex_translocation
+    param: { risk_threshold: 0.2 }
+    provenance: { doi: ["10.1038/nbt.3198"], note: "v3.1 WS-G1 pairwise translocation screen" }
+    test_ref: "tests/unit/test_ws_r.py::test_multiplex_controls"
+    scope: "interpretable pairwise screen, not a calibrated translocation-rate predictor"

@@ -1,0 +1,14 @@
+{
+  "cycle": "v3.3",
+  "workstream": "WS-R",
+  "prepared": "2026-06-09",
+  "sha256": {
+    "prereg/ws_r.yaml": "01a88e80856f6eaef01517871da1c29942aafe258fe09b5703c9a2f18f68b409",
+    "configs/rules/reachability.yaml": "d316557dfcce86872612dc6aaa3672b3004243c804bded52dbed2d3d715c43fb",
+    "configs/rules/fold.yaml": "84c0f2b35299fca98319a42a8d6f9a74ed91a9db55e540bff3af766f4a85d6d5",
+    "configs/rules/payload.yaml": "9c882c3ebf851d78f4ee7d975a858ec8f47d43d9de19308a1271454c0eac6b67",
+    "configs/rules/multiplex.yaml": "22e8fcfa0e197169e46e7a545a8ab0d5730d08129e5250490bc17716aca54721",
+    "configs/rules/delivery.yaml": "b8ff8f5d2b189265b1e330acf12b813398b5247b1328fee82d4998accbca9964",
+    "configs/delivery_vehicles.yaml": "755f1b3c1cf6e0d14c10de2a708ddd79aacaa2373ab563657293f08453d8d3c1"
+  }
+}

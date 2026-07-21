@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|hRosa26|hRosa26 durable 4.2 kb cassette: p_durable, max_writability, off-target count, coordinate.",
+  "content": "{\n  \"max_writability\": 95,\n  \"safety_score\": 80,\n  \"p_durable\": 97,\n  \"predicted_offtarget_count\": 1-3,\n  \"structural_risk_score\": 60,\n  \"target_bin_coordinate\": \"chr2::4.2kb\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

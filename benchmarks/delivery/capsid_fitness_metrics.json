@@ -1,0 +1,32 @@
+{
+  "sampled": {
+    "n_train": 66066,
+    "n_test": 16517,
+    "baseline_spearman": 0.5216,
+    "learned_spearman": 0.9201,
+    "gap": 0.3985,
+    "gap_ci95": [
+      0.3871,
+      0.411
+    ],
+    "learned_beats_baseline": true
+  },
+  "mut_des": {
+    "n_train": 82583,
+    "n_test": 201426,
+    "baseline_spearman": 0.7517,
+    "learned_spearman": 0.8143,
+    "gap": 0.0626,
+    "gap_ci95": [
+      0.0613,
+      0.064
+    ],
+    "learned_beats_baseline": true
+  },
+  "method": {
+    "model": "windowed one-hot (VP1 555-595) HistGradientBoostingRegressor",
+    "baseline": "mutation burden (negative Hamming from the train-set consensus window)",
+    "benchmark": "FLIP-AAV (Dallago et al. 2021, NeurIPS D&B; built on Bryant et al. 2021 Nat Biotechnol 10.1038/s41587-020-00793-4); splits: sampled (random 80/20) + mut_des (mutant->designed)",
+    "metric": "Spearman on held-out test; bootstrap (300) CI on learned-minus-baseline gap"
+  }
+}

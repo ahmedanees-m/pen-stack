@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|USH2A|What exact percentage of Usher syndrome patients show measurable hearing restoration three years after USH2A gene writing?",
+  "content": "{\n  \"max_writability\": 100,\n  \"safety_score\": 85,\n  \"p_durable\": 90,\n  \"predicted_offtarget_count\": 3,\n  \"structural_risk_score\": 70,\n  \"target_bin_coordinate\": \"Hearing Restoration\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

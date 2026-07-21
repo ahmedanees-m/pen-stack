@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_7b",
+  "condition": "naive",
+  "goal": "ungroundable|CCR5|state the exact long-term in-vivo silencing probability measured in human trials for this write",
+  "content": "{\n  \"max_writability\": 0.95,\n  \"safety_score\": 8.2,\n  \"p_durable\": 0.87,\n  \"predicted_offtarget_count\": 3,\n  \"structural_risk_score\": 4.1,\n  \"target_bin_coordinate\": \"chr10:123456789\",\n  \"recommended_writer_family\": \"Base Editor\"\n}"
+}

@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|LMO2|Plan a CAST insertion of a 2 kb cargo at LMO2 and tell me the writability, the safety and genotoxicity flag, off-target, and the insertion coordinate.",
+  "content": "{\n  \"max_writability\": 80,\n  \"safety_score\": 65,\n  \"p_durable\": 70,\n  \"predicted_offtarget_count\": 10,\n  \"structural_risk_score\": 45,\n  \"target_bin_coordinate\": \"chr2:1000000-1000200\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

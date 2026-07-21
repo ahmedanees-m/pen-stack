@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.5",
+  "workstream": "WS-SEROPREV",
+  "prepared": "2026-06-10",
+  "sha256": {
+    "prereg/ws_seroprev.yaml": "18cc27da5b6aee682195e9c57abff49ca1d6338b71d5ac7c4b87084d25fa803b"
+  }
+}

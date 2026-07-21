@@ -1,0 +1,1 @@
+{"available": true, "chrom": "chr21", "bin": 14214, "ct": "k562", "ontology": "EFO:0002067", "model_version": "alphagenome-2025-06", "center_bp": 1000, "key": "b521b5e1f3c20d649103db6a", "atac": 0.024868415668606758, "dnase": 0.01282038539648056, "H3K27ac": 78.97673797607422, "H3K4me1": 72.75550842285156, "H3K4me3": 60.9835205078125, "H3K9me3": NaN, "H3K27me3": 64.54373931884766}

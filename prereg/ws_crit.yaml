@@ -1,0 +1,16 @@
+# PEN-STACK v5.0 - WS-CRIT + WS-SCOPE2 (self-critique loop + scope ledger) pre-registered. Directional.
+cycle: "v5.0"
+workstream: "WS-CRIT + WS-SCOPE2"
+prepared: "2026-06-09"
+
+WS_CRIT_self_critique:
+  deliverable: "co_scientist.critique() / critique_and_revise() / critique_falsifiability()"
+  method: "the critic flags issues via the verifier (hard violations / soft flags / scope) + categorical cross-checks, and suggests a DESIGN-LEVEL revision (swap vehicle/writer); the planner revises -> re-verify. The critic can ONLY flag/reject + swap a choice; it NEVER invents a number."
+  acceptance: "FALSIFIABILITY (Principle 3): on a frozen set of FLAWED designs the critique->revise loop measurably IMPROVES plan quality (illegal->legal); on CLEAN designs it does NOT spuriously change them; reported honestly (improve-rate + spurious-rate) - a critique that does not help is reported not-yet-useful, never assumed beneficial. no-fabrication holds (the critic sources no number)."
+
+WS_SCOPE2_ledger:
+  deliverable: "co_scientist.scope_ledger()"
+  acceptance: "every recommendation carries a COMPLETE scope ledger: what WAS assessed (rule legality / reachability / delivery / payload / calibrated confidence, each with its verdict + source) AND what was NOT (the standing known-unknowns: structure->phenotype, in-vivo immunogenicity, long-term durability, epistasis, polygenic, germline; + any verifier scope flags) - out-of-scope dimensions ITEMISED, never silently omitted."
+
+gate: "self-critique falsifiable (improves held-out FLAWED quality or reported negative); scope ledger complete per recommendation; no-fabrication intact."
+locked_files: [prereg/ws_crit.yaml]

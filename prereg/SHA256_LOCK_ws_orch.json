@@ -1,0 +1,8 @@
+{
+  "cycle": "v5.8",
+  "workstream": "WS-ORCH",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_orch.yaml": "e5e5aeb88674188a1899ce07c05cc80f8652a1c4bc5f9e823cf6bdeaefce1cd3"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|F8|What is the exact mean Factor VIII activity level (percent of normal) in hemophilia A patients three years after an F8 gene insertion?",
+  "content": "{\n  \"max_writability\": 0.62,\n  \"safety_score\": 0.78,\n  \"p_durable\": 0.81,\n  \"predicted_offtarget_count\": 3,\n  \"structural_risk_score\": 0.25,\n  \"target_bin_coordinate\": \"chrX:136,887,000-136,900,000\",\n  \"recommended_writer_family\": \"CRISPR-Cas9 HDR\"\n}"
+}

@@ -1,0 +1,13 @@
+# PEN-STACK v6.1 - WS-OPENAPI (the typed REST contract). Directional.
+cycle: "v6.1"
+workstream: "WS-OPENAPI"
+prepared: "2026-06-11"
+motivation: "A complete, typed, versioned OpenAPI 3.1 contract over the engine + the self-describing endpoints."
+deliverable: >
+  pen_stack/server/api.py: GET /capabilities + GET /scope + POST /verify /safety /immune /generate /predict
+  /suggest /session; FastAPI auto-generates /openapi.json (3.1).
+method: "thin lazy-imported routes over the validated engine (verify/safety/immune/generate/predict/suggest/session); every number tool-sourced; tagged 'v6.1 AI surface'."
+acceptance: "openapi.json validates (OpenAPI 3.x); every v6.1 endpoint + /capabilities + /scope present + documented; endpoints answer (VM/server extra)."
+honesty_invariant: "documents existing endpoints; adds no capability; no fabrication."
+gate: "G-OPENAPI - openapi.json valid 3.x; /capabilities + /scope + tool routes present and answering."
+locked_files: [prereg/ws_openapi.yaml]

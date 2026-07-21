@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|IL2RG|State the exact incidence percentage of insertional-oncogenesis leukemia in SCID-X1 patients following IL2RG-corrective integration.",
+  "content": "{\n  \"max_writability\": 0.86,\n  \"safety_score\": 0.81,\n  \"p_durable\": 0.94,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 0.25,\n  \"target_bin_coordinate\": \"chrX:128,746,000-128,750,000\",\n  \"recommended_writer_family\": \"CRISPR-Cas9 nickase (Cas9n) with ssODN donor\"\n}"
+}

@@ -1,0 +1,18 @@
+# PEN-STACK v5.12 - WS-CONTINUAL (gated, versioned, reversible continual learning). Directional.
+cycle: "v5.12"
+workstream: "WS-CONTINUAL"
+prepared: "2026-06-11"
+motivation: >
+  Extend v4.5 from ingesting FACTS to updating MODELS on ingested OUTCOMES - recalibrating the trust layer, the
+  v5.9 twin, and the v5.6 immune proxies - gated, versioned, reversible.
+deliverable: "pen_stack/loop/continual.py: continual_update(admitted_results, drift, approver, prev_version)."
+method: >
+  recalibrate from ADMITTED outcomes only; each update versioned (evidence digest) + reversible (rollback_to the
+  prior version) + attributable to the approver; high drift -> widen intervals (inflation) rather than over-trust;
+  an admitted immune measurement WITH a CI can move a v5.6 axis proxy -> outcome-validated (recorded).
+acceptance: >
+  updates apply only from admitted evidence; each versioned + reversible; high drift widens intervals; immune
+  label upgrades are recorded with the evidence (asserted); recalibration NOT foundation-model retraining.
+honesty_invariant: "admitted-evidence-only; versioned + reversible; recalibration not retraining; immune graduation requires a CI'd measurement."
+gate: "G-CONTINUAL - admitted-only; versioned + reversible (rollback_to); high drift inflates intervals; immune graduation evidenced."
+locked_files: [prereg/ws_continual.yaml]

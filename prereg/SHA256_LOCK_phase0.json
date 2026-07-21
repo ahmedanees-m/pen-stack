@@ -1,0 +1,9 @@
+{
+  "phase": 0,
+  "locked_files": {
+    "configs/wtkb_curated.yaml": "bba67cff3c6d128e0146b103f82bf9479a00cd4d54450b46799453dba6669a5d",
+    "configs/score_axes.yaml": "77147ea1f015512767557332d55a10aa389ffc49bc87dd402912657d666b1ad3",
+    "configs/universe_crosswalk.yaml": "fb6667173a3a5c150e4fb5f75f0ba0f49e60d8ea89190ff2a9de2d04ac3c2568",
+    "prereg/phase0.yaml": "c21dbbcfc6f586fd4aa1d32f5e4816e2ae7eaaecda5425323174c9ef90ab028b"
+  }
+}

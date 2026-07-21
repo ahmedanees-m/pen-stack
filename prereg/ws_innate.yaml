@@ -1,0 +1,39 @@
+# PEN-STACK v5.4 - WS-INNATE (computed nucleic-acid innate-sensing scorer). Directional.
+cycle: "v5.4"
+workstream: "WS-INNATE"
+prepared: "2026-06-10"
+
+motivation: >
+  Third computed delivery-immunology signal (after v5.2 genotoxicity, v5.3 capsid epitope load), completing the
+  computable immune axes. Innate sensing of a delivered nucleic acid is a property of the CARGO SEQUENCE + form,
+  computable directly from sequence - covering every cargo form the palette carries.
+
+deliverable: >
+  pen_stack/planner/innate_sensing.py: cpg_observed_expected() + innate_sensing(seq, cargo_form) -> OracleResult;
+  surfaced in verify() when a design supplies cargo_seq; scope card `innate_sensing`.
+
+method: >
+  DNA (TLR9/cGAS): CpG observed/expected ratio (Gardiner-Garden & Frommer) = (n_CpG/(nC*nG))*L. Vertebrate
+  genome ~0.2 (CpG-depleted, tolerated); non-depleted plasmid/viral DNA -> 1 (stimulatory); CpG-depleted
+  vectors evade TLR9. innate_score = max(0, 1 - CpG_O/E). mRNA (TLR7/8 + RIG-I/MDA5/PKR): uridine fraction +
+  ViennaRNA dsRNA base-pairing; innate_score = 1 - 0.5*U_frac - 0.5*paired_frac (U-only if ViennaRNA absent).
+  RNP: minimal/transient (score ~0.9). v4.0 OracleResult (output_kind="baseline"). Refs: CpG-TLR9 Krieg 1995
+  [10.1038/374546a0] / Bauer 2001 [10.1073/pnas.161293498]; CpG-depleted AAV Faust 2013 [10.1172/JCI68205];
+  RNA nucleoside modification Kariko 2005 [10.1016/j.immuni.2005.06.008]; 5'ppp dsRNA RIG-I Hornung 2006
+  [10.1126/science.1132505].
+
+acceptance: >
+  (1) CpG O/E computed correctly (CGCGCG -> 2.0) and mapped to a TLR9 score (CpG-free DNA -> 1.0, CpG-rich ->
+  0.0). (2) DNA / mRNA / RNP forms handled; mRNA flagged PARTIAL (extrapolating) with the nucleoside-
+  modification limitation declared. (3) the scorer ABSTAINS on empty / unrecognised input (never fabricates).
+  (4) verify() surfaces a cargo_innate_sensing scope flag when cargo_seq is supplied, none otherwise. (5)
+  provenance DOIs curated / Crossref-verified.
+
+honesty_invariant: >
+  Sequence-intrinsic motif-LOAD signal. The realized IN-VIVO innate RESPONSE magnitude in a patient is NOT
+  modelled (known-unknown); the mRNA score is PARTIAL because the dominant evasion lever - nucleoside
+  modification (m1-pseudouridine) - is a manufacturing choice NOT derivable from sequence; DNA methylation state
+  is likewise out of scope. No magnitude predicted.
+
+gate: "CpG O/E correct + TLR9 mapping; DNA/mRNA/RNP handled; mRNA flagged partial; abstains not fabricates; verify surfaces it; provenance curated; no-fabrication intact."
+locked_files: [prereg/ws_innate.yaml]

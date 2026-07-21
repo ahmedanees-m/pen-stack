@@ -1,0 +1,39 @@
+# PEN-STACK v6.7 - WS-EXPRESS2 (PEN-EXPRESS: learned, trained-conformal Stage H + TPE-Bench). Pre-registered.
+cycle: "v6.7"
+workstream: "WS-EXPRESS2"
+prepared: "2026-06-19"
+motivation: >
+  Stage H's expression/outcome layer is the stack's weakest link: a closed-form HEURISTIC that failed independent
+  validation (rho=0.12 vs Damdindorj 2014) and an interval the code labels "NOT a trained conformal interval".
+  Replace it with a learned, decomposable, TRAINED-CONFORMAL position-effect model behind Stage H, and ship the
+  held-out benchmark the expression capability never had - wrapping the digital twin, not rebuilding it.
+deliverable: >
+  pen_stack/twin/data/position_effect.py (unified schema + dataset registry with verified accessions + leakage
+  splits) + pen_stack/twin/position_effect.py (factored f_cassette + g_context model, chromosome-blocked CV vs the
+  v3.x durability head, split-conformal via wgenome.uncertainty, OOD via wgenome.ood, predict_stage_h serving seam)
+  + twin/outcome.py wiring (learned interval when context supplied, heuristic fallback) + benchmarks/position_effect/
+  (TPE-Bench: sealed SHA-locked held-out-chromosome split + baseline leaderboard) + validate/{expr_controls,
+  known_biology_expr,heldout_celltype_expr}.py + configs/twin/position_effect_conformal.json.
+baselines_to_beat: >
+  (i) the v3.x context-only TRIP durability head (expression Spearman ~0.43, silenced AUROC ~0.65 on chromosome-
+  blocked CV); (ii) the current Stage H closed-form heuristic. Splits are leakage-controlled (held out by whole
+  chromosome). The cassette-only predictor is the lower anchor.
+method: >
+  factored E_raw ~= f_cassette(cassette) + g_context(chromatin features); g_context (LightGBM) supervised on the
+  residual. Chromosome GroupKFold OOF; paired-bootstrap 95% CI on the delta vs the durability head; separability =
+  interaction extra R^2. Split-conformal (ConformalRegressor, chromosome-Mondrian) on OOF residuals -> the trained
+  interval; honest HELD-OUT coverage via a half-chromosome calibrate/evaluate split (NOT the calibration set).
+  TPE-Bench seals held-out chromosomes (split.json, SHA256SUMS) before model selection.
+acceptance: >
+  G-M: the learned model SHIPS behind Stage H only if it beats the durability head (CI excludes 0) AND the
+  heuristic; else retain the head, report the negative, and rest the increment on trained-conformal + TPE-Bench.
+  G-U: held-out conformal coverage within +/-3 pts of nominal (0.90). G-B: TPE-Bench test sealed + SHA-locked
+  before selection. WS-V: label-shuffle collapses to chance; H3K9me3 up -> silencing up (known-biology recovery).
+honesty_invariant: >
+  every metric is from a real CV run on real TRIP supervision - no fabrication. The cross-cell-type TRANSFER claim
+  is DATA-GATED: with one available position-effect cell type (mESC) the transfer track returns data_gated and no
+  transfer number is produced; it activates only on PatchMPRA/MPIRE/lentiMPRA/Leemans acquisition. Public data
+  cannot flip expression to a validated (green) axis (the v6.5 wall) - v6.7 ships the learned+calibrated upgrade +
+  the benchmark + the path, not a manufactured checkmark. Wet-lab validation omitted by scope.
+gate: "G-EXPR2 - learned model beats the durability head (CI) or negative reported; Stage H trained-conformal (coverage within tol); TPE-Bench sealed; transfer honestly data-gated; controls pass."
+locked_files: [prereg/ws_expr2.yaml]

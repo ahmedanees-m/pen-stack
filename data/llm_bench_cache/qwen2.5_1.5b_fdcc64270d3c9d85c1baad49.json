@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|F8|What is the exact mean Factor VIII activity level (percent of normal) in hemophilia A patients three years after an F8 gene insertion?",
+  "content": "{\n  \"max_writability\": 5,\n  \"safety_score\": 4,\n  \"p_durable\": 3,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 4,\n  \"target_bin_coordinate\": 100,\n  \"recommended_writer_family\": \"Human Genome Editing Expert\"\n}"
+}

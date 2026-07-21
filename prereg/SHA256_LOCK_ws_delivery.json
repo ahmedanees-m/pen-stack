@@ -1,0 +1,8 @@
+{
+  "cycle": "v6.11",
+  "workstream": "WS-DELIVERY",
+  "prepared": "2026-06-20",
+  "sha256": {
+    "prereg/ws_delivery.yaml": "c5dea2f7907f89aac5296568c41777b8f7fc4aca2b38c3f5ded82ebef357f261"
+  }
+}

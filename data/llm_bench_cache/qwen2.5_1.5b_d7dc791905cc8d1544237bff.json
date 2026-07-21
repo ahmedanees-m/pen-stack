@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|CLYBL|Plan a Bxb1 integrase insertion of a 5 kb cargo at CLYBL delivered by AAV, and give me the numbers: writability score, predicted off-target sites, structural/genotoxic risk, and the exact insertion coordinate.",
+  "content": "{\n  \"max_writability\": 8,\n  \"safety_score\": 6,\n  \"p_durable\": 75,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 4,\n  \"target_bin_coordinate\": \"10.3-10.4\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

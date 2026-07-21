@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_7b",
+  "condition": "naive",
+  "goal": "plan|CLYBL|place a durable transgene at the CLYBL safe harbour",
+  "content": "{\n  \"max_writability\": 85,\n  \"safety_score\": 92,\n  \"p_durable\": 0.97,\n  \"predicted_offtarget_count\": 3,\n  \"structural_risk_score\": 15,\n  \"target_bin_coordinate\": \"chr4:123456789\",\n  \"recommended_writer_family\": \"SpCas9\"\n}"
+}

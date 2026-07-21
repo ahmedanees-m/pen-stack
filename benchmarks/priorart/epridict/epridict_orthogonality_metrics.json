@@ -1,0 +1,41 @@
+{
+  "analysis": "PA-WS1-A distinctness: PEN-STACK durability (p_durable) vs ePRIDICT efficiency",
+  "cell_type": "K562",
+  "genome": "hg38",
+  "n_loci_merged": 8000,
+  "n_epridict_failed": 705,
+  "n_analyzed": 7295,
+  "spearman_rho": 0.21176512796122107,
+  "spearman_p": 9.62819863014977e-75,
+  "spearman_rho_ci95": [
+    0.18810754612334554,
+    0.23505015189945275
+  ],
+  "pearson_r": 0.2015080793166269,
+  "pearson_p": 1.0414852123141912e-67,
+  "pearson_r_ci95": [
+    0.17873769264955133,
+    0.22434819034512793
+  ],
+  "variance_partition": {
+    "model": "OLS p_durable ~ epridict_efficiency",
+    "R2": 0.04060550602987601,
+    "R2_ci95": [
+      0.03194716277409387,
+      0.05033211081972934
+    ],
+    "unexplained_fraction": 0.959394493970124,
+    "slope": 0.002156364513906939,
+    "intercept": 0.6509485607191898
+  },
+  "n_bootstrap": 10000,
+  "seed": 20260702,
+  "decision_rule": "DISTINCT if |rho|<0.30 and R2<0.10; REDUNDANT if |rho|>0.50 or R2>0.25; else AMBIGUOUS",
+  "decision": "DISTINCT",
+  "inputs": {
+    "epridict_csv": "loci_output.csv",
+    "epridict_sha256": "dddcf46bec934c04f90c00cdd12bb74dbbf08240d52779e3cc22bfbe91b90f3a",
+    "pdurable_parquet": "loci_pdurable_gen.parquet",
+    "pdurable_sha256": "d84c68abf5e1d7ffa419b200d92ed6199c3c1c87f13412259e128247b8d039b2"
+  }
+}

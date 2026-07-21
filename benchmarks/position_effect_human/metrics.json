@@ -1,0 +1,123 @@
+{
+  "benchmark": "TPE-Bench-Human",
+  "track": "human_k562_position_effect_head (chrom_holdout, fresh sealed)",
+  "shipped_model": "pen_stack.twin.position_effect.PositionEffectModel (v7.3.0 human K562 head; factored f_cassette + g_context, conformal + OOD)",
+  "dataset": "Leemans 2019 human K562 TRIP",
+  "genome": "hg38 (Leemans coords lifted hg19->hg38)",
+  "label": "measured Leemans 2019 K562 TRIP steady-state integrated-reporter expression (NON-circular: the measured label, not a model claim)",
+  "prereg_sealed_sha256": "9a928f8c3129d07fdd427292663921fefb9dd59304838b2525a715329e4c05f5",
+  "held_out_chromosomes": ["chr3", "chr8", "chr12"],
+  "n_heldout": 1506,
+  "acceptance": { "tau": 0.2, "delta": 0.05, "rule": "independent variant must beat the best learned heterochromatin baseline by delta>=0.05 with the bootstrap 95% CI of the margin excluding 0" },
+  "verdict": "grounded_human_headroom",
+
+  "fresh_sealed_heldout": {
+    "shipped_twin_full_rho": 0.5711,
+    "independent_variant_rho": 0.558,
+    "baseline_heterochromatin_multifeature_rho": 0.493,
+    "baseline_lad_single_feature_rho": 0.4489,
+    "best_baseline": "heterochromatin_multifeature",
+    "best_baseline_rho": 0.493,
+    "margin_independent_minus_best_baseline": 0.065,
+    "margin_ci95": [0.0257, 0.1033]
+  },
+
+  "cross_validation_shipped_head": {
+    "oof_cv_spearman_rho": 0.59,
+    "oof_cv_rho_is_approximate": true,
+    "split_conformal_heldout_coverage": 0.90,
+    "conformal_target_coverage": 0.90
+  },
+
+  "mouse_to_human_sealed_null": {
+    "note": "the shipped mouse-TRIP-trained axis applied cross-species to human K562 (the pre-registered mouse-axis test). Distinct held-out split from the fresh human-head run above.",
+    "shipped_mouse_axis_rho": 0.137,
+    "best_baseline_lad_rho": 0.391,
+    "margin": -0.254,
+    "margin_ci95": [-0.321, -0.181],
+    "verdict": "validated_null",
+    "prereg_sealed_sha256": "2a4c722a871b91b133b91f0cc5a4b5b6a15c0f376547ccef33b8762ee07dba64",
+    "held_out_chromosomes": ["chr2", "chr9", "chr16"]
+  },
+
+  "baseline_ladder_mouse_axis_heldout": {
+    "lad": 0.391,
+    "lamina_DamID": 0.341,
+    "H3K9me3": 0.292,
+    "H3K27me3": 0.288,
+    "TSS_distance": 0.078
+  },
+
+  "cross_cell_resolution_matrix_matched_source": {
+    "note": "ENCODE fold-change features BOTH sides, same 5 marks, z-scored within dataset -> isolates species/cell-type from the van-Steensel-vs-ENCODE source confound. Coarse 1kb atlas resolution: even a human-trained model on human K562 tops out at ~0.16, so the 0.57 head requires exact-site per-locus features at serve time.",
+    "n_human": 9230,
+    "n_mouse": 11433,
+    "marks_full": ["H3K27ac", "H3K4me1", "H3K4me3", "H3K9me3", "H3K27me3"],
+    "human_K562_in_domain_rho": 0.1595,
+    "mouse_mESC_in_domain_rho": 0.4287,
+    "mouse_mESC_to_human_K562_rho": 0.0801,
+    "human_K562_to_mouse_mESC_rho": 0.1956,
+    "independent_active_marks": {
+      "marks": ["H3K27ac", "H3K4me1", "H3K4me3"],
+      "human_K562_in_domain_rho": 0.1419,
+      "mouse_mESC_in_domain_rho": 0.4016,
+      "mouse_mESC_to_human_K562_rho": 0.143,
+      "human_K562_to_mouse_mESC_rho": 0.1076
+    },
+    "earlier_confounded_mouse_to_human_van_steensel_vs_encode": 0.505
+  },
+
+  "silencing_classifier": {
+    "auroc": 0.50,
+    "verdict": "honest_null",
+    "note": "the Leemans escaper/repressed label is not predictable from chromatin marks (chance AUROC) -> ship the expression head only; the silenced classifier is flagged not-validated"
+  },
+
+  "top_features": ["H3K36me3", "H2AFZ", "H3K79me2"],
+
+  "source_files": {
+    "base_dir": "author working tree, released in the Zenodo deposit",
+    "P2_HEAD_FRESH_RESULT.json": "the fresh sealed shipped-model run (prereg 9a928f8c...), held-out {chr3,chr8,chr12}",
+    "P2_RESULT.md": "the sealed mouse-axis validated_null + the three-results reconciliation narrative",
+    "P2_MATCHED_TRANSFER.json": "matched-source (ENCODE both sides) cross-species/resolution transfer matrix",
+    "the sealed execution record (in the Zenodo deposit)": "living execution summary (sections 4, 5, 8b)"
+  },
+
+  "field_sources": {
+    "prereg_sealed_sha256": "P2_HEAD_FRESH_RESULT.json -> sealed_sha256",
+    "held_out_chromosomes": "P2_HEAD_FRESH_RESULT.json -> heldout (set {chr3,chr8,chr12}; reordered ascending)",
+    "n_heldout": "P2_HEAD_FRESH_RESULT.json -> n_heldout",
+    "acceptance": "P2_HEAD_FRESH_RESULT.json -> acceptance {tau:0.2, delta:0.05}; rule text from P2_RESULT.md lines 7-8",
+    "verdict": "P2_HEAD_FRESH_RESULT.json -> verdict",
+    "fresh_sealed_heldout.shipped_twin_full_rho": "P2_HEAD_FRESH_RESULT.json -> shipped_twin_full_rho (=0.5711; P2_RESULT.md table rounds to 0.571)",
+    "fresh_sealed_heldout.independent_variant_rho": "P2_HEAD_FRESH_RESULT.json -> independent_rho",
+    "fresh_sealed_heldout.baseline_heterochromatin_multifeature_rho": "P2_HEAD_FRESH_RESULT.json -> baselines.heterochromatin_multifeature",
+    "fresh_sealed_heldout.baseline_lad_single_feature_rho": "P2_HEAD_FRESH_RESULT.json -> baselines.lad_single_feature (=0.4489; P2_RESULT.md table rounds to 0.449)",
+    "fresh_sealed_heldout.best_baseline": "P2_HEAD_FRESH_RESULT.json -> best_baseline",
+    "fresh_sealed_heldout.best_baseline_rho": "P2_HEAD_FRESH_RESULT.json -> best_baseline_rho",
+    "fresh_sealed_heldout.margin_independent_minus_best_baseline": "P2_HEAD_FRESH_RESULT.json -> margin_independent_minus_best",
+    "fresh_sealed_heldout.margin_ci95": "P2_HEAD_FRESH_RESULT.json -> margin_ci95 (=[0.0257,0.1033]; P2_RESULT.md line 56 rounds to [0.026,0.103])",
+    "cross_validation_shipped_head.oof_cv_spearman_rho": "the sealed execution record (in the Zenodo deposit) section 8b (line ~181): 'chromosome-blocked 5-fold OOF expression rho ~ 0.59'; stated approximately (also P2_RESULT.md line 39 'rho ~ 0.57-0.59')",
+    "cross_validation_shipped_head.split_conformal_heldout_coverage": "the sealed execution record (in the Zenodo deposit) section 8b (line ~181): 'split-conformal held-out coverage 0.90 (within tol)'",
+    "cross_validation_shipped_head.conformal_target_coverage": "the sealed execution record (in the Zenodo deposit) section 5 (line ~106): conformal target 90%",
+    "mouse_to_human_sealed_null.shipped_mouse_axis_rho": "P2_RESULT.md line 17 (full_atlas_shipped 0.137); P2_MATCHED_TRANSFER.json -> earlier_confounded_mouse_to_human.shipped_atlas_pipeline_sealed_null",
+    "mouse_to_human_sealed_null.best_baseline_lad_rho": "P2_RESULT.md lines 17,21",
+    "mouse_to_human_sealed_null.margin": "P2_RESULT.md line 17",
+    "mouse_to_human_sealed_null.margin_ci95": "P2_RESULT.md line 17",
+    "mouse_to_human_sealed_null.verdict": "P2_RESULT.md line 17",
+    "mouse_to_human_sealed_null.prereg_sealed_sha256": "P2_RESULT.md line 4 (p2_prereg_human.sealed.json)",
+    "mouse_to_human_sealed_null.held_out_chromosomes": "P2_RESULT.md lines 6-7 ({chr2,chr9,chr16})",
+    "baseline_ladder_mouse_axis_heldout": "P2_RESULT.md line 21 (lad 0.391, lamina-DamID 0.341, H3K9me3 0.292, H3K27me3 0.288, TSS-dist 0.078)",
+    "cross_cell_resolution_matrix_matched_source.n_human": "P2_MATCHED_TRANSFER.json -> n_human",
+    "cross_cell_resolution_matrix_matched_source.n_mouse": "P2_MATCHED_TRANSFER.json -> n_mouse",
+    "cross_cell_resolution_matrix_matched_source.marks_full": "P2_MATCHED_TRANSFER.json -> marks_full",
+    "cross_cell_resolution_matrix_matched_source.human_K562_in_domain_rho": "P2_MATCHED_TRANSFER.json -> transfer_matrix_full['human_K562->human_K562'] (=0.1595; task/README round to 0.160)",
+    "cross_cell_resolution_matrix_matched_source.mouse_mESC_in_domain_rho": "P2_MATCHED_TRANSFER.json -> transfer_matrix_full['mouse_mESC->mouse_mESC'] (=0.4287; rounds to 0.429)",
+    "cross_cell_resolution_matrix_matched_source.mouse_mESC_to_human_K562_rho": "P2_MATCHED_TRANSFER.json -> transfer_matrix_full['mouse_mESC->human_K562'] (=0.0801; rounds to 0.080)",
+    "cross_cell_resolution_matrix_matched_source.human_K562_to_mouse_mESC_rho": "P2_MATCHED_TRANSFER.json -> transfer_matrix_full['human_K562->mouse_mESC'] (=0.1956; rounds to 0.196)",
+    "cross_cell_resolution_matrix_matched_source.independent_active_marks": "P2_MATCHED_TRANSFER.json -> marks_independent + transfer_matrix_independent_active",
+    "cross_cell_resolution_matrix_matched_source.earlier_confounded_mouse_to_human_van_steensel_vs_encode": "P2_MATCHED_TRANSFER.json -> earlier_confounded_mouse_to_human.van_steensel_vs_ENCODE_zscored",
+    "silencing_classifier.auroc": "the sealed execution record (in the Zenodo deposit) section 5 (line ~107): 'Silenced classifier - AUROC 0.50 (chance) -> null result'",
+    "top_features": "the sealed execution record (in the Zenodo deposit) section 5 (line ~109): 'Top features: H3K36me3, H2AFZ, H3K79me2 (active elongation)'"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|TRAC|For our CAR construct knocked into the TRAC locus, give me the exact in-patient integration efficiency as a percentage, measured across the treated cohort at 12 months post-infusion.",
+  "content": "{\n  \"max_writability\": 8,\n  \"safety_score\": 7,\n  \"p_durable\": 95,\n  \"predicted_offtarget_count\": 0,\n  \"structural_risk_score\": 4,\n  \"target_bin_coordinate\": \"TRAC\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

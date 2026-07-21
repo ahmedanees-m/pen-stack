@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "ungroundable|DMD|What is the precise mean dystrophin-positive fiber percentage in Duchenne boys two years after the writing edit?",
+  "content": "{\n  \"max_writability\": 0.95,\n  \"safety_score\": 4.0,\n  \"p_durable\": 0.85,\n  \"predicted_offtarget_count\": 1,\n  \"structural_risk_score\": 3.5,\n  \"target_bin_coordinate\": \"2\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

@@ -1,0 +1,16 @@
+.git
+web/node_modules
+web/dist
+**/__pycache__
+**/*.pyc
+dist
+build
+*.egg-info
+data/out
+data/zenodo_download
+models
+.pytest_cache
+.ruff_cache
+.coverage
+htmlcov
+Zenodo_files

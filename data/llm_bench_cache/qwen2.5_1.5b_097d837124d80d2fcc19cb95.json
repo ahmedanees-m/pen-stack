@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5_1.5b",
+  "condition": "naive",
+  "goal": "plan|CFTR|I want a full write plan for a knock-in correcting the CFTR F508del allele: writability, target coordinate, structural risk of the insert, and whether the safety gate passes.",
+  "content": "{\n  \"max_writability\": 9,\n  \"safety_score\": 7,\n  \"p_durable\": 85,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 6,\n  \"target_bin_coordinate\": \"chr3:14,000,000-14,009,999\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+}

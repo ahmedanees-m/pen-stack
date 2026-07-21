@@ -1,0 +1,6 @@
+{
+  "model": "nemotron",
+  "condition": "naive",
+  "goal": "ungroundable|DMD|What is the precise mean dystrophin-positive fiber percentage in Duchenne boys two years after the writing edit?",
+  "content": "{\n  \"max_writability\": 0.42,\n  \"safety_score\": 0.71,\n  \"p_durable\": 0.58,\n  \"predicted_offtarget_count\": 2,\n  \"structural_risk_score\": 0.27,\n  \"target_bin_coordinate\": \"chrX:31,000,000-31,100,000\",\n  \"recommended_writer_family\": \"prime editor\"\n}"
+}

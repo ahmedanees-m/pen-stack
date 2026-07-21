@@ -1,0 +1,8 @@
+{
+  "cycle": "v6.2",
+  "workstream": "WS-CHAT",
+  "prepared": "2026-06-11",
+  "sha256": {
+    "prereg/ws_chat.yaml": "8a9a27e6ddf6f0d53ceb5f9a8cc67dfb4e6ef7bda4b8434e1013712a21d71202"
+  }
+}

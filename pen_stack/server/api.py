@@ -1,0 +1,647 @@
+"""PEN-STACK REST API - atlas + cross-link endpoints over FastAPI.
+
+Extends the base atlas with the Writer Atlas and the writer<->locus cross-link. Every quantitative
+result is computed by the validated library functions (never guessed); the ``/ask`` route defers numeric
+claims to those tools. Heavy data is loaded lazily so the app boots without the base atlas.
+
+Run: ``uvicorn pen_stack.server.api:app --host 0.0.0.0 --port 8000`` (needs the ``server`` extra).
+"""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pandas as pd
+
+try:
+    from fastapi import FastAPI, HTTPException, Query, Request
+except ImportError as e: # pragma: no cover - server extra optional
+    raise ImportError("FastAPI not installed: pip install 'pen-stack[server]'") from e
+
+from pen_stack import __version__
+
+_ATLAS = Path(__file__).resolve().parents[1] / "atlas" / "atlas.parquet"
+
+app = FastAPI(title="PEN-STACK API", version=__version__,
+              description="Open infrastructure for genome writing: Writer Atlas + Writable Genome cross-link.")
+
+_DISCLAIMER = ("Decision-support only - predictions are calibrated risk/durability estimates, not "
+               "clinical directives. Tier-2/3 reachability is candidate and requires experimental validation.")
+
+
+def _resolve_ct(request: Request, ct: str, cell_type: str | None, allowed_params: set[str]) -> str:
+    """Resolve the cell type from `ct` OR its `cell_type` alias, and REJECT any unrecognized query parameter.
+
+    Without this, a misnamed cell-type argument (e.g. `?cell_type=hspc` when the endpoint reads `ct`) is silently
+    ignored by FastAPI and `ct` falls back to its "k562" default, so the caller gets confidently-wrong K562 data
+    labelled coverage=full. We instead accept both names and 422 on any unknown parameter, so the fallback can
+    never happen silently. The resolved cell type is validated against the known universe.
+    """
+    extra = set(request.query_params) - allowed_params
+    if extra:
+        raise HTTPException(422, f"unknown query parameter(s) {sorted(extra)}; for the cell type use 'ct' or its "
+                                 f"alias 'cell_type'. Valid parameters: {sorted(allowed_params)}.")
+    resolved = (cell_type or ct or "k562").lower()
+    known = {c["id"] for c in _CELLTYPES}
+    if resolved not in known:
+        raise HTTPException(422, f"unknown cell type '{resolved}'; valid cell types: {sorted(known)} "
+                                 f"(only k562/hepg2/hspc have a measured atlas; the others are a data-gated roadmap).")
+    return resolved
+
+
+def _atlas_df() -> pd.DataFrame:
+    if not _ATLAS.exists():
+        raise HTTPException(503, "atlas.parquet not built")
+    return pd.read_parquet(_ATLAS)
+
+
+def _records(df: pd.DataFrame) -> list[dict]:
+    """JSON-safe records from a DataFrame: NaN/inf -> null and numpy scalars -> native (pandas `to_json`
+    handles both). Raw `to_dict('records')` leaks non-finite floats, which the JSON encoder rejects (500)."""
+    return json.loads(df.to_json(orient="records"))
+
+
+@app.get("/health")
+def health():
+    """Liveness + a DATA-PRESENCE check. `atlas_present` is the writer atlas (bundled); `writability_atlas`
+    reports the per-cell-type writable-genome atlases that Site Finder / the cell-type dropdown depend on and
+    that are provided at runtime (mounted), NOT bundled. Reporting only the writer atlas here once masked a
+    deploy that dropped the writability-atlas mount: health stayed green while Site Finder was 100% broken and
+    every cell type read 'no atlas'. Surfacing measured_count makes that failure visible (0 = misconfigured)."""
+    from pen_stack.atlas.crosslink import writability_path
+    measured = []
+    for ct in _CELLTYPES:
+        try:
+            writability_path(ct["id"])
+            measured.append(ct["id"])
+        except Exception:  # noqa: BLE001 - absent atlas is the very thing we are reporting
+            pass
+    return {"status": "ok", "version": __version__, "atlas_present": _ATLAS.exists(),
+            "writability_atlas": {"measured_count": len(measured), "measured": measured,
+                                  "ok": len(measured) > 0}}
+
+
+@app.get("/atlas/coverage")
+def atlas_coverage():
+    df = _atlas_df()
+    cov = (df.groupby("family")
+             .agg(n=("representative_system", "size"),
+                  measured=("confidence", lambda s: int((s == "measured").sum())),
+                  reachability_tier=("reachability_tier", "first"),
+                  mechanism=("mechanism_bucket", "first"))
+             .reset_index())
+    return {"families": int(df["family"].nunique()), "systems": int(len(df)),
+            "coverage": cov.to_dict("records"), "disclaimer": _DISCLAIMER}
+
+
+@app.get("/atlas")
+def atlas(family: str | None = None, limit: int = Query(50, ge=1, le=500)):
+    df = _atlas_df()
+    if family:
+        df = df[df["family"] == family]
+    cols = [c for c in ["representative_system", "family", "confidence", "mechanism_bucket",
+                        "deliv_class", "readiness", "cargo_capacity_bp", "reachability_tier",
+                        "human_cell_activity"] if c in df.columns]
+    return {"n": int(len(df)), "rows": _records(df[cols].head(limit)), "disclaimer": _DISCLAIMER}
+
+
+@app.get("/crosslink/writers")
+def crosslink_writers(request: Request, chrom: str, bin: int, ct: str = "k562", cell_type: str | None = None):
+    from pen_stack.atlas import crosslink as cl
+    ct = _resolve_ct(request, ct, cell_type, {"chrom", "bin", "ct", "cell_type"})
+    try:
+        w = cl.writers_for_locus(chrom, bin, ct)
+    except FileNotFoundError as e:
+        raise HTTPException(503, str(e)) from e
+    if w.empty:
+        return {"locus": f"{chrom}:bin{bin}", "writers": [], "disclaimer": _DISCLAIMER}
+    fams = w.groupby("family").size().to_dict()
+    return {"locus": f"{chrom}:bin{bin}", "ct": ct,
+            "locus_writability": float(w["locus_writability"].iloc[0]),
+            "families": {k: int(v) for k, v in fams.items()},
+            "n_systems": int(len(w)), "disclaimer": _DISCLAIMER}
+
+
+@app.get("/crosslink/loci")
+def crosslink_loci(request: Request, family: str, ct: str = "k562", cell_type: str | None = None,
+                   top: int = Query(20, ge=1, le=200)):
+    from pen_stack.atlas import crosslink as cl
+    ct = _resolve_ct(request, ct, cell_type, {"family", "ct", "cell_type", "top"})
+    try:
+        loci = cl.loci_for_writer(family, ct, top=top)
+    except FileNotFoundError as e:
+        raise HTTPException(503, str(e)) from e
+    return {"family": family, "ct": ct, "loci": _records(loci), "disclaimer": _DISCLAIMER}
+
+
+@app.get("/gene/location")
+def gene_location(gene: str):
+    """The canonical chromosome of a gene (or safe-harbour locus nickname), for the UI's gene/chromosome
+    concordance check. found=False when the gene is not in the coordinate table (no fabrication)."""
+    from pen_stack.planner.chromosome import canonical_chromosome
+    from pen_stack.planner.optimize import gene_region, resolve_gene
+    try:
+        reg = gene_region(gene)
+    except Exception:  # noqa: BLE001 - coords table absent -> cannot resolve
+        reg = None
+    resolved = resolve_gene(gene)
+    if reg is None:
+        return {"gene": gene, "resolved": resolved, "found": False, "chrom": None}
+    return {"gene": gene, "resolved": resolved, "found": True, "chrom": canonical_chromosome(reg[0]),
+            "start": int(reg[1]), "end": int(reg[2])}
+
+
+@app.get("/writable")
+def writable(request: Request, gene: str, ct: str = "k562", cell_type: str | None = None,
+             top: int = Query(20, ge=1, le=200)):
+    from pen_stack.atlas.crosslink import loci_for_gene
+    ct = _resolve_ct(request, ct, cell_type, {"gene", "ct", "cell_type", "top"})
+    try:
+        g = loci_for_gene(gene, ct)
+    except FileNotFoundError as e:
+        raise HTTPException(503, str(e)) from e
+    cov = next((c["coverage"] for c in _CELLTYPES if c["id"] == ct), "unknown")
+    # writability = 0.5*safety + 0.5*p_durable (an additive, decomposable mean -- NOT a product, and there is no
+    # separate accessibility axis; chromatin enters as input features to the safety + durability models).
+    meta = {"gene": gene, "ct": ct, "coverage": cov, "writability_formula": "0.5*safety + 0.5*p_durable",
+            "coverage_note": ("partial chromatin panel for this cell type: durability degrades gracefully over the "
+                              "missing tracks (still measured, not extrapolated)") if cov == "partial" else None,
+            "disclaimer": _DISCLAIMER}
+    if g.empty:
+        return {**meta, "loci": []}
+    cols = ["chrom", "bin", "safety", "p_durable", "writability"]
+    return {**meta, "loci": _records(g[cols].head(top))}
+
+
+# the cell types the Site Finder offers, with their actual coverage. A cell type returns writable loci only when
+# its measured writability atlas (atlas_<ct>.parquet) is actually present; the rest are a data-gated roadmap,
+# never a silently-failing dropdown option.
+_CELLTYPES = [
+    {"id": "k562", "label": "K562", "description": "chronic myelogenous leukemia line",
+     "coverage": "full", "tracks": "ATAC + histones + TRIP durability + safety"},
+    {"id": "hepg2", "label": "HepG2", "description": "hepatocellular carcinoma line",
+     "coverage": "full", "tracks": "ATAC + histones + safety (partial TRIP)"},
+    {"id": "hspc", "label": "HSPC", "description": "hematopoietic stem and progenitor cells",
+     "coverage": "partial", "tracks": "ATAC + expression + genotoxicity; partial histone panel (graceful degradation)"},
+    {"id": "h1_hesc", "label": "H1 hESC", "description": "H1 human embryonic stem cells", "coverage": "none", "tracks": ""},
+    {"id": "ipsc", "label": "iPSC", "description": "induced pluripotent stem cells", "coverage": "none", "tracks": ""},
+    {"id": "cd8_t", "label": "CD8 T", "description": "cytotoxic T lymphocytes", "coverage": "none", "tracks": ""},
+    {"id": "pbmc", "label": "PBMC", "description": "peripheral blood mononuclear cells", "coverage": "none", "tracks": ""},
+]
+
+
+@app.get("/celltypes", tags=["site finder"])
+def celltypes_endpoint():
+    """Per cell type: whether a MEASURED writability atlas exists (so Site Finder returns real loci) and its
+    coverage. Cell types without an atlas are a documented, data-gated roadmap, never a silently-failing option."""
+    from pen_stack.atlas.crosslink import writability_path
+    out = []
+    for ct in _CELLTYPES:
+        try:
+            writability_path(ct["id"])
+            measured = True
+        except Exception: # noqa: BLE001
+            measured = False
+        cov = ct["coverage"] if measured else "none"
+        out.append({**ct, "coverage": cov, "measured": measured,
+                    "note": ct["tracks"] if measured else "no writability atlas built yet (data-gated roadmap)"})
+    return {"cell_types": out, "measured_count": sum(c["measured"] for c in out),
+            "disclaimer": "Only cell types with a measured writability atlas return loci; the rest are a "
+                          "data-gated roadmap, never a fabricated or silently-empty result."}
+
+
+@app.get("/recommend", tags=["writer atlas"])
+def recommend_endpoint(write_type: str = "insertion", cargo_bp: int = Query(2000, ge=1, le=300000), cell_type: str = "K562",
+                       target_seq: str | None = None, donor_seq: str | None = None,
+                       top_k: int = Query(8, ge=1, le=30)):
+    """Rank writer families for a write request. KB readiness is the GROUNDED primary ranking;
+    each family also carries a CANDIDATE learned efficiency with a trained split-conformal interval, and a
+    dependency-free guide / att design when target/donor sequences are supplied. No efficiency is ever
+    fabricated for a family the curated dataset never saw (KB-only for those)."""
+    from pen_stack.atlas.writer_recommend import WRITE_TYPES, recommend_writers
+    if write_type not in WRITE_TYPES:
+        raise HTTPException(422, f"unknown write_type {write_type!r}; expected one of {sorted(WRITE_TYPES)}")
+    req = {"write_type": write_type, "cargo_bp": cargo_bp, "cell_type": cell_type,
+           "target_seq": (target_seq or "").strip() or None, "donor_seq": (donor_seq or "").strip() or None}
+    return recommend_writers(req, top_k=top_k)
+
+
+@app.get("/guide_design", tags=["writer atlas"])
+def guide_design_endpoint(writer_family: str, target_seq: str | None = None,
+                          donor_seq: str | None = None, integrase: str = "Bxb1"):
+    """Design the targeting component a writer family needs from the published reprogramming rules: the
+    IS110/IS621 bridge-RNA loops for a (target, donor) pair, or a prime-editing pegRNA that writes a serine-
+    integrase attB at the target. Returned sequences are DESIGN CANDIDATES requiring empirical validation -- no
+    activity is claimed, and a documented att is written verbatim or not at all (the site is never fabricated)."""
+    from pen_stack.atlas.guide_design import design_guide_for_writer
+    return design_guide_for_writer(writer_family, (target_seq or "").strip() or None,
+                                   (donor_seq or "").strip() or None, integrase=integrase)
+
+
+@app.get("/writer/efficiency", tags=["writer atlas"])
+def writer_efficiency_endpoint():
+    """The curated Writer-Efficiency dataset (real measured integration efficiencies, one row per condition
+    with a DOI + verbatim quote) and the held-out Writer-Efficiency-Bench result (validation). The
+    pre-registered outcome: the learned predictor beats the KB family-mean baseline on held-out LOCUS (CI excludes
+    0) but NOT on held-out FAMILY at this N, so the KB ranking is retained as primary and the predictor ships as a
+    candidate advisory."""
+    from pen_stack.atlas import writer_efficiency as we
+    df = we.human_cell()
+    cols = [c for c in ["system", "family", "variant", "cargo_bp", "locus", "cell_type",
+                        "efficiency_pct", "specificity_pct", "doi", "quote"] if c in df.columns]
+    bench = None
+    p = _ATLAS.parents[2] / "benchmarks" / "writer_efficiency" / "result.json"
+    if p.exists():
+        bench = json.loads(p.read_text(encoding="utf-8"))
+    return {"dataset_summary": we.provenance_summary(), "records": _records(df[cols]), "benchmark": bench,
+            "note": "Measured, DOI-backed integration efficiencies. The bench is the contribution; the "
+                    "learned predictor is a candidate advisory, not the authoritative ranking."}
+
+
+@app.get("/writer/variants", tags=["writer atlas"])
+def writer_variants_endpoint(integrase: str | None = None, system: str | None = None):
+    """Variant critique: retrospective recovery of known serine-integrase hyperactive mutants over a frozen
+    DOI'd panel (NOT a blind sequence-only predictor), plus the deferral of the blind protein-LM recovery
+    (no per-variant fitness endpoint exists, so it abstains rather than fabricate a positive). `system` is accepted
+    as an alias for `integrase`; omit both to get the full panel."""
+    from pen_stack.design import writer_variants as wv
+    target = integrase or system  # accept either name; the panel is keyed by serine-integrase
+    return {"hyperactive_recovery": wv.hyperactive_recovery(target),
+            "blind_lm_recovery": wv.lm_recovery(),
+            "panel": wv.hyperactive_panel(target),  # honour the integrase filter (was: always the full panel)
+            "note": "Retrospective catalogue recovery is real and DOI-backed; the blind LM predictor is deferred "
+                    "(reported as a known limitation, never a manufactured positive)."}
+
+
+@app.get("/writer/immune", tags=["writer atlas"])
+def writer_immune_endpoint():
+    """The writer enzyme's immunogenicity as an antigen (writer-as-antigen, surfaced in the Writer Atlas):
+    per genome-writer family, the real NetMHCIIpan-4.0 MHC-II/CD4 epitope load + the ADA-risk axis
+    (MHC-II density x foreignness, self-tolerance filtered against the human proteome). Read from the committed
+    cache - NOT recomputed. Population-level proxy, never a patient-specific magnitude (a known-unknown). The Cas9
+    nuclease (an editor, not a large-cargo writer) and the human self control are excluded."""
+    from pen_stack.planner.immune_profile import writer_immunogenicity_table
+    return {"writers": writer_immunogenicity_table(),
+            "method": "NetMHCIIpan-4.0 MHC-II epitope load + ADA risk (MHC-II density x foreignness, self-tolerance "
+                      "filtered against the human proteome). Population-level proxy from the committed cache; the "
+                      "realized CD4 response / ADA titer is a known-unknown.",
+            "scale": "0-1, higher = lower risk (1 = least presentable / least ADA-driving)",
+            "no_fabrication": True}
+
+
+@app.get("/bridge/design")
+def bridge_design(target: str, donor: str, scaffold: str = "ISCro4_enhanced",
+                  ct: str | None = None, scan: bool = False):
+    """Bridge-recombinase design + off-target/QC. scan=false by default (genome scan is heavy)."""
+    from pen_stack.bridge.pipeline import design_and_assess
+    res = design_and_assess(target, donor, scaffold, ct=ct, scan=scan)
+    off = res["offtargets"]
+    if off.get("scanned") and "table" in off:
+        t = off["table"]
+        off = {"scanned": True, "n_candidates": off["n_candidates"], "n_exact": off["n_exact"],
+               "top": t.head(20).to_dict("records")}
+    return {"brna": {k: v for k, v in res["brna"].items() if k != "bridge_sequence"} |
+            ({"bridge_sequence_len": len(res["brna"]["bridge_sequence"])} if res["brna"].get("available") else {}),
+            "qc": res["qc"], "offtargets": off, "disclaimer": res["disclaimer"]}
+
+
+@app.get("/ask")
+def ask(q: str):
+    """Grounded, cited Q&A. Numeric claims are resolved by tool calls, never guessed."""
+    from pen_stack.rag.qa import answer
+    return answer(q)
+
+
+@app.get("/plan")
+def plan(request: Request, gene: str, intent: str,
+         cargo_bp: int = Query(2000, ge=1, le=300000, description="donor payload in bp (1..300000)"),
+         ct: str = "k562", cell_type: str | None = None, k: int = Query(5, ge=1, le=20)):
+    """Write Planner: goal + edit_intent -> ranked, traceable plans. cargo_bp is bounded to a real
+    payload range (1..300 kb); out-of-range values are a 422, never a silently-'valid' plan."""
+    from pen_stack.planner.optimize import EditIntent
+    from pen_stack.planner.pipeline import plan_write
+    ct = _resolve_ct(request, ct, cell_type, {"gene", "intent", "cargo_bp", "ct", "cell_type", "k"})
+    try:
+        intent_e = EditIntent(intent)
+    except ValueError as e:
+        raise HTTPException(422, f"unknown edit_intent: {intent}") from e
+    try:
+        plans = plan_write(gene, intent_e, cargo_bp, ct, k=k)
+    except FileNotFoundError as e:
+        raise HTTPException(503, str(e)) from e
+    cov = next((c["coverage"] for c in _CELLTYPES if c["id"] == ct), "unknown")
+    return {"gene": gene, "intent": intent, "ct": ct, "coverage": cov, "n": len(plans), "plans": plans,
+            "disclaimer": _DISCLAIMER}
+
+
+@app.post("/verify")
+def verify_endpoint(design: dict):
+    """Verification service: submit a proposed genomic write, get back a structured Verdict,
+    legality + named rejections + calibrated confidence + epistemic status + scope flags. Legality and
+    confidence are distinct axes. A `question` key (optional) is checked against the known-unknowns registry."""
+    from pen_stack.verify import verify
+    return verify(design).model_dump()
+
+
+@app.post("/verify/proof")
+def verify_proof_endpoint(design: dict):
+    """Verification service: the repair-oriented proof object. Returns the three axes
+    (legality, confidence, biosecurity) reported separately, each with a status, the rule or signature that
+    fired, evidence, and a repair hint; the collapsed verdict is None. An agent repairs a failed design from
+    the legality axis's repair hint. A `question` key (optional) is checked against the known-unknowns."""
+    from pen_stack.verify.proof import verify_proof
+    return verify_proof(design).model_dump()
+
+
+@app.post("/graph/query")
+def graph_query_endpoint(q: dict):
+    """World-model graph: multi-hop query. Body: {locus, cargo_form?}. Returns writers that
+    reach the locus AND are deliverable by a cargo-form-compatible vehicle, each with its provenanced path."""
+    from pen_stack.graph import writers_reaching_and_deliverable
+    return writers_reaching_and_deliverable(q.get("locus"), cargo_form=q.get("cargo_form"))
+
+
+# ======================================================================================
+# The AI Integration Surface: the self-describing contract + the engine tool routes.
+# An external agent fetches /capabilities + /scope and ROUTES on them, then calls the tools.
+# ======================================================================================
+@app.get("/capabilities", tags=["AI surface"])
+def capabilities_endpoint():
+    """Machine-readable: WHAT PEN-STACK can do (tools, inputs, outputs, stability). Route on this, not prose."""
+    from pen_stack.api.manifest import capability_manifest
+    return capability_manifest()
+
+
+@app.get("/scope", tags=["AI surface"])
+def scope_endpoint():
+    """Machine-readable: WHAT PEN-STACK REFUSES to answer (known-unknowns + oracle scope cards). The contract
+    that makes depending on PEN-STACK safe: outputs outside scope are out_of_scope/extrapolating, never asserted."""
+    from pen_stack.api.manifest import scope_manifest
+    return scope_manifest()
+
+
+@app.get("/oracles", tags=["live oracles"])
+def oracles_endpoint(probe: bool = False):
+    """Per-foundation-model EXECUTION + LATENCY CLASS + live status (the 'tell the user the cost up front'
+    surface). `?probe=true` pings the local GPU model servers. Live oracles answer in seconds, ~2 min; held cloud
+    jobs (AF3/Boltz/Chai/Protenix) run separately and never block; deferred outcomes are never fabricated."""
+    from pen_stack.oracles.status import oracle_status, summary
+    return {"summary": summary(), "oracles": oracle_status(probe=bool(probe))}
+
+
+@app.post("/safety", tags=["AI surface"])
+def safety_endpoint(design: dict):
+    """Guardian: biosecurity / dual-use screen -> SafetyVerdict (clear/flag/escalate/refuse) + reason.
+    Additive: also carries ``standards``, the SafetyVerdict expressed in the community-standard
+    vocabulary (Common Mechanism ScreenStatus, SecureDNA outcome) for this specific decision, an in-design
+    concordance, not a certification (see /safety/concordance for the labelled-probe-set benchmark)."""
+    from pen_stack.safety import safety_gate
+    from pen_stack.safety.standards import align_to_common_mechanism
+    sv = safety_gate(design, actor=str(design.get("actor", "api")))
+    return {**sv.model_dump(), "standards": align_to_common_mechanism(sv)}
+
+
+@app.get("/safety/concordance", tags=["AI surface"])
+def safety_concordance_endpoint():
+    """Standards concordance: run the Guardian over the committed labelled probe set
+    (configs/safety/probes.yaml) and report, verbatim, its concordance with the Common Mechanism's expected
+    ScreenStatus (Pass for benign, Warning/Flag for a hazard). A concordance, not a certification."""
+    from pen_stack.safety.standards import concordance_report
+    return concordance_report()
+
+
+@app.post("/immune", tags=["AI surface"])
+def immune_endpoint(design: dict):
+    """Immune-risk profile: per-axis screen (never collapsed; collapsed_score is None)."""
+    from pen_stack.planner.immune_profile import immune_profile
+    return immune_profile(design)
+
+
+@app.post("/offtarget", tags=["off-target"])
+def offtarget_endpoint(req: dict):
+    """Cross-family off-target NOMINATION (NOT a clearance). Body:
+    {writer_family, guide?, enzyme?, max_mismatch?, candidate_sites?, sequence?, accessibility?, assay?}.
+
+    (finder): for a nuclease guide with NO ``candidate_sites``, enumerates the genome-wide off-target set
+    over GRCh38 (Cas-OFFinder, replayed from the committed cache) and ranks it by the real CRISOT-Score +
+    mismatch-calibrated risk + chromatin annotation - the default. Supplying ``candidate_sites`` keeps the
+    score-my-candidates path. Abstains (never fabricates) for a novel guide with no VM scan."""
+    from pen_stack.wgenome.offtarget_predict import nominate_offtargets
+    return nominate_offtargets(
+        req.get("writer_family", ""), guide=req.get("guide"), candidate_sites=req.get("candidate_sites"),
+        sequence=req.get("sequence"), accessibility=req.get("accessibility"),
+        target_core=req.get("target_core"), assay=req.get("assay", "guideseq"),
+        enzyme=req.get("enzyme") or req.get("system"), max_mismatch=int(req.get("max_mismatch", 5)))
+
+
+@app.get("/offtarget/assay", tags=["off-target"])
+def offtarget_assay_endpoint(writer_family: str):
+    """Validation-assay recommendation for a writer family (the assay that would confirm a nomination)."""
+    from pen_stack.wgenome.offtarget_assay import recommend_assay
+    return recommend_assay(writer_family)
+
+
+@app.get("/offtarget/enumerated", tags=["off-target"])
+def offtarget_enumerated_endpoint():
+    """The guides whose genome-wide off-target enumeration is CACHED (so the finder works here without a VM
+    scan). A novel guide abstains (its scan runs on the VM). Enumerated coordinates are public-genome facts."""
+    from pen_stack.wgenome.offtarget_data import CANONICAL_GUIDES
+    from pen_stack.wgenome.offtarget_enumerate import enumerated_guides
+    cached = enumerated_guides()
+    seq2name = {v: k for k, v in CANONICAL_GUIDES.items()}
+    return {"enzyme": "SpCas9",
+            "guides": [{"guide": g, "name": seq2name.get(g, g), "enzyme": e} for e, g in cached],
+            "note": ("genome-wide enumeration for these guides is replayed from the committed GRCh38 Cas-OFFinder "
+                     "cache; a novel guide requires an on-VM scan (the finder abstains rather than fabricate).")}
+
+
+@app.get("/campaign", tags=["closed-loop"])
+def campaign_endpoint():
+    """The validation-campaign engine. Returns the expression-validation campaign: the next batch of
+    (cassette x locus x cell type) measurements ordered by expected information gain, the calibrate_axis gate it
+    targets, and the active-vs-random result (reported verbatim). Cloud-lab-executable; Level 3, human in control;
+    the experiments are candidates, the wet run is the standing bottleneck."""
+    from pen_stack.active.campaign import design_campaign
+    return design_campaign()
+
+
+@app.post("/cloudlab", tags=["closed-loop"])
+def cloudlab_endpoint(req: dict):
+    """Safety-gated cloud-lab submission. Body: {design, experiment?, provider?, actor?}. The
+    biosecurity gate runs BEFORE submission; a flagged design returns a structured refusal (blocked=True) and NO
+    protocol is emitted. A cleared design returns a mock / dry-run job receipt (a real run needs a partner).
+
+    An unknown provider is a 422 (not a 500): `submit()` raises CloudLabError for a provider outside the
+    recognised set, which submit_gated does NOT catch (it only wraps the safety refusal), so validate it here.
+    A null/empty provider falls back to the only wired provider, `mock`."""
+    from pen_stack.build.cloudlab import CloudLabError, submit_gated
+    provider = req.get("provider") or "mock"  # null / "" -> the wired mock/dry-run path
+    try:
+        return submit_gated(req.get("design", {}), req.get("experiment", {}),
+                            provider=provider, actor=str(req.get("actor", "api")))
+    except CloudLabError as e:
+        raise HTTPException(422, str(e)) from e
+
+
+@app.get("/brains", tags=["closed-loop"])
+def brains_endpoint():
+    """Benchmark the EIG/VOI experiment designer against the public SDL optimizers (BayBE / Atlas),
+    reported verbatim with both cited (a win is not required; the result is falsifiable)."""
+    from pen_stack.active.brains import benchmark
+    return benchmark()
+
+
+@app.post("/writespec", tags=["writespec"])
+def writespec_endpoint(req: dict):
+    """Parse a plain-language genome-writing request into a typed, ontology-backed WriteSpec.
+    Body: {prose, overrides?, check_feasibility?}. Returns the typed spec (with per-field provenance), the
+    assumptions behind every inferred field, clarifying questions for anything underspecified, the unresolved
+    terms (kept null, never invented), the downstream design adapter, and the feasibility verdict. A WriteSpec is
+    a REQUEST, not a claim; the extractor never fabricates intent."""
+    from pen_stack.spec.service import parse_request
+    return parse_request(req.get("prose", ""), overrides=req.get("overrides"),
+                         check_feasibility=bool(req.get("check_feasibility", True)))
+
+
+@app.post("/oracle/affinity", tags=["oracle"])
+def oracle_affinity_endpoint(req: dict):
+    """Protein-ligand binding-affinity (Boltz-2 head) under the oracle contract. Body:
+    {protein_seq, ligand_smiles, pair_type?, ligand_name?}. Returns a CANDIDATE affinity (binder probability +
+    predicted value) with native uncertainty, cache-or-abstain; protein-protein/protein-DNA pair types are
+    flagged extrapolating (the head is protein-ligand only). Never runs the long job on the request path."""
+    from pen_stack.oracles.affinity import predict_affinity
+    r = predict_affinity(req.get("protein_seq", ""), req.get("ligand_smiles", ""),
+                         pair_type=req.get("pair_type", "ligand"), ligand_name=req.get("ligand_name"))
+    return r.model_dump()
+
+
+@app.post("/delivery", tags=["delivery"])
+def delivery_endpoint(req: dict):
+    """Cross-modality delivery recommender. Body: {cargo_form, cargo_bp?, target_tissue?,
+    safety_weight?, in_vivo?}. Returns ranked vehicles + a grounded serotype->tissue tropism prior (approved
+    therapies; known-unknown for novel capsids) + the learned capsid-fitness bench. Never fabricates tropism."""
+    from pen_stack.planner.delivery_predict import recommend_delivery_plus
+    return recommend_delivery_plus(req.get("cargo_form", ""), req.get("cargo_bp"), req.get("target_tissue"),
+                                   safety_weight=float(req.get("safety_weight", 0.5)), in_vivo=req.get("in_vivo"),
+                                   serotype=req.get("serotype"))
+
+
+@app.post("/capsid_fitness", tags=["delivery"])
+def capsid_fitness_endpoint(req: dict):
+    """Learned AAV capsid packaging-fitness for a VP1 sequence (FLIP-AAV-trained). Body: {vp1_sequence}.
+    A CANDIDATE for the measured packaging axis, not an in-vivo tropism claim; abstains if the model is absent."""
+    from pen_stack.planner.delivery_predict import capsid_fitness
+    return capsid_fitness(req.get("vp1_sequence", ""), req.get("vector", "AAV"))
+
+
+@app.post("/capsid/generate", tags=["delivery"])
+def capsid_generate_endpoint(req: dict):
+    """Verify-gated generative AAV capsid candidates: propose VP1 555-595 variants of a WT, score each
+    with the learned FLIP-AAV fitness model, and keep only survivors with fitness >= WT (verifier-as-discriminator).
+    Body: {wt_vp1, n?, max_mut?, top?}. Candidates are labelled -- packaging fitness ONLY; assembly, in-vivo tropism
+    and immunogenicity are NOT claimed (immunogenicity is deferred to the immune profile, run before
+    synthesis). Abstains without the model; never fabricates a capsid."""
+    from pen_stack.design.capsid_generate import generate_capsid_candidates
+    n = max(1, min(int(req.get("n", 200)), 500))
+    max_mut = max(1, min(int(req.get("max_mut", 4)), 8))
+    top = max(1, min(int(req.get("top", 20)), 50))
+    return generate_capsid_candidates(req.get("wt_vp1", ""), n=n, max_mut=max_mut, top=top)
+
+
+@app.get("/delivery/tropism", tags=["delivery"])
+def delivery_tropism_endpoint(serotype: str | None = None, target_tissue: str | None = None):
+    """Grounded AAV serotype<->tissue tropism priors (approved therapies). Pass a `serotype` for the tissue(s)
+    it reaches (with the approved product + DOI), or a `target_tissue` for the approved serotypes that reach it; a
+    known-unknown when there is no approved precedent. Never fabricates a tissue."""
+    from pen_stack.planner.delivery_predict import serotype_tropism, serotypes_for_tissue
+    if serotype:
+        return serotype_tropism(serotype)
+    if target_tissue:
+        return serotypes_for_tissue(target_tissue)
+    raise HTTPException(422, "provide a serotype (-> tissue) or a target_tissue (-> serotypes)")
+
+
+@app.post("/generate", tags=["AI surface"])
+def generate_endpoint(req: dict):
+    """Generative designer: verifier-as-discriminator. Body: {goal?, candidates?, keep?}. Hazardous/illegal
+    candidates are discarded; survivors are calibrated + immune-profiled candidates (never asserted to work).
+
+    The GOAL'S cargo function is screened by the Guardian FIRST, before the vehicle x cargo sweep. A
+    hazardous goal (e.g. a furin-cleavage tropism-enhancement or a dominant-negative tumor-suppressor ablation) is
+    REFUSED up front and the response carries the explicit safety verdict, so an empty result is correctly
+    attributed to a biosecurity refusal (not a silent 'no candidates'). The per-candidate Guardian still runs in
+    verify() as defence in depth."""
+    from pen_stack.design import generate_designs
+    goal = req.get("goal")
+    # Guardian pre-screen on the goal's declared cargo function (the artifact, not any free-text justification).
+    if isinstance(goal, dict) and any(goal.get(f) for f in ("cargo_function", "cargo_seq")):
+        from pen_stack.safety.gate import safety_gate
+        screen = {f: goal[f] for f in ("cargo_function", "cargo_seq", "gene", "delivery_vehicle", "in_vivo",
+                                       "delivery_tropism", "replication_competent") if goal.get(f) is not None}
+        gv = safety_gate(screen, actor=str(req.get("actor", "api")))
+        if gv.decision in ("refuse", "escalate"):
+            return {"survivors": [], "refused": True,
+                    "safety": {"decision": gv.decision, "reason": gv.reason,
+                               "hits": [{"detail": h.detail, "severity": h.severity, "kind": h.kind}
+                                        for h in gv.hits]},
+                    "disclaimer": _DISCLAIMER}
+    return {"survivors": generate_designs(goal, candidates=req.get("candidates"),
+                                          keep=int(req.get("keep", 25)), actor=str(req.get("actor", "api"))),
+            "refused": False, "disclaimer": _DISCLAIMER}
+
+
+@app.post("/predict", tags=["AI surface"])
+def predict_endpoint(req: dict):
+    """Digital twin: calibrated, OOD-gated, phenotype-bounded outcome. Body: {design, cell_state}."""
+    from pen_stack.twin import predict_outcome
+    return predict_outcome(req["design"], req.get("cell_state", "k562"))
+
+
+@app.get("/twin/promoters", tags=["AI surface"])
+def promoters_endpoint():
+    """The selectable promoter palette (constitutive + tissue-specific, literature strength/context/DOI).
+    The Twin's relative-expression estimate reacts to the chosen promoter (design.promoter)."""
+    from pen_stack.twin.mechanistic import promoter_palette
+    return {"promoters": promoter_palette()}
+
+
+@app.post("/suggest", tags=["AI surface"])
+def suggest_endpoint(req: dict):
+    """Experiment designer: a diverse, informative next-experiment batch. Body: {candidates, cell_state, k?}."""
+    from pen_stack.active import select_batch
+    return {"batch": select_batch(req["candidates"], req.get("cell_state", "k562"), {},
+                                  k=int(req.get("k", 8))), "disclaimer": _DISCLAIMER}
+
+
+@app.post("/session", tags=["AI surface"])
+def session_endpoint(req: dict):
+    """Co-scientist: drive the full loop. Body: {goal, cell_state, candidates?}. Returns strategies +
+    predicted outcomes + per-axis immune profiles + suggested experiments + citations + scope ledger + safety."""
+    from pen_stack.agent.co_scientist import co_scientist_session
+    return co_scientist_session(req["goal"], req.get("cell_state", "k562"), candidates=req.get("candidates"))
+
+
+# ======================================================================================
+# The Genome-Writing Challenge (read-only surface for the web Challenge page).
+# Public tasks (NO labels) + the PEN-STACK reference submission that anchors the leaderboard. Submissions
+# are Python `predict_fn`s scored offline (`benchmarks/genome_writing_challenge/run.py`), never accepted
+# over HTTP, so these routes only EXPOSE the held-out round and the anchor score.
+# ======================================================================================
+@app.get("/challenge/tasks", tags=["challenge"])
+def challenge_tasks(round_id: str = "2026R1"):
+    """The public inputs of the current held-out round (family + design + instructions; NEVER the label)."""
+    from benchmarks.genome_writing_challenge.harness import _round_tasks
+    tasks = _round_tasks(round_id)
+    return {"round": round_id, "n_tasks": len(tasks),
+            "tasks": [{"id": t.id, "family": t.family, "public_input": t.public_input} for t in tasks]}
+
+
+@app.get("/challenge/leaderboard", tags=["challenge"])
+def challenge_leaderboard(round_id: str = "2026R1"):
+    """The leaderboard anchored by the PEN-STACK reference submission (deterministic, non-circular labels,
+    no-fabrication audited). External submissions are scored offline and appended here after a round."""
+    from benchmarks.genome_writing_challenge.harness import evaluate, reference_submission
+    ref = evaluate(reference_submission(), round_id)
+    return {"round": round_id, "leaderboard": [ref],
+            "rules": {"no_circular_labels": ref["no_circular_labels"],
+                      "no_fabrication_audited": True, "labels": "validated PEN-STACK verifier / oracles"}}

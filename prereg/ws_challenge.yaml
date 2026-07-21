@@ -1,0 +1,20 @@
+# PEN-STACK v5.13 - WS-CHALLENGE (the public, recurring, held-out benchmark). Directional.
+cycle: "v5.13"
+workstream: "WS-CHALLENGE"
+prepared: "2026-06-11"
+motivation: >
+  Turn the internal bench into THE Genome-Writing Challenge - an open, recurring, held-out leaderboard others
+  build to (the CASP / Virtual-Cell-Challenge model), including an immune-risk task.
+deliverable: >
+  benchmarks/genome_writing_challenge/{harness.py, run.py, README.md, SUBMISSIONS.md}: Submission +
+  evaluate(submission, round_id) over held-out task families incl. an immune-risk task; a reference submission.
+method: >
+  an external predict_fn(public_input) -> answer is scored on a HELD-OUT round; public input names family + design
+  but NOT the label; labels are computed by the validated PEN-STACK layers (verifier / v5.7 Guardian / v5.6 immune
+  profile) so NO task uses a circular label; a no-fabrication audit runs on every submission; deterministic scoring.
+acceptance: >
+  the suite runs one command; an external predict_fn is scored on a held-out round without seeing labels; the
+  leaderboard is reproducible; no task uses a circular label; an immune-risk task (v5.6 oracles) is included.
+honesty_invariant: "held-out rounds finite + periodic; labels are mechanistic/verifier facts not the agent's claim; participation is the standing adoption work (outreach bottleneck)."
+gate: "G-CHALLENGE - one-command, held-out, no-circular-labels, no-fabrication audit, immune-risk task included."
+locked_files: [prereg/ws_challenge.yaml]
