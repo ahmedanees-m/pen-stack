@@ -11,8 +11,19 @@ date-released: 2026-07-21
 authors:
   - family-names: "Mahaboob Ali"
     given-names: "Anees Ahmed"
-    affiliation: "VIT University, Vellore"
+    orcid: "https://orcid.org/0000-0002-2135-0865"
+    affiliation: "Gene Therapy Laboratory, School of Bio Sciences and Technology, Vellore Institute of Technology, Vellore, India"
     email: ahmedaneesm@gmail.com
+  - family-names: "Delhibabu"
+    given-names: "Radhakrishnan"
+    orcid: "https://orcid.org/0000-0001-6591-184X"
+    affiliation: "School of Computer Science and Engineering, Vellore Institute of Technology, Vellore, India"
+    email: rdelhibabu@vit.ac.in
+  - family-names: "Nelson"
+    given-names: "Everette Jacob Remington"
+    orcid: "https://orcid.org/0000-0002-9781-526X"
+    affiliation: "Gene Therapy Laboratory, School of Bio Sciences and Technology, Vellore Institute of Technology, Vellore, India"
+    email: everette.nelson@vit.ac.in
 repository-code: "https://github.com/ahmedanees-m/pen-stack"
 license: MIT
 keywords:
