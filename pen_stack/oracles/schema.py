@@ -16,9 +16,10 @@ Three invariants are encoded in the type itself:
 """
 from __future__ import annotations
 
-from typing import Any, Literal
+from types import MappingProxyType
+from typing import Any, Literal, Mapping
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 OutputKind = Literal["claim", "candidate", "baseline"]
 
@@ -26,14 +27,28 @@ OutputKind = Literal["claim", "candidate", "baseline"]
 class Provenance(BaseModel):
     """Immutable (frozen): once an oracle stamps a result with its model, version, and source, that record
     cannot be edited after the fact. Frozen here as well as on OracleResult, since a frozen OracleResult with
-    a mutable Provenance would still let a caller rewrite `model`/`version`/`source` on the nested object."""
+    a mutable Provenance would still let a caller rewrite `model`/`version`/`source` on the nested object.
+    The free-form `extra` mapping is deep-frozen for the same reason."""
     model_config = ConfigDict(frozen=True)
 
     model: str # e.g. "boltz-2", "alphagenome", "evo2"
     version: str # pinned model/version string
     source: str = "adapter" # adapter | cache | hosted_api | local_gpu
     cache_key: str | None = None
-    extra: dict[str, Any] = Field(default_factory=dict)
+    extra: Mapping[str, Any] = Field(default_factory=dict)
+
+    @field_validator("extra")
+    @classmethod
+    def _freeze_extra(cls, v: Mapping[str, Any]) -> Mapping[str, Any]:
+        """Deep-freeze the free-form mapping: pydantic's `frozen` blocks attribute assignment but
+        not mutation of a mutable field value, so a plain dict here would leave `extra` writable on
+        an object documented as immutable."""
+        return MappingProxyType(dict(v))
+
+    @field_serializer("extra")
+    def _ser_extra(self, v: Mapping[str, Any]) -> dict[str, Any]:
+        """A mappingproxy is not JSON-serialisable, and OracleResult crosses the REST boundary."""
+        return dict(v)
 
 
 class OracleResult(BaseModel):
