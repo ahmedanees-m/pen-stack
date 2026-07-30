@@ -59,13 +59,13 @@ A goal enters through one of the interfaces. The agent layer turns it into candi
                    Reference and model layers
    +-------------------+  +----------------+  +-------------------+
    | Writable Genome   |  | Writer Atlas   |  | Oracle mesh       |
-   | per-locus safety, |  | 33,370 enzyme  |  | AlphaFold3, Evo2, |
-   | durability,       |  | systems, 8     |  | AlphaGenome,      |
-   | expression-       |  | families, on   |  | ESM3, RFdiffusion,|
-   | robustness,       |  | common axes,   |  | ProteinMPNN under |
-   | reachability,     |  | cross-linked   |  | one OracleResult  |
-   | per-mechanism     |  | to every locus |  | contract (scope-  |
-   | off-target        |  |                |  | gated, provenance)|
+   | per-locus safety, |  | 33,370 enzyme  |  | ViennaRNA, Evo2,  |
+   | durability,       |  | systems, 8     |  | AlphaGenome, ESM3,|
+   | expression-       |  | families, on   |  | RFdiffusion,      |
+   | robustness,       |  | common axes,   |  | ProteinMPNN live; |
+   | reachability,     |  | cross-linked   |  | AF3, Boltz-2 held |
+   | per-mechanism     |  | to every locus |  | under one Oracle- |
+   | off-target        |  |                |  | Result contract   |
    +-------------------+  +----------------+  +-------------------+
                                 |
                                 v
@@ -93,7 +93,8 @@ A goal enters through one of the interfaces. The agent layer turns it into candi
 | Agent, co-scientist, and chat | `pen_stack.agent`, `pen_stack.web`, `pen_stack.rag` | Goal to cited, auditable plan; MCP server; the co-scientist that drives the loop; and the grounded conversational chat (four lanes: design, explain, meta, general; provenance-tagged retrieval; a swappable LLM provider). |
 | Bridge off-target engine | `pen_stack.bridge` | The measured-data-validated off-target engine for bridge recombinases (IS110/IS621): candidate-site nomination, ranking, and guide QC, validated on the Perry 2025 data. |
 | Immunogenicity and delivery | `pen_stack.planner` | Per-writer T-cell immunogenicity profiling (NetMHCpan / NetMHCIIpan) with a human-albumin self-control, a delivery-vehicle palette, and anti-drug-antibody and anti-PEG proxies, each labelled by validation status. |
-| Interfaces | `pen_stack.server`, `pen_stack.web`, `pen_stack.ui`, `pen_stack.cli` | REST API, web application, and command-line tools. |
+| Interfaces and manifests | `pen_stack.server`, `pen_stack.web`, `pen_stack.ui`, `pen_stack.cli`, `pen_stack.api` | REST API, web application, and command-line tools, together with the machine-readable capability and scope manifests an external agent routes on (including the known-unknowns registry). |
+| Data, adaptation, and monitoring | `pen_stack.data`, `pen_stack.adapt`, `pen_stack.monitor`, `pen_stack.env`, `pen_stack.validate` | Dataset ingestion (ENCODE, TRIP, safety annotation, integration sites); continual adaptation with versioned recalibration; Europe PMC literature polling and triage; the genome-writing environment and policies; and the blind-validation and benchmark-task drivers. |
 
 ## Key results
 
@@ -166,12 +167,18 @@ ZENODO_DOI=<deposit DOI> bash scripts/fetch_artifacts.sh       # installs data/o
 pen-stack writable --gene CCR5 --ct k562
 ```
 
-Self-host the whole platform (API, web app, agent, MCP, LLM) with one command:
+Self-host the platform (API, UI, agent, MCP, and the local model):
 
 ```bash
-docker compose up -d
+docker compose up -d api ui mcp ollama
 docker compose exec ollama ollama pull qwen2.5:7b-instruct     # first run only (local fallback model)
-# Web app on :8501, API on :8000, MCP on :8765 (see docs/DEPLOY.md)
+# UI on :8501, API on :8000, MCP on :8765 (see docs/DEPLOY.md)
+```
+
+The React web platform is an alternative single-origin front end that serves the API on the same port, so it is started on its own rather than alongside `api`:
+
+```bash
+docker compose up web ollama                                   # web platform on :8000
 ```
 
 The LLM backend is optional and non-load-bearing: it narrates and routes, but every number and citation comes from a validated tool, so the core scientific compute runs with no language model at all. See [docs/DEPLOY.md](docs/DEPLOY.md).
@@ -187,7 +194,7 @@ docker compose run --rm bench python bench/run.py --agent       # on the clean i
 
 The deterministic planner beats the naive baselines on the grounded tasks; a tool-using LLM agent reaches the planner's numbers only by grounding every value (zero fabricated), while the same models with no tools fabricate the tool-only fields. See [`benchmarks/genome_writing_bench/`](benchmarks/genome_writing_bench/). The held-out public leaderboard is the [Genome-Writing Challenge](benchmarks/genome_writing_challenge/).
 
-Every benchmark ships a frozen split with a SHA-256 lock and a committed `metrics.json`, so a fresh clone reproduces the central numbers with no download and no API key:
+Benchmarks are SHA-locked, and most ship a harness, a frozen split, and a committed `metrics.json`; the two open leaderboards ship tasks and a submission protocol instead. A fresh clone reproduces the central numbers with no download and no API key:
 
 ```bash
 make repro        # demo-atlas quickstart, grounding eval, agentic baseline, and the recomputed headline result
@@ -225,8 +232,8 @@ A single assembly path (`pen_stack/atlas/universe.py`) feeds the classifier, the
 ```
 pen-stack/
   README.md  LICENSE  CITATION.cff                  project front matter (MIT; cite-this-repository)
-  pyproject.toml  Makefile                            packaging; one-command reproduction targets
-  DATA_SOURCES.md  DATA_LICENSES.md                   data provenance index and the open-data licensing policy
+  pyproject.toml  MANIFEST.in                       packaging and sdist contents
+  DATA_SOURCES.md  DATA_LICENSES.md                 data provenance index and the open-data licensing policy
   pen_stack/            the installable package
     spec/               WriteSpec: typed SBOL3-profile intent layer, grounded extractor, ontology resolvers, SAT feasibility
     wgenome/            Writable Genome: features, safety, durability, writability, uncertainty, structure3d, off-target nomination
@@ -243,34 +250,42 @@ pen-stack/
     loop/               the gated design-build-test-learn loop
     rag/                provenance-tagged retrieval corpus, embedder, and four-branch ground router (social, cited, general, abstained)
     agent/              agent platform, co-scientist, MCP server
-    api/  web/  server/ ui/  cli.py    AI integration surface, web platform with the grounded chat and swappable LLM provider, REST API, CLI
-  benchmarks/           SHA-locked benchmarks, each with a harness, a frozen split, and a committed metrics file:
-    genome_writing_bench/  genome_writing_challenge/     the bench and the public held-out leaderboard
+    data/               dataset ingestion (ENCODE, TRIP, safety annotation, integration sites)
+    adapt/              continual adaptation: ingest, fine-tune, versioned recalibration, report
+    validate/           blind-validation and benchmark-task drivers (safe-harbour discovery, outcome calibration, adversarial / co-scientist / graph / rule / trust task suites)
+    monitor/            Europe PMC literature polling and triage
+    env/                the genome-writing environment and policies
+    api/  web/  server/ ui/  cli.py    capability and scope manifests, web platform with the grounded chat and swappable LLM provider, REST API, CLI
+  benchmarks/           SHA-locked benchmarks; most carry a harness, a frozen split, and a committed metrics file:
+    genome_writing_bench/  genome_writing_challenge/     the bench and the public held-out leaderboard (tasks + submission protocol)
     position_effect/  position_effect_human/             expression-robustness axis; human K562 external validation (rho=0.571)
     offtarget/  genotox_panel/                            per-mechanism off-target; clinical insertional-oncogenesis panel
     grounding_llm_on/  agentic_baseline/                  model-live no-fabrication eval; tool-driving agentic baseline
     chat_grounding/  chat_safety/  chat_routing/  chat_headtohead/   grounded-chat probe sets
     verify/  writespec/  delivery/  immuno/  loop/  oracle/  writer_efficiency/  priorart/   per-stage benchmarks and prior-art positioning
-  scripts/              reproducible pipeline drivers (fetch_artifacts.sh installs the Zenodo release)
+  scripts/              reproducible pipeline drivers (fetch_artifacts.sh installs the Zenodo release; prereg_manifest.py re-hashes every lock)
   bench/                the benchmark runner (bench/run.py; also the compose `bench` service)
   tools/                developer command-line helper (penctl.py)
   examples/             worked integration examples (external agent, MCP client, agent tool specs)
   schemas/              JSON schema for the typed WriteSpec intent layer
-  Makefile              one-command reproduction (make fetch, make repro)
-  configs/              pinned datasets, thresholds, curation, and the provider-agnostic LLM switch (YAML)
-  prereg/               SHA-locked pre-registered success criteria
+  Makefile              one-command reproduction (make fetch, make repro, make repro-human, make repro-full)
+  configs/              pinned datasets, thresholds, curation, and the provider-agnostic LLM switch (YAML, plus reference FASTA)
+  prereg/               SHA-locked pre-registered success criteria, and the generated PREREG_MANIFEST.md
   data/
     curated/            small committed tables (gene_coords, ...)
     demo/               committed 1-chromosome demo atlas (chr19) for clean-clone reproduction
     llm_bench_cache/    committed model-live transcripts for the grounding eval (replay offline, no key needed)
     priorart/  offtarget/  alphagenome_cache/             committed derived products backing the sealed benchmarks
-  tests/                unit, regression, and blind-validation suite
-  docs/                 documentation site (tutorials, method cards, deployment)
+  tests/                unit and regression suite (tests/unit); the blind-validation drivers live in pen_stack/validate/
+  docs/                 documentation site (tutorials, method cards, deployment); mkdocs.yml at the root
   docker/               container images and pinned requirements
   model_servers/        self-hosted model-server images (ProteinMPNN, ESM3, RFdiffusion)
   oracle_cache/         committed oracle responses so cached oracle paths replay offline
   web/                  React single-page frontend for the web platform
-  docker-compose.yml    one-command self-hostable platform (API, MCP, web, LLM)
+  Dockerfile            reproducible image (make repro / pytest entrypoints)
+  docker-compose.yml    self-hostable platform (api, ui, mcp, ollama, and the alternative single-origin web front end)
+  docker-compose.models.yml   the self-hosted model servers
+  .github/workflows/    continuous integration (test matrix, data-licence gate) and the PyPI publish workflow
 ```
 
 Large artifacts (multi-million-row atlases, BigWig tracks, trained models) and any third-party copyrighted data are not committed. They are released via Zenodo or fetched from the original source with `scripts/fetch_artifacts.sh`, and are reproducible by re-running the pipeline. Only small curated tables, the demo atlas, committed benchmark metrics, and derived products live in git, so a fresh clone can run the quickstart and replay every benchmark offline.
@@ -291,25 +306,16 @@ License-restricted sources (COSMIC Cancer Gene Census, OncoKB) are **never commi
 - Every estimate carries its sample size and confidence interval. The validated gold sets are small, and statistical power is a stated limitation; scaling them is the top priority for turning the proof of concept into an adopted resource.
 - Grounded services: every quantitative answer comes from a validated tool call, never a language model, verified with the model live; the living database never auto-edits the atlas; clinical directives are refused.
 
-## Citation
+## License and attribution
 
-```bibtex
-@software{penstack2026,
-  author  = {Mahaboob Ali, Anees Ahmed},
-  title   = {PEN-STACK: open infrastructure for genome writing (The Writable Genome)},
-  year    = {2026},
-  version = {0.1.0},
-  url     = {https://github.com/ahmedanees-m/pen-stack}
-}
-```
-
-Author: Anees Ahmed Mahaboob Ali, VIT University, Vellore. MIT licensed.
+MIT licensed. Developed at Vellore Institute of Technology, Vellore. Authors and ORCIDs are listed in
+[CITATION.cff](CITATION.cff).
 
 ## API stability
 
-0.1.0 is the first public release. It establishes the committed public API: the SDK functions, the REST
-endpoints, and the twenty-two MCP tools. These follow semantic versioning, with a one-minor-version
-deprecation warning before any breaking change. Stable surfaces carry calibrated uncertainty and an explicit
+0.1.0 is the first public release. It establishes the committed public API: the SDK functions, the 44 REST
+endpoints, the 16 MCP tools, and the 20-entry capability manifest. These follow semantic versioning, with a
+one-minor-version deprecation warning before any breaking change. Stable surfaces carry calibrated uncertainty and an explicit
 validation status. The mechanism-based off-target paths (serine-integrase, bridge, and CAST) are marked
 experimental and may change as measured data becomes available.
 
