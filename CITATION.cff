@@ -10,10 +10,12 @@ identifiers:
   - type: url
     value: "https://bio.tools/pen-stack"
     description: bio.tools registry entry (biotools:pen-stack)
-# The concept DOI is minted when the Zenodo record is published; add it here and in the manuscript:
-#  - type: doi
-#    value: 10.5281/zenodo.XXXXXXX
-#    description: Concept DOI (all versions)
+  - type: doi
+    value: 10.5281/zenodo.21787136
+    description: Concept DOI (resolves to the newest version)
+  - type: doi
+    value: 10.5281/zenodo.21787137
+    description: Version DOI (pins v0.1.0)
 authors:
   - family-names: "Mahaboob Ali"
     given-names: "Anees Ahmed"

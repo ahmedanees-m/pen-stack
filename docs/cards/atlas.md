@@ -1,7 +1,7 @@
 # Data Card - The Writable Genome atlas
 
 **Artifacts:** `atlas_{k562,hepg2,hspc}.parquet` + BigWig/BED tracks
-**Release:** Zenodo (DOI on upload) | CC0 1.0 (the derived atlas and tracks, this project's own contribution; the DepMap-derived essentiality feature keeps its CC BY 4.0 attribution, see `DATA_LICENSES.md`) | MIT (code)
+**Release:** Zenodo [10.5281/zenodo.21787136](https://doi.org/10.5281/zenodo.21787136) | CC0 1.0 (the derived atlas and tracks, this project's own contribution; the DepMap-derived essentiality feature keeps its CC BY 4.0 attribution, see `DATA_LICENSES.md`) | MIT (code)
 
 ## What it is
 A genome-wide, decomposable **writability** atlas: **3,031,030 loci x 3 cell types** (K562, HepG2, CD34+ HSPC),

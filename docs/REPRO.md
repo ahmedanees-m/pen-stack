@@ -38,8 +38,9 @@ python scripts/p1_validation_report.py --cts k562 hepg2 hspc    # -> validation_
 (safety-label circularity; durability partial-panel transfer; reachability locus-level), decision-support scope.
 
 ## Data release
-Atlas parquets, BigWig/BED tracks, models, and feature stores deposited to Zenodo (see
-`phase_1/zenodo_deposit_files/`, with `MANIFEST.tsv` + `checksums.sha256`). Verify: `sha256sum -c checksums.sha256`.
+Atlas parquets, BigWig/BED tracks, models, and feature stores are deposited to Zenodo:
+[10.5281/zenodo.21787136](https://doi.org/10.5281/zenodo.21787136). Fetch with `bash scripts/fetch_artifacts.sh`;
+the deposit ships `SHA256SUMS`, so verify with `sha256sum -c SHA256SUMS`.
 
 ## Determinism
 LightGBM `random_state=42`; GroupKFold by chromosome. `pen_stack.atlas.universe.assemble()` is deterministic

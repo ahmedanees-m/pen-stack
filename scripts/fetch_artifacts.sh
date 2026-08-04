@@ -9,23 +9,25 @@
 #     models/     <- models/*        (durability.pkl, safety_<ct>.pkl, position_effect*.pkl, capsid_fitness.pkl)
 #
 # Idempotent: already-downloaded files (matching size) and already-installed files (identical bytes) are
-# skipped. Verifies integrity with `sha256sum -c` against the deposit's own checksums.sha256 when present.
+# skipped. Verifies integrity with `sha256sum -c` against the deposit's own SHA256SUMS manifest.
 #
-# The DOI is minted by the author at deposit time - set ZENODO_DOI below (or export it) before running.
+# Defaults to the v0.1.0 version DOI so a fresh clone fetches the exact data v0.1.0 was scored on.
+# Export ZENODO_DOI to pull a different release; the concept DOI 10.5281/zenodo.21787136 always
+# resolves to the newest one.
 #
 # NOTE (licensed sources): this fetches the OPEN release only. License-restricted enrichment sources
 # (COSMIC Cancer Gene Census, OncoKB) are NEVER redistributed here - see scripts/fetch_licensed_sources.py,
 # which documents your own registered download under your own license.
 #
 #     bash scripts/fetch_artifacts.sh              # fetch + verify + install into data/out/ and models/
-#     ZENODO_DOI=10.5281/zenodo.1234567 bash scripts/fetch_artifacts.sh
+#     ZENODO_DOI=10.5281/zenodo.21787137 bash scripts/fetch_artifacts.sh   # a different release
 #     PEN_ATLAS_DIR=/some/other/dir bash scripts/fetch_artifacts.sh   # override the atlas destination
 # ---------------------------------------------------------------------------------------------------
 set -euo pipefail
 
 # --- 0. configuration ------------------------------------------------------------------------------
-# The concept/version DOI of the Zenodo deposit. The author fills this in when the record is published.
-ZENODO_DOI="${ZENODO_DOI:-<INSERT_ON_DEPOSIT>}"
+# The version DOI of the Zenodo deposit, pinned to v0.1.0 for reproducibility.
+ZENODO_DOI="${ZENODO_DOI:-10.5281/zenodo.21787137}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -40,20 +42,7 @@ ok()   { printf '\033[1;32m[ ok  ]\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m[warn]\033[0m %s\n' "$*" >&2; }
 die()  { printf '\033[1;31m[fail]\033[0m %s\n' "$*" >&2; exit 1; }
 
-# --- 1. guard the placeholder DOI ------------------------------------------------------------------
-if [ "${ZENODO_DOI}" = "<INSERT_ON_DEPOSIT>" ]; then
-  cat >&2 <<EOF
-[fail] ZENODO_DOI is still the placeholder "<INSERT_ON_DEPOSIT>".
-       The DOI is minted when the Zenodo record is published. Set it and re-run, e.g.:
-
-           ZENODO_DOI=10.5281/zenodo.1234567 bash scripts/fetch_artifacts.sh
-
-       or edit the ZENODO_DOI="..." line at the top of this script.
-EOF
-  exit 2
-fi
-
-# --- 2. detect required tooling --------------------------------------------------------------------
+# --- 1. detect required tooling --------------------------------------------------------------------
 if command -v curl >/dev/null 2>&1; then
   DL() { curl -fSL --retry 3 --retry-delay 2 -o "$2" "$1"; }          # DL <url> <out>
   DLQ() { curl -fsSL "$1"; }                                          # DLQ <url> -> stdout
@@ -84,7 +73,7 @@ if [ -z "${PYTHON}" ]; then
   else die "need python3/python on PATH (to parse the Zenodo record listing)"; fi
 fi
 
-# --- 3. resolve the Zenodo record + enumerate its files --------------------------------------------
+# --- 2. resolve the Zenodo record + enumerate its files --------------------------------------------
 RECORD_ID="${ZENODO_DOI##*.}"          # 10.5281/zenodo.1234567 -> 1234567
 case "${RECORD_ID}" in
   ''|*[!0-9]*) die "could not parse a numeric record id from ZENODO_DOI='${ZENODO_DOI}'";;
@@ -116,7 +105,7 @@ PY
 N_FILES=$(wc -l < "${STAGING}/_files.tsv" | tr -d ' ')
 log "record advertises ${N_FILES} file(s); downloading into ${STAGING}"
 
-# --- 4. download each file (idempotent: skip when present with the advertised size) ----------------
+# --- 3. download each file (idempotent: skip when present with the advertised size) ----------------
 while IFS=$'\t' read -r KEY SIZE; do
   [ -n "${KEY}" ] || continue
   OUT="${STAGING}/${KEY}"
@@ -131,7 +120,7 @@ while IFS=$'\t' read -r KEY SIZE; do
   DL "${URL}" "${OUT}" || die "download failed: ${KEY}"
 done < "${STAGING}/_files.tsv"
 
-# --- 5. if the deposit was uploaded as a single archive, unpack it (deposit-native layout) ---------
+# --- 4. if the deposit was uploaded as a single archive, unpack it (deposit-native layout) ---------
 shopt -s nullglob
 for arc in "${STAGING}"/*.zip "${STAGING}"/*.tar.gz "${STAGING}"/*.tgz; do
   log "extract ${arc##*/}"
@@ -142,8 +131,8 @@ for arc in "${STAGING}"/*.zip "${STAGING}"/*.tar.gz "${STAGING}"/*.tgz; do
 done
 shopt -u nullglob
 
-# --- 6. verify integrity ---------------------------------------------------------------------------
-CHECKSUMS="$(find "${STAGING}" -name 'checksums.sha256' -type f 2>/dev/null | head -n1 || true)"
+# --- 5. verify integrity ---------------------------------------------------------------------------
+CHECKSUMS="$(find "${STAGING}" \( -name 'SHA256SUMS' -o -name 'checksums.sha256' \) -type f 2>/dev/null | head -n1 || true)"
 if [ "${HAVE_SHA}" = "0" ]; then
   warn "no checksum tool - skipping integrity verification"
 elif [ -n "${CHECKSUMS}" ]; then
@@ -166,10 +155,10 @@ elif [ -n "${CHECKSUMS}" ]; then
     [ "${BAD}" = "0" ] && ok "sha256 verified (by basename)" || die "integrity verification FAILED"
   fi
 else
-  warn "no checksums.sha256 in the deposit - skipping integrity verification"
+  warn "no SHA256SUMS/checksums.sha256 in the deposit - skipping integrity verification"
 fi
 
-# --- 7. install into data/out/ and models/ (idempotent copy) ---------------------------------------
+# --- 6. install into data/out/ and models/ (idempotent copy) ---------------------------------------
 # Route by basename so this works whether the deposit is flat or keeps atlas_tracks/ + models/ subdirs.
 install_one() {  # install_one <src> <dest_dir>
   local src="$1" dest_dir="$2" dst
@@ -196,7 +185,7 @@ while IFS= read -r src; do
   install_one "${src}" "${MODELS_DIR}"; N_MODELS=$((N_MODELS + 1))
 done < <(find "${STAGING}" -type f \( -name 'durability.pkl' -o -name 'safety_*.pkl' -o -name 'position_effect.pkl' -o -name 'position_effect_human_k562.pkl' -o -name 'capsid_fitness.pkl' \) | sort)
 
-# --- 8. summary ------------------------------------------------------------------------------------
+# --- 7. summary ------------------------------------------------------------------------------------
 echo
 ok "done: ${N_ATLAS} atlas track file(s) -> ${DATA_OUT}"
 ok "      ${N_MODELS} model file(s) -> ${MODELS_DIR}"

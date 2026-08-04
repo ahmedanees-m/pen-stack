@@ -15,6 +15,7 @@ Foundation models generate candidate edits; PEN-STACK checks them. It tells you 
 [![Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
 [![RRID](https://img.shields.io/badge/RRID-SCR__028786-8A2BE2.svg)](https://scicrunch.org/resolver/RRID:SCR_028786)
 [![bio.tools](https://img.shields.io/badge/bio.tools-pen--stack-00A0B0.svg)](https://bio.tools/pen-stack)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21787136.svg)](https://doi.org/10.5281/zenodo.21787136)
 
 </div>
 
@@ -139,7 +140,7 @@ at it, or fetch the full genome-wide release from Zenodo:
 
 ```bash
 PEN_ATLAS_DIR=data/demo pen-stack writable --gene AAVS1 --ct k562   # runs on the committed chr19 demo
-ZENODO_DOI=<deposit DOI> bash scripts/fetch_artifacts.sh           # full atlas -> data/out/ (all cell types)
+bash scripts/fetch_artifacts.sh                                    # full atlas -> data/out/ (all cell types)
 ```
 
 ## Quick start
@@ -165,7 +166,7 @@ pen-stack plan --gene AAVS1 --intent knock_in_with_disruption --cargo-bp 2000
 Genome-wide queries (any gene, all cell types) need the full atlas from the Zenodo deposit:
 
 ```bash
-ZENODO_DOI=<deposit DOI> bash scripts/fetch_artifacts.sh       # installs data/out/ + models/
+bash scripts/fetch_artifacts.sh                                # installs data/out/ + models/
 pen-stack writable --gene CCR5 --ct k562
 ```
 

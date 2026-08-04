@@ -17,7 +17,7 @@ chr14) return empty on purpose - it is a demo, not the genome-wide atlas. For ge
 full open release:
 
 ```bash
-ZENODO_DOI=<the deposit DOI> bash scripts/fetch_artifacts.sh   # installs atlas_<ct>.parquet into data/out/
+bash scripts/fetch_artifacts.sh                                # installs atlas_<ct>.parquet into data/out/
 ```
 
 ## Use it

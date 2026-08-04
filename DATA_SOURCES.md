@@ -62,7 +62,8 @@ appears as a shipped derived-data source. See [`DATA_LICENSES.md`](DATA_LICENSES
 
 ## The Zenodo deposit
 
-The archived version of record and its supporting data are on Zenodo (concept DOI in the manuscript and
-`CITATION.cff`). The deposit contains the derived data described above (atlases, tracks, models), the frozen
+The archived version of record and its supporting data are on Zenodo: concept DOI
+[10.5281/zenodo.21787136](https://doi.org/10.5281/zenodo.21787136) (newest version), version DOI
+[10.5281/zenodo.21787137](https://doi.org/10.5281/zenodo.21787137) (pins v0.1.0). The deposit contains the derived data described above (atlases, tracks, models), the frozen
 benchmark splits with their SHA-256 locks, the pre-registrations, the data and model cards, the offline
 oracle cache, and a snapshot of the tagged source. Licensed raw data is listed by accession only.
