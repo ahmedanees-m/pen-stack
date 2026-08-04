@@ -5,7 +5,7 @@ version: 0.1.0
 date-released: 2026-07-21
 identifiers:
   - type: other
-    value: "RRID:SCR_028784"
+    value: "RRID:SCR_028786"
     description: Research Resource Identifier (SciCrunch)
   - type: url
     value: "https://bio.tools/pen-stack"

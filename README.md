@@ -13,7 +13,7 @@ Foundation models generate candidate edits; PEN-STACK checks them. It tells you 
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/runtime-docker-2496ED.svg)](docker/)
-[![RRID](https://img.shields.io/badge/RRID-SCR__028784-8A2BE2.svg)](https://scicrunch.org/resolver/RRID:SCR_028784)
+[![RRID](https://img.shields.io/badge/RRID-SCR__028786-8A2BE2.svg)](https://scicrunch.org/resolver/RRID:SCR_028786)
 [![bio.tools](https://img.shields.io/badge/bio.tools-pen--stack-00A0B0.svg)](https://bio.tools/pen-stack)
 
 </div>
