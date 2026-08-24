@@ -16,6 +16,7 @@ Foundation models generate candidate edits; PEN-STACK checks them. It tells you 
 [![RRID](https://img.shields.io/badge/RRID-SCR__028786-8A2BE2.svg)](https://scicrunch.org/resolver/RRID:SCR_028786)
 [![bio.tools](https://img.shields.io/badge/bio.tools-pen--stack-00A0B0.svg)](https://bio.tools/pen-stack)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21787136.svg)](https://doi.org/10.5281/zenodo.21787136)
+[![arXiv](https://img.shields.io/badge/arXiv-2608.20412-b31b1b.svg)](https://arxiv.org/abs/2608.20412)
 
 </div>
 
@@ -308,6 +309,28 @@ License-restricted sources (COSMIC Cancer Gene Census, OncoKB) are **never commi
 - Report failure: cross-cell-type degradation, the exact-site-versus-served-resolution gap, small benchmark sizes, and the limits of sequence-only off-target magnitude prediction are reported as results, not footnotes.
 - Every estimate carries its sample size and confidence interval. The validated gold sets are small, and statistical power is a stated limitation; scaling them is the top priority for turning the proof of concept into an adopted resource.
 - Grounded services: every quantitative answer comes from a validated tool call, never a language model, verified with the model live; the living database never auto-edits the atlas; clinical directives are refused.
+
+## Citation
+
+If you use PEN-STACK, please cite the preprint:
+
+> Mahaboob Ali AA, Delhibabu R, Nelson EJR. PEN-STACK: A non-fabricating tool layer for language-model agents in genome writing. arXiv:2608.20412 [q-bio.GN]. 2026.
+> <https://arxiv.org/abs/2608.20412>
+
+```bibtex
+@article{mahaboobali2026penstack,
+  title   = {PEN-STACK: A non-fabricating tool layer for language-model agents in genome writing},
+  author  = {Mahaboob Ali, Anees Ahmed and Delhibabu, Radhakrishnan and Nelson, Everette Jacob Remington},
+  journal = {arXiv preprint arXiv:2608.20412},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2608.20412}
+}
+```
+
+To cite this software release specifically, use the version DOI
+[10.5281/zenodo.21787137](https://doi.org/10.5281/zenodo.21787137), which pins v0.1.0, or the concept DOI
+[10.5281/zenodo.21787136](https://doi.org/10.5281/zenodo.21787136), which always resolves to the newest version.
+Author and ORCID metadata is in [CITATION.cff](CITATION.cff).
 
 ## License and attribution
 
