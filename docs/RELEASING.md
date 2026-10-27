@@ -22,11 +22,11 @@ is then needed.
 ## Cut a release
 
 ```bash
-# 1. bump the version in pyproject.toml, pen_stack/__init__.py, CITATION.cff
-# 2. bump the version in pyproject.toml, pen_stack/__init__.py, CITATION.cff
-# 3. commit, then tag and push the tag:
-git tag -a v0.1.0 -m "PEN-STACK v0.1.0"
-git push origin v0.1.0            # -> publish.yml builds + publishes to PyPI
+# 1. bump the version in pyproject.toml, pen_stack/__init__.py, CITATION.cff,
+#    the Dockerfile labels and web/package.json
+# 2. commit, then tag and push the tag:
+git tag -a v0.2.0 -m "PEN-STACK v0.2.0"
+git push origin v0.2.0            # -> publish.yml builds + publishes to PyPI
 ```
 
 A tag pushed before `publish.yml` existed will not auto-publish. To publish such a tag either run

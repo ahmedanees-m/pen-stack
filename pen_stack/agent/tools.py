@@ -61,6 +61,22 @@ def plan_write(gene: str, intent: str, cargo_bp: int = 2000, ct: str = "k562") -
     return (plans[0] if plans else {"gene": gene, "found": False}) | {"tool": "planner.pipeline"}
 
 
+def structural_risk(chrom: str, pos: int) -> dict:
+    """Enhancer-hijack structural risk at an integration site (AlphaGenome-backed)."""
+    from pen_stack.wgenome.structure3d import structural_risk as _sr
+    r = _sr(chrom, int(pos), int(pos) + 135_000)
+    if not r.get("available"):
+        # out of scope for the shipped configuration: an explicit known-unknown, never a guess
+        return {"chrom": chrom, "pos": int(pos), "available": False,
+                "structural_risk_score": None,
+                "epistemic_status": "not-computable", "abstain": True,
+                "reason": r.get("reason", "AlphaGenome unavailable for this locus"),
+                "tool": "wgenome.structure3d"}
+    return {"chrom": chrom, "pos": int(pos), "available": True,
+            "structural_risk_score": r.get("score", r.get("structural_risk_score")),
+            "abstain": False, "detail": r, "tool": "wgenome.structure3d"}
+
+
 def ask_literature(q: str) -> dict:
     """Grounded, cited literature answer (numbers still from tools)."""
     from pen_stack.rag.qa import answer
@@ -84,6 +100,7 @@ REGISTRY = {
     "plan_write": plan_write,
     "ask_literature": ask_literature,
     "multiplex_translocation_risk": multiplex_translocation_risk,
+    "structural_risk": structural_risk,
 }
 
 # Ollama/OpenAI tool-calling schemas
@@ -109,6 +126,13 @@ SCHEMAS = [
                        "high_durability_insertion", "regulatory_excision", "repeat_excision"]},
             "cargo_bp": {"type": "integer"}, "ct": {"type": "string"}},
             "required": ["gene", "intent"]}}},
+    {"type": "function", "function": {
+        "name": "structural_risk",
+        "description": "Enhancer-hijack structural risk at an integration site. Returns an explicit "
+                       "known-unknown when the backing model is unavailable for the locus.",
+        "parameters": {"type": "object", "properties": {
+            "chrom": {"type": "string"}, "pos": {"type": "integer"}},
+            "required": ["chrom", "pos"]}}},
     {"type": "function", "function": {
         "name": "ask_literature", "description": "Grounded, cited literature answer.",
         "parameters": {"type": "object", "properties": {"q": {"type": "string"}}, "required": ["q"]}}},

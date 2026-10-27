@@ -1,7 +1,7 @@
 # The single LLM switch every service (RAG, literature monitor, agent) reads.
 #
 # HYBRID pattern: a LOCAL model (Ollama) as the default on the compute tier, with a strong HOSTED model
-# (NVIDIA Nemotron) as the automatic fallback. The LLM is NON-load-bearing: every number and citation comes
+# (NVIDIA Nemotron) as the automatic fallback. The LLM is NON-primary: every number and citation comes
 # from validated tools, so the model choice never affects scientific reproducibility - only orchestration /
 # prose quality. The core scientific compute uses no LLM at all.
 #
@@ -44,7 +44,7 @@ providers:
     max_tokens: 1024
 
   ollama_small: # tiny LOCAL model for a private/offline path on a low-RAM box (~1 GB). Weaker
-    style: ollama # tool-use; fine because the LLM is non-load-bearing. `ollama pull qwen2.5:1.5b`.
+    style: ollama # tool-use; fine because the LLM is non-primary. `ollama pull qwen2.5:1.5b`.
     api_base: http://localhost:11434
     model: qwen2.5:1.5b-instruct # Apache-2.0, ~1 GB - fits 8 GB RAM CPU-only
 
@@ -54,7 +54,7 @@ providers:
     model: llama3.2:3b
 
   anthropic: # frontier hosted model (Anthropic Claude). Strong tool-use; used as a third, frontier
-    style: anthropic # provider for the LLM-on grounding eval and the agentic baseline. Non-load-bearing,
+    style: anthropic # provider for the LLM-on grounding eval and the agentic baseline. Non-primary,
     api_base: https://api.anthropic.com/v1 # like every provider: the LLM never introduces a number/citation.
     model: claude-haiku-4-5-20251001 # capable + inexpensive; swap for a Sonnet/Opus id for the agent baseline.
     api_key_env: ANTHROPIC_API_KEY # checked first

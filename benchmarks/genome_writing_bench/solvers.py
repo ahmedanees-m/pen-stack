@@ -123,7 +123,7 @@ def robustness_contrast_md(bench: dict) -> list[str]:
 
 def trust_contrast_md(bench: dict) -> list[str]:
     """Render the v0.2 TRUST contrast: the uncertainty-aware agent vs an over-confident baseline on the
-    calibration / selective-prediction / OOD-honesty / out-of-scope tasks. Extends the T7 'grounding
+    calibration / selective-prediction / OOD-flagging / out-of-scope tasks. Extends the T7 'grounding
     separates agents' story into 'calibration + scope-awareness separates *trustworthy* agents'."""
     trust = [r for r in bench["results"] if r["family"] in _TRUST_FAMILIES]
     if not trust:

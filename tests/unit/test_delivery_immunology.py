@@ -31,7 +31,7 @@ def test_all_vehicles_have_documented_immune_block_with_grounded_dois():
         # every score is a normalised function of the tiers, in [0, 1]
         for k in ("immune_score", "genotox_score", "safety_score", "efficacy_score"):
             assert p[k] is None or 0.0 <= p[k] <= 1.0, (n, k, p[k])
-        # headline safety is the worst (min) of the two safety sub-axes
+        # primary safety is the worst (min) of the two safety sub-axes
         assert p["safety_score"] == min(p["immune_score"], p["genotox_score"])
 
 
@@ -39,10 +39,10 @@ def test_users_stated_tradeoff_is_reproduced():
     """AAV: safe by integration but immunogenicity-limited; lentivirus: efficacious integrator but genotoxic."""
     aav = safety_efficacy_profile("AAV_single")
     lv = safety_efficacy_profile("lentivirus")
-    # AAV headline safety is driven by IMMUNOGENICITY (immune worse than genotox); it is non-integrating.
+    # AAV primary safety is driven by IMMUNOGENICITY (immune worse than genotox); it is non-integrating.
     assert aav["immune_score"] < aav["genotox_score"]
     assert aav["integrating"] is False
-    # lentivirus headline safety is driven by GENOTOXICITY (genotox worse than immune); it is highly efficacious.
+    # lentivirus primary safety is driven by GENOTOXICITY (genotox worse than immune); it is highly efficacious.
     assert lv["genotox_score"] < lv["immune_score"]
     assert lv["integrating"] is True
     assert lv["efficacy_score"] == 1.0

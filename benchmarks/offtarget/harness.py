@@ -3,7 +3,7 @@
 Scores a predictor on the immunogenic question of off-target NOMINATION: given a canonical Cas9 guide and its
 candidate sites (real, published, validated-off-target labels from GUIDE-seq / CIRCLE-seq), rank the candidates so
 the validated off-targets surface first. The engine must BEAT a sequence-homology baseline (mismatch
-count). The headline numbers (`offtarget_data.BENCH_SUMMARY`) are computed on the FULL real data on the VM with the
+count). The primary numbers (`offtarget_data.BENCH_SUMMARY`) are computed on the FULL real data on the VM with the
 licensed CRISOT predictor; this harness re-derives the relative comparison on the committed, CI-safe fixture (real
 sites + cached CRISOT scores; the CC-BY-NC predictor is never redistributed).
 
@@ -38,7 +38,7 @@ def _auprc(labels: list[int], scores: list[float]) -> float | None:
 
 def run() -> dict:
     """Re-derive the CRISOT-vs-homology nomination comparison on the committed fixture, per assay, held-out-guide;
-    report it alongside the cached full-data headline. ``available=False`` if the fixture is absent (bare wheel)."""
+    report it alongside the cached full-data primary. ``available=False`` if the fixture is absent (bare wheel)."""
     rows = bench_records()
     if not rows:
         return {"available": False, "note": "Off-Target-Bench fixture absent (data tree not present)",

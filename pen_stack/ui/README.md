@@ -8,7 +8,7 @@ A scientific Streamlit front-end over the genome-wide writability atlas.
 - **Site finder (inverse)** - disease gene -> top-N safest writable loci within a window (ranked table + map + CSV download).
 - **Atlas browser** - genome-wide writability/safety/durability tracks by region.
 - **Validation** - safe-harbour vs genotoxic-CIS concordance + durability metrics (the figure panels).
-- **Cross-cell-type** - K562 <-> HepG2 transfer, reported honestly.
+- **Cross-cell-type** - K562 <-> HepG2 transfer, reported with its interval.
 - **Writer Atlas** / **Write Planner** / **Bridge design** - enzyme catalogue, inverse design, bridge RNA + off-target.
 
 ### Additions

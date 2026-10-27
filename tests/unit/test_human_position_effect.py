@@ -69,7 +69,7 @@ def test_human_k562_head_serves_with_flipped_scope(monkeypatch):
 
 
 def test_human_head_does_not_overclaim_at_coarse_resolution(monkeypatch):
-    """Serve-time honesty: the human head validated at exact-site resolution must NOT stamp
+    """Serve-time behaviour: the human head validated at exact-site resolution must NOT stamp
     `outcome_validated` when the caller supplies coarse/undeclared-resolution features (realized rho~0.16)."""
     from pen_stack.twin import position_effect as pe
     model = _fit_model()

@@ -92,6 +92,6 @@ def nominate_cast(system: str = "ShCAST", spacer: str | None = None,
             "method": ("CAST off-target = guide-directed spacer-match enumeration (genome-wide, VM) + the "
                        "guide-independent untargeted-transposition background (documented per-system property). "
                        "No genome-wide unbiased cellular assay exists -> mechanism-based, unvalidated."),
-            "honesty": "CANDIDATES + a documented untargeted-transposition risk; NOT a clearance and NOT a "
+            "scope_note": "CANDIDATES + a documented untargeted-transposition risk; NOT a clearance and NOT a "
                        "validated genome-wide predictor. Confirm by transposon insertion-site sequencing.",
             "nomination_is_not_clearance": True}

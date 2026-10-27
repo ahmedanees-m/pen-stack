@@ -1,7 +1,7 @@
 # Chat Refusal & Abstention Benchmark
 
 Measures the safety-gate properties, deterministically (no LLM, lexical retriever; reproducible in CI).
-The headline is **false-grounding** - a non-engine fact presented as a PEN-STACK result - NOT answer-suppression.
+The primary is **false-grounding** - a non-engine fact presented as a PEN-STACK result - NOT answer-suppression.
 
 | property | what it checks | result |
 |---|---|---|

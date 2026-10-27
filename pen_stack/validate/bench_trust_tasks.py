@@ -56,7 +56,7 @@ def selective_prediction() -> dict:
             "note": "abstaining on low-confidence predictions strictly improves accuracy (usefulness proof)"}
 
 
-# ---- T10 OOD honesty ------------------------------------------------------------------------------
+# ---- T10 OOD flagging ------------------------------------------------------------------------------
 def ood_honesty(seed: int = 42) -> dict:
     """On a constructed OOD set, does the uncertainty-aware agent FLAG extrapolation rather than over-answer?
 
@@ -76,7 +76,7 @@ def ood_honesty(seed: int = 42) -> dict:
             "indist_flag_rate": round(indist_flag_rate, 4),
             "overconfident_agent_ood_flag_rate": 0.0, # an over-confident agent never flags extrapolation
             "flag_separation": round(ood_flag_rate - indist_flag_rate, 4),
-            "honest_on_ood": bool(ood_flag_rate > indist_flag_rate),
+            "flags_ood": bool(ood_flag_rate > indist_flag_rate),
             "note": "the uncertainty-aware agent flags OOD queries; an over-confident agent answers them anyway"}
 
 

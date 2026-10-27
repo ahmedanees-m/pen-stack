@@ -28,7 +28,7 @@ delivery / sub-designs):
 
 - **function screen**: flags controlled-toxin and pathogen-essential **functions**. This is what catches an
   **AI-designed homolog**: a low-identity sequence still carries a hazardous *function*, and function, not
-  sequence similarity, is the load-bearing axis.
+  sequence similarity, is the primary axis.
 - **taxon screen**: flags regulated-pathogen taxa (Select Agent / Australia Group membership).
 - **chimera screen**: flags hazardous **assembly of individually-benign parts** (a toxin payload + broad
   systemic delivery; a virulence function in a replication-competent vector; a hazard split across a multiplex

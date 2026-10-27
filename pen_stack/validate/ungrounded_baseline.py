@@ -193,12 +193,12 @@ def run_model(model_label: str, provider: str | None = None, offline: bool = Tru
     available = any(c["plan_goals"]["n"] or c["ungroundable_goals"]["n"] for c in by_cond.values())
     n_missing = sum(c["n_missing_from_cache"] for c in by_cond.values())
     naive = by_cond.get("naive") or next(iter(by_cond.values()))
-    # back-compat top-level fields point at the NAIVE condition (the headline probe)
+    # back-compat top-level fields point at the NAIVE condition (the primary probe)
     return {
         "available": available, "model": model_label, "offline": offline, "n_missing_from_cache": n_missing,
         "plan_goals": naive["plan_goals"], "ungroundable_goals": naive["ungroundable_goals"],
         "by_condition": by_cond,
-        "headline": (f"ungrounded {model_label} (naive prompt): fabrication rate "
+        "primary": (f"ungrounded {model_label} (naive prompt): fabrication rate "
                      f"{naive['plan_goals']['fabrication_rate']} on tool-only planning fields and "
                      f"{naive['ungroundable_goals']['fabrication_rate']} on ungroundable goals "
                      f"(vs the grounded agent's 0.0 under any prompt)."

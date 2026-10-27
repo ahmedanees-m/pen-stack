@@ -1,7 +1,7 @@
 {
   "bench": "Agentic baseline (E1): an external LLM agent drives the validated tools, audited for no-fabrication",
   "question": "When a real LLM agent (not the deterministic state machine) drives PEN-STACK's validated tools, does every number in its trace equal a direct tool call (no fabrication)? Does this hold across the model-capability range?",
-  "method": "For each write-planning goal, the LLM (via pen_stack.agent.orchestrator.run_agent) plans and calls the validated design tools itself; pen_stack.validate.agent_eval.no_fabrication audits that every quantity in the returned plan is traceable to a tool result.  = the LLM actually drove the loop (not the deterministic fallback). Goals answered in prose (tool_calls=0) still pass because they emit no ungrounded quantity.",
+  "method": "For each write-planning goal, the LLM (via pen_stack.agent.orchestrator.run_agent) plans and calls the validated design tools itself; pen_stack.validate.agent_eval.no_fabrication audits that every quantity in the returned plan is traceable to a tool result. Two distinct quantities are recorded and must not be read as one: llm_driven_runs counts goals where the LLM orchestrator was in control rather than the deterministic fallback, and goals_with_tool_calls counts goals where it actually issued a tool call. A goal answered in prose issues no call, emits no quantity, and so passes the audit with nothing audited.",
   "goals": [
     "knock a CAR into TRAC",
     "insert a durable cassette at AAVS1",
@@ -22,6 +22,7 @@
       "no_fabrication_pass": true,
       "llm_driven_runs": 4,
       "n_goals": 4,
+      "goals_with_tool_calls": 2,
       "tool_calls_per_goal": {
         "TRAC": 0,
         "AAVS1": 4,
@@ -37,6 +38,7 @@
       "no_fabrication_pass": true,
       "llm_driven_runs": 4,
       "n_goals": 4,
+      "goals_with_tool_calls": 3,
       "tool_calls_per_goal": {
         "TRAC": 3,
         "AAVS1": 0,
@@ -52,6 +54,7 @@
       "no_fabrication_pass": true,
       "llm_driven_runs": 4,
       "n_goals": 4,
+      "goals_with_tool_calls": 4,
       "tool_calls_per_goal": {
         "TRAC": 2,
         "AAVS1": 6,
@@ -61,7 +64,7 @@
       "total_tool_calls": 15
     }
   },
-  "finding": "Across three models spanning tiny-local (Qwen2.5-1.5B) to frontier (NVIDIA Nemotron-120B, Anthropic Claude), the LLM agent drove the validated tools on every goal (12/12 llm-driven) and the no-fabrication audit passed for all: every number in every trace equalled a direct tool call. The architecture, not the model, guarantees grounding - even a 1.5B model fabricates nothing when it must route quantities through the tools.",
+  "finding": "Across three models spanning a 1.5B local model to hosted cloud models, the no-fabrication audit passed in every run: every quantity that was emitted equalled a direct tool call. Tool engagement was uneven, at 9 of 12 model-goal runs issuing at least one call; the remaining 3 answered in prose and so passed with no quantity to audit. The audit therefore establishes that no ungrounded quantity was emitted, not that the tools were driven throughout. A matched run over the full goal set is reported separately.",
   "provenance": {
     "harness": "bench/run.py (run_agent_solver) + pen_stack/agent/orchestrator.py",
     "providers_config": "configs/llm.yaml (nvidia | anthropic | ollama_small)",

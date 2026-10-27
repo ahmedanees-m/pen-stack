@@ -1,7 +1,7 @@
 """Off-target ground-truth + provenance for the cross-family nomination engine.
 
 The ground truth is harmonized, PUBLISHED, unbiased genome-wide off-target assays over canonical Cas9 guides;
-the derived risk calibration and the Off-Target-Bench headline (the REAL CRISOT predictor vs the homology
+the derived risk calibration and the Off-Target-Bench primary (the REAL CRISOT predictor vs the homology
 baseline) are embedded in-code so the axis is available everywhere (CI / bare install / live app), while the
 full sealed fixture + per-guide metrics live under ``benchmarks/offtarget/`` for the bench harness.
 
@@ -95,7 +95,7 @@ CHROMATIN_VALIDATION = {
             "as a VALIDATED ANNOTATION and does NOT change the numeric risk score (CRISOT captures the ranking).",
 }
 
-# ---- Off-Target-Bench headline (REAL full-data result; per-guide AUPRC, held-out-guide bootstrap CI) -----
+# ---- Off-Target-Bench primary (REAL full-data result; per-guide AUPRC, held-out-guide bootstrap CI) -----
 # CRISOT-Score is the MD-physics, assay-AGNOSTIC scorer (not fit on these labels) -> a leakage-clean held-out
 # evaluation on every assay. GUIDE/CIRCLE-seq use canonical guides; CHANGE/SITE-seq use INDEPENDENT broad guide
 # panels (cross-assay generalization). CRISOT beats the homology baseline on ALL FOUR (per-guide bootstrap CI > 0).

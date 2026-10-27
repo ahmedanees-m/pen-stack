@@ -1,7 +1,7 @@
 """DMS-grounded variant proposal framework.
 
 Asserts the structural criteria: only point substitutions are proposed (NO chimeras), the model is
-pluggable, and the retrospective-recovery harness functions. The headline criterion - the framework fed
+pluggable, and the retrospective-recovery harness functions. The primary criterion - the framework fed
 the real Perry 2025 DMS recovers the KNOWN enhancing ISCro4 mutations - is in
 ``test_dms_recovers_known_enhancers`` (skips when the copyrighted Perry tables are absent).
 """

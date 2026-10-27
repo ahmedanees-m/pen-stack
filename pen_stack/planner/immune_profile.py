@@ -107,7 +107,7 @@ def _apply_administration(axes: dict, admin: dict | None) -> None:
                       "exposure); transduced cells may still present capsid epitopes, so the intrinsic value is "
                       "kept. " + (cd.get("note") or ""))
 
-# headline score key inside each oracle's value dict, per axis.
+# primary score key inside each oracle's value dict, per axis.
 _SCORE_KEY = {"genotoxicity": "genotox_score", "cd8_epitope": "capsid_immune_score",
               "innate": "innate_score", "preexisting_nab": "preexisting_score",
               "anti_peg": "preexisting_antipeg_score"}
@@ -142,7 +142,7 @@ def _vehicle_cargo_form(vehicle: str | None) -> str | None:
 
 
 def _axis(result, axis: str) -> dict:
-    """One axis record: value (headline score or None when abstaining) + native uncertainty + scope + the
+    """One axis record: value (primary score or None when abstaining) + native uncertainty + scope + the
     calibration validation label. Never fabricates, an abstaining oracle yields value None."""
     val = None
     if result.available and result.value:

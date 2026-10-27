@@ -46,7 +46,7 @@ construction the published 0.77 uses) energetics scores **0.88 vs 0.77** (robust
 as the default ranker (`bridge/offtarget.py::site_risk`) via a committed penalty table, falling back to
 position-weight when absent.
 
-*What the gain actually is (precise claim, after a reviewer-driven re-run).* The 0.88-vs-0.77 gap is **mostly
+*What the gain actually is (precise claim, after a re-analysis).* The 0.88-vs-0.77 gap is **mostly
 the core-penalisation artifact**: in `core_disrupted`, positive and decoy differ only at the conserved core,
 and because training positives are core-preserved the energetics core penalty grows ~unboundedly with N (the
 position-weight model is capped). When the core is **held matched** and decoys differ only at a **non-core**

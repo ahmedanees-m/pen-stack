@@ -5,7 +5,7 @@ Every pre-registration in `prereg/` is frozen by a companion `prereg/SHA256_LOCK
 lock that records, for each locked file, the SHA-256 of its committed bytes. This script
 walks those locks, recomputes each hash from the committed file, and asserts it against the
 recorded value; it then writes (or checks) `prereg/PREREG_MANIFEST.md`, the full manifest of
-every lock entry plus the ten-row honesty-ledger subset cited in Table 3.
+every lock entry plus the ten-row claim ledger subset cited in Table 3.
 
 Modes:
   --check   (default) recompute every hash from the working tree and assert it matches the
@@ -14,8 +14,8 @@ Modes:
             locked file that re-hashes. Exit non-zero on any mismatch. This is what CI runs.
   --write   regenerate `prereg/PREREG_MANIFEST.md` from the locks and the ledger selection.
 
-The honesty-ledger selection (which ten of the pre-registrations bear on the paper's claims)
-is held in `prereg/honesty_ledger.json`; this script validates that every file it names is
+The claim ledger selection (which ten of the pre-registrations bear on the paper's claims)
+is held in `prereg/claim_ledger.json`; this script validates that every file it names is
 locked and re-hashes, so the Table 3 citations cannot drift from the frozen bytes.
 """
 from __future__ import annotations
@@ -29,7 +29,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PREREG = ROOT / "prereg"
 MANIFEST = PREREG / "PREREG_MANIFEST.md"
-LEDGER = PREREG / "honesty_ledger.json"
+LEDGER = PREREG / "claim_ledger.json"
 
 # The phase-0 lock is the programme origin seal: it recorded the bytes of four inputs at the start of the
 # programme, and all four were revised in later cycles, so their phase-0 hashes no longer match the current
@@ -123,7 +123,7 @@ def verify_records(records: list[dict]) -> list[str]:
 
 def load_ledger() -> list[dict]:
     if not LEDGER.is_file():
-        raise FileNotFoundError(f"honesty-ledger selection not found at {LEDGER}")
+        raise FileNotFoundError(f"claim ledger selection not found at {LEDGER}")
     return json.loads(LEDGER.read_text(encoding="utf-8"))["claims"]
 
 
@@ -167,7 +167,7 @@ def render_manifest(records: list[dict], ledger: list[dict]) -> str:
                  f"{len(superseded)} belong to the superseded phase-0 origin seal (listed at the end).")
     lines.append("")
 
-    lines.append("## Table 3 honesty-ledger pre-registrations")
+    lines.append("## Table 3 claim ledger pre-registrations")
     lines.append("")
     lines.append("The ten claims in Table 3, each with the committed pre-registration that fixed it before "
                  "scoring and that pre-registration's SHA-256.")
@@ -227,6 +227,8 @@ def render_manifest(records: list[dict], ledger: list[dict]) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true",
+                        help="re-hash every entry and assert the manifest (the default)")
     parser.add_argument("--write", action="store_true", help="regenerate prereg/PREREG_MANIFEST.md")
     args = parser.parse_args()
 

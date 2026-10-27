@@ -29,10 +29,10 @@ jobs:
       - name: Test (with coverage)
         run: pytest -q --cov=pen_stack --cov-report=xml --cov-report=term-missing
       - name: Reproducibility (make repro)
-        # Enforce the paper's reproducibility claim on every commit: recompute both headline results from
+        # Enforce the paper's reproducibility claim on every commit: recompute both primary results from
         # committed source (the human-K562 expression-robustness rho and the durability-vs-ePRIDICT
         # distinctness), verify the frozen-input integrity manifest, run the no-fabrication agent gate, and
-        # re-hash every SHA-locked pre-registration against the committed bytes (the honesty-ledger manifest).
+        # re-hash every SHA-locked pre-registration against the committed bytes (the claim ledger manifest).
         # make repro exits non-zero if any block fails, so this cannot silently rot.
         run: make repro
       - name: Upload coverage to Codecov

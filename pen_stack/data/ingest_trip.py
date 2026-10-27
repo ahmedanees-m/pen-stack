@@ -6,7 +6,7 @@ silenced/expressed label) - the supervision for the conditional chromatin-contex
 
 The model learns `local chromatin features -> expression`; it never sees the coordinate. So TRIP being
 mouse is fine: attach mouse (mES) chromatin features at these positions, train the function, then apply
-it to a human epigenome (the headline function-transfer test).
+it to a human epigenome (the primary function-transfer test).
 """
 from __future__ import annotations
 

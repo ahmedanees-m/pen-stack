@@ -65,7 +65,7 @@ def _answer(w, reach_edges: list[Edge], deliv: list[Edge]) -> dict:
     }
 
 
-# ---- multi-hop design query (the headline graph capability) ------------------------------------
+# ---- multi-hop design query (the primary graph capability) ------------------------------------
 def writers_reaching_and_deliverable(locus: str, cargo_form: str | None = None,
                                      g: Graph | None = None) -> dict:
     """Multi-hop: writers that REACH `locus` AND are DELIVERABLE_BY a vehicle (optionally carrying

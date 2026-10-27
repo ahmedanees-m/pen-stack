@@ -75,8 +75,15 @@ def export_protocol(design: dict, experiment: dict, *, target: str = "opentrons"
         raise ProtocolExportError(f"export blocked: design not legal ({v.summary()})")
     ir = _to_protocol_ir(design, experiment)
     code = _EMITTERS[target](ir)
+    # a "clear" with nothing declared is not a clearance; the distinction travels with the protocol
+    # rather than being flattened into the decision string
+    _declared = (v.safety.provenance.get("declared_signal") if v.safety else None)
+    _screen = ("unassessed" if (v.safety is not None and v.safety.decision == "clear"
+                                and _declared is False)
+               else (v.safety.decision if v.safety else None))
     return _stamp_draft(code, provenance={
         "verify": v.summary(), "safety": (v.safety.decision if v.safety else None),
+        "biosecurity_screen": _screen, "declared_signal": _declared,
         "immune_profile": v.immune_profile, # metadata travels with the protocol
         "target": target, "actor": actor,
         "note": "immune profile is a screen carrying its known-unknowns, not a patient prediction"})

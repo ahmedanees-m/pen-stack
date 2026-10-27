@@ -9,9 +9,9 @@ _ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_version_consistent_everywhere():
-    # the single released version is consistent across __init__ == pyproject == CITATION
+    # the declared version is consistent across __init__ == pyproject == CITATION
     v = pen_stack.__version__
-    assert v == "0.1.0"
+    assert v == "0.2.0"
     assert f'version = "{v}"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert f"version: {v}" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
 

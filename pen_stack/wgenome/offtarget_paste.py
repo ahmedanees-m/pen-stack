@@ -36,6 +36,6 @@ def nominate_paste(guide: str | None = None, integrase: str = "Bxb1", max_mismat
                                       "integrase off-target assay (for the installed att)."},
             "method": ("compose the validated nuclease finder (nickase, pegRNA spacer) with the semi-validated "
                        "integrase pseudo-attP scan (installed att); return both candidate sets by component"),
-            "honesty": "two component candidate sets, each with its own status; NOT a clearance. Confirm with "
+            "scope_note": "two component candidate sets, each with its own status; NOT a clearance. Confirm with "
                        "both a nuclease assay and an integrase assay.",
             "nomination_is_not_clearance": True}

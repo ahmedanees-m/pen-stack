@@ -13,7 +13,7 @@ Every number in `metrics.json` is copied verbatim from a source file, and each f
 
 This is **confirmatory face-validity, not a novel AUROC.** Per the sealed anti-circularity manifest
 (`fce43e1c68082b8a72f1a8a0492a08285a1954336bd6adc3e52a1be6281b9e38`, sealed 2026-07-05 **before** scoring), the score
-rejects annotated oncogenes **by construction** - the CancerMine `dist_oncogene` / `genotoxic_cis` layer. So a headline
+rejects annotated oncogenes **by construction** - the CancerMine `dist_oncogene` / `genotoxic_cis` layer. So a primary
 separation number is not the informative content. The informative content is: is there a **non-obvious subset**, are
 there **false-negatives**, and does the risk band **track severity**?
 

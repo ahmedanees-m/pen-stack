@@ -28,7 +28,7 @@ def build() -> str:
     lines = [
         "# PEN-STACK - De-circularized planning benchmark",
         "",
-        "The headline is the **blind safe-harbour site discovery** (a search, not a confirmation). The "
+        "The primary is the **blind safe-harbour site discovery** (a search, not a confirmation). The "
         "former targeted-intent recovery@k is a definitional artifact and is reported only as a "
         "specification-compliance property (see `docs/benchmark_circularity.md`).",
         "",
@@ -36,12 +36,12 @@ def build() -> str:
         f"- Held-out GSH: **{a3['n_positives']}** loci ({a3['n_validated']} validated + "
         f"{a3['n_candidate']} candidate) vs **{a3['n_controls']}** matched controls "
         f"(controls SHA `{a3['controls_sha256'][:12]}`, frozen before scoring).",
-        f"- **{a3['headline']}**",
+        f"- **{a3['primary']}**",
         f"- Acceptance: all-loci CI excludes chance = "
         f"{a3['acceptance']['all_loci_ci_excludes_chance']}; writability beats safety baseline = "
         f"{a3['acceptance']['writability_beats_safety_AUROC']}; validated tier underpowered = "
         f"{a3['acceptance']['validated_tier_underpowered']}.",
-        f"- Finding: {a3['honest_finding']}",
+        f"- Finding: {a3['finding']}",
         f"- Scope: {a3['scope']}",
         "",
         "## A4 - Diversified writer-family recovery",

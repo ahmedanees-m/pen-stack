@@ -144,7 +144,7 @@ def track_fig(sub, center=None):
 
 # ----------------------------------------------------------------------------- sidebar
 st.sidebar.markdown("## PEN-STACK")
-st.sidebar.caption("The Writable Genome | v0.1.0")
+st.sidebar.caption("The Writable Genome | v0.2.0")
 page = st.sidebar.radio("Navigate", ["Overview", "Forward query", "Site finder (inverse)",
                                      "Atlas browser", "Validation", "Cross-cell-type",
                                      "Writer Atlas", "Write Planner", "Bridge design", "Guide QC",
@@ -445,7 +445,7 @@ elif page == "Bridge design":
 elif page == "Write Planner":
     st.markdown("### Write Planner - *inverse design*")
     st.caption("goal + edit_intent -> ranked, traceable site x writer x cargo x delivery plans. "
-               "edit_intent is load-bearing (an in-gene site ranks high for knock-in, low for safe-harbour).")
+               "edit_intent is primary (an in-gene site ranks high for knock-in, low for safe-harbour).")
     gene = st.text_input("Target gene", "TRAC")
     intent = st.selectbox("Edit intent", ["knock_in_with_disruption", "safe_harbour_insertion",
                                           "high_durability_insertion", "regulatory_excision", "repeat_excision"])
@@ -683,7 +683,7 @@ elif page == "Genome-Writing Bench":
     st.markdown("### Genome-Writing Bench v0.2 - *the writing-side benchmark*")
     st.caption("Tasks with deterministic scorers and documented ground truth; no task is scored against "
                "a circular label. v0.2 adds the TRUST tasks - calibration (T8), selective prediction (T9), "
-               "OOD honesty (T10), out-of-scope refusal (T11) - contrasting the uncertainty-aware agent with "
+               "OOD flagging (T10), out-of-scope refusal (T11) - contrasting the uncertainty-aware agent with "
                "an over-confident baseline. The planner is also compared to a naive baseline and a grounded "
                "LLM agent that cannot fabricate.")
     from pen_stack._resources import project_root
@@ -708,6 +708,6 @@ elif page == "Genome-Writing Bench":
                "Submissions: benchmarks/genome_writing_bench/SUBMISSIONS.md.")
 
 st.markdown("---")
-st.caption("PEN-STACK v0.1.0 | Writable Genome + Writer Atlas + Write Planner + Genome-Writing Bench + "
+st.caption("PEN-STACK v0.2.0 | Writable Genome + Writer Atlas + Write Planner + Genome-Writing Bench + "
            "PEN-Agent | decision-support, not a clinical directive | every score traceable to public data "
            "+ a pre-registered model.")

@@ -94,7 +94,7 @@ def test_energetics_fit_score_and_serialize():
 
 
 def test_energetics_decoy_constructions():
-    # the reviewer-driven core_preserved decoy must keep the core matched and flip only a non-core position
+    # the core_preserved decoy must keep the core matched and flip only a non-core position
     import random
 
     from pen_stack.validate.offtarget_energetics_eval import _CORE0, _make_decoy

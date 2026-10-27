@@ -8,7 +8,7 @@ Scope, stated plainly: this is a useful catalogue feature that recovers KNOWN en
 variant-design method. For GENERATING new variants the established engine is EVOLVEpro - when PEN-STACK
 reaches generative variant design it should wrap EVOLVEpro rather than rebuild it. The 72-system ortholog
 screen (Table S1) carries no per-system activity label, so it supports only the descriptive characterisation
-in ortholog_screen.py (N ~72, exploratory). The headline deliverable is the off-target screening engine.
+in ortholog_screen.py (N ~72, exploratory). The primary deliverable is the off-target screening engine.
 """
 from __future__ import annotations
 

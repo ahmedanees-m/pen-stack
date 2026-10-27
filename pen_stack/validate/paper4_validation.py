@@ -1,6 +1,6 @@
 """Paper 4 validation - off-target engine vs naive Hamming.
 
-The headline criterion that does NOT need the paywalled measured data: the position-weight model is
+The primary criterion that does NOT need the paywalled measured data: the position-weight model is
 strictly more informative than a position-blind Hamming ranking. On a controlled set of pseudosites with
 the SAME mismatch count but different positions, the model ranks biologically plausible off-targets
 (distal mismatches, core preserved) above implausible ones (central CT core disrupted), while Hamming

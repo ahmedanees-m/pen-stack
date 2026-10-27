@@ -1,4 +1,4 @@
-"""Cross-module universe consistency - the headline fix.
+"""Cross-module universe consistency - the primary fix.
 
 One canonical assembly path; the classifier/scorer/scorecard must consume identical metadata.
 """

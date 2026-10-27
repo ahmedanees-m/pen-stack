@@ -14,9 +14,10 @@ intractable; verification, and repairing a failed-on-legality design, is tractab
 """
 from __future__ import annotations
 
-from typing import Any
+from types import MappingProxyType
+from typing import Any, Mapping, Sequence
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 from pen_stack.planner.delivery_vehicles import names as _vehicle_names
 from pen_stack.planner.delivery_vehicles import vehicle as _vehicle
@@ -27,23 +28,89 @@ from pen_stack.verify.service import verify
 AXES = ("legality", "confidence", "biosecurity")
 
 
+def _freeze(v: Any) -> Any:
+    """Recursively replace mappings with read-only views and sequences with tuples.
+
+    ``frozen`` blocks attribute assignment but not mutation of a mutable field value, so a proof
+    carrying plain dicts and lists would stay writable through its own fields: a caller handed a
+    failed proof could clear ``violated``, rewrite ``evidence``, or edit the repair hint in place.
+    Applied to the nested containers for the same reason ``Provenance.extra`` is deep-frozen."""
+    if isinstance(v, Mapping):
+        return MappingProxyType({k: _freeze(x) for k, x in v.items()})
+    if isinstance(v, (list, tuple)):
+        return tuple(_freeze(x) for x in v)
+    return v
+
+
+def _thaw(v: Any) -> Any:
+    """Plain JSON types for the serialisers: a mappingproxy is not JSON-serialisable and the proof
+    crosses the REST and MCP boundaries."""
+    if isinstance(v, Mapping):
+        return {k: _thaw(x) for k, x in v.items()}
+    if isinstance(v, (list, tuple)):
+        return [_thaw(x) for x in v]
+    return v
+
+
 class AxisProof(BaseModel):
+    """Immutable (frozen): one axis verdict as the verifier computed it.
+
+    Frozen so an agent step or a downstream transform cannot turn a failing axis into a passing one,
+    drop the rule that fired, or edit the repair hint on a proof it was handed."""
+    model_config = ConfigDict(frozen=True)
+
     axis: str # one of AXES
     status: str # pass | fail | abstain | refuse | escalate | flag | deferred
     ok: bool # True when this axis does not block (pass/flag/clear; abstain is ok-but-uncertain for confidence)
-    violated: list[dict[str, Any]] = Field(default_factory=list) # the rule(s)/signature(s) that fired
-    evidence: dict[str, Any] = Field(default_factory=dict)
-    repair_hint: dict[str, Any] | None = None # {text, repair?: {field, set_to}} | None
+    violated: Sequence[Mapping[str, Any]] = Field(default_factory=tuple) # the rule(s)/signature(s) that fired
+    evidence: Mapping[str, Any] = Field(default_factory=dict)
+    repair_hint: Mapping[str, Any] | None = None # {text, repair?: {field, set_to}} | None
+
+    @field_validator("violated", "evidence", "repair_hint")
+    @classmethod
+    def _deep_freeze(cls, v: Any) -> Any:
+        return _freeze(v)
+
+    @field_serializer("violated", "evidence", "repair_hint")
+    def _ser(self, v: Any) -> Any:
+        return _thaw(v)
 
 
 class Proof(BaseModel):
-    design: dict[str, Any]
+    """Immutable (frozen): the per-axis proof object as returned.
+
+    The same guarantee the oracle result type carries, extended to the verification surface: once
+    ``verify_proof`` has returned, ``passable``, ``no_fabrication``, the axes and the provenance
+    cannot be rewritten by ordinary attribute assignment. Build a changed copy with
+    ``model_copy(update=...)`` if a transform genuinely needs one."""
+    model_config = ConfigDict(frozen=True)
+
+    design: Mapping[str, Any]
     write_type: str
-    axes: list[AxisProof]
+    axes: Sequence[AxisProof]
     collapsed: None = None # the three axes are NEVER fused into one verdict
     passable: bool # legality passes AND biosecurity does not refuse/escalate (confidence may abstain)
     no_fabrication: bool = True
-    provenance: dict[str, Any] = Field(default_factory=dict)
+    provenance: Mapping[str, Any] = Field(default_factory=dict)
+
+    @field_validator("design", "provenance")
+    @classmethod
+    def _deep_freeze(cls, v: Any) -> Any:
+        return _freeze(v)
+
+    @field_validator("axes")
+    @classmethod
+    def _tuple_axes(cls, v: Any) -> Any:
+        return tuple(v)
+
+    @field_serializer("design", "provenance")
+    def _ser(self, v: Any) -> Any:
+        return _thaw(v)
+
+    @field_serializer("axes")
+    def _ser_axes(self, v: Sequence[AxisProof]) -> list[dict[str, Any]]:
+        """A list, not the stored tuple, so the REST and MCP payload shape is unchanged by the freeze."""
+        return [a.model_dump() for a in v]
 
     def axis(self, name: str) -> AxisProof:
         return next(a for a in self.axes if a.axis == name)
@@ -168,6 +235,22 @@ def _biosecurity_axis(v: Verdict) -> AxisProof:
         hint = {"text": "this design matches a controlled-hazard signature; it is not auto-repairable. "
                         "Route to institutional biosafety / IBC review. (No actionable repair is provided.)",
                 "repair": None}
+    # "clear" carries two different meanings: screened and nothing found, or nothing screenable was
+    # declared so nothing ran. The verdict distinguishes them through provenance.declared_signal, which
+    # a caller branching on a status cannot see, so the second case gets its own status here.
+    # `ok` stays True because it does not block: a design whose cargo is not yet declared is a normal
+    # intermediate state, and no hazard was found. What changes is that the axis no longer reports a
+    # clearance it did not make.
+    unassessed = s.decision == "clear" and s.provenance.get("declared_signal") is False
+    if unassessed:
+        return AxisProof(
+            axis="biosecurity", status="unassessed", ok=True,
+            evidence={"decision": s.decision, "reason": s.reason, "declared_signal": False,
+                      "is_clearance": False},
+            repair_hint={"text": "nothing screenable was declared, so no screen ran. Declare the cargo "
+                                 "function, cargo sequence, domain tags or source taxon and re-verify. "
+                                 "This is not a clearance.",
+                         "repair": None})
     return AxisProof(axis="biosecurity", status=s.decision, ok=not blocked,
                      violated=sigs, evidence={"decision": s.decision, "reason": s.reason}, repair_hint=hint)
 

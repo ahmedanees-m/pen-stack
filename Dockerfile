@@ -1,10 +1,10 @@
-# PEN-STACK 0.1.0 - a reproducible image for the genome-writing science stack.
+# PEN-STACK 0.2.0 - a reproducible image for the genome-writing science stack.
 # Portable: no GPU, builds and runs on any machine with Docker.
 #
-#   docker build -t pen-stack:0.1.0 .
-#   docker run --rm pen-stack:0.1.0                  # reproduce the committed-data results (make repro)
-#   docker run --rm pen-stack:0.1.0 pytest -q        # run the full test suite
-#   docker run --rm pen-stack:0.1.0 pen-stack info   # stack status
+#   docker build -t pen-stack:0.2.0 .
+#   docker run --rm pen-stack:0.2.0                  # reproduce the committed-data results (make repro)
+#   docker run --rm pen-stack:0.2.0 pytest -q        # run the full test suite
+#   docker run --rm pen-stack:0.2.0 pen-stack info   # stack status
 #
 # This installs the core package with its test and benchmark dependencies - the exact set the CI runs and
 # the same one verified end to end on a clean clone. The one non-pip system dependency is libgomp1, the
@@ -21,7 +21,7 @@
 FROM python:3.12-slim
 
 LABEL org.opencontainers.image.title="PEN-STACK" \
-      org.opencontainers.image.version="0.1.0" \
+      org.opencontainers.image.version="0.2.0" \
       org.opencontainers.image.source="https://github.com/ahmedanees-m/pen-stack" \
       org.opencontainers.image.description="Open infrastructure for genome writing (the Writable Genome)." \
       org.opencontainers.image.licenses="MIT"

@@ -11,8 +11,8 @@ its role. Machine-readable pins (versions, retrieval dates, checksums) are in
   (`data/demo/`), the committed benchmark metrics and frozen splits (`benchmarks/*/`), the offline transcript
   cache (`data/llm_bench_cache/`), and the derived Leemans K562 features table
   (`benchmarks/position_effect_human/leemans_scored_input.parquet`, 0.5 MB) that `make repro-human` uses to
-  **recompute the headline expression-robustness result from source**. These let a fresh clone run the
-  quickstart, recompute the headline number, and replay every benchmark with no download.
+  **recompute the primary expression-robustness result from source**. These let a fresh clone run the
+  quickstart, recompute the primary number, and replay every benchmark with no download.
 - **Fetched from the Zenodo deposit** with `scripts/fetch_artifacts.sh` (set `ZENODO_DOI`): the full
   genome-wide Writable-Genome atlases (`atlas_{k562,hepg2,hspc}.parquet`), their BigWig tracks and top-site
   BED files, `gene_coords.parquet`, and the trained models (`durability.pkl`, `safety_{ct}.pkl`, the
@@ -62,8 +62,9 @@ appears as a shipped derived-data source. See [`DATA_LICENSES.md`](DATA_LICENSES
 
 ## The Zenodo deposit
 
-The archived version of record and its supporting data are on Zenodo: concept DOI
-[10.5281/zenodo.21787136](https://doi.org/10.5281/zenodo.21787136) (newest version), version DOI
-[10.5281/zenodo.21787137](https://doi.org/10.5281/zenodo.21787137) (pins v0.1.0). The deposit contains the derived data described above (atlases, tracks, models), the frozen
+The archived version of record and its supporting data are on Zenodo under the concept DOI
+[10.5281/zenodo.21787136](https://doi.org/10.5281/zenodo.21787136), which resolves to the newest version;
+the first release is pinned by its own version DOI, [10.5281/zenodo.21787137](https://doi.org/10.5281/zenodo.21787137).
+The deposit contains the derived data described above (atlases, tracks, models), the frozen
 benchmark splits with their SHA-256 locks, the pre-registrations, the data and model cards, the offline
 oracle cache, and a snapshot of the tagged source. Licensed raw data is listed by accession only.

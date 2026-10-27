@@ -107,7 +107,7 @@ def retrospective_recovery(proposals: pd.DataFrame, known_variants: list[str], k
     """Blind-validation harness: does the top-k proposal set recover a published enhanced variant?
 
     ``known_variants`` are 1-based strings like "A123V". Returns recovery flags per known variant and an
-    overall hit. With the DMS model this is the headline retrospective criterion; with the
+    overall hit. With the DMS model this is the primary retrospective criterion; with the
     baseline it merely demonstrates the harness runs (recovery is not expected from the placeholder).
     """
     topk = set(proposals.head(k)["variant"])

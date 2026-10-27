@@ -97,7 +97,7 @@ def retrospective_active_learning(dataset=None, strategies=("active", "random", 
         "curves": {s: _mean_ci(c) for s, c in curves.items()},
         "active_vs_random": gap,
         "active_beats_random": gap["active_beats_random"],
-        "honest_note": ("active learns faster than random (curve-area CI excludes 0)" if gap["active_beats_random"]
+        "note": ("active learns faster than random (curve-area CI excludes 0)" if gap["active_beats_random"]
                         else "active does NOT beat random on this data (CI spans 0) - reported, not hidden; "
                              "not-yet-useful is a valid outcome"),
         "no_fabrication": True,

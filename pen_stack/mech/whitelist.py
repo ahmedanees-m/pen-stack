@@ -4,7 +4,7 @@ Tier-A of MECH-CLASS: maps a Pfam domain architecture to a mechanism bucket
 (``DSB_NUCLEASE`` / ``DSB_FREE_TRANSEST_RECOMBINASE`` / ``TRANSPOSASE``) using domain presence plus
 *composite co-occurrence rules* (e.g. Cas9 requires >=2 of its 3 signature domains; IS110 requires
 both PF01548 and PF02371). This is the audited backbone the program carries forward (Section 9); the retired
-ESM-2 discovery head is not used - domain evidence is the load-bearing mechanism signal.
+ESM-2 discovery head is not used - domain evidence is the primary mechanism signal.
 
 The source YAML ``pfam_whitelist.yaml`` is the genome-atlas asset, accessions verified against InterPro
 on 2026-04-22 (v1.2.1 corrected three v1.2.0 accession errors).

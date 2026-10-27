@@ -8,7 +8,7 @@ reasoning/tool-use (default `provider: nvidia`, NVIDIA Nemotron, free, OpenAI-co
 **fallback** to the local Ollama model (`fallback: ollama`), then to a deterministic no-LLM path. To use
 the hosted model, provide a key via the `NVIDIA_API_KEY` env var or a gitignored `configs/nvidia_api_key.txt`
 (in docker-compose, pass it to the `api`/`ui`/`mcp` services as `NVIDIA_API_KEY`). To run fully local,
-set `provider: ollama`. The LLM is non-load-bearing - all numbers/citations come from validated tools.
+set `provider: ollama`. The LLM is non-primary - all numbers/citations come from validated tools.
 
 ## Prerequisites
 - Docker + Docker Compose, an NVIDIA GPU (16 GB is enough) with the NVIDIA Container Toolkit.

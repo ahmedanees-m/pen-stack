@@ -45,7 +45,7 @@ def test_b1_offline_contract():
         # significance, not as a bare point estimate.
         assert r["delta_ci95"] is not None and len(r["delta_ci95"]) == 2
         assert r["delta_ci95"][0] <= r["delta"] <= r["delta_ci95"][1]
-        assert "delta_ci_excludes_zero" in r and "honest_finding" in r
+        assert "delta_ci_excludes_zero" in r and "finding" in r
         assert r["trip_trained_spearman_ci95"] is not None
         assert r["endogenous_proxy_spearman_ci95"] is not None
 
@@ -67,15 +67,15 @@ def test_b3_headline_is_absolute_discrimination_not_delta():
     from pen_stack.wgenome.gsh_baseline import run
     r = run()
     # HEADLINE must be the learned model's ABSOLUTE discrimination with CI + N, never a delta vs the rule.
-    assert "headline" in r and "AUROC" in r["headline"] and "95% CI" in r["headline"] and "N=" in r["headline"]
+    assert "primary" in r and "AUROC" in r["primary"] and "95% CI" in r["primary"] and "N=" in r["primary"]
     assert r["auroc_learned_ci95"][0] <= r["auroc_learned_writability"] <= r["auroc_learned_ci95"][1]
     # The distance rule is a QUALITATIVE failure case (near/below chance because harbours are intragenic),
-    # NOT a number to headline a delta against. Validated-8 rule score is at/below chance.
+    # NOT a number to primary a delta against. Validated-8 rule score is at/below chance.
     assert "rule_qualitative_finding" in r and "intragenic" in r["rule_qualitative_finding"]
     assert r["auroc_gsh_ruleset_validated_tier"] is not None and r["auroc_gsh_ruleset_validated_tier"] <= 0.5
     # The delta is demoted to a diagnostic and reported WITH its CI (which includes zero - not significant).
     assert "delta_DIAGNOSTIC_not_headline" in r
     assert r["delta_ci95"] is not None and len(r["delta_ci95"]) == 2
-    assert "delta_ci_excludes_zero" in r and "honest_finding" in r
+    assert "delta_ci_excludes_zero" in r and "finding" in r
     assert "DEMOTED" in r["genotoxic_cis_auroc"] # circular metric must stay demoted
     assert r["n_positives"] >= 16 # scaled gold set

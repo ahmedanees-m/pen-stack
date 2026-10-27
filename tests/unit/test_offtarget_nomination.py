@@ -2,7 +2,7 @@
 
 CI-safe: the Off-Target-Bench fixture (real validated off-targets + cached CRISOT scores) and the derived
 calibration/metrics are committed; the licensed CRISOT predictor runs only on the VM and is never redistributed.
-Asserts: the real learned predictor beats the homology baseline (full-data headline); the nominator ranks
+Asserts: the real learned predictor beats the homology baseline (full-data primary); the nominator ranks
 validated off-targets, abstains without inputs, and never claims a clearance; the integrase pseudo-attB scan uses
 the real Bxb1 attB core; bridge delegates; the assay recommender is grounded; provenance DOIs grounded.
 """

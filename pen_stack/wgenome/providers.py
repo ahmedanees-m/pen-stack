@@ -8,7 +8,7 @@ provider-agnostic interface so the rest of PEN-STACK never imports `alphagenome`
   * contact_map(interval) -> predicted Hi-C contact matrix (3D structural-risk feature)
 
 Design rules (match the rest of the stack):
-  * The LLM and the provider are NON-load-bearing for reproducibility - every cached value is keyed by an
+  * The LLM and the provider are NON-primary for reproducibility - every cached value is keyed by an
     explicit (assembly, interval, output, ontology) tuple and written to disk, so a run is reproducible
     offline from the cache without re-querying the API.
   * The API key is read from env (ALPHAGENOME_API_KEY) or a gitignored file; NEVER committed.

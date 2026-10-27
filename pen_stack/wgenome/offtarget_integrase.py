@@ -117,7 +117,7 @@ def nominate_integrase(integrase: str = "Bxb1", top: int = 20) -> dict:
                            "similarity is INSUFFICIENT to rank these sites (the signal is real but needs a learned "
                            "model, not raw identity). Reported verbatim."),
                 "confirm_assay": _CONFIRM,
-                "honesty": "verified documented pseudosites (grounded facts) PLUS an explicit capability disclosure: "
+                "scope_note": "verified documented pseudosites (grounded facts) PLUS an explicit capability disclosure: "
                            "sequence-similarity scanning does not reliably rank them; NOT a clearance. Confirm "
                            "empirically.",
                 "nomination_is_not_clearance": True}
@@ -150,6 +150,6 @@ def nominate_integrase(integrase: str = "Bxb1", top: int = 20) -> dict:
                        "the sealed PhiC31 recall benchmark is NEGATIVE (sequence similarity is insufficient to "
                        "rank pseudo-attP; the signal is real but needs a learned model, per IntQuery)."),
             "confirm_assay": _CONFIRM,
-            "honesty": "genome-wide pseudo-attP candidates by att similarity; sequence similarity is insufficient "
+            "scope_note": "genome-wide pseudo-attP candidates by att similarity; sequence similarity is insufficient "
                        "to rank them (sealed-negative benchmark) -> mechanism-based, confirm empirically. NOT a clearance.",
             "nomination_is_not_clearance": True}

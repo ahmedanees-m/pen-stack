@@ -11,23 +11,24 @@
 # Idempotent: already-downloaded files (matching size) and already-installed files (identical bytes) are
 # skipped. Verifies integrity with `sha256sum -c` against the deposit's own SHA256SUMS manifest.
 #
-# Defaults to the v0.1.0 version DOI so a fresh clone fetches the exact data v0.1.0 was scored on.
-# Export ZENODO_DOI to pull a different release; the concept DOI 10.5281/zenodo.21787136 always
-# resolves to the newest one.
+# Defaults to the concept DOI, which resolves to the newest deposit. That deposit is self-contained: it
+# carries the repository archive, the atlas rasters, the trained models and the analysis records together.
+# Export ZENODO_DOI to pin one release instead.
 #
 # NOTE (licensed sources): this fetches the OPEN release only. License-restricted enrichment sources
 # (COSMIC Cancer Gene Census, OncoKB) are NEVER redistributed here - see scripts/fetch_licensed_sources.py,
 # which documents your own registered download under your own license.
 #
 #     bash scripts/fetch_artifacts.sh              # fetch + verify + install into data/out/ and models/
-#     ZENODO_DOI=10.5281/zenodo.21787137 bash scripts/fetch_artifacts.sh   # a different release
+#     ZENODO_DOI=10.5281/zenodo.21787137 bash scripts/fetch_artifacts.sh   # pin the first release
 #     PEN_ATLAS_DIR=/some/other/dir bash scripts/fetch_artifacts.sh   # override the atlas destination
 # ---------------------------------------------------------------------------------------------------
 set -euo pipefail
 
 # --- 0. configuration ------------------------------------------------------------------------------
-# The version DOI of the Zenodo deposit, pinned to v0.1.0 for reproducibility.
-ZENODO_DOI="${ZENODO_DOI:-10.5281/zenodo.21787137}"
+# The concept DOI of the Zenodo deposit. The Zenodo API resolves a concept record id to the newest
+# version, so this tracks the current deposit; export ZENODO_DOI to pin one.
+ZENODO_DOI="${ZENODO_DOI:-10.5281/zenodo.21787136}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"

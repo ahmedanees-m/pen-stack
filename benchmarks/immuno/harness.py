@@ -175,7 +175,7 @@ def run() -> dict:
         "min_n_to_validate": _MIN_N,
         "calibrate_axis_output": cal,
         "interpretation": (
-            "This is the load-bearing entry. No paired (proxy, observed ADA incidence) dataset exists at "
+            "This is the primary entry. No paired (proxy, observed ADA incidence) dataset exists at "
             "the pre-registered power, so the gate refuses to promote the axis and it ships as a "
             "mechanistic proxy. The refusal is the result: it is a recorded null, not a pending run."
         ),

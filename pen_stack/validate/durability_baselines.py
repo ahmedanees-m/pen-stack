@@ -164,7 +164,7 @@ def endogenous_expression_baseline(n_sample: int = 150, seed: int = 20260604,
                               if (sp_trip - sp_proxy) >= margin else
                               "endogenous expression explains most of the durability signal at this sample; "
                               "reframe durability novelty toward integration-site genotoxicity (prereg downgrade)",
-            "honest_finding": ("the TRIP-trained vs endogenous-proxy difference is NOT distinguishable from "
+            "finding": ("the TRIP-trained vs endogenous-proxy difference is NOT distinguishable from "
                                "noise at this pilot N - the paired delta 95% CI includes zero"
                                if delta_ci and not delta_ci_excludes_zero else
                                "the TRIP-trained model beats the endogenous proxy and the paired delta 95% CI "

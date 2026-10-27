@@ -38,8 +38,8 @@ def test_blind_gsh_discovery_scaled():
     # Signal: writability beats the safety baseline; the all-loci CI lower bound is above chance.
     assert allb["auroc_writability"] > allb["auroc_safety_baseline"]
     assert r["acceptance"]["all_loci_ci_excludes_chance"] is True
-    # The headline must never be a bare point estimate - it carries the CI and N.
-    assert "95% CI" in r["headline"] and "N=" in r["headline"]
+    # The primary must never be a bare point estimate - it carries the CI and N.
+    assert "95% CI" in r["primary"] and "N=" in r["primary"]
 
 
 @pytest.mark.skipif(

@@ -102,7 +102,7 @@ def run(out: str | Path = _OUT, seed: int = 20260608, train_frac: float = 0.5) -
     w = position_weights() # the measured position-weight model (the 0.77 baseline)
 
     # The shipping gate uses core_disrupted (comparable to the published 0.77). The core_preserved mode is the
-    # reviewer-driven diagnostic that isolates whether NON-core substitution identity is the source of the gain.
+    # diagnostic that isolates whether NON-core substitution identity is the source of the gain.
     cd = _eval_mode(test, model, w, "core_disrupted", seed)
     cp = _eval_mode(test, model, w, "core_preserved", seed)
 

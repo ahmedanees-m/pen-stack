@@ -77,8 +77,8 @@ def _run_real(protocol_ir: dict, design: dict): # pragma: no cover - a real lab 
 
 def loop_converges_faster_than_random(reps: int = 15, rounds: int = 6) -> dict:
     """The loop's active Learn stage reaches a target model quality in FEWER rounds than random,
-    proven retrospectively with reps + a bootstrap CI (the convergence headline; reuses the prior validation)."""
+    proven retrospectively with reps + a bootstrap CI (the convergence primary; reuses the prior validation)."""
     from pen_stack.active.validate import retrospective_active_learning
     r = retrospective_active_learning(reps=reps, rounds=rounds)
     return {"reaches_optimum_faster_than_random": r["active_beats_random"],
-            "active_vs_random_ci": r["active_vs_random"]["ci"], "honest_note": r["honest_note"]}
+            "active_vs_random_ci": r["active_vs_random"]["ci"], "note": r["note"]}

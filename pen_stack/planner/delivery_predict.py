@@ -22,7 +22,7 @@ import yaml
 
 from pen_stack._resources import project_root, resource
 
-# Delivery-Bench headline (REAL FLIP-AAV result; learned vs mutation-burden baseline, Spearman, bootstrap CI).
+# Delivery-Bench primary (REAL FLIP-AAV result; learned vs mutation-burden baseline, Spearman, bootstrap CI).
 # Filled from benchmarks/delivery/capsid_fitness_metrics.json (computed on the VM); kept in-code so the axis is
 # available everywhere (CI / bare wheel / live app) without the licensed data tree.
 CAPSID_FITNESS_BENCH = {
@@ -192,5 +192,5 @@ def recommend_delivery_plus(cargo_form: str, cargo_bp: int | None = None, target
     return {**base, "serotype": serotype, "target_tissue": target_tissue, "serotype_tropism_prior": tropism,
             "capsid_fitness": {"capability": "learned FLIP-AAV capsid-fitness (call capsid_fitness(vp1_seq))",
                                "bench": _bench_metrics().get("mut_des") or CAPSID_FITNESS_BENCH},
-            "honesty": "tropism is a grounded prior for approved serotypes, a known-unknown otherwise; predicted "
+            "scope_note": "tropism is a grounded prior for approved serotypes, a known-unknown otherwise; predicted "
                        "capsid-fitness is a candidate for the measured packaging axis; no fabricated tropism."}

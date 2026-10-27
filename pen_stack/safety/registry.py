@@ -8,7 +8,7 @@ is a safeguard, not a guarantee, and not a substitute for institutional biosafet
 The matcher is intentionally EXPLICIT (keyword/Pfam/alias tokens from the curated config), not a heuristic:
 a safety control should be auditable. Flags come ONLY from the registry (or, when enabled, a wrapped external
 screener), never fabricated. The function screen is what catches an AI-designed homolog: a low-identity
-sequence still carries a hazardous FUNCTION annotation, and function, not homology, is the load-bearing axis.
+sequence still carries a hazardous FUNCTION annotation, and function, not homology, is the primary axis.
 """
 from __future__ import annotations
 

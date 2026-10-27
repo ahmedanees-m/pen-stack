@@ -10,7 +10,7 @@ reproducible, SHA-locked suite with a baseline leaderboard.
 
 **v0.2:** four TRUST tasks contrasting the uncertainty-aware agent with an over-confident baseline.
 **T8** calibration (conformal coverage vs nominal), **T9** selective prediction (does abstaining improve
-accuracy?), **T10** OOD honesty (flag extrapolation vs over-answer), **T11** out-of-scope refusal (defer
+accuracy?), **T10** OOD flagging (flag extrapolation vs over-answer), **T11** out-of-scope refusal (defer
 known-unknowns vs fabricate). This extends the story from "grounding separates agents" to "calibration +
 scope-awareness separates *trustworthy* agents."
 
@@ -41,7 +41,7 @@ scope-awareness separates *trustworthy* agents."
 | T7 ungrounded contrast | `ungrounded_llm_contrast` | fabrication rate of the same models with no tools | cached LLM transcripts |
 | **T8 calibration** | `calibration_coverage` | conformal coverage vs nominal (vs uncalibrated) | held-out TRIP (N=11,433) |
 | **T9 selective prediction** | `selective_prediction_usefulness` | accuracy of high-conf decile vs no abstention | held-out TRIP risk-coverage |
-| **T10 OOD honesty** | `ood_honesty` | OOD flag rate (vs over-confident never-flags) | constructed OOD set (deterministic) |
+| **T10 OOD flagging** | `ood_honesty` | OOD flag rate (vs over-confident never-flags) | constructed OOD set (deterministic) |
 | **T11 out-of-scope** | `out_of_scope_refusal` | deferral rate (vs ungrounded no-scope) | known-unknowns registry |
 
 ## Solvers

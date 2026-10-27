@@ -165,7 +165,7 @@ def test_generative_capsids_are_candidates_or_abstain():
     assert g["output_kind"] == "candidate"
     if g["available"]:
         assert all(c["output_kind"] == "candidate" for c in g["candidates"])
-        assert "not claimed" in g["honesty"].lower() or "candidate" in g["honesty"].lower()
+        assert "not claimed" in g["scope_note"].lower() or "candidate" in g["scope_note"].lower()
     else:
         assert g["abstain"] is True
 

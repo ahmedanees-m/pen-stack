@@ -104,7 +104,7 @@
   },
   "verdict": "learned_model_null",
   "verdict_source": "P3_RESULT.json line 38",
-  "honest_reading": {
+  "reading": {
     "strict_sealed_rule": "learned_model_validated required beating BOTH baselines on BOTH AUROC and AUPRC with the bootstrap 95% CI of each difference excluding 0 (N>=30, by-chromosome CV). The model does NOT clear this bar because it does not improve AUROC over attP-similarity (AUROC diff CI [-0.0537, 0.0651] includes 0). Sealed verdict: learned_model_null.",
     "precision_recall_gain": "On AUPRC, the operationally-relevant rare-positive retrieval metric (prevalence 0.0491), the learned model beats BOTH baselines with CI excluding 0: AUPRC 0.2154 vs 0.0944 (attP-similarity) and 0.0548 (palindrome), roughly 2-4x the baselines and >4x prevalence.",
     "what_the_null_teaches": "At proper power (N=115, GC-matched genomic negatives) canonical-attP sequence similarity is itself a moderate predictor (AUROC 0.6317). So the earlier N=3 open-subset conclusion that sequence identity sits below chance does NOT generalize to the well-powered set; identity carries real ranking signal, and the learned model matches (not beats) it on AUROC while improving precision.",

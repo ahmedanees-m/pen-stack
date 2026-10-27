@@ -42,6 +42,6 @@ def nominate_bridge(target_core: str | None = None, writer_family: str = "bridge
             "engine": res,
             "method": ("seed on the central core (CT), verify the bipartite ~14-nt target with tolerated "
                        "mismatches, score by the measured DMS specificity (position + substitution identity)"),
-            "honesty": ("mechanism-based CANDIDATES with a DMS-grounded mismatch-tolerance model; NOT a validated "
+            "scope_note": ("mechanism-based CANDIDATES with a DMS-grounded mismatch-tolerance model; NOT a validated "
                         "genome-wide predictor (no cellular assay exists) and NOT a clearance."),
             "nomination_is_not_clearance": True}

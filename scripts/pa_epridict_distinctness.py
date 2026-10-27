@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Recompute the ePRIDICT-distinctness headline (Spearman rho and variance-partition R-squared) from source.
+"""Recompute the ePRIDICT-distinctness primary (Spearman rho and variance-partition R-squared) from source.
 
 The prior-art claim is that PEN-STACK's durability axis (p_durable) is DISTINCT from ePRIDICT's integration
 efficiency, not a renamed version of it. This reads the committed merged per-locus score table

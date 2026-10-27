@@ -55,7 +55,7 @@ def delivery_immune_tradeoff(cargo_form: str, cargo_bp: int | None = None, targe
                              "(pre-existing NAbs, capsid CD8, dose-dependent innate sensing); higher dose raises both "
                              "transduction AND immunogenicity. The tradeoff is surfaced per vehicle, never collapsed."),
         "known_unknowns": ["in_vivo_immunogenicity_magnitude", "patient_specific_titer", "realized_dose_response"],
-        "honesty": "immune axes are population-level proxies; realized magnitude/titer is a known-unknown; "
+        "scope_note": "immune axes are population-level proxies; realized magnitude/titer is a known-unknown; "
                    "this is decision-support, NOT a clinical dosing directive. No collapsed score.",
         "no_fabrication": True,
     }

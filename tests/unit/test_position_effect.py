@@ -185,6 +185,6 @@ def test_real_trip_factored_beats_durability_head_when_available():
     from pen_stack.twin.position_effect import evaluate
     df = ped.load_position_effect(["TRIP_Akhtar2013"])
     e = evaluate(df)["expression"]
-    # the headline: factored model beats the context-only durability head, CI excludes zero
+    # the primary: factored model beats the context-only durability head, CI excludes zero
     assert e["rho_factored"] > e["rho_context_only_durability_head"]
     assert e["delta_factored_vs_context"]["excludes_zero"] is True

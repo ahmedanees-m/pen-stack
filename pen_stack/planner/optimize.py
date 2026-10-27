@@ -2,7 +2,7 @@
 
 Given a goal (gene/locus, edit_intent, cargo, cell type), search destination x writer for the joint
 optimum of safety x durability x reachability x writer-activity, conditioned on an explicit
-``edit_intent``. The intent is *load-bearing*: its ``target_gene_sign`` decides whether hitting the
+``edit_intent``. The intent is *primary*: its ``target_gene_sign`` decides whether hitting the
 named target gene/element is penalised (safe-harbour: avoid) or rewarded (knock-in / excision: intended)
 - so the same locus ranks high or low depending only on the stated goal.
 

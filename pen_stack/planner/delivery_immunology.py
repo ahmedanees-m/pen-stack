@@ -50,7 +50,7 @@ def safety_efficacy_profile(name: str) -> dict | None:
       * ``immune_score`` = 1 - mean(immune-burden axes)/2 (1 = least immunogenic)
       * ``genotox_score`` = 1 - genotoxicity/2 (1 = least insertional/oncogenic risk)
       * ``efficacy_score`` = efficacy/2 (1 = most efficacious)
-    plus a headline ``safety_score = min(immune_score, genotox_score)``, a precautionary worst-axis aggregation
+    plus a primary ``safety_score = min(immune_score, genotox_score)``, a precautionary worst-axis aggregation
     so a vehicle is only as "safe" as its WORST safety dimension (a non-immunogenic but genotoxic vector is not
     called safe). Also returns the documented tradeoff sentence, curated DOIs, and the standing scope flag that
     the immune MAGNITUDE is not predicted. Returns ``None`` for an unknown vehicle; invents no number."""

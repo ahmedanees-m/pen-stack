@@ -70,14 +70,14 @@ def agentic() -> None:
 
 
 def headline_metrics() -> None:
-    hr("4. Benchmark headline metrics (the primary result is recomputed from source; secondaries are echoed)")
+    hr("4. Benchmark primary metrics (the primary result is recomputed from source; secondaries are echoed)")
     peh = json.load(open(ROOT / "benchmarks/position_effect_human/metrics.json"))
     fh = peh.get("fresh_sealed_heldout", {})
     print("  Expression-robustness head (human K562, sealed held-out chr3/8/12):")
     print(f"    shipped head Spearman rho = {fh.get('shipped_twin_full_rho')} "
           f"(independent variant {fh.get('independent_variant_rho')}); "
           f"best chromatin baseline {fh.get('best_baseline_rho')}")
-    print("    ^ this primary headline is RE-DERIVED from the committed source table by `make repro-human` "
+    print("    ^ this primary primary is RE-DERIVED from the committed source table by `make repro-human` "
           "(scripts/p2_build_human_head.py), not merely read from this file.")
     null = peh.get("mouse_to_human_sealed_null", {})
     print(f"    cross-species null: shipped mouse axis rho = {null.get('shipped_mouse_axis_rho')} "

@@ -1,6 +1,6 @@
 """Bridge-recombinase off-target engine + QC.
 
-Off-target headline property: the position-weight model beats a naive Hamming ranking *because mismatch
+Off-target primary property: the position-weight model beats a naive Hamming ranking *because mismatch
 position matters* - a core-disrupting 2-mismatch site (recombination abolished) ranks far below a distal
 2-mismatch site, while Hamming scores them identically. Fold/cross-loop QC and the integration hook are also
 exercised. The genome-wide hg38 scan itself runs on the VM (pysam + hg38.fa).

@@ -6,7 +6,7 @@ baseline leaderboard (cassette-only, context-only durability head, factored mode
 
   * `chrom_holdout` (LIVE): held-out CHROMOSOMES (frozen in split.json, SHA-locked), leakage-controlled, sealed
     before model selection. Metric = Spearman rho (expression) + AUROC (silenced).
-  * `celltype_holdout` (DATA-GATED): leave-one-cell-type-out, the headline transfer track. With a single
+  * `celltype_holdout` (DATA-GATED): leave-one-cell-type-out, the primary transfer track. With a single
     available cell type (mESC) it reports `data_gated`; it activates once PatchMPRA/MPIRE/lentiMPRA/
     Leemans are fetched. No fabricated transfer number.
 
@@ -97,7 +97,7 @@ def baseline_leaderboard() -> dict:
 
 
 def celltype_track() -> dict:
-    """The headline leave-one-cell-type-out transfer track, data-gated until >=2 cell types exist."""
+    """The primary leave-one-cell-type-out transfer track, data-gated until >=2 cell types exist."""
     from pen_stack.twin.data.position_effect import heldout_celltype_splits
     df = load_position_effect()
     splits = heldout_celltype_splits(df)

@@ -82,7 +82,7 @@ def test_object_setattr_is_not_blocked_and_the_paper_says_so():
     Python offers no memory safety, so a caller with arbitrary code execution can bypass the frozen
     model. The guarantee is against inadvertent rewriting by an agent step or a downstream transform,
     not against a determined caller. If this test ever starts failing, the manuscript's Limitations
-    paragraph needs updating too -- it is the assertion that keeps prose and code honest with each other.
+    paragraph needs updating too -- it is the assertion that keeps prose and code in agreement.
     """
     r = _result()
     object.__setattr__(r, "output_kind", "claim")

@@ -5,7 +5,7 @@ Bryant et al. 2021): predict the fitness of held-out capsid variants, evaluated 
 `sampled` (random 80/20, in-distribution) and `mut_des` (mutant->designed, hard generalization) splits. The
 learned model (windowed one-hot gradient boosting) must BEAT a mutation-burden baseline.
 
-The headline numbers (`benchmarks/delivery/capsid_fitness_metrics.json`) are computed on the VM over the full
+The primary numbers (`benchmarks/delivery/capsid_fitness_metrics.json`) are computed on the VM over the full
 FLIP-AAV data (217 MB per split, never committed); this harness exposes them + the gate verdict. The licensed FLIP
 data stays on the VM; the derived metrics + reproducible build script (`scripts/build_capsid_fitness.py`) are
 committed, while the ~3 MB model (`models/capsid_fitness.pkl`) is gitignored, regenerated from the build script and

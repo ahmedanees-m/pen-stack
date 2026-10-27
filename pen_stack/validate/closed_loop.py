@@ -7,7 +7,7 @@ trustworthy Level-3 DBTL loop must have and an ungated "autopilot" lacks:
   3. drift detection separates a matched stream (low) from a shifted one (high) and drives interval inflation,
   4. continual learning updates only from admitted evidence, is versioned + reversible, and high drift widens intervals.
 The contrast `ungated_autopilot_honest` is False by construction. The active-vs-random convergence is reported
-informationally with a CI (the headline demonstration is retrospective/simulated, either way).
+informationally with a CI (the primary demonstration is retrospective/simulated, either way).
 
 Deterministic, CI-safe. Non-circular: the integrity properties are structural.
 """

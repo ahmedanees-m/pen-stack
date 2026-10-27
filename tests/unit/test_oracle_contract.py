@@ -39,7 +39,8 @@ def test_reliability_reports_published_numbers_verbatim_with_citations():
 
 
 def test_reliability_does_not_invent_unverified_numbers():
-    # where a verbatim score was not verified, the value is null and the benchmark is the cited pointer
+    # where no verbatim score has an independently verified source, the value is null and the
+    # benchmark name is the cited pointer
     af3 = reliability.reliability("alphafold3")[0]
     assert af3["value"] is None
     assert af3["benchmark"]

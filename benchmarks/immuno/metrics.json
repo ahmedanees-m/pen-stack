@@ -76,7 +76,7 @@
       "reason": "insufficient paired outcome data (N=0 < 6)",
       "label": "ada_writer: mechanistic/population proxy, NOT outcome-validated"
     },
-    "interpretation": "This is the load-bearing entry. No paired (proxy, observed ADA incidence) dataset exists at the pre-registered power, so the gate refuses to promote the axis and it ships as a mechanistic proxy. The refusal is the result: it is a recorded null, not a pending run."
+    "interpretation": "This is the primary entry. No paired (proxy, observed ADA incidence) dataset exists at the pre-registered power, so the gate refuses to promote the axis and it ships as a mechanistic proxy. The refusal is the result: it is a recorded null, not a pending run."
   },
   "G-G3_no_collapse_writer_antigen": {
     "criterion": "G-G3: writer_dominant_risk fires on a foreign writer and the axes are never collapsed into a single score.",

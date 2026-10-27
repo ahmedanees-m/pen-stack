@@ -119,5 +119,5 @@ def find_nuclease_offtargets(guide: str, enzyme: str = "SpCas9", max_mismatch: i
                        "only, NOT a re-ranker)" if chromatin_available else
                        "; chromatin accessibility is a validated annotation surfaced when the accessibility track is "
                        "mounted (annotation-only, not a re-ranker)")),
-            "honesty": "genome-wide CANDIDATES, NOT a clearance; confirm with the recommended empirical assay",
+            "scope_note": "genome-wide CANDIDATES, NOT a clearance; confirm with the recommended empirical assay",
             "nomination_is_not_clearance": True}

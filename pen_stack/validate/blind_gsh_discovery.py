@@ -1,4 +1,4 @@
-"""Blind safe-harbour site discovery - the NON-circular headline.
+"""Blind safe-harbour site discovery - the NON-circular primary.
 
 Hold out literature-validated safe harbours (configs/gsh_validated_heldout.yaml), run the planner
 genome-wide (so the on-target identity term never fires), and test whether the held-out GSH bins rank
@@ -178,11 +178,11 @@ def run(ct: str = "k562", k: int = 10, rebuild_controls: bool = False, out: str 
     all_block = _tier_block(curated) # "all curated loci" = the acceptance basis
     all_incl_pellenz = _tier_block(positives) # everything incl. the weak Pellenz tier
     val_block = _tier_block(validated)
-    # per-tier blocks (validated headline; eLife candidate; Pellenz reported SEPARATELY so the mostly-weak
-    # 35-site set does not contaminate the headline or the acceptance).
+    # per-tier blocks (validated primary; eLife candidate; Pellenz reported SEPARATELY so the mostly-weak
+    # 35-site set does not contaminate the primary or the acceptance).
     tier_blocks = {t: _tier_block(positives[positives["tier"] == t])
                    for t in positives["tier"].unique()}
-    # PRIMARY headline = validated tier (the strict claim); the all-loci block is the broader, larger-N set.
+    # PRIMARY primary = validated tier (the strict claim); the all-loci block is the broader, larger-N set.
     auroc_w = val_block["auroc_writability"]
     auroc_ci = val_block["auroc_writability_ci95"]
     auroc_s = val_block["auroc_safety_baseline"]
@@ -207,7 +207,7 @@ def run(ct: str = "k562", k: int = 10, rebuild_controls: bool = False, out: str 
         "n_pellenz_candidate": int((positives["tier"] == "pellenz_candidate").sum()),
         "tier_counts": {t: int((positives["tier"] == t).sum()) for t in positives["tier"].unique()},
         "controls_sha256": sha,
-        "headline": f"validated tier: AUROC {round(auroc_w, 2)} (95% CI {auroc_ci}, N={len(validated)} "
+        "primary": f"validated tier: AUROC {round(auroc_w, 2)} (95% CI {auroc_ci}, N={len(validated)} "
                     f"functionally-validated GSH) vs safety-only {round(auroc_s, 2)}; all {len(curated)} "
                     f"curated loci: AUROC {all_block['auroc_writability']} (95% CI "
                     f"{all_block['auroc_writability_ci95']}); +35 Pellenz exploratory loci reported separately",
@@ -222,7 +222,7 @@ def run(ct: str = "k562", k: int = 10, rebuild_controls: bool = False, out: str 
                          "35 Pellenz/Sadelain 2019 candidates (10.1089/hum.2018.169, lifted hg19->hg38). The "
                          "Pellenz tier is mostly weak computational candidates (criteria_met of 8; only 3 "
                          "validated) and is reported SEPARATELY (discrimination_by_tier) so it does not "
-                         "contaminate the validated headline.",
+                         "contaminate the validated primary.",
         "auroc_safety_baseline": round(auroc_s, 4),
         "recovery_at_k": {"k": k, "writability": rec_w, "safety_baseline": rec_s, "n": len(positives),
                           "note": "recovery@k is confounded here: the safety axis is saturated (~1.0 across "
@@ -238,7 +238,7 @@ def run(ct: str = "k562", k: int = 10, rebuild_controls: bool = False, out: str 
             "validated_tier_underpowered": bool(val_block["auroc_writability_ci95"]
                                                 and val_block["auroc_writability_ci95"][0] <= 0.5),
         },
-        "honest_finding": "Scaling N from 5 -> 16 loci shows the earlier 0.92-on-5 was an over-estimate of a "
+        "finding": "Scaling N from 5 -> 16 loci shows the earlier 0.92-on-5 was an over-estimate of a "
                           "FRAGILE signal. On the scaled set the discrimination is WEAK: all-loci AUROC "
                           f"{all_block['auroc_writability']} (95% CI {all_block['auroc_writability_ci95']}, "
                           "lower bound just above chance), and the validated-only subset (N=8) is UNDERPOWERED "

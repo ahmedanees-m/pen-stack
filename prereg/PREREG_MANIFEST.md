@@ -11,7 +11,7 @@ python scripts/prereg_manifest.py --check   # re-hash every entry, assert this m
 
 Total: 120 locked files across 80 pre-registration locks; 116 re-hash against the current committed bytes and are asserted here. 4 belong to the superseded phase-0 origin seal (listed at the end).
 
-## Table 3 honesty-ledger pre-registrations
+## Table 3 claim ledger pre-registrations
 
 The ten claims in Table 3, each with the committed pre-registration that fixed it before scoring and that pre-registration's SHA-256.
 

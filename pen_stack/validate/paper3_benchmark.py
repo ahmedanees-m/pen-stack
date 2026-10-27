@@ -17,7 +17,7 @@ held out. The panel is adversarial to the baseline by construction:
     worse.
   * Discriminating stratum (therapeutic-into-functional-locus writes): an intent-blind safety ranker keeps
     proposing safe harbours and *misses* the intended (often intragenic) target; the Planner, conditioned
-    on edit_intent, recovers them. This is the headline.
+    on edit_intent, recovers them. This is the primary.
 
 Anti-leakage: the Planner scores a fixed candidate POOL (panel loci + decoy genes) from the goal only;
 recovery@k = the documented locus appearing in the Planner's top-k. The baseline ranks the same pool by

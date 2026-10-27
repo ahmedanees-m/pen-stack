@@ -57,6 +57,6 @@ def generate_capsid_candidates(wt_vp1: str, n: int = 200, max_mut: int = 4, fitn
             "fitness_threshold": round(float(thr), 4), "n_proposed": len(scored), "n_survivors": len(survivors),
             "candidates": survivors, "output_kind": "candidate",
             "verifier": "learned FLIP-AAV capsid-fitness (verifier-as-discriminator); fitness >= WT kept",
-            "honesty": "CANDIDATES, predicted packaging fitness only; assembly, in-vivo tropism, and "
+            "scope_note": "CANDIDATES, predicted packaging fitness only; assembly, in-vivo tropism, and "
                        "immunogenicity are NOT claimed (immunogenicity routes through the immune-risk profile). A design proposer, "
                        "not a validation. Run a biosecurity/verify() gate before any synthesis."}

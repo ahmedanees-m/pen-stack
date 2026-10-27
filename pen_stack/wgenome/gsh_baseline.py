@@ -5,7 +5,7 @@ per-bin annotations: outside a gene, and minimum distances to the nearest TSS, c
 essential gene. We compute it as a graded safety score and compare its **safe-harbour discrimination**
 (held-out validated GSH vs matched controls) against the learned writability model.
 
-The headline safety claim is **discrimination** (validated GSH vs matched controls), NOT the
+The primary safety claim is **discrimination** (validated GSH vs matched controls), NOT the
 `genotoxic_cis` AUROC - which is circular (its label is proximity to five oncogenes, i.e. the distance
 baseline's own definition) and is demoted to a clearly-labeled diagnostic.
 
@@ -110,7 +110,7 @@ def run(ct: str = "k562", out: str | Path = _OUT) -> dict:
         "primary_safety_metric": "safe-harbour discrimination (validated GSH vs matched controls)",
         "n_positives": npos, "n_controls": nctrl,
         # HEADLINE = the learned model's ABSOLUTE discrimination with CI+N (NOT a delta vs a broken baseline).
-        "headline": (f"Learned writability discriminates curated safe harbours from matched controls at "
+        "primary": (f"Learned writability discriminates curated safe harbours from matched controls at "
                      f"AUROC {round(auroc_learned, 3)} (95% CI [{al_lo}, {al_hi}], N={npos}). Naive distance "
                      f"rules fail on this task because validated harbours sit INSIDE genes (e.g. AAVS1 in "
                      f"PPP1R12C), so a far-from-genes prior mis-ranks them (rule AUROC "
@@ -119,7 +119,7 @@ def run(ct: str = "k562", out: str | Path = _OUT) -> dict:
                      f"- below chance - on the validated-8)."),
         "auroc_learned_writability": round(auroc_learned, 4),
         "auroc_learned_ci95": _ci(boot_learned),
-        # The rule is reported as a QUALITATIVE failure case, not as a number to headline a delta against.
+        # The rule is reported as a QUALITATIVE failure case, not as a number to primary a delta against.
         "auroc_gsh_ruleset_baseline": round(auroc_rule, 4) if not np.isnan(auroc_rule) else None,
         "auroc_gsh_ruleset_validated_tier": (round(auroc_rule_validated, 4)
                                              if not np.isnan(auroc_rule_validated) else None),
@@ -128,21 +128,21 @@ def run(ct: str = "k562", out: str | Path = _OUT) -> dict:
                                     "validated harbours are themselves intragenic (AAVS1 / PPP1R12C, CCR5, "
                                     "ROSA26-type loci). The rule's failure is the interesting result; it is "
                                     "reported as a qualitative point, not as a delta the learned model 'beats'.",
-        # delta DEMOTED from headline to a diagnostic - it is not significant and is sensitive to a baseline
-        # that is near/below chance, which a reviewer would (correctly) flag if it were the headline.
+        # delta DEMOTED from primary to a diagnostic - it is not significant and is sensitive to a baseline
+        # that is near/below chance, which a reviewer would (correctly) flag if it were the primary.
         "delta_DIAGNOSTIC_not_headline": round(auroc_learned - auroc_rule, 4) if not np.isnan(auroc_rule) else None,
         "delta_ci95": _ci(boot_delta),
         "delta_ci_excludes_zero": (bool(_ci(boot_delta)[0] > 0) if boot_delta else None),
         "learned_beats_ruleset": bool(auroc_learned > auroc_rule) if not np.isnan(auroc_rule) else None,
         "ci_note": f"bootstrap 2000x over {npos} positives + {nctrl} controls (seed 20260604).",
-        "honest_finding": "Headline is the learned model's ABSOLUTE discrimination (AUROC + 95% CI + N), not a "
+        "finding": "Headline is the learned model's ABSOLUTE discrimination (AUROC + 95% CI + N), not a "
                           "delta. The distance-rule baseline is near/below chance because validated harbours are "
                           "intragenic; that failure is reported qualitatively, NOT as a delta to beat (beating a "
                           "worse-than-random baseline would be a low bar). The learned vs rule delta is kept only "
                           "as a diagnostic and is not statistically significant (CI includes zero). A larger "
                           "validated GSH set is the route to a precise absolute estimate.",
         "genotoxic_cis_auroc": "DEMOTED to a diagnostic - circular (label = proximity to 5 oncogenes = the "
-                               "distance baseline's own definition); not a safety headline",
+                               "distance baseline's own definition); not a safety primary",
         "rule_thresholds_bp": _MIN_DIST,
     }
     Path(out).parent.mkdir(parents=True, exist_ok=True)

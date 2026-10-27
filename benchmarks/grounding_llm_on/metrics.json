@@ -1,7 +1,7 @@
 {
   "bench": "Grounding-LLM-on (ungrounded-baseline contrast, T7)",
   "question": "With the LLM live and no tools, does a model fabricate tool-only genome-writing quantities, and does the grounded architecture prevent it - across model families and at scale?",
-  "method": "Same write-planning goals as the grounded agent, LLM ON, NO tools, under a naive prompt (no anti-fabrication coaching) and a coached prompt (told to REFUSE anything ungroundable). A concrete number for a tool-only field is fabrication; an explicit refusal is honest. Transcripts cached under data/llm_bench_cache/ and replayed offline (CI-safe).",
+  "method": "Same write-planning goals as the grounded agent, LLM ON, NO tools, under a naive prompt (no anti-fabrication coaching) and a coached prompt (told to REFUSE anything ungroundable). A concrete number for a tool-only field is fabrication; an explicit refusal is correct. Transcripts cached under data/llm_bench_cache/ and replayed offline (CI-safe).",
   "tool_only_fields": [
     "max_writability",
     "safety_score",
@@ -19,7 +19,7 @@
     "providers": {
       "claude_haiku45": {
         "family": "Claude (Anthropic)",
-        "hosting": "hosted frontier",
+        "hosting": "hosted, vendor small/fast tier (not frontier tier)",
         "naive": {
           "plan_fabrication_rate": 0.9875,
           "plan_refused": 0,
@@ -35,7 +35,7 @@
       },
       "nemotron": {
         "family": "Nemotron (NVIDIA)",
-        "hosting": "hosted frontier",
+        "hosting": "hosted, open-weights 120B",
         "naive": {
           "plan_fabrication_rate": 0.9083,
           "plan_refused": 3,
@@ -89,7 +89,7 @@
       },
       "nemotron": {
         "family": "Nemotron (NVIDIA)",
-        "hosting": "hosted frontier",
+        "hosting": "hosted, open-weights 120B",
         "naive": {
           "plan_fabrication_rate": 1.0,
           "plan_refused": 0,
@@ -109,5 +109,6 @@
     "harness": "pen_stack/validate/ungrounded_baseline.py",
     "reproduce_offline": "python -c \"from pen_stack.validate.ungrounded_baseline import run_model; ...\" (replays committed cache)",
     "reproduce_live": "python bench/run.py --agent --ungrounded-live (re-queries providers set in configs/llm.yaml)"
-  }
+  },
+  "panel_scope": "No frontier-tier model is included. The largest model is 120B open-weights and the hosted closed-weights model is drawn from its vendor's small, fast tier. Three families are too few to resolve any dependence of the fabrication rate on model scale, and none is claimed."
 }

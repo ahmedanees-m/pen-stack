@@ -29,7 +29,7 @@
     "beats_on_held_out_family": false,
     "beats_on_held_out_locus": true,
     "ship_learned_model": false,
-    "verdict": "learned predictor does NOT beat the KB baseline on both axes at this N - RETAIN the KB ranking, report the negative; the curated dataset + Writer-Efficiency Bench are the contribution (the honest, pre-registered outcome)"
+    "verdict": "learned predictor does NOT beat the KB baseline on both axes at this N - RETAIN the KB ranking, report the negative; the curated dataset + Writer-Efficiency Bench are the contribution (the pre-registered outcome)"
   },
   "dataset": {
     "n_records": 45,

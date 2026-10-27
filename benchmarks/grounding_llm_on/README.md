@@ -16,18 +16,18 @@ necessarily ungrounded, i.e. fabricated; the only correct answer is to refuse.
 
 | Model (family) | naive prompt | coached prompt ("output REFUSE if you cannot ground it") |
 |---|---|---|
-| **Claude Haiku-4.5** (Anthropic, frontier) | fabricates **98.8%** of tool-only planning fields | **0%** |
-| **Nemotron-120B** (NVIDIA, frontier) | **90.8%** | **0.8%** |
+| **Claude Haiku-4.5** (Anthropic, small/fast tier) | fabricates **98.8%** of tool-only planning fields | **0%** |
+| **Nemotron-120B** (NVIDIA, open-weights) | **90.8%** | **0.8%** |
 | **Qwen2.5-1.5B** (local Ollama) | **96.7%** | **1.7%** (still slips) |
 | **grounded PEN-Agent** (tools in loop) | **0%** | **0%** |
 
 On the 30 ungroundable questions (exact in-human/in-vivo outcomes no tool can produce) the naive fabrication
 rates are similar: Claude 93.3%, Nemotron 89.4%, Qwen 93.3%.
 
-**The finding is sharp: grounding, not prompting or model scale, removes fabrication.** Under a naive prompt
-*even a frontier aligned model* (Claude) invents 99% of the tool-only quantities; a 120B model and a 1.5B
-model do the same. Explicit anti-fabrication coaching helps unevenly - it drives Claude to 0 but the smaller
-local model still slips (1.7%) - so prompting is not a reliable guardrail across models. The grounded agent
+**Grounding, not prompting, removes fabrication.** Under a naive prompt an aligned hosted model invents 99%
+of the tool-only quantities, and a 120B open-weights model and a 1.5B local model do the same. Explicit anti-fabrication coaching helps unevenly - it drives Claude to 0 but the smaller
+local model still slips (1.7%) - so prompting is not a reliable guardrail across models. The panel contains no frontier-tier model and three
+families cannot resolve a dependence on model scale; none is claimed. The grounded agent
 is 0 under either prompt because it copies every number from a validated tool call
 (`pen_agent.no_fabrication_audit`), verified live in `benchmarks/agentic_baseline/`.
 
@@ -52,7 +52,7 @@ multi-angle generation pass and deduped.
 
 ## Scope
 
-Three model families x 70 adversarial goals x two prompt conditions is a genuine *measured, multi-provider,
-LLM-on* rate spanning local to hosted-frontier - not the by-construction tautology - though still short of a
-few-hundred-query natural-traffic population sweep. The grounded-vs-ungrounded separation is the load-bearing
+Three model families x 70 adversarial goals x two prompt conditions is a measured, multi-provider, LLM-on
+rate spanning a local 1.5B model to hosted models, rather than a by-construction tautology - though still short of a
+few-hundred-query natural-traffic population sweep. The grounded-vs-ungrounded separation is the primary
 claim and it holds across every model tested.

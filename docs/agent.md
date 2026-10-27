@@ -13,7 +13,7 @@ fabricate.
 | **Deterministic state machine** | `pen_stack/agent/pen_agent.py` | Sequences the validated tools; the no-fabrication guarantee holds *by construction* (values are copied from tool dicts). Runs with **no LLM**. |
 | **LLM orchestrator** | `pen_stack/agent/orchestrator.py` | An optional conversational front-end. The LLM may obtain numbers **only** by calling the registered tools (`agent/tools.py`); the eval audits that every number in its trace equals a direct tool call. |
 
-The LLM is **non-load-bearing**: with no provider reachable, the agent falls back to the deterministic path
+The LLM is **non-primary**: with no provider reachable, the agent falls back to the deterministic path
 and the plan is unchanged. Provider config is `configs/llm.yaml` (VM: local Ollama 7B; laptop/fallback:
 hosted Nemotron).
 

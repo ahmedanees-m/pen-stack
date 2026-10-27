@@ -37,7 +37,7 @@ def build() -> str:
         f"- **HEADLINE (absolute discrimination, not a delta): learned writability AUROC = "
         f"{gsh.get('auroc_learned_writability')}** (95% CI {gsh.get('auroc_learned_ci95')}, "
         f"N={gsh.get('n_positives')} curated positives vs {gsh.get('n_controls')} matched controls).",
-        "- **Why the published distance rule is NOT the headline baseline:** it scores at/below chance "
+        "- **Why the published distance rule is NOT the primary baseline:** it scores at/below chance "
         f"(curated AUROC {gsh.get('auroc_gsh_ruleset_baseline')}; validated-8 AUROC "
         f"**{gsh.get('auroc_gsh_ruleset_validated_tier')}**, below 0.5) because the functionally validated "
         "harbours are themselves *intragenic* (AAVS1 in PPP1R12C, CCR5, ROSA26-type loci), so a "
@@ -47,12 +47,12 @@ def build() -> str:
         f"- For completeness the learned-minus-rule delta is reported as a **diagnostic only**: "
         f"{gsh.get('delta_DIAGNOSTIC_not_headline')} (95% CI {gsh.get('delta_ci95')}, excludes zero: "
         f"{gsh.get('delta_ci_excludes_zero')}) - it is **not** statistically significant at this N and is "
-        "not used as a headline.",
+        "not used as a primary.",
         f"- Scope: the absolute CI is wide ({gsh.get('n_positives')} curated positives); a larger "
         "validated GSH set is the route to a precise estimate. The earlier 0.92-on-5 / delta-0.54 figures were "
         "fragile small-sample over-estimates and have been retired.",
         "- `genotoxic_cis` AUROC is **demoted to a diagnostic**: its label is proximity to five oncogenes, "
-        "i.e. the distance baseline's own definition (circular); it is not a safety headline.",
+        "i.e. the distance baseline's own definition (circular); it is not a safety primary.",
         "",
         "## B2 - Multi-mark vs single-mark durability ablation (TRIP, ES-Bruce4)",
         f"- Out-of-fold silenced-AUROC: H3K9me3-only {sub.get('H3K9me3_only', {}).get('silenced_auroc')}, "
@@ -76,7 +76,7 @@ def build() -> str:
             f"- Paired-bootstrap delta **{b1.get('delta')}** (95% CI {b1.get('delta_ci95')}, excludes zero: "
             f"**{b1.get('delta_ci_excludes_zero')}**; margin {b1.get('margin')}). "
             f"{b1.get('ci_note', '')}",
-            f"- **Finding: {b1.get('honest_finding', 'n/a')}.** The point estimate clears the "
+            f"- **Finding: {b1.get('finding', 'n/a')}.** The point estimate clears the "
             f"pre-registered margin (`trip_beats_proxy_by_margin` = {b1.get('trip_beats_proxy_by_margin')}), "
             "but at this pilot N the advantage is NOT statistically significant - reported as a margin-pass "
             "with an non-significant CI, not as a proven gain.",

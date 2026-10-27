@@ -104,7 +104,7 @@ A goal enters through one of the interfaces. The agent layer turns it into candi
 
 All results are blind and pre-registered (success criteria, baselines, and held-out sets are SHA-locked in [`prereg/`](prereg/) before any model sees the test data). Estimates are reported with their sample size and confidence interval.
 
-- **Expression-robustness axis (the headline result).** A per-locus prediction of whether an integrated cassette stays expressed rather than being positionally silenced. On measured human K562 position-effect data (Leemans 2019) the axis reaches a held-out Spearman rho of 0.571 (0.558 on an independent held-out variant), and it is empirically *distinct* from ePRIDICT's chromatin prediction of prime-editing efficiency (rho 0.212, R-squared 0.041 across 7,295 loci): a complementary signal, not a restatement of one. It is validated at exact-site resolution; the deployment commonly serves coarse 1-kb features, at which the axis reaches rho about 0.16, and that gap is reported as a result rather than claimed away. See [`benchmarks/position_effect_human/`](benchmarks/position_effect_human/).
+- **Expression-robustness axis (the primary result).** A per-locus prediction of whether an integrated cassette stays expressed rather than being positionally silenced. On measured human K562 position-effect data (Leemans 2019) the axis reaches a held-out Spearman rho of 0.571 (0.558 on an independent held-out variant), and it is empirically *distinct* from ePRIDICT's chromatin prediction of prime-editing efficiency (rho 0.212, R-squared 0.041 across 7,295 loci): a complementary signal, not a restatement of one. It is validated at exact-site resolution; the deployment commonly serves coarse 1-kb features, at which the axis reaches rho about 0.16, and that gap is reported as a result rather than claimed away. See [`benchmarks/position_effect_human/`](benchmarks/position_effect_human/).
 - **Writable Genome and the integrated safety filter.** A genome-wide atlas of 3,031,030 loci across three cell types (K562, HepG2, CD34+ HSPC) recovers experimentally validated safe harbours as highly writable and clinical genotoxic loci as non-writable, blind. The three-way integrated score (safety x durability x reachability) is characterised as a *reject-known-bad safety filter*: against oncogene-distance and accessibility-matched controls it reaches AUROC 0.679 (95% CI 0.536 to 0.825) versus a safety-only baseline of 0.51, with real false negatives on documented clinical genotoxic loci reported in full; it is not a calibrated genotoxicity predictor.
 - **Writer Atlas.** 33,370 enzyme systems across 8 families on common measured axes; the mechanism classifier agrees with the audited labels on the curated core (1.00); the cross-link to loci is validated on AAVS1. Writer-family recovery at rank 1 is 0.86 against a prevalence of 0.29.
 - **Per-mechanism off-target engine.** The RNA-guided nuclease path *wraps* the published CRISOT scorer (which beats naive homology, CRISOT's own result, stated plainly). The serine-integrase path, on the Chalberg 115-site human genomic pseudo-attP set, reaches AUROC 0.637 and AUPRC 0.215, beating a palindrome baseline (CI excludes zero) and matching an attP-similarity baseline on AUROC while beating it on AUPRC: an informative two-stage result, reported as such. The bridge path (Perry 2025, 6,856 measured off-targets) ranks real off-targets above core-disrupted decoys at AUROC 0.77 versus 0.62 for Hamming distance. The bridge and CAST paths are mechanism-based screens, not per-site risk calculators, and are labelled as such.
@@ -185,7 +185,7 @@ The React web platform is an alternative single-origin front end that serves the
 docker compose up web ollama                                   # web platform on :8000
 ```
 
-The LLM backend is optional and non-load-bearing: it narrates and routes, but every number and citation comes from a validated tool, so the core scientific compute runs with no language model at all. See [docs/DEPLOY.md](docs/DEPLOY.md).
+The LLM backend is optional and non-primary: it narrates and routes, but every number and citation comes from a validated tool, so the core scientific compute runs with no language model at all. See [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## Benchmarks
 
@@ -201,18 +201,18 @@ The deterministic planner beats the naive baselines on the grounded tasks; a too
 Benchmarks are SHA-locked, and most ship a harness, a frozen split, and a committed `metrics.json`; the two open leaderboards ship tasks and a submission protocol instead. A fresh clone reproduces the central numbers with no download and no API key:
 
 ```bash
-make repro        # demo-atlas quickstart, grounding eval, agentic baseline, and the recomputed headline result
-make repro-human  # recompute the headline human K562 expression-robustness result (rho=0.571) from source data
+make repro        # demo-atlas quickstart, grounding eval, agentic baseline, and the recomputed primary result
+make repro-human  # recompute the primary human K562 expression-robustness result (rho=0.571) from source data
 make repro-full   # the above plus the genome-wide atlas benchmarks (needs 'make fetch' with ZENODO_DOI)
 ```
 
-`make repro` also re-hashes every SHA-locked pre-registration against the committed bytes (`scripts/prereg_manifest.py`, which emits the full manifest `prereg/PREREG_MANIFEST.md`) and asserts it in continuous integration, so a live lock cannot silently drift from the file it fixes. The ten claims in the honesty ledger each cite a committed pre-registration verifiable from a bare clone with `sha256sum prereg/<file>`; the full eighty-lock manifest is in `prereg/PREREG_MANIFEST.md`.
+`make repro` also re-hashes every SHA-locked pre-registration against the committed bytes (`scripts/prereg_manifest.py`, which emits the full manifest `prereg/PREREG_MANIFEST.md`) and asserts it in continuous integration, so a live lock cannot silently drift from the file it fixes. The ten claims in the claim ledger each cite a committed pre-registration verifiable from a bare clone with `sha256sum prereg/<file>`; the full eighty-lock manifest is in `prereg/PREREG_MANIFEST.md`.
 
-The headline expression-robustness result is **recomputed from source, not read from a stored number**:
+The primary expression-robustness result is **recomputed from source, not read from a stored number**:
 `scripts/p2_build_human_head.py` (run by `make repro-human`, and folded into `make repro`) trains the shipped
 twin on the committed Leemans K562 features table, holds out chromosomes 3/8/12 exactly as the sealed
 pre-registration specifies, and asserts the recomputed held-out Spearman correlation (0.5711) matches the
-committed metrics. The three headline analyses each ship their metrics: the human K562 expression-robustness
+committed metrics. The three primary analyses each ship their metrics: the human K562 expression-robustness
 head ([`benchmarks/position_effect_human/`](benchmarks/position_effect_human/)), the integrase off-target set
 ([`benchmarks/offtarget/integrase_chalberg/`](benchmarks/offtarget/integrase_chalberg/)), and the clinical
 genotoxicity panel ([`benchmarks/genotox_panel/`](benchmarks/genotox_panel/)).
@@ -327,9 +327,9 @@ If you use PEN-STACK, please cite the preprint:
 }
 ```
 
-To cite this software release specifically, use the version DOI
-[10.5281/zenodo.21787137](https://doi.org/10.5281/zenodo.21787137), which pins v0.1.0, or the concept DOI
-[10.5281/zenodo.21787136](https://doi.org/10.5281/zenodo.21787136), which always resolves to the newest version.
+To cite this software, use the concept DOI
+[10.5281/zenodo.21787136](https://doi.org/10.5281/zenodo.21787136), which always resolves to the newest archived
+version. The first release is pinned by its own version DOI, [10.5281/zenodo.21787137](https://doi.org/10.5281/zenodo.21787137).
 Author and ORCID metadata is in [CITATION.cff](CITATION.cff).
 
 ## License and attribution
@@ -339,8 +339,8 @@ MIT licensed. Developed at Vellore Institute of Technology, Vellore. Authors and
 
 ## API stability
 
-0.1.0 is the first public release. It establishes the committed public API: the SDK functions, the 44 REST
-endpoints, the 16 MCP tools, and the 20-entry capability manifest. These follow semantic versioning, with a
+0.2.0 is the current release and 0.1.0 was the first. The committed public API is the SDK functions, the
+44 REST endpoints, the 22 MCP tools, and the 20-entry capability manifest. These follow semantic versioning, with a
 one-minor-version deprecation warning before any breaking change. Stable surfaces carry calibrated uncertainty and an explicit
 validation status. The mechanism-based off-target paths (serine-integrase, bridge, and CAST) are marked
 experimental and may change as measured data becomes available.

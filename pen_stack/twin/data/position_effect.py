@@ -220,7 +220,7 @@ def blocked_splits(df: pd.DataFrame, n_splits: int = 5, group: str = "chrom",
 
 
 def heldout_celltype_splits(df: pd.DataFrame) -> list[tuple[str, np.ndarray, np.ndarray]]:
-    """Leave-one-cell-type-out: train on all but one cell type, test on the held-out one. This is the headline
+    """Leave-one-cell-type-out: train on all but one cell type, test on the held-out one. This is the primary
     transfer evaluation. With a single available cell type it returns [] and the caller reports the transfer
     axis as data-gated, never a fabricated transfer number."""
     cts = sorted(df["cell_type"].unique())

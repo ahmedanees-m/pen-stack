@@ -25,7 +25,7 @@ def test_bench_is_v0_2_with_trust_tasks():
 def test_ci_safe_trust_tasks_run():
     # T10 + T11 are deterministic / pure-logic -> always available, beat the over-confident baseline
     o = B.ood_honesty()
-    assert o["available"] and o["honest_on_ood"]
+    assert o["available"] and o["flags_ood"]
     assert o["ood_flag_rate"] > o["overconfident_agent_ood_flag_rate"]
     s = B.out_of_scope()
     assert s["available"] and s["deferral_rate"] == 1.0

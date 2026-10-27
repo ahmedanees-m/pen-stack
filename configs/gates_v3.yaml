@@ -85,7 +85,7 @@ removed_gates:
   gate_6_energy:
     reason: |
       Walker A/B regex test was biochemically trivial. CAST family (evoCAST,
-      CAST_VK, CAST_IF) honestly lands in PROBABLE_WRITER or TRUE_WRITER -
+      CAST_VK, CAST_IF) lands in PROBABLE_WRITER or TRUE_WRITER -
       multi-subunit ATP-dependent transposases are legitimate writer architectures,
       architecturally distinct from single-protein bridge recombinases.
     retained_as_metadata: true

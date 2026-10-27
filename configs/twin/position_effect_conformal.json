@@ -29,5 +29,5 @@
   "heldout_coverage": 0.8851674641148325,
   "mean_width": 10.736144086389379,
   "within_tol": true,
-  "note": "trained split-conformal on chromosome-blocked OOF residuals of the position-effect model (TRIP supervision). qhat is calibrated on all OOF residuals; heldout_coverage is the honest half-chromosome held-out validation. Ships the calibration, not the calibration data."
+  "note": "trained split-conformal on chromosome-blocked OOF residuals of the position-effect model (TRIP supervision). qhat is calibrated on all OOF residuals; heldout_coverage is the half-chromosome held-out validation. Ships the calibration, not the calibration data."
 }

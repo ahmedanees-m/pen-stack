@@ -171,7 +171,7 @@ def nominate_nuclease(guide: str, candidate_sites: list[str] | None, accessibili
             "method": ("risk = empirical active fraction at k mismatches (real GUIDE-seq/CIRCLE-seq data); "
                        "ranked by the real CRISOT-Score when the (guide,site) is cached, else by empirical risk"),
             "bench": BENCH_SUMMARY.get(assay), "output_kind": "candidate",
-            "honesty": "candidates, NOT a clearance, confirm with the recommended empirical assay"}
+            "scope_note": "candidates, NOT a clearance, confirm with the recommended empirical assay"}
 
 
 def pseudo_attb_sites(sequence: str, integrase: str = "Bxb1", max_arm_mismatch: int = 4, top: int = 20) -> dict:
@@ -207,7 +207,7 @@ def pseudo_attb_sites(sequence: str, integrase: str = "Bxb1", max_arm_mismatch: 
                        f"{att['central_dinucleotide']}), verify the {L}-nt attB with <= {max_arm_mismatch} arm "
                        "mismatches"),
             "validating_assay": "Cryptic-seq / HIDE-seq (Hazelbaker et al., bioRxiv 2024.08.23.609471)",
-            "honesty": "CANDIDATE cryptic sites, recombination at a pseudo-attB is not claimed; confirm by "
+            "scope_note": "CANDIDATE cryptic sites, recombination at a pseudo-attB is not claimed; confirm by "
                        "Cryptic-seq/HIDE-seq. Quantitative LSI off-target prediction (IntQuery) is paper-only "
                        "(no public weights), not run here."}
 

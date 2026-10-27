@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you use PEN-STACK, please cite it as below."
 title: "PEN-STACK: open infrastructure for genome writing"
-version: 0.1.0
-date-released: 2026-07-21
+version: 0.2.0
+date-released: 2026-10-27
 identifiers:
   - type: other
     value: "RRID:SCR_028786"
@@ -15,7 +15,7 @@ identifiers:
     description: Concept DOI (resolves to the newest version)
   - type: doi
     value: 10.5281/zenodo.21787137
-    description: Version DOI (pins v0.1.0)
+    description: Version DOI of the first release (v0.1.0)
   - type: other
     value: "arXiv:2608.20412"
     description: arXiv preprint identifier

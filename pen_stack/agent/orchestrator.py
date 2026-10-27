@@ -61,7 +61,8 @@ def run_agent(goal: str, max_steps: int = 12, cfg: dict | None = None) -> dict:
         calls = resp.get("tool_calls") or []
         if not calls:
             return {"refused": False, "plan": resp.get("content", "").strip(),
-                    "trace": trace, "disclaimer": DISCLAIMER, "llm": True, "provider": provider}
+                    "trace": trace, "disclaimer": DISCLAIMER, "llm": True, "provider": provider,
+                    "messages": msgs + [{"role": "assistant", "content": resp.get("content", "")}]}
         msgs.append(resp["raw"]) # append the assistant turn verbatim
         raw_calls = resp["raw"].get("tool_calls") or []
         for i, c in enumerate(calls):
@@ -82,7 +83,7 @@ def run_agent(goal: str, max_steps: int = 12, cfg: dict | None = None) -> dict:
             trace.append({"tool": name, "args": args, "result": result})
             msgs.append(_tool_response(style, call_id, json.dumps(result, default=str)))
     return {"refused": False, "plan": "(max steps reached)", "trace": trace,
-            "disclaimer": DISCLAIMER, "llm": True}
+            "disclaimer": DISCLAIMER, "llm": True, "messages": msgs}
 
 
 def _fallback(goal: str, trace: list[dict]) -> dict:

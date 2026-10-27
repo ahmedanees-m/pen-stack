@@ -163,7 +163,7 @@ def chat(messages: list, tools: list | None = None, cfg: dict | None = None,
          timeout: int | None = None) -> dict | None:
     """Provider-agnostic chat. Tries the active provider, then the configured fallback, skipping any
     provider in cooldown (recently unreachable). Returns {content, tool_calls, provider} or None if every
-    provider fails (callers then degrade deterministically - the LLM is non-load-bearing)."""
+    provider fails (callers then degrade deterministically - the LLM is non-primary)."""
     import time
     cfg = cfg or load_llm_config()
     timeout = timeout if timeout is not None else int(cfg.get("call_timeout", 60))

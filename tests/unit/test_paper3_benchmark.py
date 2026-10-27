@@ -3,7 +3,7 @@
 DE-CIRCULARIZED. The discriminating (targeted-intent) recovery@k is **definitional, not
 predictive** - an on-target identity term makes the planner rank the goal's own gene first by construction
 (see docs/benchmark_circularity.md and the CIRCULARITY NOTICE in paper3_benchmark.py). So we no longer
-assert strict planner superiority here; that headline moved to the BLIND GSH discovery AUROC
+assert strict planner superiority here; that primary moved to the BLIND GSH discovery AUROC
 (tests/unit/test_decircularized_benchmarks.py::test_blind_gsh_discovery_auroc_gate). This test now only checks the
 panel is frozen/stratified and that the planner is NOT WORSE than the intent-blind baseline on either
 stratum. Skips when the writability atlas is absent.
@@ -33,7 +33,7 @@ def test_panel_frozen_and_stratified():
 
 def test_stratified_report_is_well_formed():
     # The discriminating recovery@k is circular/definitional and tie-break-sensitive - we do NOT
-    # assert a performance ordering on it. The deterministic performance headline is the blind GSH
+    # assert a performance ordering on it. The deterministic performance primary is the blind GSH
     # discovery AUROC (test_decircularized_benchmarks.py). Here we only check the report is well-formed for both
     # strata so downstream code/manuscripts read valid fields.
     from pen_stack.validate.paper3_benchmark import recovery_at_k, stratified_report

@@ -71,7 +71,7 @@ def run(out: str | Path = _OUT) -> dict:
         "all_correct": n_correct == n,
         "table": tab.to_dict("records"),
         "scope": "definitional by design; no recovery@k, p-value, or CI is attached to this result. The "
-                 "predictive headline is the blind safe-harbour discovery, not this table.",
+                 "predictive primary is the blind safe-harbour discovery, not this table.",
     }
     Path(out).parent.mkdir(parents=True, exist_ok=True)
     Path(out).write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")

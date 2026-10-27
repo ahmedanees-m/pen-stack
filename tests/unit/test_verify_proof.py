@@ -93,7 +93,7 @@ def test_legality_and_confidence_are_not_evaluated_when_biosecurity_refuses():
                       "pfam_domains": ["PF00161"], "source_taxon": "Ricinus communis",
                       "delivery_vehicle": "AAV"})
     leg, conf, bio = p.axis("legality"), p.axis("confidence"), p.axis("biosecurity")
-    assert leg.status == "not_evaluated" and leg.ok is True and leg.violated == []
+    assert leg.status == "not_evaluated" and leg.ok is True and not leg.violated
     assert conf.status == "not_evaluated" and conf.ok is True
     assert leg.repair_hint and leg.repair_hint.get("repair") is None
     assert conf.repair_hint and conf.repair_hint.get("repair") is None

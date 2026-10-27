@@ -9,10 +9,10 @@ _ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_version_consistent_across_release_artifacts():
-    assert pen_stack.__version__ == "0.1.0"
-    assert 'version = "0.1.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert "version: 0.1.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
-    assert 'org.opencontainers.image.version="0.1.0"' in (_ROOT / "Dockerfile").read_text(encoding="utf-8")
+    assert pen_stack.__version__ == "0.2.0"
+    assert 'version = "0.2.0"' in (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "version: 0.2.0" in (_ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    assert 'org.opencontainers.image.version="0.2.0"' in (_ROOT / "Dockerfile").read_text(encoding="utf-8")
 
 
 def test_api_stability_commitment():

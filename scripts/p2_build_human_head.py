@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Recompute the headline human K562 expression-robustness result from source, not from a stored number.
+"""Recompute the primary human K562 expression-robustness result from source, not from a stored number.
 
 This trains the shipped position-effect twin on the measured Leemans 2019 K562 TRIP data
 (`benchmarks/position_effect_human/leemans_scored_input.parquet`, a committed derived features table built
@@ -71,7 +71,7 @@ def main() -> int:
     if not (ok_full and ok_indep):
         print("[fail] recomputed correlation does not match the committed metrics", file=sys.stderr)
         return 1
-    print(f"[ok] headline result recomputed from source (rho ~ {rho_full:.3f}, held out on chr3/8/12).")
+    print(f"[ok] primary result recomputed from source (rho ~ {rho_full:.3f}, held out on chr3/8/12).")
     return 0
 
 
