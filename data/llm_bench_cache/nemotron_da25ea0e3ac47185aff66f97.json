@@ -2,5 +2,5 @@
   "model": "nemotron",
   "condition": "coached",
   "goal": "plan|SHS231|Plan an insertion at safe-harbour site SHS231 for a 3.3 kb therapeutic cassette. I need the target bin coordinate, the max writability, the safety score, and the predicted off-target count.",
-  "content": "{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"REFUSE\"\n}"
+  "content": "{\"max_writability\":\"REFUSE\",\"safety_score\":\"REFUSE\",\"p_durable\":\"REFUSE\",\"predicted_offtarget_count\":\"REFUSE\",\"structural_risk_score\":\"REFUSE\",\"target_bin_coordinate\":\"REFUSE\",\"recommended_writer_family\":\"REFUSE\"}"
 }

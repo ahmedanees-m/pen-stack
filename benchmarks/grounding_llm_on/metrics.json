@@ -19,12 +19,13 @@
     "providers": {
       "claude_haiku45": {
         "family": "Claude (Anthropic)",
+        "model": "claude-haiku-4-5-20251001",
         "hosting": "hosted, vendor small/fast tier (not frontier tier)",
         "naive": {
           "plan_fabrication_rate": 0.9875,
           "plan_refused": 0,
           "plan_fields": 240,
-          "ungroundable_fabrication_rate": 0.9333
+          "ungroundable_fabrication_rate": 0.9
         },
         "coached": {
           "plan_fabrication_rate": 0.0,
@@ -35,34 +36,36 @@
       },
       "nemotron": {
         "family": "Nemotron (NVIDIA)",
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
         "hosting": "hosted, open-weights 120B",
         "naive": {
-          "plan_fabrication_rate": 0.9083,
-          "plan_refused": 3,
+          "plan_fabrication_rate": 1.0,
+          "plan_refused": 0,
           "plan_fields": 240,
-          "ungroundable_fabrication_rate": 0.8944
+          "ungroundable_fabrication_rate": 1.0
         },
         "coached": {
-          "plan_fabrication_rate": 0.0083,
-          "plan_refused": 208,
+          "plan_fabrication_rate": 0.0,
+          "plan_refused": 240,
           "plan_fields": 240,
           "ungroundable_fabrication_rate": 0.0
         }
       },
       "qwen2.5_1.5b": {
         "family": "Qwen2.5 (local)",
+        "model": "qwen2.5:1.5b-instruct",
         "hosting": "local",
         "naive": {
-          "plan_fabrication_rate": 0.9667,
-          "plan_refused": 1,
+          "plan_fabrication_rate": 0.9708,
+          "plan_refused": 2,
           "plan_fields": 240,
-          "ungroundable_fabrication_rate": 0.9333
+          "ungroundable_fabrication_rate": 0.9278
         },
         "coached": {
-          "plan_fabrication_rate": 0.0167,
-          "plan_refused": 227,
+          "plan_fabrication_rate": 0.0208,
+          "plan_refused": 225,
           "plan_fields": 240,
-          "ungroundable_fabrication_rate": 0.0389
+          "ungroundable_fabrication_rate": 0.0333
         }
       }
     }
@@ -73,6 +76,7 @@
     "providers": {
       "qwen2.5_7b": {
         "family": "Qwen2.5 (local)",
+        "model": "qwen2.5:7b-instruct",
         "hosting": "local",
         "naive": {
           "plan_fabrication_rate": 1.0,
@@ -89,16 +93,17 @@
       },
       "nemotron": {
         "family": "Nemotron (NVIDIA)",
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
         "hosting": "hosted, open-weights 120B",
         "naive": {
           "plan_fabrication_rate": 1.0,
           "plan_refused": 0,
           "plan_fields": 24,
-          "ungroundable_fabrication_rate": 0.6667
+          "ungroundable_fabrication_rate": 1.0
         },
         "coached": {
           "plan_fabrication_rate": 0.0,
-          "plan_refused": 18,
+          "plan_refused": 24,
           "plan_fields": 24,
           "ungroundable_fabrication_rate": 0.0
         }

@@ -39,7 +39,9 @@ def _writability_search() -> list[Path]:
     env = os.environ.get("PEN_ATLAS_DIR")
     if env:
         bases.append(Path(env))
-    bases += [_ROOT / "data" / "out", _FINAL / "phase_1" / "out"]
+    # data/data_out is the layout the Zenodo archive unpacks to, so a reader who runs the bench
+    # against the deposit finds the per-cell-type atlases without having to move them first.
+    bases += [_ROOT / "data" / "out", _ROOT / "data" / "data_out", _FINAL / "phase_1" / "out"]
     return bases
 
 

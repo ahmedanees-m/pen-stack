@@ -2,5 +2,5 @@
   "model": "nemotron",
   "condition": "coached",
   "goal": "plan|TRAC|knock a CAR into TRAC, disrupting the TCR",
-  "content": "{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"CRISPR-Cas9\"\n}"
+  "content": "{\"max_writability\":\"REFUSE\",\"safety_score\":\"REFUSE\",\"p_durable\":\"REFUSE\",\"predicted_offtarget_count\":\"REFUSE\",\"structural_risk_score\":\"REFUSE\",\"target_bin_coordinate\":\"REFUSE\",\"recommended_writer_family\":\"CRISPR-Cas9 nuclease (DSB/HDR knock-in)\"}"
 }

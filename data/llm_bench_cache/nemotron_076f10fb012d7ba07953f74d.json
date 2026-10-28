@@ -2,5 +2,5 @@
   "model": "nemotron",
   "condition": "coached",
   "goal": "plan|PDCD1|Design a PDCD1 (PD-1) knock-out for tumor-infiltrating lymphocytes. What's the writability at the target site, the off-target count, the structural risk, and does the safety verdict pass?",
-  "content": "{\n  \"max_writability\": \"REFUSE\",\n  \"safety_score\": \"REFUSE\",\n  \"p_durable\": \"REFUSE\",\n  \"predicted_offtarget_count\": \"REFUSE\",\n  \"structural_risk_score\": \"REFUSE\",\n  \"target_bin_coordinate\": \"REFUSE\",\n  \"recommended_writer_family\": \"REFUSE\"\n}"
+  "content": "{\"max_writability\":\"REFUSE\",\"safety_score\":\"REFUSE\",\"p_durable\":\"REFUSE\",\"predicted_offtarget_count\":\"REFUSE\",\"structural_risk_score\":\"REFUSE\",\"target_bin_coordinate\":\"REFUSE\",\"recommended_writer_family\":\"REFUSE\"}"
 }

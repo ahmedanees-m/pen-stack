@@ -2,5 +2,5 @@
   "model": "nemotron",
   "condition": "naive",
   "goal": "plan|CLYBL|Write plan for a 2.8 kb cassette at CLYBL: durability, writability, off-targets, coordinate.",
-  "content": "{\"max_writability\":0.81,\"safety_score\":0.94,\"p_durable\":0.88,\"predicted_offtarget_count\":1,\"structural_risk_score\":0.12,\"target_bin_coordinate\":\"chr13:104,321,500\",\"recommended_writer_family\":\"CRISPR-Cas9 nickase-mediated HDR\"}"
+  "content": "{\n  \"max_writability\": 0.81,\n  \"safety_score\": 0.88,\n  \"p_durable\": 0.84,\n  \"predicted_offtarget_count\": 5,\n  \"structural_risk_score\": 0.19,\n  \"target_bin_coordinate\": \"chr13:95,552,000-95,552,500\",\n  \"recommended_writer_family\": \"CRISPR-associated transposase (CAST)\"\n}"
 }

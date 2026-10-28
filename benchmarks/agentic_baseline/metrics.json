@@ -17,19 +17,19 @@
   "llm_agents": {
     "nemotron": {
       "provider": "nvidia",
-      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
       "hosting": "hosted cloud",
       "no_fabrication_pass": true,
       "llm_driven_runs": 4,
       "n_goals": 4,
-      "goals_with_tool_calls": 2,
+      "goals_with_tool_calls": 4,
       "tool_calls_per_goal": {
-        "TRAC": 0,
-        "AAVS1": 4,
-        "CCR5": 0,
-        "CLYBL": 6
+        "TRAC": 12,
+        "AAVS1": 1,
+        "CCR5": 10,
+        "CLYBL": 10
       },
-      "total_tool_calls": 10
+      "total_tool_calls": 33
     },
     "claude": {
       "provider": "anthropic",
@@ -64,7 +64,7 @@
       "total_tool_calls": 15
     }
   },
-  "finding": "Across three models spanning a 1.5B local model to hosted cloud models, the no-fabrication audit passed in every run: every quantity that was emitted equalled a direct tool call. Tool engagement was uneven, at 9 of 12 model-goal runs issuing at least one call; the remaining 3 answered in prose and so passed with no quantity to audit. The audit therefore establishes that no ungrounded quantity was emitted, not that the tools were driven throughout. A matched run over the full goal set is reported separately.",
+  "finding": "Across three models spanning a 1.5B local model to hosted cloud models, the no-fabrication audit passed in every run: every quantity that was emitted equalled a direct tool call. Tool engagement was uneven, at 11 of 12 model-goal runs issuing at least one call; the remaining 1 answered in prose and so passed with no quantity to audit. The audit therefore establishes that no ungrounded quantity was emitted, not that the tools were driven throughout. A matched run over the full goal set is reported separately.",
   "provenance": {
     "harness": "bench/run.py (run_agent_solver) + pen_stack/agent/orchestrator.py",
     "providers_config": "configs/llm.yaml (nvidia | anthropic | ollama_small)",
