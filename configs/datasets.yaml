@@ -11,7 +11,33 @@ genome:
     note: "for TRIP mouse data + function-transfer test (kept in mm10, not lifted 1:1)"
 
 chromatin:
-  encode: { portal: "https://www.encodeproject.org", tracks: [ATAC, DNase, H3K27ac, H3K4me1, H3K4me3, H3K9me3, H3K27me3] }
+  encode:
+    portal: "https://www.encodeproject.org"
+    tracks: [ATAC, DNase, H3K27ac, H3K4me1, H3K4me3, H3K9me3, H3K27me3]
+    # The atlas panel is RESOLVED, not pinned: pen_stack/data/encode.py queries the portal for a
+    # released bigWig matching (biosample, assay, target, assembly) and takes the first by
+    # preferred output type. These criteria are the provenance; file accessions are not recorded,
+    # so a rebuild after the portal changes can resolve different files.
+    resolution:
+      assembly: GRCh38
+      status: released
+      file_format: bigWig
+      output_type_preference: ["fold change over control", "signal p-value",
+                               "read-depth normalized signal", "signal"]
+      biosamples: [K562, HepG2, "CD34+ progenitor", "ES-Bruce4"]
+    # Pinned accessions, which do not move:
+    pinned:
+      offtarget_accessibility:
+        { accession: ENCFF529BOG, experiment: ENCSR000EJR, biosample: HEK293T, assay: DNase-seq,
+          output_type: "read-depth normalized signal", assembly: GRCh38,
+          use: "cell-type-matched off-target accessibility (GUIDE-seq HEK293, TTISS HEK293T)" }
+      epridict_light_panel:   # the comparator tool's inputs, locked in prereg/ws_priorart.yaml
+        - { mark: DNase,    accession: ENCFF972GVB }
+        - { mark: HDAC2,    accession: ENCFF954LGE }
+        - { mark: H3K4me1,  accession: ENCFF834SEY }
+        - { mark: H3K9me3,  accession: ENCFF601JGK }
+        - { mark: H3K27me3, accession: ENCFF139KZL }
+        - { mark: H3K4me2,  accession: ENCFF959YJV }
   roadmap: { portal: "https://egg2.wustl.edu/roadmap/web_portal/" }
   hic_compartments: { note: "A/B compartments per cell type" }
   lad: { note: "lamina-associated domain calls per cell type" }
@@ -46,7 +72,9 @@ safety_annotations:
     registration: required
   depmap:
     portal: "https://depmap.org"
-    file: "CRISPR_gene_effect.csv" # verified filename
+    release: "DepMap Public 26Q1"
+    file: "CRISPRGeneEffect.csv" # renamed from CRISPR_gene_effect.csv at 22Q2
+    license: "CC BY 4.0 (attribution required)"
     use: "essential-gene list"
     registration: required
   gnomad: { version: "v4", use: "variant density / avoid variant-disrupted target sites" }

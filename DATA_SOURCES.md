@@ -26,8 +26,12 @@ its role. Machine-readable pins (versions, retrieval dates, checksums) are in
 |---|---|---|
 | Human genome GRCh38 (hg38) | UCSC / Ensembl | primary coordinate system |
 | Mouse genome mm10 | UCSC | TRIP mouse data and the cross-species transfer test |
-| ENCODE chromatin | ENCODE portal (incl. ENCFF529BOG) | ATAC, DNase, and histone marks for K562, HepG2, CD34+ progenitor, and mouse ES-Bruce4 |
+| ENCODE chromatin, atlas panel | resolved at build time, not pinned (see note below) | ATAC, DNase, H3K27ac, H3K4me1, H3K4me3, H3K9me3 and H3K27me3 for K562, HepG2, CD34+ progenitor and mouse ES-Bruce4 |
+| ENCODE chromatin, ePRIDICT comparator panel | ENCFF972GVB, ENCFF954LGE, ENCFF834SEY, ENCFF601JGK, ENCFF139KZL, ENCFF959YJV (pinned in `prereg/ws_priorart.yaml`) | the six K562 bigWigs the ePRIDICT light model reads in the prior-art comparison |
+| ENCODE chromatin, off-target accessibility | ENCFF529BOG (experiment ENCSR000EJR), HEK293T DNase-seq, read-depth normalised signal, GRCh38 | the cell-type-matched track behind the off-target accessibility comparison; HEK293T matches GUIDE-seq's HEK293 and TTISS's HEK293T |
 | Roadmap Epigenomics | egg2.wustl.edu/roadmap | additional chromatin context |
+
+**How the ENCODE atlas panel is selected.** `pen_stack/data/encode.py` does not hard-code the atlas track accessions. It queries the ENCODE portal for a released bigWig signal file matching (biosample, assay, histone target, assembly GRCh38) and takes the first by preferred output type: fold change over control, then signal p-value, then read-depth normalised signal, then signal. The query criteria are therefore the provenance for this panel, and they are stable; the file accessions are not recorded, and a rebuild after the portal changes can resolve different files. The two panels listed above it are pinned by accession and do not move.
 | GENCODE v46 | gencodegenes.org | gene models and coordinates |
 | DepMap Public 26Q1 | depmap.org | gene essentiality |
 | CancerMine | Lever et al. 2019, doi:10.1038/s41592-019-0422-y; Zenodo 7689627 (CC0) | oncogene / tumour-suppressor annotation (default safety source) |
