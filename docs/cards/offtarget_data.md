@@ -89,7 +89,8 @@ Nomination is **not** a clearance; every result ships with the empirical assay t
 candidate ENUMERATION needs the on-VM Cas-OFFinder/genome scan; this benchmark covers SCORING + RANKING of supplied
 candidates. Bridge/integrase off-target is data-thin: there is **no published genome-wide unbiased off-target assay
 or predictor for bridge recombinases** (verified), and the large-serine-integrase assays (Cryptic-seq/HIDE-seq) and
-predictor (IntQuery) are recent single-company preprints with no public weights.
+predictor (IntQuery) are recent single-company preprints. IntQuery publishes its trained weights;
+it is not run here, and no head-to-head is claimed.
 
 ---
 

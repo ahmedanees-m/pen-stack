@@ -38,7 +38,7 @@ def recommend_assay(writer_family: str) -> dict:
                                  "use": "the genome-wide unbiased assay for serine-integrase cryptic attB sites "
                                         "(Tome Biosciences, 2024 preprint)"}],
                 "strategy": "scan cryptic pseudo-attB (this engine) THEN confirm by Cryptic-seq/HIDE-seq; "
-                            "quantitative prediction (IntQuery) is paper-only (no public weights)",
+                            "quantitative prediction (IntQuery) publishes trained weights; not run here",
                 "available": True,
                 "note": "LSI off-target assays are recent preprints; coverage is single-company / largely Bxb1."}
     if "paste" in fam or "passige" in fam:
