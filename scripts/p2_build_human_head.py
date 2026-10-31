@@ -31,10 +31,21 @@ FULL = ["H3K27ac", "H3K4me1", "H3K9me3", "H3K27me3", "H3K36me3"]
 INDEPENDENT = ["H3K27ac", "H3K4me1", "H3K36me3"]            # lamina/heterochromatin marks removed (de-circular)
 
 
+def _ensure_input() -> bool:
+    """Build the upstream table if it is not present. It is fetched, not committed."""
+    if INPUT.exists():
+        return True
+    print(f"[fetch] {INPUT.name} is not committed; rebuilding it from the two upstream sources")
+    import subprocess
+    r = subprocess.run([sys.executable, str(ROOT / "scripts" / "build_leemans_input.py")])
+    return r.returncode == 0 and INPUT.exists()
+
+
 def main() -> int:
-    if not INPUT.exists():
-        print(f"[fail] {INPUT} not found. It is a committed derived table; fetch the release with "
-              "`bash scripts/fetch_artifacts.sh` if you are on a partial checkout.", file=sys.stderr)
+    if not _ensure_input():
+        print(f"[fail] could not obtain {INPUT.name}. Run "
+              "`python scripts/build_leemans_input.py` (needs network and pyreadr).",
+              file=sys.stderr)
         return 2
     from pen_stack.twin.position_effect import PositionEffectModel
 

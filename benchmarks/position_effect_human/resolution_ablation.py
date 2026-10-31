@@ -45,7 +45,13 @@ def main():
 
     split = json.loads(open(f"{BENCH}/split.json", encoding="utf8").read())
     held = set(split["chrom_holdout"]["test_chroms"])
-    df = pd.read_parquet(f"{BENCH}/leemans_scored_input.parquet")
+    table = f"{BENCH}/leemans_scored_input.parquet"
+    if not os.path.exists(table):
+        # the upstream table is fetched, not committed; see DATA_LICENSES.md
+        print(f"[fetch] {table} is not committed; rebuilding it from upstream")
+        import subprocess
+        subprocess.run([sys.executable, "scripts/build_leemans_input.py"], check=True)
+    df = pd.read_parquet(table)
     df["expr_y"] = df["expr_y"].astype(float)
     print(f"integrations {len(df)}   held-out chromosomes {sorted(held)}")
 

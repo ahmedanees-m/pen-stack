@@ -58,3 +58,6 @@ configs/alphagenome_api_key.txt
 
 # v6.6: bring-your-own-license restricted data (COSMIC/OncoKB), never commit
 licensed_data/
+
+# fetched at build time from the two upstream sources, never committed (see DATA_LICENSES.md)
+benchmarks/position_effect_human/leemans_scored_input.parquet

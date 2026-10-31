@@ -8,11 +8,14 @@ its role. Machine-readable pins (versions, retrieval dates, checksums) are in
 ## How the data is distributed
 
 - **Committed in the repository:** small curated tables (`data/curated/`), the one-chromosome demo atlas
-  (`data/demo/`), the committed benchmark metrics and frozen splits (`benchmarks/*/`), the offline transcript
-  cache (`data/llm_bench_cache/`), and the derived Leemans K562 features table
-  (`benchmarks/position_effect_human/leemans_scored_input.parquet`, 0.5 MB) that `make repro-human` uses to
-  **recompute the primary expression-robustness result from source**. These let a fresh clone run the
-  quickstart, recompute the primary number, and replay every benchmark with no download.
+  (`data/demo/`), the committed benchmark metrics and frozen splits (`benchmarks/*/`), and the offline
+  transcript cache (`data/llm_bench_cache/`). These let a fresh clone run the quickstart and replay every
+  benchmark with no download.
+- **Fetched from upstream at build time, never committed:** the Leemans K562 position-effect table that
+  `make repro-human` recomputes the primary expression-robustness result from. Every column is published
+  by Leemans et al., in two places, and `scripts/build_leemans_input.py` fetches both and joins them on
+  the reporter barcode, asserting the result against a recorded content digest. Needs network and
+  `pyreadr`; see [`DATA_LICENSES.md`](DATA_LICENSES.md).
 - **Fetched from the Zenodo deposit** with `scripts/fetch_artifacts.sh` (set `ZENODO_DOI`): the full
   genome-wide Writable-Genome atlases (`atlas_{k562,hepg2,hspc}.parquet`), their BigWig tracks and top-site
   BED files, `gene_coords.parquet`, and the trained models (`durability.pkl`, `safety_{ct}.pkl`, the

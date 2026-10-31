@@ -15,7 +15,7 @@ source.
 |---|---|---|---|---|---|
 | **CancerMine** (Lever et al. 2019, *Nat Methods* 16:505, [10.1038/s41592-019-0422-y](https://doi.org/10.1038/s41592-019-0422-y); Zenodo 7689627) | oncogene / TSG / driver gene list (+ citation counts) | **CC0** | yes | yes | `data/ingest_safety_annot.py::load_cancermine` → `safety_annot` → `safety_{ct}.pkl`, `genotoxicity_oracle.yaml`, atlas |
 | **DepMap** (Broad, CRISPRGeneEffect) | common-essential genes | **CC BY 4.0** | yes | yes (attrib) | `load_depmap_essential` → `dist_essential` |
-| **Leemans 2019** (Cell, [10.1016/j.cell.2019.03.009](https://doi.org/10.1016/j.cell.2019.03.009); PMID 30982597) | human K562 TRIP position-effect: measured expression + integration coordinates | **CC BY-NC-ND 4.0** (source compilation) | yes | source taken from the publisher; a derived feature table is committed for reproduction, attributed, no licence grant claimed (see note) | `p2_build_human_head.py` → `benchmarks/position_effect_human/leemans_scored_input.parquet` → `position_effect_human_k562.pkl` |
+| **Leemans 2019** (Cell, [10.1016/j.cell.2019.03.009](https://doi.org/10.1016/j.cell.2019.03.009); PMID 30982597) | human K562 TRIP position-effect: the authors' feature set, expression, LAD call, promoter name and class, plus the integration coordinates from their supplement | **CC BY-NC-ND 4.0** (supplement); **no licence declared** (their GitHub feature set) | yes | **nothing redistributed**: both sources are fetched at build time by `scripts/build_leemans_input.py` (see note) | `p2_build_human_head.py` → `benchmarks/position_effect_human/leemans_scored_input.parquet` → `position_effect_human_k562.pkl` |
 | **gnomAD** (pLI / LOEUF) | dosage / constraint | open (aggregate) | yes | yes | locus dosage signals |
 | **ClinVar / ClinGen** | dosage sensitivity | public domain (NCBI/NIH) | yes | yes | locus dosage signals |
 | **GENCODE / Ensembl** (v46) | gene/TSS coordinates | open | yes | yes | `parse_gencode_genes` → all distances |
@@ -25,7 +25,19 @@ source.
 
 The genotoxic-CIS gene names (LMO2/MECOM/EVI1/CCND2/PRDM16/HMGA2) are **well-known literature facts**, not COSMIC-specific.
 
-**Leemans 2019 (position-effect head).** The source compilation is CC BY-NC-ND 4.0. That licence permits producing adapted material but not sharing it, so this repository claims no licence grant for what it ships and says plainly what it ships instead.
+**Leemans 2019 (position-effect head).** This repository ships none of it. `benchmarks/position_effect_human/leemans_scored_input.parquet` is **not committed**; `scripts/build_leemans_input.py` fetches both upstream sources and joins them locally, which is
+what CC BY-NC-ND 4.0 permits, since the licence allows producing adapted material and not sharing it.
+
+The table has two upstream sources, and every column is theirs:
+
+| Columns | Source | Terms |
+|---|---|---|
+| the five `*_mean` marks, `LMNB1_DamID`, `lad`, `prom_name`, `class`, `expr_y`, and the `barcode` index | `github.com/vansteensellab/Promoters_in_LADs`, `data/cl20181013_feature_set_trip.Rdata` (objects `X`, `y`, `lad_vec`) | **no licence declared** |
+| `chrom`, `pos` (hg19) | Cell supplement Dataset S2, `mmc4.zip -> Dataset_S2_TRIP.tsv`, served by Europe PMC for the open-access record | CC BY-NC-ND 4.0 |
+
+The 9,298 rows are the row count of the authors' own feature matrix, not a filter applied here: the hPGK pool is absent upstream. The barcode join to the coordinate table is exact at 9,298 of 9,298, and the coordinates are hg19 as the supplement states, with no liftover applied. Our only contribution is that join and the selection of five of their fourteen marks.
+
+`build_leemans_input.py` asserts the rebuilt table against a recorded content digest, so a reader can confirm they have the same values the paper used without this repository carrying them.
 
 `benchmarks/position_effect_human/leemans_scored_input.parquet` is a derived feature table: per-integration measured expression and the escaper/repressed call from Leemans et al., lifted to hg38 and joined to ENCODE chromatin signal computed here. It is committed for one purpose, to let `make repro-human` recompute the single reported correlation on a bare clone, and Leemans et al. are attributed wherever it is used.
 
