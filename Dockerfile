@@ -44,6 +44,6 @@ RUN python -m pip install --upgrade pip && \
 RUN python -c "import pen_stack; print('PEN-STACK', pen_stack.__version__)" && \
     PEN_ATLAS_DIR=data/demo pen-stack writable --gene AAVS1 --ct k562 | head -3
 
-# Default: reproduce the committed-data results (demo atlas, grounding eval, agentic baseline, headline
-# metrics) with no download and no API key.
+# Default: reproduce the committed-data results (demo atlas, grounding eval, agentic baseline,
+# reported metrics) with no download and no API key.
 CMD ["make", "repro"]

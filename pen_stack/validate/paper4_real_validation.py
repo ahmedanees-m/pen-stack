@@ -7,7 +7,7 @@ The criteria are validated against the measured Perry 2025 data (Science adz0276
    (UMI-weighted). The data confirm the mechanism: the central core (positions 7-9, esp. 8) is the most
    conserved; distal positions are tolerant. This measured profile replaces the literature one.
 
-2. **HEADLINE - blind discrimination of real off-targets, beating Hamming.** Real observed off-targets
+2. **Blind discrimination of real off-targets, beating Hamming.** Real observed off-targets
    (which recombined -> core preserved) are positives; a core-disrupted decoy of each (position-8 mutated ->
    non-recombinogenic) is the negative. The position-weight model separates them near-perfectly where a
    position-blind Hamming ranking cannot (AUROC).

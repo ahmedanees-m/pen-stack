@@ -34,7 +34,7 @@ def build() -> str:
         "",
         "## B3 (PRIMARY SAFETY METRIC) - Safe-harbour discrimination",
         f"- Primary metric: **{gsh.get('primary_safety_metric', 'n/a')}**.",
-        f"- **HEADLINE (absolute discrimination, not a delta): learned writability AUROC = "
+        f"- **Primary result (absolute discrimination, not a delta): learned writability AUROC = "
         f"{gsh.get('auroc_learned_writability')}** (95% CI {gsh.get('auroc_learned_ci95')}, "
         f"N={gsh.get('n_positives')} curated positives vs {gsh.get('n_controls')} matched controls).",
         "- **Why the published distance rule is NOT the primary baseline:** it scores at/below chance "

@@ -66,7 +66,8 @@ def test_b2_all_marks_beats_best_single():
 def test_b3_headline_is_absolute_discrimination_not_delta():
     from pen_stack.wgenome.gsh_baseline import run
     r = run()
-    # HEADLINE must be the learned model's ABSOLUTE discrimination with CI + N, never a delta vs the rule.
+    # The reported metric must be the learned model's ABSOLUTE discrimination with CI + N, never a delta
+    # vs the rule.
     assert "primary" in r and "AUROC" in r["primary"] and "95% CI" in r["primary"] and "N=" in r["primary"]
     assert r["auroc_learned_ci95"][0] <= r["auroc_learned_writability"] <= r["auroc_learned_ci95"][1]
     # The distance rule is a QUALITATIVE failure case (near/below chance because harbours are intragenic),

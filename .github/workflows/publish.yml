@@ -5,11 +5,8 @@ name: Publish to PyPI
 # version already on PyPI is skipped, not treated as a failure - so re-runs and already-published versions
 # do not fail the workflow. (To switch to tokenless Trusted Publishing instead, see docs/RELEASING.md.)
 #
-# NOTE: this token-based, tag-triggered workflow intentionally declares NO `environment:` on its jobs. A
-# GitHub environment (e.g. `pypi`) would create a Deployment object whose branch/tag policy can BLOCK a
-# tag-triggered publish, and adds no provenance beyond the workflow run + the PyPI page. The leftover `pypi`
-# environment from the abandoned Trusted-Publishing setup (and its stale failed deployment) was deleted on
-# 2026-06-08; PyPI is the source of truth. Do NOT re-add `environment:` here without a tag-allowing policy.
+# The jobs declare no `environment:`. A GitHub environment's branch and tag policy can block a
+# tag-triggered publish, so adding one requires a policy that allows tags.
 
 on:
   push:

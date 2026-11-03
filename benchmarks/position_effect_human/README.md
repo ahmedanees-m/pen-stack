@@ -17,11 +17,11 @@ Every number in `metrics.json` is copied verbatim from a source file and each fi
 - **Distinct from the mouse-axis null split.** The pre-registered *mouse-axis* `validated_null` (below) used a
   different held-out split `{chr2, chr9, chr16}` (prereg `2a4c722a...`). Do not conflate the two.
 
-## Headline result (fresh sealed held-out)
+## Result (fresh sealed held-out)
 
 | Predictor (fresh sealed, run once) | Held-out ρ |
 |---|---|
-| **Shipped twin model (5 marks) - HEADLINE** | **0.5711** |
+| **Shipped twin model (5 marks)** | **0.5711** |
 | Independent variant (3 active marks; heterochromatin dropped) | **0.558** |
 | Baseline - learned multi-feature heterochromatin | 0.493 |
 | Baseline - single-feature `lad` | 0.4489 |

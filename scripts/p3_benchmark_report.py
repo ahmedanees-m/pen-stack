@@ -1,6 +1,6 @@
 """Consolidated de-circularized benchmark report.
 
-Emits out/ws_a_report.md with: the blind GSH discovery (A3, the HEADLINE), writer-family recovery (A4),
+Emits out/ws_a_report.md with: the blind GSH discovery (A3, the primary result), writer-family recovery (A4),
 within-locus ranking (A5), and the intent specification-compliance table (A2). Each section carries its
 scope statement. The targeted-intent gene-level recovery is NOT reported as predictive (see
 docs/benchmark_circularity.md).
@@ -32,7 +32,7 @@ def build() -> str:
         "former targeted-intent recovery@k is a definitional artifact and is reported only as a "
         "specification-compliance property (see `docs/benchmark_circularity.md`).",
         "",
-        "## A3 (HEADLINE) - Blind safe-harbour site discovery",
+        "## A3 - Blind safe-harbour site discovery",
         f"- Held-out GSH: **{a3['n_positives']}** loci ({a3['n_validated']} validated + "
         f"{a3['n_candidate']} candidate) vs **{a3['n_controls']}** matched controls "
         f"(controls SHA `{a3['controls_sha256'][:12]}`, frozen before scoring).",

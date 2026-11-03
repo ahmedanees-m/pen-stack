@@ -217,7 +217,7 @@ export default function Twin() {
                 position-effect chromatin model's own OOD signal, that one is the "OOD widen" stat on the position-effect
                 card below, and it DOES move (verified: ×1–2 typical, saturating at ×3 under extreme marks). */}
             <p className="text-[11px] leading-relaxed text-fg-faint">
-              The headline is the <b>mechanistic</b> estimate, promoter strength × copy number × accessibility
+              The reported value is the <b>mechanistic</b> estimate, promoter strength × copy number × accessibility
               {res.conditioned_on_preexisting_nab != null ? " × pre-existing-NAb" : ""}. It reacts to <b>promoter</b> and
               <b> delivery vehicle</b>; it is <b>cell-type-agnostic</b> (accessibility is neutral here, the
               cell-type-specific position effect is the learned position-effect head below, which does move with cell type).

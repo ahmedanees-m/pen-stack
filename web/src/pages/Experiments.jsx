@@ -72,7 +72,7 @@ export default function Experiments() {
           { term: "Validation campaign", scale: "ordered batch", meaning: "A fixed, pre-registered (cassette × locus × cell type) plan targeting the calibrate_axis gate, independent of the candidate-pool form above; identical on repeat by design." },
         ]}
         caveats={[
-          "Within one regime (same cell-type coverage, same buildability) the mechanistic twin cannot finely rank experiments, the ordering there is diversity + immune-VOI. Coverage, buildability and OOD are what move the headline EIG.",
+          "Within one regime (same cell-type coverage, same buildability) the mechanistic twin cannot finely rank experiments, the ordering there is diversity + immune-VOI. Coverage, buildability and OOD are what move the EIG.",
           "EIG-beats-random is reported verbatim either way (it is rep-sensitive on the synthetic task); cloud-lab execution is mock / dry-run.",
         ]} />
 

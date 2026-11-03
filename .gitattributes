@@ -20,7 +20,6 @@ benchmarks/**/split.json                   text eol=lf
 # Pre-registration-locked text inputs are pinned to LF so their frozen SHA-256 hashes verify on every platform.
 prereg/*.yaml text eol=lf
 prereg/SHA256_LOCK_*.json text eol=lf
-prereg/honesty_ledger.json text eol=lf
 prereg/PREREG_MANIFEST.md text eol=lf
 configs/*.yaml text eol=lf
 configs/**/*.yaml text eol=lf

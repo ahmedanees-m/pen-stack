@@ -109,7 +109,8 @@ def run(ct: str = "k562", out: str | Path = _OUT) -> dict:
     report = {
         "primary_safety_metric": "safe-harbour discrimination (validated GSH vs matched controls)",
         "n_positives": npos, "n_controls": nctrl,
-        # HEADLINE = the learned model's ABSOLUTE discrimination with CI+N (NOT a delta vs a broken baseline).
+        # The reported metric is the learned model's ABSOLUTE discrimination with CI+N, not a delta vs a
+# broken baseline.
         "primary": (f"Learned writability discriminates curated safe harbours from matched controls at "
                      f"AUROC {round(auroc_learned, 3)} (95% CI [{al_lo}, {al_hi}], N={npos}). Naive distance "
                      f"rules fail on this task because validated harbours sit INSIDE genes (e.g. AAVS1 in "
@@ -135,7 +136,7 @@ def run(ct: str = "k562", out: str | Path = _OUT) -> dict:
         "delta_ci_excludes_zero": (bool(_ci(boot_delta)[0] > 0) if boot_delta else None),
         "learned_beats_ruleset": bool(auroc_learned > auroc_rule) if not np.isnan(auroc_rule) else None,
         "ci_note": f"bootstrap 2000x over {npos} positives + {nctrl} controls (seed 20260604).",
-        "finding": "Headline is the learned model's ABSOLUTE discrimination (AUROC + 95% CI + N), not a "
+        "finding": "The reported metric is the learned model's ABSOLUTE discrimination (AUROC + 95% CI + N), not a "
                           "delta. The distance-rule baseline is near/below chance because validated harbours are "
                           "intragenic; that failure is reported qualitatively, NOT as a delta to beat (beating a "
                           "worse-than-random baseline would be a low bar). The learned vs rule delta is kept only "

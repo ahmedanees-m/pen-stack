@@ -64,7 +64,7 @@ def ungrounded_contrast_md(ung: dict | None) -> list[str]:
         "Same models, **no tools**, same write-planning goals. A concrete value for a tool-only field is a "
         "fabrication; an explicit refusal is deterministic. Two prompt conditions: **naive** (no anti-fabrication "
         "coaching - the realistic probe) and **coached** (explicitly told to refuse ungroundable values). The "
-        "grounded agent is 0.0 under BOTH by construction - that architectural guarantee is the point; "
+        "grounded agent is 0.0 under BOTH by construction, which is structural rather than prompt-dependent; "
         "prompt-coaching is not a substitute for grounding.",
         "",
         "| Agent | Prompt | Plan-goal fabrication | Ungroundable-goal fabrication |",

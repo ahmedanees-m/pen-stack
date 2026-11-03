@@ -17,7 +17,7 @@ There are two solver classes:
 2. **Agent solver (LLM or otherwise)** - drives the validated tools through the MCP registry
    (`pen_stack.agent.mcp_server`) or the in-process orchestrator. Its numbers must come from tool calls.
 
-## The rules (non-negotiable)
+## Rules
 
 - **No-fabrication is a hard gate (T6).** Every number in an agent's trace must equal a direct tool call.
   A single invented value disqualifies the submission. This is checked automatically.
@@ -37,15 +37,15 @@ There are two solver classes:
    `out/bench_results.json` and a one-line description.
 3. Open a pull request titled `bench-submission: <solver name>`. Include: the solver class, the provider /
    model (for agents), the one-command invocation, and whether the no-fabrication gate passed.
-4. We verify the run reproduces against the frozen SHAs and add your row to `LEADERBOARD.md`.
+4. The run is verified against the frozen SHAs and the row is added to `LEADERBOARD.md`.
 
 ## Scoring and scope
 
 The leaderboard reports, per solver: tasks scored, whether it beats the naive baseline on grounded tasks,
-the no-fabrication result, and a short note. We report **how many goals an agent was LLM-driven vs gracefully
-fell back** - the no-fabrication result holds either way. We do not rank by a single composite score; the
-point is to show that grounded planning beats naive baselines and that an agent can only match the planner by
-grounding, never by inventing.
+the no-fabrication result, and a short note. It also records **how many goals an agent was LLM-driven and
+how many fell back** - the no-fabrication result holds either way. There is no single composite score: the
+board separates grounded planning from naive baselines, and an agent matches the planner only by grounding
+its values in tool calls.
 
 ## Versioning
 

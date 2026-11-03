@@ -52,7 +52,7 @@ def test_retrospective_recovery_harness():
 
 @pytest.mark.skipif(load_dms().empty, reason="Perry 2025 DMS (Table S3) not present")
 def test_dms_recovers_known_enhancers():
-    # Headline: the framework fed the REAL DMS recovers the known ISCro4 enhancers in its top set
+    # The framework fed the REAL DMS recovers the known ISCro4 enhancers in its top set
     from pen_stack.atlas.variant_propose import KNOWN_ISCRO4_ENHANCERS, iscro4_dms_recovery
     r = iscro4_dms_recovery(top=20)
     assert r["available"] is True

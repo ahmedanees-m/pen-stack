@@ -638,7 +638,7 @@ export default function DesignStudio() {
                     </tbody>
                   </table>
                 </div>
-                <p className="text-[11px] leading-relaxed text-fg-faint">{capGen.honesty}</p>
+                <p className="text-[11px] leading-relaxed text-fg-faint">{capGen.scope_note}</p>
               </div>
             ) : (
               <div className="rounded-lg border border-warn/30 bg-warn/5 p-3">

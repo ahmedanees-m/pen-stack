@@ -1,6 +1,6 @@
 """Cross-cell-type transfer evaluation for the position-effect model.
 
-The HEADLINE transfer test: train on a subset of cell types, hold one out, predict it from its epigenome alone.
+The transfer test: train on a subset of cell types, hold one out, predict it from its epigenome alone.
 This is the characterization of *where* a position-effect model transfers. With a single available
 position-effect cell type (mESC) it returns `data_gated`, NO transfer number is fabricated. It activates once
 PatchMPRA / MPIRE / lentiMPRA / Leemans are fetched (the data-acquisition step, reported).

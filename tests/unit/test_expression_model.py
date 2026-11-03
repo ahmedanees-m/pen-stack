@@ -22,7 +22,7 @@ def test_palette_is_comprehensive_and_cited():
 
 
 def test_promoter_context_is_encoded_not_a_universal_scalar():
-    # CMV is flagged context-variable/silencing (the whole point: strength is NOT a single universal number)
+    # CMV is flagged context-variable/silencing (strength is NOT a single universal number)
     cmv = promoter_info("cmv")
     assert "variable" in str(cmv.get("context", "")).lower()
     r = cassette_expression({"promoter": "cmv"}, {"accessibility": 1.0})

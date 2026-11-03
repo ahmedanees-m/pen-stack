@@ -86,7 +86,7 @@ export default function SiteFinder() {
           { name: "Writable loci", tells: "the scored 1-kb bins in and around your gene, ranked", output: "table · safety / durability / writability (0–1)" },
           { name: "Site safety", tells: "is the locus away from cancer & essential genes?", output: "0–1 · higher = safer" },
           { name: "Durability", tells: "will an insert here keep expressing (resist silencing)?", output: "0–1 · higher = lasts" },
-          { name: "Writability", tells: "overall write-suitability (0.5·safety + 0.5·durability)", output: "0–1 · the headline" },
+          { name: "Writability", tells: "overall write-suitability (0.5·safety + 0.5·durability)", output: "0–1 · the composite" },
           { name: "Ranked write plans", tells: "concrete writer × site combos for your cargo + intent", output: "ranked list · genotoxic sites flagged" },
           { name: "Cell-type coverage", tells: "which cell types have a measured atlas (refusal otherwise)", output: "K562/HepG2 full · HSPC partial · others disabled" },
         ]}
@@ -138,7 +138,7 @@ export default function SiteFinder() {
         items={[
           { term: "Safety", scale: "0–1, higher = safer", meaning: "1 − P(genotoxic) from a model over chromatin marks + log-distance to the nearest oncogene (CancerMine), tumour-suppressor, essential gene (DepMap) and TSS, plus retroviral (MLV) integration density. ~1.0 = far from cancer/essential genes; low = near one (e.g. LMO2, MECOM)." },
           { term: "Durability", scale: "0–1, higher = lasts", meaning: "P(durable) = 1 − P(silenced), from a TRIP-trained chromatin model (thousands of genome-integrated reporters scored for positional silencing), applied to this cell type's histone marks. The slider shows the modeled probability an insert here keeps expressing." },
-          { term: "Writability", scale: "0–1, the headline", meaning: "0.5·Safety + 0.5·Durability, a documented 50/50 blend, not a product. A 0.92 might be 'very safe, decent durability' or the reverse; the two columns tell you which trade-off you are getting." },
+          { term: "Writability", scale: "0–1, the composite", meaning: "0.5·Safety + 0.5·Durability, a documented 50/50 blend, not a product. A 0.92 might be 'very safe, decent durability' or the reverse; the two columns tell you which trade-off you are getting." },
         ]}
         caveats={[
           "Validation: the learned writability separates curated safe harbours (AAVS1, CCR5, CLYBL…) from matched controls at AUROC 0.68 (95% CI 0.54–0.83, N=16), modest, above chance. Naive distance rules fail this (AUROC ~0.51) because real safe harbours sit inside genes.",

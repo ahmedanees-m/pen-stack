@@ -20,7 +20,7 @@ help:
 	@echo "  make install      pip install -e .[dev]"
 	@echo "  make test         run the unit test suite (pytest -q)"
 	@echo "  make repro        reproduce results from committed data + the demo atlas (no download, no key)"
-	@echo "  make repro-human  recompute the headline human K562 expression-robustness result from source data"
+	@echo "  make repro-human  recompute the human K562 expression-robustness result from source data"
 	@echo "  make fetch        download the full atlas + models from Zenodo (set ZENODO_DOI)"
 	@echo "  make repro-full   make fetch, then also run the genome-wide atlas benchmarks"
 	@echo ""
@@ -42,7 +42,7 @@ test:
 repro:
 	$(PYTHON) scripts/reproduce.py
 	@echo ""
-	@echo "== Headline result recomputed from source: human K562 expression-robustness head =="
+	@echo "== Recomputed from source: human K562 expression-robustness head =="
 	$(PYTHON) scripts/p2_build_human_head.py
 	@echo ""
 	@echo "== Prior-art distinctness recomputed from source: durability axis vs ePRIDICT =="
@@ -52,7 +52,7 @@ repro:
 	$(PYTHON) bench/run.py --verify
 	$(PYTHON) bench/run.py --agent
 
-# Recompute the headline human K562 expression-robustness result from the committed Leemans source data,
+# Recompute the human K562 expression-robustness result from the committed Leemans source data,
 # training the shipped twin on the chr3/8/12-held-out split and asserting the correlation matches the metrics.
 repro-human:
 	$(PYTHON) scripts/p2_build_human_head.py
