@@ -8,7 +8,7 @@ oracle abstains (never fabricates) when it has no computed class; the ROBUST int
 near oncogenes from data and the lentiviral score validates the documented tier; the in-vivo clonal OUTCOME
 stays a known-unknown.
 
-Honesty note: with the license-clean CancerMine (CC0) oncogene set (broader than COSMIC CGC) the per-class
+With the license-clean CancerMine (CC0) oncogene set (broader than COSMIC CGC) the per-class
 enrichments compress toward 1, and the lentiviral-vs-gammaretroviral ORDERING, which rested on COSMIC's narrow
 set AND a tiny (n=32) gammaretroviral catalogue, is no longer reproduced and is NOT asserted as a gate. The
 robust, source-independent claim that integrating vectors are enriched near oncogenes (a mechanistic flag) holds."""

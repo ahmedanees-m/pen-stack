@@ -1,8 +1,7 @@
 """Paper 4 validation on the REAL Perry 2025 data.
 
-Now that the Perry 2025 supplementary (Science adz0276) is available locally, the previously *gated*
-criteria are validated against measured data (raw tables stay local - copyrighted; only derived results
-are written):
+The criteria are validated against the measured Perry 2025 data (Science adz0276), held locally
+(raw tables stay local, copyrighted; only derived results are written):
 
 1. **Measured position profile** - derive per-position protective weights from 6,856 real off-targets
    (UMI-weighted). The data confirm the mechanism: the central core (positions 7-9, esp. 8) is the most

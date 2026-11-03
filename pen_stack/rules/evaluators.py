@@ -3,7 +3,7 @@
 Each evaluator runs ONE rule against a ``Design`` and returns a ``RuleResult``. Crucially, evaluators
 **delegate to the functions that already implement the logic** (``planner.target_site``, ``bridge.fold_qc``,
 ``planner.delivery_constraints``, ``planner.multiplex``, and the delivery-vehicle table), so lifting the
-rules into data changes no decision (the parity test proves it). An evaluator whose required inputs are
+rules into data changes no decision (a parity test covers it). An evaluator whose required inputs are
 absent returns ``not_applicable`` (never a spurious violate), so a partial design is still checkable.
 
 Evaluators are registered by name; a rule's ``evaluator`` field names the function. To add a rule you add a

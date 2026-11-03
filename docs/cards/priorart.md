@@ -1,7 +1,7 @@
 # Data card: Positioning against prior art
 
 ## Summary
-Head-to-head positioning of PEN-STACK against the exact prior tools a reviewer flags, measured, with confidence
+Head-to-head positioning of PEN-STACK against the closest prior tools, measured, with confidence
 intervals, reporting nulls verbatim, and **never** claiming to beat a prior tool on its own endpoint. The
 defensible contributions under test are (i) the learned **durability** axis and (ii) the **three-way
 integration** (safety × durability × reachability). Stance: *complementarity and concordance*, not superiority.

@@ -9,8 +9,10 @@ Every released artifact is regenerable from public data by re-running the pipeli
 - Pinned deps: `docker/requirements.txt`; pinned datasets/accessions: `configs/datasets.yaml`.
 
 ## Pre-registration
-`prereg/paper1.yaml` (success criteria, baselines, held-out sets) is SHA-256-locked **before** models see test
-data. Hash embedded in the manuscript (`manuscripts/paper1/prereg_hash.txt`).
+`prereg/paper1.yaml` records the success criteria, baselines and held-out sets fixed before models see
+test data. The SHA-256-locked pre-registrations and their digests are listed in
+`prereg/PREREG_MANIFEST.md`, which `scripts/prereg_manifest.py --check` re-hashes against the
+committed bytes.
 
 ## Pipeline (regenerates every atlas artifact)
 ```bash

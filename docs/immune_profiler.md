@@ -1,8 +1,8 @@
 # The immune profiler
 
-The immune profiler profiles a design's immunogenicity/toxicity across **separate, never-collapsed axes**. Previously the
-adaptive axis was **CD8/MHC-I only** (capsid epitope load via MHCflurry). This release adds the **dominant** driver,
-**MHC-II/CD4 to ADA**, and scores the **writer enzyme as a distinct antigen**.
+The immune profiler profiles a design's immunogenicity/toxicity across **separate, never-collapsed
+axes**. The adaptive axis covers **CD8/MHC-I** (capsid epitope load via MHCflurry) and the dominant
+driver **MHC-II/CD4 to ADA**, and it scores the **writer enzyme as a distinct antigen**.
 
 ## The MHC-II/CD4 axis (`planner/immune_mhc2.py`)
 

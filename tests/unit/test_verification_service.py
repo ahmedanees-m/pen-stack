@@ -81,9 +81,8 @@ def test_mcp_tool_registered():
 
 
 def test_mcp_tool_count_is_pinned():
-    """The MCP server exposes exactly twenty-two tools. If you add or remove one, update this number AND the
-    tool count stated in the README and manuscript so they agree (an unchecked quantity in a
-    no-fabrication project is a contradiction)."""
+    """The MCP server exposes exactly twenty-two tools. Adding or removing one requires this number
+    and the tool count in the README to be updated with it."""
     import asyncio
     import inspect
 
@@ -94,4 +93,4 @@ def test_mcp_tool_count_is_pinned():
     tools = asyncio.run(res) if inspect.isawaitable(res) else res
     assert len(tools) == 22, (
         f"MCP server now exposes {len(tools)} tools, not 22; update the tool count in the README "
-        "and manuscript to match")
+        "to match")

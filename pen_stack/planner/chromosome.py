@@ -1,7 +1,7 @@
 """Chromosome validation, gene/chromosome concordance, and chromosome-context advisories.
 
-The `chrom` field on a design was previously a free-text pass-through with no validation and no downstream
-effect. This module makes it meaningful WITHOUT fabricating a score: the engine's per-locus safety / durability /
+The `chrom` field on a design is validated here rather than passed through as free text. This
+module makes it meaningful WITHOUT fabricating a score: the engine's per-locus safety / durability /
 accessibility / off-target numbers are indexed by the GENE's resolved genomic coordinates via the writability
 atlas (`planner.optimize.gene_region`), not by a free-text chromosome string - a bare "chrX" with no position
 cannot index a specific locus value. So the grounded use of the field is:

@@ -114,9 +114,8 @@ def test_the_guarantee_does_not_survive_the_rest_boundary():
 
     Over REST or MCP the proof is delivered as ordinary JSON. The frozen type is an in-process
     Python property; an external client receives a mutable object and the type system has no reach
-    into it. This is asserted rather than described so the manuscript cannot drift from it: the
-    claim is that a *downstream Python caller* holding the returned object cannot rewrite it, not
-    that a verdict is tamper-proof once it has left the process.
+    into it. The claim is that a *downstream Python caller* holding the returned object cannot
+    rewrite it, not that a verdict is tamper-proof once it has left the process.
     """
     p = verify_proof(OVER_CAPACITY)
     payload = json.loads(p.model_dump_json())
@@ -130,13 +129,12 @@ def test_the_guarantee_does_not_survive_the_rest_boundary():
     assert revalidated is not p
 
 
-def test_object_setattr_is_not_blocked_and_the_paper_says_so():
+def test_object_setattr_is_not_blocked():
     """The same boundary the oracle result type records, restated for the proof.
 
     Python offers no memory safety, so a caller running arbitrary code bypasses the frozen model.
     The guarantee is against inadvertent rewriting by an agent step or a downstream transform, not
-    against a determined caller. If this test starts failing, the Limitations paragraph needs
-    updating with it.
+    against a determined caller.
     """
     p = verify_proof(OVER_CAPACITY)
     object.__setattr__(p, "passable", True)

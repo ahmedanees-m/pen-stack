@@ -10,8 +10,8 @@ Replaces the closed-form expression heuristic with a learned, **trained-conforma
 `g_context` is supervised on the residual `E_raw - f_cassette`, so it learns the *position* effect on a scale
 comparable across cassettes. A `silenced` classifier shares the same features. Both are wrapped with the EXISTING
 `wgenome.uncertainty.ConformalRegressor` (chromosome-Mondrian) and `wgenome.ood.OODDetector`, so a prediction is a
-*calibrated interval that widens out of distribution*, which is exactly the "trained conformal" property this model
-previously lacked (it was a heuristic +/-0.20 band).
+*calibrated interval that widens out of distribution*, which is the "trained conformal" property,
+not a fixed +/-0.20 band.
 
 Pre-registered acceptance gate: the learned model ships ONLY if it beats the prior durability head
 (context-only) AND the heuristic on chromosome-blocked CV; otherwise the baseline is retained and the negative is

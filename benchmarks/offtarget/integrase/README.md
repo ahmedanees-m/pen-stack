@@ -17,7 +17,7 @@ background, consistent with the field (φC31 pseudosite recognition depends on p
 2006 DOI `10.1016/j.jmb.2005.11.098`, / a learned model, IntQuery). The integrase genome-wide pseudo-attP
 **similarity ranking is therefore unvalidated**; the verified att and documented pseudosites remain grounded facts.
 
-**Honest limits:** N=3 (the open GenBank subset; the full Chalberg 19-site set is paywalled); tests
+**Limits:** N=3 (the open GenBank subset; the full Chalberg 19-site set is paywalled); tests
 sequence-identity only (no palindrome/learned model); deterministic (seed 20260701), pysam over GRCh38.
 
 Run: `docker run --rm --entrypoint bash -v <genomes>:/genome -v $PWD:/work -w /work penstack:phase1.5 -lc 'python harness.py'`

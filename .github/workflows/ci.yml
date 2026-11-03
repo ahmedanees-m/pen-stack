@@ -29,7 +29,7 @@ jobs:
       - name: Test (with coverage)
         run: pytest -q --cov=pen_stack --cov-report=xml --cov-report=term-missing
       - name: Reproducibility (make repro)
-        # Enforce the paper's reproducibility claim on every commit: recompute both primary results from
+        # Recompute both primary results from
         # committed source (the human-K562 expression-robustness rho and the durability-vs-ePRIDICT
         # distinctness), verify the frozen-input integrity manifest, run the no-fabrication agent gate, and
         # re-hash every SHA-locked pre-registration against the committed bytes (the claim ledger manifest).

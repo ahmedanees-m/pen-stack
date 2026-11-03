@@ -117,7 +117,7 @@ literature_monitor:
   europe_pmc: { api: "https://www.ebi.ac.uk/europepmc/webservices/rest/search" }
   backtest_target: { name: ISPpu10, ref: "bioRxiv 2026-03-19", note: "IS110 bridge recombinase, P. putida - living-literature monitor back-test" }
 
-sequence_models: # inference only (no from-scratch training); we do not claim to beat them
+sequence_models: # inference only (no from-scratch training); not benchmarked against them
   options: [ChromBPNet, Borzoi, Enformer]
   use: "sequence -> chromatin/accessibility features per window"
 

@@ -10,7 +10,7 @@ Repair hints are actionable for legality (a structured field edit that an agent,
 apply and re-verify) and for the confidence abstention (which scores to supply). Biosecurity repair hints are
 deliberately NON-ACTIONABLE for a hazard: a refused or escalated design is acknowledged and routed to human
 biosafety review, never auto-repaired and never given instructions toward the hazard. Generation may be
-intractable; verification, and repairing a failed-on-legality design, is tractable, which is the point.
+intractable; verification, and repairing a failed-on-legality design, is tractable.
 """
 from __future__ import annotations
 
@@ -222,8 +222,8 @@ def _biosecurity_axis(v: Verdict) -> AxisProof:
         return AxisProof(axis="biosecurity", status="pass", ok=True, evidence={"decision": "clear"})
     blocked = s.decision in ("refuse", "escalate")
     # Carry the same detail Guardian's own /api/safety view shows (which signature, and for a
-    # sequence-domain hit, which Pfam accession + bit score) -- Design Studio's Proof was previously
-    # stripping this down to a bare signature id with no reason/citation/evidence.
+    # sequence-domain hit, which Pfam accession + bit score), rather than a bare signature id with
+    # no reason/citation/evidence.
     sigs = [{"signature": h.provenance.get("signature_id"), "kind": h.kind, "severity": h.severity,
              "reason": h.detail, "citation": [c for c in [h.provenance.get("control_ref")] if c],
              **({"pfam_accession": h.evidence.get("pfam_accession"), "bit_score": h.evidence.get("bit_score")}

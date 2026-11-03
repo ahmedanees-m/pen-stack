@@ -4,7 +4,7 @@ Demonstrates all acceptance points without any private data or atlas:
   1. ACTIVATE case: a miscalibrated released score + informative labels -> isotonic recalibration improves
      held-out Brier/ECE -> the gate ACTIVATES the adapted model.
   2. REJECT case: labels independent of the score -> no held-out improvement -> the gate REJECTS (the
-     released model is kept). This proves the gate actually guards quality, not just rubber-stamps.
+     released model is kept), so the gate rejects as well as activates.
   3. The released model is provably unchanged in both cases (fingerprint identical), and a before/after
      report + model card are written under models/local_<id>/.
 """

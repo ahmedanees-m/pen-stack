@@ -42,7 +42,7 @@ promotes it to the primary result and strengthens it.
 - **Reframe intent-sensitivity as specification-compliance.** Keep the demonstration that the same
   locus changes rank under opposing goals, but report it as a behavioral-correctness table
   (`pen_stack/validate/intent_specification.py`). Remove all "recovery@k", p-value, and CI language for
-  the targeted-intent gene-level result, everywhere (code, docstrings, README, manuscript).
+  the targeted-intent gene-level result, in code, docstrings and documentation alike.
 - **Blind safe-harbour site discovery (the new primary result).** Hold out literature-validated safe
   harbours, run the planner genome-wide (so on-target cannot fire), and test whether the held-out GSH bins
   rank above **matched-context random controls** (matched on chromatin state, gene density, distance-to-TSS

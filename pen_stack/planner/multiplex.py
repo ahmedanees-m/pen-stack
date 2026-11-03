@@ -7,7 +7,7 @@ enumerate all site PAIRS exactly (cheap for 2-5 edits), and combine pairwise DSB
 `translocation_risk` in [0,1].
 
 Key property: **DSB-free writers (bridge / seek recombinases) contribute NO cut sites**, so a plan
-built from them carries ~zero translocation risk - which is the whole point of programmable recombinases.
+built from them carries ~zero translocation risk.
 The flag is monotonic (more sites / higher cut prob / closer pairs -> higher risk) and reports its top pairs
 so a user can see WHY. A QUBO formulation is provided as a documented OPTIONAL baseline, off by default.
 """

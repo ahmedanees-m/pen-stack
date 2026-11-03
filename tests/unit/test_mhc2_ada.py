@@ -24,7 +24,7 @@ def test_mhc2_real_cache_is_grounded_and_bounded():
 
 
 def test_mhc2_abstains_without_a_grounded_name_no_production_proxy():
-    # Honesty: an uncached sequence (no name) is a KNOWN-UNKNOWN, it ABSTAINS, never a guessed
+    # An uncached sequence (no name) is a KNOWN-UNKNOWN, it ABSTAINS, never a guessed
     # proxy number. The documented promiscuous-binder estimate remains available for OFFLINE triage ONLY.
     from pen_stack.planner.immune_mhc2 import mhc2_proxy_estimate
     s = writer_sequences()["SpCas9"]["seq"]

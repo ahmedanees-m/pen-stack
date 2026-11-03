@@ -2,8 +2,8 @@
 
 A **sequence-computable hard filter** on reachability: for a candidate site sequence, does the writer family
 carry the *targeting element* its mechanism physically requires? No usable element → the writer is unreachable
-there and is REJECTED. This extends the WT-KB reachability tier with a sequence-level mechanistic check,
-"the LLM may propose a writer, but if the physics says it cannot engage this site, the funnel rejects it."
+there and is REJECTED. This extends the WT-KB reachability tier with a sequence-level mechanistic
+check.
 
 Requirement per family (configs/target_sites.yaml):
   * ``pam``, a PAM motif must occur in the window (Cas9 NGG / Cas12a TTTV / CAST GTN).
@@ -12,8 +12,8 @@ Requirement per family (configs/target_sites.yaml):
                          it REJECTS unless a landing pad was pre-installed (the key mechanistic reject).
   * ``pe_installable``, a PE-integrase installs its own att, so the site is broadly reachable (available + note).
 
-These are SCREENS, not activity guarantees (relaxed-PAM engineered variants especially); reported with a
-confidence. The point is the hard *negative*: a physically impossible writer, site pairing is rejected.
+These are SCREENS, not activity guarantees (relaxed-PAM engineered variants especially); reported
+with a confidence. A physically impossible writer and site pairing is rejected.
 """
 from __future__ import annotations
 

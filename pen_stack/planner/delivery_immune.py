@@ -1,9 +1,9 @@
 """Immune-coupled delivery selection.
 
 Fuses the cross-modality deliverability recommendation with the per-axis immune-risk profile and
-surfaces the **dose <-> immunogenicity tradeoff** as a VECTOR, never collapsed into one number. The point: a vehicle
-that is most deliverable may carry the highest immune liability (e.g. AAV: efficient in vivo, but pre-existing NAbs +
-capsid CD8 + dose-dependent innate sensing), and that tension must be visible, not hidden.
+surfaces the **dose <-> immunogenicity tradeoff** as a VECTOR, never collapsed into one number. A vehicle
+that is most deliverable may carry the highest immune liability (e.g. AAV: efficient in vivo, but
+pre-existing NAbs + capsid CD8 + dose-dependent innate sensing).
 
 the immune axes are population-level proxies; the realized in-vivo magnitude / patient titer is a
 declared known-unknown. The dose<->immune tradeoff is informative, NOT a clinical dosing directive.

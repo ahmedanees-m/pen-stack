@@ -1,7 +1,8 @@
 """Genome-wide off-target ENUMERATION, the search step of the off-target finder.
 
-The off-target scorer previously only SCORED candidate sites a caller supplied. This module adds the missing half: given a guide +
-enzyme, ENUMERATE every genomic site within the mismatch tolerance across GRCh38, returning coordinates, strand,
+The off-target scorer SCORES candidate sites a caller supplies; this module is the search step:
+given a guide and enzyme, ENUMERATE every genomic site within the mismatch tolerance across
+GRCh38, returning coordinates, strand,
 matched sequence, and mismatch count, so the downstream scorer ranks a genome-wide candidate set, not a
 hand-typed one (the caller supplies a guide and gets the off-target sites back).
 

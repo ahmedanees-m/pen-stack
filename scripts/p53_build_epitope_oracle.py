@@ -10,7 +10,7 @@ configs/delivery_vehicles.yaml:
     epitope_fraction = (capsid residues covered by >=1 strong-binder 9-mer for >=1 allele) / length;
     capsid_immune_score = 1 - epitope_fraction # 1 = least presentable / least immunogenic
 
-This is the NetMHC-style calculation the user asked for, made population-level (averaged over a frequent-allele
+A NetMHC-style calculation made population-level (averaged over a frequent-allele
 panel) so it is NOT a patient-HLA-specific magnitude. Inputs are committed (configs/capsid_sequences.fasta,
 fetched + verified from UniProt) so the run needs no network and is reproducible. Answers through the
 OracleResult contract (output_kind="baseline").

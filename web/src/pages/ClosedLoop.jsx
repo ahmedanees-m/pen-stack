@@ -1,5 +1,5 @@
-// Closed Loop: the design->build->test->learn features that were previously API-only (a tester
-// flagged they had no UI). Three surfaces, all safety-first and explicit about the mock/dry-run boundary:
+// Closed Loop: the design->build->test->learn surfaces. Three of them, all safety-first and
+// explicit about the mock/dry-run boundary:
 //   * Cloud-lab submission (/api/cloudlab), verify runs FIRST; a cleared design returns a DRAFT protocol + a
 //     mock/dry-run job receipt, a flagged design is refused with NO protocol emitted.
 //   * SDL-brain benchmark (/api/brains), the EIG/VOI designer vs random/greedy on a shared task, BayBE/Atlas
@@ -175,7 +175,7 @@ export default function ClosedLoop() {
   return (
     <div className="space-y-4">
       <WhatYouGet
-        intro="The closed loop (design → build → test → learn), Level 3 with a human in control. These closed-loop capabilities were previously reachable only via the API, here they are, safety-first and explicit about the mock/dry-run boundary."
+        intro="The closed loop (design → build → test → learn), Level 3 with a human in control. Safety-first and explicit about the mock/dry-run boundary."
         features={[
           { name: "Build & submit", tells: "would a cloud lab accept this design?", output: "verify-first → DRAFT protocol + mock/dry-run receipt, or a refusal" },
           { name: "SDL-brain benchmark", tells: "does the EIG/VOI designer beat random?", output: "curve-area gap + CI, BayBE / Atlas cited (falsifiable)" },

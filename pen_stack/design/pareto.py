@@ -1,7 +1,7 @@
 """Multi-objective Pareto frontier with a GROUNDED immune-risk axis.
 
 Returns the non-dominated set of generated candidates over the design tradeoff axes. The `neg_immune_risk` axis
-is sourced from the immune profile (no longer a placeholder): it is the WORST-CASE per-axis in-scope score
+is sourced from the immune profile: it is the WORST-CASE per-axis in-scope score
 (lower score = higher risk) with the per-axis uncertainty carried as a band, never collapsing the profile into
 one confident number, and keeping the in-vivo magnitude scope-flagged. Unknown axes enter as flagged bounds,
 never fabricated points; the per-axis profile remains the source of truth.

@@ -70,7 +70,7 @@ def plan_equivalence(gene: str, intent: str) -> dict:
     reproduces the site the agent logged (the agent adds reasoning/citations, not different numbers).
 
     The agent has latitude over parameters (ct, cargo_bp); equivalence is checked against the agent's own
-    chosen args, so this proves no alteration of the tool output rather than forcing one fixed answer.
+    chosen args, so the check detects alteration of the tool output rather than forcing one answer.
     """
     res = run_agent(f"plan a {intent} write for {gene}")
     agent_step = next((s for s in res.get("trace", [])

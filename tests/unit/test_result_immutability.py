@@ -1,9 +1,7 @@
 """The type-level immutability invariant on OracleResult, asserted rather than asserted-about.
 
-These are the adversarial probes the paper reports for the frozen result type: an agent step or a
-downstream transform must not be able to rewrite a flag on a result it was handed. The last test
-pins the *boundary* of that claim -- `object.__setattr__` is not blocked and cannot be, so it is
-recorded here as an executable fact rather than left to prose.
+An agent step or a downstream transform must not be able to rewrite a flag on a result it was
+handed. The last test pins the boundary: `object.__setattr__` is not blocked and cannot be.
 """
 import pytest
 from pydantic import ValidationError
@@ -76,13 +74,12 @@ def test_model_copy_is_the_sanctioned_escape_hatch():
     assert promoted is not r
 
 
-def test_object_setattr_is_not_blocked_and_the_paper_says_so():
+def test_object_setattr_is_not_blocked():
     """The documented boundary of the invariant.
 
     Python offers no memory safety, so a caller with arbitrary code execution can bypass the frozen
     model. The guarantee is against inadvertent rewriting by an agent step or a downstream transform,
-    not against a determined caller. If this test ever starts failing, the manuscript's Limitations
-    paragraph needs updating too -- it is the assertion that keeps prose and code in agreement.
+    not against a determined caller.
     """
     r = _result()
     object.__setattr__(r, "output_kind", "claim")

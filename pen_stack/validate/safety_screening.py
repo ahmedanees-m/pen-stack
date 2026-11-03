@@ -4,7 +4,7 @@ Scores the biosecurity gate on the frozen probe set: benign therapeutic designs 
 hazard probes must be refused/escalated at the correct severity, and adversarial evasions must never come back
 `clear`. The contrast is a **no-safety baseline**, a gate that does not screen, i.e. clears everything;
 it trivially passes the benign set but fails every hazard and evasion. The Guardian's correct-decision rate
-beats that baseline by construction, which is the point: screening adds real, measurable protection.
+beats that baseline by construction.
 
 Deterministic, CI-safe (pure config + the gate; audit writes go to the default out/ path). No circular label:
 the ground truth is the pre-registered, SHA-locked `configs/safety/probes.yaml`.

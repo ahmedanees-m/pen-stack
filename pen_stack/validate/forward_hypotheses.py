@@ -1,6 +1,6 @@
 """Forward hypotheses + grounded ranking.
 
-So the paper is not purely retrospective: run the Planner on additional therapeutic goals, register its
+Prospective rather than retrospective: run the Planner on additional therapeutic goals, register its
 top *novel* (site, writer, construct) proposals date-stamped, then triage them with a literature-grounded
 pairwise ranking (a Robin-style pattern, made cited + guard-railed). The numeric predictions always come
 from the validated models; the LLM only orders *plausibility given the cited literature*.

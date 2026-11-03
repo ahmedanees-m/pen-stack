@@ -1,10 +1,8 @@
 # The learned, trained-conformal position-effect model
 
 The position-effect model predicts how strongly an integrated cassette expresses in its **chromatin context** (the position effect).
-Previously this was a closed-form **heuristic** with a heuristic ±0.20 band that the code itself labelled *"NOT
-a trained conformal interval"*, and which **failed** independent validation (ρ=0.12 vs Damdindorj 2014). This release
-replaces it with a **learned, decomposable, trained-conformal** model that wraps the digital
-twin, not rebuilding it.
+It is a **learned, decomposable, trained-conformal** model that wraps the digital twin rather than
+rebuilding it, so a prediction carries a calibrated interval rather than a fixed band.
 
 ## The model
 

@@ -126,7 +126,7 @@ def endogenous_expression_baseline(n_sample: int = 150, seed: int = 20260604,
     sp_proxy = _spearman(sample["endo_proxy"], sample["expression"])
 
     # PAIRED bootstrap CI (same loci feed both correlations) - resample rows with replacement, recompute both
-    # Spearmans and their difference on each draw. This is what tells a reviewer whether sp_trip vs sp_proxy is
+    # Spearmans and their difference on each draw. This shows whether sp_trip vs sp_proxy is
     # distinguishable from noise on the TRIP data: if the delta 95% CI includes zero, it is NOT.
     trip_oof = sample["trip_oof"].to_numpy(float)
     endo = sample["endo_proxy"].to_numpy(float)

@@ -19,8 +19,8 @@ retriever, no LLM) -> reproducible in CI.
 | abstention_on_specific_unsourceable | **1.0** |
 | per-gold pass | cited 6/6 · general 4/4 · social 2/2 · abstain 2/2 |
 
-The regression guard `helpful_answer_rate = 1.0` exists because an earlier version over-abstained (it declined "hi" and "what
-is DNA"); a later revision made retrieval additive, so general + social questions are answered (labelled) while the cited
-answers keep citation coverage 1.0 and false-grounding stays 0.
+The regression guard `helpful_answer_rate = 1.0` holds retrieval additive, so general and social
+questions are answered and labelled rather than declined, while the cited answers keep citation
+coverage 1.0 and false-grounding stays 0.
 
 Reproduce: `python -c "from benchmarks.chat_grounding.harness import run; print(run())"`.

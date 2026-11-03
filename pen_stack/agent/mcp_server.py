@@ -3,7 +3,7 @@
 Wraps the validated tools as a Model Context Protocol server (fastmcp) so any MCP client (Claude, etc.)
 can call ``writability``, ``reachable_writers``, ``writer_axes``, ``plan_write``, ``ask_literature`` and the
 grounded ``plan_write_session`` (the full PEN-Agent state machine) and receive correct, provenance-tagged
-results - turning PEN-STACK into shared agentic infrastructure.
+results.
 
 Run: ``python -m pen_stack.agent.mcp_server`` (needs the ``services`` extra: ``pip install fastmcp``).
 """

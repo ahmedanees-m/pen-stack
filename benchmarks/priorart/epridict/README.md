@@ -29,7 +29,7 @@ H3K27me3), but the effect size is negligible (Cohen), so the axes are distinct/c
 not perfectly independent. The claim is **weak correlation / negligible shared variance**, i.e. distinctness,
 not statistical independence. The variance partition (96% unexplained) is the load-bearing number.
 
-## Manuscript consequence (pre-registered)
+## Pre-registered consequence
 `DISTINCT` → **keep** the durability axis as a distinct/complementary contribution (softened wording);
 proceed to GSH-recovery + GEG-SH concordance.
 

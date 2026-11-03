@@ -10,9 +10,8 @@ Three solvers are compared on the same tasks:
                               EQUAL the planner's; its distinguishing axis is the no-fabrication HARD GATE
                               (T6) and correct tool selection. Listed on the leaderboard only when an LLM ran.
 
-The point of the leaderboard is not to crown a winner but to show (a) the planner beats the naive baseline
-on grounded tasks, and (b) an LLM agent can reach the planner's numbers ONLY by grounding every value in a
-tool result - never by inventing them.
+The leaderboard shows (a) whether the planner beats the naive baseline on grounded tasks, and (b)
+that an LLM agent reaches the planner's numbers only by grounding every value in a tool result.
 """
 from __future__ import annotations
 

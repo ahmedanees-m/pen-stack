@@ -2,9 +2,8 @@
 
 This benchmark records how the shipped **integrated locus score** (K562 atlas `writability` + calibrated `safety`,
 per 1 kb bin) behaves on a panel of **documented clinical insertional-oncogenesis loci** from real gene-therapy
-trials, versus functionally-validated safe harbors. It is the RB-2 result from the retrospective-validation work,
-landed here as a real, source-locked benchmark. Previously it lived only in the working area
-(`Retrospective_validation/`).
+trials, versus functionally-validated safe harbors. It is the RB-2 result from the
+retrospective-validation work, as a source-locked benchmark.
 
 Every number in `metrics.json` is copied verbatim from a source file, and each field is annotated with its origin in
 `metrics.json -> field_sources`. Source files are listed under `metrics.json -> source_files`.
@@ -49,8 +48,8 @@ metric.
 
 1. **The clean separation is by construction.** The five loci the filter flags hard (LMO2/CCND2/MECOM/PRDM16/HMGA2,
    writ_pct ≤ 2.6, safety 0.0) are exactly the genes encoded in the score's own `genotoxic_cis` training label. The
-   manuscript §3.5 "AUROC 1.0 on five oncogenes" is this subset - it confirms the filter *encodes* known-bad loci, not
-   that it *predicts* genotoxicity.
+   reported "AUROC 1.0 on five oncogenes" is this subset: it confirms the filter *encodes* known-bad
+   loci, not that it *predicts* genotoxicity.
 2. **The genuine test exposes false-negatives.** There is **no non-obvious subset by annotation** - all 8 genotoxic
    genes are CancerMine oncogenes (SETBP1 and MN1 included, contrary to the plan's guess). But the loci **outside the
    hard-coded label - SETBP1, BMI1, MN1 - are NOT flagged** (writ_pct 34–99.9, safety 1.0), despite documented trial
@@ -110,12 +109,11 @@ rescue the false-negatives above.
 - Annotation stack = GENCODE v46 + CancerMine (CC0, ≥3 citations) + DepMap-essential - the shipped license-clean
   safety-annotation stack.
 
-## Manuscript disposition
+## Disposition
 
-RB-2 is kept as the real §3.5 contribution of the retrospective work: §3.5 was rewritten to
-"…a reject-known-bad safety filter, not a calibrated genotoxicity predictor", keeping the AUROC null, reframing the
-AUROC 1.0 as **by construction**, and stating the false-negatives with BMI1 (99.9th percentile) as the vivid example.
-The abstract was updated to match ("validated safety filter" → "reject-known-bad safety filter").
+RB-2 stands as a reject-known-bad safety filter, not a calibrated genotoxicity predictor: the
+AUROC null holds, the AUROC 1.0 is by construction, and the false negatives include BMI1 at the
+99.9th writability percentile.
 
 ## Files
 

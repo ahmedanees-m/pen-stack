@@ -5,18 +5,18 @@ Every pre-registration in `prereg/` is frozen by a companion `prereg/SHA256_LOCK
 lock that records, for each locked file, the SHA-256 of its committed bytes. This script
 walks those locks, recomputes each hash from the committed file, and asserts it against the
 recorded value; it then writes (or checks) `prereg/PREREG_MANIFEST.md`, the full manifest of
-every lock entry plus the ten-row claim ledger subset cited in Table 3.
+every lock entry plus the ten-row claim ledger subset cited in Table 5.
 
 Modes:
   --check   (default) recompute every hash from the working tree and assert it matches the
             lock; regenerate the manifest in memory and assert it is byte-identical to the
-            committed `prereg/PREREG_MANIFEST.md`; assert every Table 3 pre-registration is a
+            committed `prereg/PREREG_MANIFEST.md`; assert every Table 5 pre-registration is a
             locked file that re-hashes. Exit non-zero on any mismatch. This is what CI runs.
   --write   regenerate `prereg/PREREG_MANIFEST.md` from the locks and the ledger selection.
 
-The claim ledger selection (which ten of the pre-registrations bear on the paper's claims)
+The claim ledger selection (which ten of the pre-registrations the claim ledger cites)
 is held in `prereg/claim_ledger.json`; this script validates that every file it names is
-locked and re-hashes, so the Table 3 citations cannot drift from the frozen bytes.
+locked and re-hashes, so the Table 5 citations cannot drift from the frozen bytes.
 """
 from __future__ import annotations
 
@@ -128,7 +128,7 @@ def load_ledger() -> list[dict]:
 
 
 def verify_ledger(ledger: list[dict], by_file: dict[str, dict]) -> list[str]:
-    """Assert each Table 3 claim cites a locked pre-registration that currently re-hashes."""
+    """Assert each Table 5 claim cites a locked pre-registration that currently re-hashes."""
     failures: list[str] = []
     for claim in ledger:
         prereg_file = claim["prereg_file"]
@@ -167,9 +167,9 @@ def render_manifest(records: list[dict], ledger: list[dict]) -> str:
                  f"{len(superseded)} belong to the superseded phase-0 origin seal (listed at the end).")
     lines.append("")
 
-    lines.append("## Table 3 claim ledger pre-registrations")
+    lines.append("## Table 5 claim ledger pre-registrations")
     lines.append("")
-    lines.append("The ten claims in Table 3, each with the committed pre-registration that fixed it before "
+    lines.append("The ten claims in Table 5, each with the committed pre-registration that fixed it before "
                  "scoring and that pre-registration's SHA-256.")
     lines.append("")
     lines.append("| # | Claim | Verdict | Pre-registration | SHA-256 |")
@@ -255,7 +255,7 @@ def main() -> int:
         MANIFEST.write_text(rendered, encoding="utf-8", newline="\n")
         print(f"Wrote {MANIFEST.relative_to(ROOT)}: {n_verified} locked files re-hash, "
               f"{n_superseded} superseded (phase-0 origin seal), "
-              f"{len(ledger)} Table 3 pre-registrations cited.")
+              f"{len(ledger)} Table 5 pre-registrations cited.")
         return 0
 
     if not MANIFEST.is_file():
@@ -268,7 +268,7 @@ def main() -> int:
         return 1
 
     print(f"Pre-registration manifest verified: {n_verified} locked files re-hash against committed bytes "
-          f"({n_superseded} superseded phase-0 seal disclosed); {len(ledger)} Table 3 pre-registrations "
+          f"({n_superseded} superseded phase-0 seal disclosed); {len(ledger)} Table 5 pre-registrations "
           f"cited and re-hashed.")
     return 0
 

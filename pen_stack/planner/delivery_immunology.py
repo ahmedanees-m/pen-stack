@@ -1,9 +1,9 @@
 """Delivery safety<->efficacy balance over DOCUMENTED immune priors.
 
-Motivation (user): "we should be able to give a good balance between safety and efficacy. AAV is
-safe but neutralizing antibodies / pre-existing immunity will be there; lentivirus is highly efficacious at
-integrating but its safety is bad." This module turns the per-vehicle ``immune_safety`` block in
-configs/delivery_vehicles.yaml into a transparent, user-weightable ranking of the delivery palette.
+The vehicles trade safety against efficacy in documented ways: AAV carries pre-existing
+neutralising antibodies, lentivirus integrates efficiently with a worse safety profile. This module
+turns the per-vehicle ``immune_safety`` block in configs/delivery_vehicles.yaml into an
+inspectable, user-weightable ranking of the delivery palette.
 
 SCOPE NOTE (unchanged across the program): the immune MAGNITUDE, how strongly a given patient or
 construct will react in vivo, is a declared known-unknown (configs/known_unknowns.yaml: ``in_vivo_immunogenicity``)

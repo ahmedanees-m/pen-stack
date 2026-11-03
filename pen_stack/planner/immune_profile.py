@@ -250,7 +250,7 @@ def immune_profile(design: dict) -> dict:
         "innate": _axis(innate_sensing(cargo_seq, form), "innate"),
         "preexisting_nab": _axis(seroprevalence_oracle(veh, sero), "preexisting_nab"),
         "anti_peg": _axis(antipeg_oracle(veh, peg), "anti_peg"),
-        # CD4/MHC-II + ADA over the WRITER enzyme (the dominant immunogenicity driver, previously omitted)
+        # CD4/MHC-II + ADA over the WRITER enzyme (the dominant immunogenicity driver)
         "mhc2_writer": _proxy_axis(writer_card["mhc2_immune_score"] if writer_card else None,
                                    (writer_card or {}).get("note", "no bundled writer sequence -> abstains"),
                                    "mhc2_writer"),

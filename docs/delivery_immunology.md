@@ -140,11 +140,11 @@ a known-unknown). Provenance: Calcedo `10.1086/595830`, Boutin `10.1089/hum.2009
 
 ## Outcome
 
-Across this work the delivery immune/safety profile moved from documented `low/moderate/high` tiers to **real
-calculations from data and sequence** on four of the five axes, spanning all 8 vehicles: each grounded, each
-abstaining rather than fabricating, with the in-vivo magnitude always a declared known-unknown. The result is
-the safety↔efficacy balance the program set out to provide: *computed wherever the science allows, documented
-where it does not, and explicitly out-of-scope where no one can yet predict.*
+The delivery immune/safety profile rests on **real calculations from data and sequence** on four of
+the five axes, spanning all 8 vehicles: each grounded, each abstaining rather than fabricating,
+with the in-vivo magnitude a declared known-unknown. The safety↔efficacy balance is therefore
+*computed wherever the science allows, documented where it does not, and explicitly out-of-scope
+where no one can yet predict.*
 
 See also: [Oracle mesh](oracles.md) · [Delivery palette & router](delivery.md) · [Verification](verify.md) ·
 [Scope & known-unknowns](scope.md). Pre-registrations: `prereg/ws_{immune,genotox,epitope,innate,seroprev}.yaml`.

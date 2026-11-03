@@ -1,8 +1,8 @@
 # The writer-efficiency engine
 
-This component picks the **writer** (the enzyme that writes). Previously this was the curated **Writer Atlas**, a
-ranking, not a prediction. This release adds a prediction + design layer, grounded in the new quantitative human-cell
-writer data, **wrapping** the Atlas + writer-verification.
+This component picks the **writer** (the enzyme that writes). It adds a prediction and design layer
+over the curated **Writer Atlas**, grounded in quantitative human-cell writer data, **wrapping**
+the Atlas and writer-verification.
 
 ## The curated writer-efficiency dataset (the contribution)
 

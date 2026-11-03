@@ -68,8 +68,8 @@ def candidate_space(goal: dict, *, n: int = 200, k: int = 8) -> list[dict[str, A
 
     The goal's screening-relevant fields (cargo_function, cargo_seq, in_vivo, delivery_tropism,
     replication_competent) are PROPAGATED onto every candidate so the Guardian biosecurity gate in verify() screens
-    the cargo function for each swept vehicle. Previously these were dropped here, so a hazardous cargo function
-    reached NO screen on the goal-based path."""
+    the cargo function for each swept vehicle. Without the propagation a hazardous cargo function
+    would reach NO screen on the goal-based path."""
     gene = goal["gene"]
     intent = goal.get("intent") or goal.get("edit_intent") or "safe_harbour_insertion"
     cargo_bp = int(goal.get("cargo_bp") or goal.get("payload_bp") or 3000)

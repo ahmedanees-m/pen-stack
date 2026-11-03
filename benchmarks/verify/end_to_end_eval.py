@@ -3,7 +3,7 @@
 Four parts:
 
   A. Requirement preservation. Stated requirements go in; check each is still satisfied on the way out.
-  B. The cascade test, which is the reviewer's own example. A design violating cargo capacity is
+  B. The cascade test. A design violating cargo capacity is
      repaired from the proof object, and the repaired design is re-verified. The question is whether a
      repair that fixes one constraint and breaks another is caught, or whether it passes.
   C. Unsupported steps. Does the workflow name the quantities it cannot ground, rather than omitting

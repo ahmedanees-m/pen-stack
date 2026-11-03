@@ -340,7 +340,7 @@ export default function WriterAtlas() {
 
       {immune?.writers?.length > 0 && (
         <Card title="Writer immunogenicity (the writer as an antigen)" icon="delivery"
-              subtitle="Each genome writer's own MHC-II/CD4 epitope load and anti-drug-antibody (ADA) risk, a writer property, profiled here (it used to live in the design immune profile). Read from the committed NetMHCIIpan-4.0 cache; not recomputed.">
+              subtitle="Each genome writer's own MHC-II/CD4 epitope load and anti-drug-antibody (ADA) risk, a writer property. Read from the committed NetMHCIIpan-4.0 cache; not recomputed.">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">

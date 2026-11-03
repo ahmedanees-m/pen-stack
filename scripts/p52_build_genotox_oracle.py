@@ -46,7 +46,7 @@ VIRUS_CLASS = {"HIV": "lentiviral", "HTLV": "deltaretroviral",
 CLASS_VEHICLES = {"lentiviral": ["lentivirus"]}
 
 # oncogene SOURCE is CancerMine (CC0, via safety_annot), replacing COSMIC CGC. DOIs: VISDB; CancerMine;
-# HIV/lentiviral integration biology; MLV/gammaretroviral. (COSMIC methodology may still be CITED in the paper.)
+# HIV/lentiviral integration biology; MLV/gammaretroviral.
 PROVENANCE_DOIS = ["10.1093/nar/gkz867", "10.1038/s41592-019-0422-y",
                    "10.1016/S0092-8674(02)00864-4", "10.1126/science.1083413"]
 

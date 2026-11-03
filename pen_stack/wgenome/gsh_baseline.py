@@ -126,10 +126,10 @@ def run(ct: str = "k562", out: str | Path = _OUT) -> dict:
         "rule_qualitative_finding": "Published distance rules ('place cargo far from TSS / oncogenes / "
                                     "essential genes') score AT or BELOW chance here because the functionally "
                                     "validated harbours are themselves intragenic (AAVS1 / PPP1R12C, CCR5, "
-                                    "ROSA26-type loci). The rule's failure is the interesting result; it is "
-                                    "reported as a qualitative point, not as a delta the learned model 'beats'.",
+                                    "ROSA26-type loci). The rule's failure is reported as a qualitative "
+                                    "point, not as a delta the learned model 'beats'.",
         # delta DEMOTED from primary to a diagnostic - it is not significant and is sensitive to a baseline
-        # that is near/below chance, which a reviewer would (correctly) flag if it were the primary.
+        # that is near/below chance, so it does not support a primary claim.
         "delta_DIAGNOSTIC_not_headline": round(auroc_learned - auroc_rule, 4) if not np.isnan(auroc_rule) else None,
         "delta_ci95": _ci(boot_delta),
         "delta_ci_excludes_zero": (bool(_ci(boot_delta)[0] > 0) if boot_delta else None),

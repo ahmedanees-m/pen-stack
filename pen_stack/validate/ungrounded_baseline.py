@@ -1,6 +1,6 @@
 """Ungrounded-LLM baseline for the Genome-Writing Bench.
 
-THE POINT (reviewer concern #5): the grounded agent reaches the planner's numbers only because it CALLS the
+The grounded agent reaches the planner's numbers only because it CALLS the
 planner's tools, so a leaderboard of {planner, grounded-LLM, naive} measures "did the agent call the tool",
 not "how good or grounded the agent is". The deterministic no-fabrication audit cannot fabricate *by
 construction*, so on its own it is one data point.

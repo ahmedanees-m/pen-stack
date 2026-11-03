@@ -8,7 +8,7 @@ The front door for non-expert users. Contract (enforced by pen_stack.agent.guard
 
 An optional LLM (Ollama/Qwen via litellm) only *phrases* the grounded facts; it is never the source of a
 number or a citation. With no LLM available the deterministic tool+retrieval path still satisfies the
-contract - that is the whole point.
+contract.
 """
 from __future__ import annotations
 
