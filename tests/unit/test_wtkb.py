@@ -1,4 +1,4 @@
-"""WT-KB schema + coverage tests (pre-registered success criteria)."""
+"""WT-KB schema + coverage tests (pre-specified success criteria)."""
 from pathlib import Path
 
 import pytest

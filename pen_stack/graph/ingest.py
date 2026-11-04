@@ -94,7 +94,7 @@ def gate_admit(graph: Graph, candidate: Candidate, *, approved: bool, admitted_b
 # back-test: surface a KNOWN recent addition as a candidate (deterministic / CI-safe, no network)
 # --------------------------------------------------------------------------------------------------
 def back_test_candidates() -> list[Candidate]:
-    """The pre-registered back-test fixture: the recently-published bridge system **ISPpu10** (Europe PMC
+    """The pre-specified back-test fixture: the recently-published bridge system **ISPpu10** (Europe PMC
     PPR1218813; bioRxiv 2026-03-19), which the live monitor surfaces. Proposed as a candidate writer node +
     a `performs insertion` edge, to be admitted only through the gate."""
     prov = {"source": "Europe PMC monitor", "europepmc": "PPR1218813",

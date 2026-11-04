@@ -23,7 +23,7 @@ Evaluated leave-one-family-out **and** leave-one-locus-out vs the KB family-mean
 | held-out locus (35) | 15.2 / −0.26 | **11.7 / +0.38** | [0.42, 6.29] | **yes** (CI excludes 0) |
 | held-out family (42) | 12.7 / −0.20 | **11.4 / +0.52** | [−1.09, 3.75] | no (CI includes 0) |
 
-**Pre-registered acceptance criterion:** a learned model becomes the *authoritative* ranking only if it beats the KB
+**Pre-specified acceptance criterion:** a learned model becomes the *authoritative* ranking only if it beats the KB
 baseline on **both** axes. It wins on locus and *ranks* families far better, but at N=42 across only **4 families**
 the held-out-**family** MAE gain is not statistically distinguishable from zero. So the **KB ranking stays
 primary**, the predictor ships as a **candidate advisory**, and the **dataset + benchmark are the standalone

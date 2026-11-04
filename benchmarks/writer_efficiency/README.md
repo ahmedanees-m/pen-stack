@@ -25,7 +25,7 @@ verbatim source quote + a source-access grade**) so others can build a calibrate
 | held-out family (42) | 12.72 / −0.20 | **11.37 / +0.52** | [−1.09, 3.75] | no (CI includes 0) |
 | held-out locus (35) | 15.23 / −0.26 | **11.71 / +0.38** | [0.42, 6.29] | **yes** (CI excludes 0) |
 
-**Pre-registered outcome:** the learned predictor beats the KB family-mean baseline on
+**Pre-specified outcome:** the learned predictor beats the KB family-mean baseline on
 held-out **locus** (CI excludes 0) and **ranks** families far better (ρ +0.52 vs −0.20), but at N=42 across only
 **4 families** the held-out-**family** MAE improvement is not statistically distinguishable from zero. So the **KB
 ranking is retained as primary**, the learned predictor ships **candidate-flagged**, and the **curated dataset +

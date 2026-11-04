@@ -1,7 +1,7 @@
 """Writer Atlas expansion invariants.
 
 Runs against the committed ``atlas.parquet`` deliverable (offline - no network in CI). Asserts the
-pre-registered success criteria: all target families present, thousands of IS110 orthologs, every row
+pre-specified success criteria: all target families present, thousands of IS110 orthologs, every row
 carries a confidence tag + >=1 source DOI, and targeting metadata is inherited (never NaN).
 """
 from __future__ import annotations

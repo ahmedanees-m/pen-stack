@@ -1,6 +1,6 @@
 """Uncertainty-quantification unit tests: pure-logic, synthetic data, run everywhere (no real atlas/VM needed).
 
-Asserts the *properties* the pre-registration locks: conformal coverage hits the nominal target on a
+Asserts the *properties* the frozen analysis specification locks: conformal coverage hits the nominal target on a
 held-out synthetic set; the OOD detector separates a deliberately-shifted set and widens monotonically;
 the risk-coverage curve is monotone-improving when confidence is genuinely informative.
 """

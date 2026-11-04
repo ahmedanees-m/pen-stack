@@ -2,7 +2,7 @@
 critique.
 
 CI-safe: the curated dataset is reproducible in-code (`writer_efficiency.records()`), the predictor evaluates on
-it, and guide/variant logic is pure, no gitignored artifact required. The pre-registered outcome (the
+it, and guide/variant logic is pure, no gitignored artifact required. The pre-specified outcome (the
 learned model wins on held-out LOCUS but not held-out FAMILY at N=42/4-families -> retain the KB ranking) is
 asserted, including the negative.
 """

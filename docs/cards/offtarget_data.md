@@ -24,7 +24,7 @@ fingerprint. **License: CC-BY-NC** → it runs only on the VM (`crisot:tools` Do
 its weights are NEVER redistributed. Only DERIVED scores are cached/committed (CI-safe), exactly like the licensed
 NetMHC tools.
 
-## Baseline (pre-registered)
+## Baseline (pre-specified)
 Sequence-homology nomination = ascending **mismatch count** (Hamming over the 20-nt protospacer).
 
 ## Result (full real data, on the VM)

@@ -11,7 +11,7 @@ Five analyses, in order:
   E. Where the eight blocklisted genotoxic loci rank after the blocklist is applied, since the
      blocklist zeroes the safety term inside an additive composite rather than excluding the locus.
 
-Then the multiplicity correction over the pre-registered claim family.
+Then the multiplicity correction over the pre-specified claim family.
 
 Run from the repository root with the atlas mounted at data/out/.
 """
@@ -187,7 +187,7 @@ def main():
                      "flagged locus retains 0.5 x p_durable rather than being excluded from ranking")
 
     # ---------------------------------------------------------------- multiplicity
-    hdr("Multiplicity across the pre-registered claim family (over the claim family)")
+    hdr("Multiplicity across the pre-specified claim family (over the claim family)")
     # Only the claims that make a positive inferential finding are at risk of a false positive.
     fam = [
         {"claim": 1, "what": "human K562 head margin over learned baseline",
@@ -196,8 +196,8 @@ def main():
          "est": out["A_curated_16"]["auroc"], "ci": out["A_curated_16"]["ci95_published_method"],
          "null": 0.5, "verdict": "PASS (weak)"},
     ]
-    m = 10  # the pre-registered family
-    print(f"  family size m = {m} pre-registered claims; {m - len(fam)} are non-passes and carry no "
+    m = 10  # the pre-specified family
+    print(f"  family size m = {m} pre-specified claims; {m - len(fam)} are non-passes and carry no "
           f"false-positive risk")
     print(f"\n  {'claim':<7}{'estimate':>10}{'95% CI':>22}{'Bonferroni 99.5% CI':>26}{'survives':>10}")
     res = []

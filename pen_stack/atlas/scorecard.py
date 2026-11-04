@@ -1,8 +1,8 @@
 """Descriptive writer scorecard.
 
-Reframes the prior 5-gate "TRUE_WRITER certification" (circular - it pre-registered ISCro4 *by name*
+Reframes the prior 5-gate "TRUE_WRITER certification" (circular - it pre-specified ISCro4 *by name*
 and depended on hand-set scores) into a transparent, DESCRIPTIVE scorecard computed from the
-re-grounded axes. No enzyme is named in any pre-registered prediction. We additionally report a
+re-grounded axes. No enzyme is named in any pre-specified prediction. We additionally report a
 *blind concordance* outcome: does the ranking place ISCro4 at the top of the bridge family using only
 generic measured axes (cell-based evidence, DSB-freeness, programmability, cargo) - without any
 ISCro4-specific value being asserted? This is reported, never asserted as an input.

@@ -1,6 +1,6 @@
 """Therapeutic-readiness scoring.
 
-Pre-registered criterion: deliverability classes match known facts (ISCro4 326 aa -> AAV), and every
+Pre-specified criterion: deliverability classes match known facts (ISCro4 326 aa -> AAV), and every
 component (S_Deliv / S_Cargo / S_HumanCell) is retrievable from the row (transparent, not collapsed).
 """
 from __future__ import annotations

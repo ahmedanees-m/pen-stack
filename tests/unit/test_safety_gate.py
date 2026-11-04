@@ -1,7 +1,7 @@
 """Biosecurity / dual-use screening gate (the Guardian).
 
 CI-safe (pure config + arithmetic; no network, no heavy data). Audit writes go to a tmp file via the
-PEN_STACK_SAFETY_AUDIT env var so the suite is hermetic. Asserts the pre-registered gates:
+PEN_STACK_SAFETY_AUDIT env var so the suite is hermetic. Asserts the pre-specified gates:
   * benign therapeutic designs pass with ZERO false refusals;
   * hazard probes are refused/escalated at the CORRECT severity;
   * >=1 AI-homolog evasion (low identity, hazardous function) is caught by the FUNCTION screen;
@@ -34,7 +34,7 @@ def _probes() -> dict:
     return yaml.safe_load(resource("configs/safety/probes.yaml").read_text(encoding="utf-8"))
 
 
-# --- pre-registered acceptance gates ---------------------------------------------------
+# --- pre-specified acceptance gates ---------------------------------------------------
 
 def test_benign_controls_zero_false_refusals():
     for c in _probes()["benign_controls"]:

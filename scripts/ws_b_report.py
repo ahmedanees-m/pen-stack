@@ -77,7 +77,7 @@ def build() -> str:
             f"**{b1.get('delta_ci_excludes_zero')}**; margin {b1.get('margin')}). "
             f"{b1.get('ci_note', '')}",
             f"- **Finding: {b1.get('finding', 'n/a')}.** The point estimate clears the "
-            f"pre-registered margin (`trip_beats_proxy_by_margin` = {b1.get('trip_beats_proxy_by_margin')}), "
+            f"pre-specified margin (`trip_beats_proxy_by_margin` = {b1.get('trip_beats_proxy_by_margin')}), "
             "but at this pilot N the advantage is NOT statistically significant - reported as a margin-pass "
             "with an non-significant CI, not as a proven gain.",
             f"- Interpretation: {b1.get('interpretation')}",

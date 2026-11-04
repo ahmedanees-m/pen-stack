@@ -4,7 +4,7 @@
 This trains the shipped position-effect twin on the measured Leemans 2019 K562 TRIP data
 (`benchmarks/position_effect_human/leemans_scored_input.parquet`, a committed derived features table built
 from the public Leemans expression and ENCODE chromatin marks), holds out chromosomes 3, 8, and 12 exactly as
-the sealed pre-registration specifies, scores held-out Spearman correlation, and asserts the recomputed value
+the sealed frozen analysis specification specifies, scores held-out Spearman correlation, and asserts the recomputed value
 matches the committed metrics. Run by `make repro-human`.
 
 The split is by chromosome (chr3/8/12), not a random partition, so it is deterministic without a seed; the

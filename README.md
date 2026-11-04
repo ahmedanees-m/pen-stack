@@ -24,7 +24,7 @@ Foundation models generate candidate edits; PEN-STACK checks them. It tells you 
 
 PEN-STACK is an installable Python package and service for the genome-*writing* era, the modality that installs new information into a genome (inserting genes, flipping or excising kilobases, placing programmable landing pads) rather than editing a base in place. Writing is harder and less tooled than editing, and it is gated by questions that have no canonical answer: where can you write, what can write there, and how should the write be designed.
 
-The package consolidates five earlier research projects into one citable stack and adds the maps and the design engine the field was missing: a genome-wide Writable-Genome atlas, a cross-family Writer Atlas, an inverse-design Write Planner, a per-mechanism off-target engine, a design-stage biosecurity gate, immunogenicity and delivery profiling, a calibrated digital twin, and a grounded agent that drives them end to end. All of it runs under one engineered invariant: every reported quantity comes from a validated tool or an out-of-distribution-gated oracle, never from a language model, and anything out of scope is returned as a known-unknown rather than guessed. It runs on a single GPU, uses bulk-downloadable public data, and is validated against pre-registered baselines with the negatives reported in full.
+The package consolidates five earlier research projects into one citable stack and adds the maps and the design engine the field was missing: a genome-wide Writable-Genome atlas, a cross-family Writer Atlas, an inverse-design Write Planner, a per-mechanism off-target engine, a design-stage biosecurity gate, immunogenicity and delivery profiling, a calibrated digital twin, and a grounded agent that drives them end to end. All of it runs under one engineered invariant: every reported quantity comes from a validated tool or an out-of-distribution-gated oracle, never from a language model, and anything out of scope is returned as a known-unknown rather than guessed. It runs on a single GPU, uses bulk-downloadable public data, and is validated against pre-specified baselines with the negatives reported in full.
 
 See [docs/](docs/) for the full documentation.
 
@@ -102,7 +102,7 @@ A goal enters through one of the interfaces. The agent layer turns it into candi
 
 ## Key results
 
-All results are blind and pre-registered (success criteria, baselines, and held-out sets are SHA-locked in [`prereg/`](prereg/) before any model sees the test data). Estimates are reported with their sample size and confidence interval.
+All results are blind and pre-specified (success criteria, baselines, and held-out sets are SHA-locked in [`prereg/`](prereg/) before any model sees the test data). Estimates are reported with their sample size and confidence interval.
 
 - **Expression-robustness axis (the primary result).** A per-locus prediction of whether an integrated cassette stays expressed rather than being positionally silenced. On measured human K562 position-effect data (Leemans 2019) the axis reaches a held-out Spearman rho of 0.571 (0.558 on an independent held-out variant), and it is empirically *distinct* from ePRIDICT's chromatin prediction of prime-editing efficiency (rho 0.212, R-squared 0.041 across 7,295 loci): a complementary signal, not a restatement of one. It is validated at exact-site resolution; the deployment commonly serves coarse 1-kb features, at which the axis reaches rho about 0.16, and that gap is reported as a result rather than claimed away. See [`benchmarks/position_effect_human/`](benchmarks/position_effect_human/).
 - **Writable Genome and the integrated safety filter.** A genome-wide atlas of 3,031,030 loci across three cell types (K562, HepG2, CD34+ HSPC) recovers experimentally validated safe harbours as highly writable and clinical genotoxic loci as non-writable, blind. The three-way integrated score (safety x durability x reachability) is characterised as a *reject-known-bad safety filter*: against oncogene-distance and accessibility-matched controls it reaches AUROC 0.679 (95% CI 0.536 to 0.825) versus a safety-only baseline of 0.51, with real false negatives on documented clinical genotoxic loci reported in full; it is not a calibrated genotoxicity predictor.
@@ -206,12 +206,12 @@ make repro-human  # recompute the primary human K562 expression-robustness resul
 make repro-full   # the above plus the genome-wide atlas benchmarks (needs 'make fetch' with ZENODO_DOI)
 ```
 
-`make repro` also re-hashes every SHA-locked pre-registration against the committed bytes (`scripts/prereg_manifest.py`, which emits the full manifest `prereg/PREREG_MANIFEST.md`) and asserts it in continuous integration, so a live lock cannot silently drift from the file it fixes. The ten claims in the claim ledger each cite a committed pre-registration verifiable from a bare clone with `sha256sum prereg/<file>`; the full eighty-lock manifest is in `prereg/PREREG_MANIFEST.md`.
+`make repro` also re-hashes every SHA-locked frozen analysis specification against the committed bytes (`scripts/prereg_manifest.py`, which emits the full manifest `prereg/PREREG_MANIFEST.md`) and asserts it in continuous integration, so a live lock cannot silently drift from the file it fixes. The ten claims in the claim ledger each cite a committed frozen analysis specification verifiable from a bare clone with `sha256sum prereg/<file>`; the full eighty-lock manifest is in `prereg/PREREG_MANIFEST.md`.
 
 The primary expression-robustness result is **recomputed from source, not read from a stored number**:
 `scripts/p2_build_human_head.py` (run by `make repro-human`, and folded into `make repro`) trains the shipped
 twin on the committed Leemans K562 features table, holds out chromosomes 3/8/12 exactly as the sealed
-pre-registration specifies, and asserts the recomputed held-out Spearman correlation (0.5711) matches the
+frozen analysis specification specifies, and asserts the recomputed held-out Spearman correlation (0.5711) matches the
 committed metrics. The three primary analyses each ship their metrics: the human K562 expression-robustness
 head ([`benchmarks/position_effect_human/`](benchmarks/position_effect_human/)), the integrase off-target set
 ([`benchmarks/offtarget/integrase_chalberg/`](benchmarks/offtarget/integrase_chalberg/)), and the clinical
@@ -274,7 +274,7 @@ pen-stack/
   schemas/              JSON schema for the typed WriteSpec intent layer
   Makefile              one-command reproduction (make fetch, make repro, make repro-human, make repro-full)
   configs/              pinned datasets, thresholds, curation, and the provider-agnostic LLM switch (YAML, plus reference FASTA)
-  prereg/               SHA-locked pre-registered success criteria, and the generated PREREG_MANIFEST.md
+  prereg/               SHA-locked pre-specified success criteria, and the generated PREREG_MANIFEST.md
   data/
     curated/            small committed tables (gene_coords, ...)
     demo/               committed 1-chromosome demo atlas (chr19) for clean-clone reproduction
@@ -302,7 +302,7 @@ License-restricted sources (COSMIC Cancer Gene Census, OncoKB) are **never commi
 
 ## Validation approach
 
-- Pre-register before training: success criteria, baselines, and held-out sets are SHA-locked in `prereg/` before any model sees the test data.
+- Pre-specify before training: success criteria, baselines, and held-out sets are SHA-locked in `prereg/` before any model sees the test data.
 - Always report a baseline: a safety-only far-from-oncogene prior and CancerMine oncogene distance for the integrated score; a learned lamina-associated-domain chromatin baseline and ePRIDICT for the expression-robustness axis; intent-blind ranking for the planner; and attP-similarity, palindrome, or Hamming-distance baselines for the per-mechanism off-target paths.
 - Guard against circularity: the expression-robustness axis is validated with lamina and heterochromatin features removed, so it cannot restate a chromatin baseline, and no task is scored against a label derived from the model's own features (asserted by a dedicated de-circularization test).
 - Blind external concordance: recover validated safe harbours, clinical genotoxic loci, documented writes, and measured off-targets the model never trained on.
@@ -345,4 +345,4 @@ one-minor-version deprecation warning before any breaking change. Stable surface
 validation status. The mechanism-based off-target paths (serine-integrase, bridge, and CAST) are marked
 experimental and may change as measured data becomes available.
 
-Decision-support, not a clinical directive. Every score is traceable to public data and a pre-registered model.
+Decision-support, not a clinical directive. Every score is traceable to public data and a pre-specified model.

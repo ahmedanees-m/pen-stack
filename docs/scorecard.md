@@ -51,4 +51,4 @@ Among **natural** bridge_IS110 systems, the top-ranked by generic measured axes 
 
 Bridge family ranking: ISCro4 (0.911), IS621 (0.711), IS621_2 (0.711)
 
-> ISCro4 is **not** named in any pre-registered prediction. It emerges top because it is the only bridge recombinase carrying human-cell evidence (`has_cell_based`) - a generic axis, not an asserted value. This reproduces the prior qualitative result WITHOUT any hand-set `s_prog=1.0` / `s_cargo=1.0` override.
+> ISCro4 is **not** named in any pre-specified prediction. It emerges top because it is the only bridge recombinase carrying human-cell evidence (`has_cell_based`) - a generic axis, not an asserted value. This reproduces the prior qualitative result WITHOUT any hand-set `s_prog=1.0` / `s_cargo=1.0` override.

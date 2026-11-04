@@ -27,7 +27,7 @@ grounded prior) and ambiguous phrasings. SHA-locked in `SHA256SUMS`.
 
 The first run measured `routing_safety_metric = 0.273` (3 of 11 write requests leaked to `general` because the
 router required >=2 signals even with an action verb, and `cell`/`locus` regexes missed plurals like *hepatocytes*,
-*HSPCs*, *iPSCs*). Per the pre-registered discipline (*tighten, never relax the metric*) the router was made
+*HSPCs*, *iPSCs*). Per the pre-specified discipline (*tighten, never relax the metric*) the router was made
 conservative - **an action verb + any one target signal routes to the grounded design lane** - and the metric was
 re-measured at 0.000. Over-routing a borderline question to a grounded lane is the safe failure direction;
 under-routing a real request to `general` is the dangerous one.

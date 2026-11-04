@@ -1,6 +1,6 @@
 """Mechanism classification at scale.
 
-Asserts the pre-registered criterion: the Pfam-whitelist classifier agrees with the audited 18-family
+Asserts the pre-specified criterion: the Pfam-whitelist classifier agrees with the audited 18-family
 labels on the curated core, and that homology-derived mechanism is computed independently of the
 inherited label. Composite co-occurrence rules (Cas9 >=2/3; IS110 both domains) are exercised directly.
 """

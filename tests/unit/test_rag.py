@@ -1,6 +1,6 @@
 """Grounded, cited Q&A.
 
-Pre-registered criteria: every quantitative answer traces to a tool call (no LLM-guessed numbers);
+Pre-specified criteria: every quantitative answer traces to a tool call (no LLM-guessed numbers);
 every factual claim carries a citation; out-of-scope/clinical-directive questions are refused.
 """
 from __future__ import annotations

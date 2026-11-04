@@ -27,13 +27,13 @@ directly from `phase_1/out/atlas_k562.parquet`):
 
 - Spearman **ρ = 0.212** [0.188, 0.235]; Pearson r = 0.202 [0.179, 0.224]
 - Variance partition **R² = 0.041** [0.032, 0.050] → ePRIDICT explains ~4% of durability variance; **96% unexplained**
-- Pre-registered decision: **DISTINCT** (`|ρ|<0.30 and R²<0.10`).
+- Pre-specified decision: **DISTINCT** (`|ρ|<0.30 and R²<0.10`).
 
 Conservative by construction: both models read K562 chromatin and share three marks (H3K4me1, H3K9me3,
 H3K27me3), yet the axes still diverge. Caveat: at n=7,295 the weak correlation is statistically
 significant (p≈1e-75); the claim is *negligible shared variance / distinctness*, not statistical independence.
 
-**Consequence (pre-registered):** keep the durability axis as a distinct/complementary contribution (softened
+**Consequence (pre-specified):** keep the durability axis as a distinct/complementary contribution (softened
 wording); proceed to GSH-recovery + GEG-SH concordance.
 
 Deposit: [`benchmarks/priorart/epridict/`](../../benchmarks/priorart/epridict/) (metrics JSON, scatter,

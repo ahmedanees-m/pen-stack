@@ -1,6 +1,6 @@
 """Full genome-writing environment over the router + verifier.
 
-Asserts the pre-registered MDP (prereg/ws_env.yaml): verifier-driven step validity, the legal/illegal/refusal
+Asserts the pre-specified MDP (prereg/ws_env.yaml): verifier-driven step validity, the legal/illegal/refusal
 reward contract, the abstain action, and the greedy>=random + greedy-legal sanity over the frozen seed set.
 Skips cleanly if gymnasium is absent (the [env] extra).
 """

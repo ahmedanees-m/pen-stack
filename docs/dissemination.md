@@ -27,7 +27,7 @@ the plan and the running state; adoption metrics are updated as they accrue.
 
 ## Release checklist (per milestone)
 
-1. All tests green; CI green; single contributor; pre-registration SHA-locked.
+1. All tests green; CI green; single contributor; frozen analysis specification SHA-locked.
 2. version bumped; README + badges updated.
 3. Tagged GitHub release; Zenodo deposit (data) with DOI.
 4. Preprint posted; `docs/positioning.md` updated; this log updated.

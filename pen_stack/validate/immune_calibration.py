@@ -47,7 +47,7 @@ def calibrate_axis(proxy_scores: list[float], observed: list[float], *, axis: st
 
     Returns a status of `outcome_validated` ONLY when N>=6 AND the bootstrap CI excludes zero; `weak_proxy`
     when N>=6 but the CI includes zero; `mechanistic_proxy` when there are too few paired points. Never
-    upgrades an axis to "validated" without a CI excluding zero (pre-registered gate)."""
+    upgrades an axis to "validated" without a CI excluding zero (pre-specified gate)."""
     n = len(proxy_scores)
     if n < _MIN_N or len(observed) != n:
         return {"axis": axis, "status": "mechanistic_proxy", "n": n,

@@ -1,7 +1,7 @@
 """Consolidated blind-validation report.
 
 Gathers the per-layer results (safety concordance, durability transfer, atlas safe-harbour separation
-for each cell type) into one report and checks them against the pre-registered validation criteria.
+for each cell type) into one report and checks them against the pre-specified validation criteria.
 
     python scripts/p1_validation_report.py
 """
@@ -73,7 +73,7 @@ def main():
     print("\nPre-registered checks:")
     for k, v in report["prereg_checks"].items():
         print(f" [{'PASS' if v else 'FAIL'}] {k}")
-    print(f"\nALL PRE-REGISTERED CHECKS PASS: {report['all_prereg_checks_pass']}")
+    print(f"\nALL PRE-SPECIFIED CHECKS PASS: {report['all_prereg_checks_pass']}")
 
 
 if __name__ == "__main__":

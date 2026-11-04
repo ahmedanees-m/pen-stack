@@ -1,6 +1,6 @@
-# Additional File 5: pre-registration SHA-256 manifest
+# Supplementary File 5: Frozen analysis specification SHA-256 manifest
 
-Every pre-registration in `prereg/` is frozen by a companion `SHA256_LOCK_*.json` that records the SHA-256 of the locked file's committed bytes. This manifest is generated and checked by `scripts/prereg_manifest.py`, which recomputes each hash from source and asserts it against the lock; the check runs in continuous integration on every commit and in `make repro`.
+Every analysis specification in `prereg/` is frozen by a companion `SHA256_LOCK_*.json` that records the SHA-256 of the locked file's committed bytes. This manifest is generated and checked by `scripts/prereg_manifest.py`, which recomputes each hash from source and asserts it against the lock; the check runs in continuous integration on every commit and in `make repro`.
 
 Verify any row from a clean checkout:
 
@@ -9,13 +9,13 @@ sha256sum <file>            # must equal the SHA-256 column
 python scripts/prereg_manifest.py --check   # re-hash every entry, assert this manifest
 ```
 
-Total: 120 locked files across 80 pre-registration locks; 116 re-hash against the current committed bytes and are asserted here. 4 belong to the superseded phase-0 origin seal (listed at the end).
+Total: 120 locked files across 80 specification locks; 116 re-hash against the current committed bytes and are asserted here. 4 belong to the superseded phase-0 origin seal (listed at the end).
 
-## Table 5 claim ledger pre-registrations
+## Table 5 claim ledger frozen analysis specifications
 
-The ten claims in Table 5, each with the committed pre-registration that fixed it before scoring and that pre-registration's SHA-256.
+The ten claims in Table 5, each with the committed frozen analysis specification that fixed it before scoring and that frozen analysis specification's SHA-256.
 
-| # | Claim | Verdict | Pre-registration | SHA-256 |
+| # | Claim | Verdict | Frozen analysis specification | SHA-256 |
 |---|---|---|---|---|
 | 1 | Human K562 head, exact-site resolution | PASS | `prereg/ws_expr2.yaml` | `c9966059cee6d241beaacb2745d298ae5e1fc6d42abf0a22311e5e7266f6b90f` |
 | 2 | Mouse-trained axis transfers to human | NULL | `prereg/ws_expr2.yaml` | `c9966059cee6d241beaacb2745d298ae5e1fc6d42abf0a22311e5e7266f6b90f` |
@@ -28,7 +28,7 @@ The ten claims in Table 5, each with the committed pre-registration that fixed i
 | 9 | Serine-integrase learned model (both metrics) | NULL (strict) | `prereg/ws_offtarget2.yaml` | `a351a409b191df1755a2a48e00a23116a9d72d3d0ee9c576bedf5710092cf2c5` |
 | 10 | Expected-information-gain beats random | SPANS ZERO | `prereg/ws_closedloop.yaml` | `ad9d413e5f790d64affb41a6bda2e2843fcbb5a2289e780b19c8bbe89dc69f3c` |
 
-## Full manifest: every current pre-registration lock
+## Full manifest: every current frozen analysis specification lock
 
 Each file below re-hashes to the SHA-256 shown; `scripts/prereg_manifest.py` asserts this on every commit.
 
@@ -153,7 +153,7 @@ Each file below re-hashes to the SHA-256 shown; `scripts/prereg_manifest.py` ass
 
 ## Superseded phase-0 origin seal
 
-The phase-0 lock is the programme origin seal. All 4 of its inputs were revised in later cycles, so the phase-0 hashes below are the sealed originals and no longer match the current files. 1 stayed in use and is re-locked at the current bytes by a later-cycle lock (asserted in the manifest above): `configs/score_axes.yaml`. The other 3 are not re-locked at their current bytes by any later lock, so only the phase-0 originals are recorded here: `configs/universe_crosswalk.yaml`, `configs/wtkb_curated.yaml`, `prereg/phase0.yaml`.
+The phase-0 lock is the programme origin seal. It was computed before its 4 inputs were first committed, so the hashes below match no bytes in the published history; each of those files carries a single commit and has not been modified since. 1 stayed in use and is re-locked at the current bytes by a later-cycle lock (asserted in the manifest above): `configs/score_axes.yaml`. The other 3 are not re-locked at their current bytes by any later lock, so only the phase-0 originals are recorded here: `configs/universe_crosswalk.yaml`, `configs/wtkb_curated.yaml`, `prereg/phase0.yaml`.
 
 | Lock | File | Sealed SHA-256 (phase 0) | Current status |
 |---|---|---|---|

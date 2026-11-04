@@ -54,7 +54,7 @@ pip install -i https://test.pypi.org/simple/ pen-stack
 
 - [ ] Version bumped consistently (pyproject / `__init__` / CITATION.cff); `test_release_dissemination` enforces this.
 - [ ] README + badges updated.
-- [ ] CI green; single contributor; pre-registration SHA-locked.
+- [ ] CI green; single contributor; frozen analysis specification SHA-locked.
 - [ ] `python -m twine check dist/*` passes.
 - [ ] Tag pushed; PyPI badge resolves; GitHub release notes written.
 - [ ] Zenodo data deposit (DOI) for any data release.

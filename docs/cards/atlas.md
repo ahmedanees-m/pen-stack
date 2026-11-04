@@ -16,8 +16,8 @@ hg38 (UCSC) | ENCODE bigWig signal (accessibility + 5 histones; K562, HepG2, CD3
 mouse ES-Bruce4) | GENCODE v46 | COSMIC CGC v104 | DepMap 26Q1 | LaFave 2014 MLV (NHGRI GeIST) | VISDB .
 TRIP GSE49806/49807 | UniProt/Pfam (WT-KB). Accessions pinned in `configs/datasets.yaml`.
 
-## Validation (blind, pre-registered)
-All pre-registered checks pass (`validation_report.json`). Safe harbours score high, clinical genotoxic CIS low:
+## Validation (blind, pre-specified)
+All pre-specified checks pass (`validation_report.json`). Safe harbours score high, clinical genotoxic CIS low:
 
 | Cell type | safe-harbour writability %ile | genotoxic-CIS %ile |
 |---|---|---|
@@ -38,4 +38,4 @@ All pre-registered checks pass (`validation_report.json`). Safe harbours score h
 ## Intended use
 Rank candidate insertion loci for genome-writing projects; surface safe + durable + reachable sites. Inputs to
 the Write Planner. **Decision-support, not a clinical directive** - every score traces to public data + a
-pre-registered model.
+pre-specified model.

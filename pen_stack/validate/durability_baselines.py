@@ -14,7 +14,7 @@ otherwise the endogenous baseline is reported as pending (the ablation is indepe
 
 Acceptance (prereg/ws_b.yaml): the ablation - all-marks >= best single-mark on out-of-fold silenced-AUROC, or report
 the negative. The endogenous baseline - report TRIP-trained vs endogenous-proxy Spearman; if the proxy is not beaten by the
-pre-registered margin, reframe the durability novelty (e.g. around integration-site genotoxicity).
+pre-specified margin, reframe the durability novelty (e.g. around integration-site genotoxicity).
 """
 from __future__ import annotations
 

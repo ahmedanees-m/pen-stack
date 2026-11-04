@@ -7,7 +7,7 @@ it trivially passes the benign set but fails every hazard and evasion. The Guard
 beats that baseline by construction.
 
 Deterministic, CI-safe (pure config + the gate; audit writes go to the default out/ path). No circular label:
-the ground truth is the pre-registered, SHA-locked `configs/safety/probes.yaml`.
+the ground truth is the pre-specified, SHA-locked `configs/safety/probes.yaml`.
 """
 from __future__ import annotations
 

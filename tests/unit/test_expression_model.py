@@ -1,6 +1,6 @@
 """The comprehensive, literature-cited relative-expression model + its validation.
 
-The hard gate (pre-registered, no-fabrication): the expanded promoter palette is RICHER but still a PROXY, it
+The hard gate (pre-specified, no-fabrication): the expanded promoter palette is RICHER but still a PROXY, it
 must NOT claim outcome-validation, because an independent promoter study (Damdindorj 2014) disagrees with the
 anchor (Qin 2010): promoter strength is context-dependent. These tests lock both the model and that context-dependence.
 """

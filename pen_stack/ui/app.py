@@ -202,7 +202,7 @@ if page == "Overview":
                     unsafe_allow_html=True)
     v = load_validation()
     if v:
-        st.markdown("##### Blind validation - all pre-registered checks")
+        st.markdown("##### Blind validation - all pre-specified checks")
         cols = st.columns(len(v.get("prereg_checks", {})) or 1)
         for col, (k, ok) in zip(cols, v.get("prereg_checks", {}).items()):
             col.markdown(f'<div class="card"><div class="kpi-l">{k}</div>'
@@ -327,7 +327,7 @@ elif page == "Validation":
                       f'<div class="kpi-l">baseline {d.get("silenced_baseline_h3k9me3_auroc",0):.2f}</div></div>',
                       unsafe_allow_html=True)
         allok = v.get("all_prereg_checks_pass")
-        c[2].markdown(f'<div class="card"><div class="kpi-l">pre-registered checks</div>'
+        c[2].markdown(f'<div class="card"><div class="kpi-l">pre-specified checks</div>'
                       f'<div class="kpi" style="color:{"#3dffa2" if allok else "#ff5d6c"}">'
                       f'{"ALL PASS" if allok else "REVIEW"}</div></div>', unsafe_allow_html=True)
         st.markdown("##### Safe harbours vs genotoxic CIS - writability percentile")
@@ -710,4 +710,4 @@ elif page == "Genome-Writing Bench":
 st.markdown("---")
 st.caption("PEN-STACK v0.2.0 | Writable Genome + Writer Atlas + Write Planner + Genome-Writing Bench + "
            "PEN-Agent | decision-support, not a clinical directive | every score traceable to public data "
-           "+ a pre-registered model.")
+           "+ a pre-specified model.")

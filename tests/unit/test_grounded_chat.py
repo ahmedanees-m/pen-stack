@@ -1,6 +1,6 @@
 """Grounded co-scientist chat unit tests.
 
-The hard gate (pre-registered): **no numeric claim in a reply is absent from the tool results.** These tests are
+The hard gate (pre-specified): **no numeric claim in a reply is absent from the tool results.** These tests are
 pure-Python and CI-safe, they never call a live LLM. They exercise:
   * the engine tool-runner produces a grounded dossier (legality/safety/immune/scope) for the example goal;
   * the grounding guard strikes any number a model invents that is not in the engine's allow-list;

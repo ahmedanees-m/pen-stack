@@ -47,7 +47,7 @@ _DNA_WRITERS = ["bridge_IS110", "seek_IS1111", "CAST_VK", "serine_integrase", "P
 CARGO_BUCKETS = [1000, 3000, 6000, 12000, 30000] # bp
 _N_STAGES = 5
 
-# reward shaping constants (pre-registered in prereg/ws_env.yaml)
+# reward shaping constants (pre-specified in prereg/ws_env.yaml)
 _ILLEGAL_PENALTY = -1.0 # committing to an illegal plan is the worst outcome
 _ABSTAIN_REWARD = 0.05 # a justified refusal beats an illegal plan, loses to a good legal one
 _SOFT_PENALTY = 0.1 # per soft-rule flag (e.g. split-AAV efficiency)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Generate and verify the pre-registration SHA-256 manifest (Additional File 5).
+"""Generate and verify the frozen analysis specification SHA-256 manifest (Supplementary File 5).
 
-Every pre-registration in `prereg/` is frozen by a companion `prereg/SHA256_LOCK_*.json`
+Every analysis specification in `prereg/` is frozen by a companion `prereg/SHA256_LOCK_*.json`
 lock that records, for each locked file, the SHA-256 of its committed bytes. This script
 walks those locks, recomputes each hash from the committed file, and asserts it against the
 recorded value; it then writes (or checks) `prereg/PREREG_MANIFEST.md`, the full manifest of
@@ -10,11 +10,11 @@ every lock entry plus the ten-row claim ledger subset cited in Table 5.
 Modes:
   --check   (default) recompute every hash from the working tree and assert it matches the
             lock; regenerate the manifest in memory and assert it is byte-identical to the
-            committed `prereg/PREREG_MANIFEST.md`; assert every Table 5 pre-registration is a
+            committed `prereg/PREREG_MANIFEST.md`; assert every Table 5 frozen analysis specification is a
             locked file that re-hashes. Exit non-zero on any mismatch. This is what CI runs.
   --write   regenerate `prereg/PREREG_MANIFEST.md` from the locks and the ledger selection.
 
-The claim ledger selection (which ten of the pre-registrations the claim ledger cites)
+The claim ledger selection (which ten of the frozen analysis specifications the claim ledger cites)
 is held in `prereg/claim_ledger.json`; this script validates that every file it names is
 locked and re-hashes, so the Table 5 citations cannot drift from the frozen bytes.
 """
@@ -31,10 +31,10 @@ PREREG = ROOT / "prereg"
 MANIFEST = PREREG / "PREREG_MANIFEST.md"
 LEDGER = PREREG / "claim_ledger.json"
 
-# The phase-0 lock is the programme origin seal: it recorded the bytes of four inputs at the start of the
-# programme, and all four were revised in later cycles, so their phase-0 hashes no longer match the current
-# files. One input (configs/score_axes.yaml) stayed in use and is re-locked at its current bytes by the
-# phase-2 lock; the other three were retired and are no longer referenced by any lock. The phase-0 entries are
+# The phase-0 lock is the programme origin seal: it was computed before its four inputs were first
+# committed, so its recorded hashes match no bytes in the published history. Each of the four carries a
+# single commit and has not been modified since. One input (configs/score_axes.yaml) stayed in use and is
+# re-locked at its committed bytes by the phase-2 lock; the other three are referenced by no later lock. The phase-0 entries are
 # reported as superseded rather than re-hashed. The exemption is re-hash gated (see classify): an allowlisted
 # entry counts as superseded only when its current bytes differ from the seal, so an entry that still matches
 # its lock is asserted like any other and cannot be hidden by the allowlist. This is the ONLY lock exempted;
@@ -128,25 +128,25 @@ def load_ledger() -> list[dict]:
 
 
 def verify_ledger(ledger: list[dict], by_file: dict[str, dict]) -> list[str]:
-    """Assert each Table 5 claim cites a locked pre-registration that currently re-hashes."""
+    """Assert each Table 5 claim cites a locked frozen analysis specification that currently re-hashes."""
     failures: list[str] = []
     for claim in ledger:
         prereg_file = claim["prereg_file"]
         record = by_file.get(prereg_file)
         if record is None:
-            failures.append(f"claim {claim['n']}: {prereg_file} is not a locked pre-registration")
+            failures.append(f"claim {claim['n']}: {prereg_file} is not a locked frozen analysis specification")
         elif not record["verified"]:
             failures.append(f"claim {claim['n']}: {prereg_file} does not re-hash against its lock")
     return failures
 
 
 def render_manifest(records: list[dict], ledger: list[dict]) -> str:
-    """Render the deterministic Additional File 5 manifest as Markdown (no timestamps)."""
+    """Render the deterministic Supplementary File 5 manifest as Markdown (no timestamps)."""
     lines: list[str] = []
-    lines.append("# Additional File 5: pre-registration SHA-256 manifest")
+    lines.append("# Supplementary File 5: Frozen analysis specification SHA-256 manifest")
     lines.append("")
     lines.append(
-        "Every pre-registration in `prereg/` is frozen by a companion `SHA256_LOCK_*.json` that records "
+        "Every analysis specification in `prereg/` is frozen by a companion `SHA256_LOCK_*.json` that records "
         "the SHA-256 of the locked file's committed bytes. This manifest is generated and checked by "
         "`scripts/prereg_manifest.py`, which recomputes each hash from source and asserts it against the "
         "lock; the check runs in continuous integration on every commit and in `make repro`."
@@ -162,17 +162,17 @@ def render_manifest(records: list[dict], ledger: list[dict]) -> str:
     verified = [r for r in records if r["verified"]]
     superseded = [r for r in records if r["superseded"]]
     lines.append(f"Total: {len(records)} locked files across "
-                 f"{len({r['lock'] for r in records})} pre-registration locks; "
+                 f"{len({r['lock'] for r in records})} specification locks; "
                  f"{len(verified)} re-hash against the current committed bytes and are asserted here. "
                  f"{len(superseded)} belong to the superseded phase-0 origin seal (listed at the end).")
     lines.append("")
 
-    lines.append("## Table 5 claim ledger pre-registrations")
+    lines.append("## Table 5 claim ledger frozen analysis specifications")
     lines.append("")
-    lines.append("The ten claims in Table 5, each with the committed pre-registration that fixed it before "
-                 "scoring and that pre-registration's SHA-256.")
+    lines.append("The ten claims in Table 5, each with the committed frozen analysis specification that fixed it before "
+                 "scoring and that frozen analysis specification's SHA-256.")
     lines.append("")
-    lines.append("| # | Claim | Verdict | Pre-registration | SHA-256 |")
+    lines.append("| # | Claim | Verdict | Frozen analysis specification | SHA-256 |")
     lines.append("|---|---|---|---|---|")
     for claim in ledger:
         rec = next(r for r in verified if r["file"] == claim["prereg_file"])
@@ -182,7 +182,7 @@ def render_manifest(records: list[dict], ledger: list[dict]) -> str:
         )
     lines.append("")
 
-    lines.append("## Full manifest: every current pre-registration lock")
+    lines.append("## Full manifest: every current frozen analysis specification lock")
     lines.append("")
     lines.append("Each file below re-hashes to the SHA-256 shown; `scripts/prereg_manifest.py` asserts this on "
                  "every commit.")
@@ -200,9 +200,10 @@ def render_manifest(records: list[dict], ledger: list[dict]) -> str:
         retired = [r for r in superseded if not r["relocked_current"]]
         lines.append("## Superseded phase-0 origin seal")
         lines.append("")
-        para = (f"The phase-0 lock is the programme origin seal. All {len(superseded)} of its inputs were "
-                f"revised in later cycles, so the phase-0 hashes below are the sealed originals and no longer "
-                f"match the current files.")
+        para = (f"The phase-0 lock is the programme origin seal. It was computed before its "
+                f"{len(superseded)} inputs were first committed, so the hashes below match no bytes in the "
+                f"published history; each of those files carries a single commit and has not been modified "
+                f"since.")
         if relocked:
             para += (f" {len(relocked)} stayed in use and {'is' if len(relocked) == 1 else 'are'} re-locked at "
                      f"the current bytes by a later-cycle lock (asserted in the manifest above): "
@@ -255,7 +256,7 @@ def main() -> int:
         MANIFEST.write_text(rendered, encoding="utf-8", newline="\n")
         print(f"Wrote {MANIFEST.relative_to(ROOT)}: {n_verified} locked files re-hash, "
               f"{n_superseded} superseded (phase-0 origin seal), "
-              f"{len(ledger)} Table 5 pre-registrations cited.")
+              f"{len(ledger)} Table 5 frozen analysis specifications cited.")
         return 0
 
     if not MANIFEST.is_file():
@@ -267,8 +268,8 @@ def main() -> int:
               f"`python scripts/prereg_manifest.py --write`.")
         return 1
 
-    print(f"Pre-registration manifest verified: {n_verified} locked files re-hash against committed bytes "
-          f"({n_superseded} superseded phase-0 seal disclosed); {len(ledger)} Table 5 pre-registrations "
+    print(f"Frozen analysis specification manifest verified: {n_verified} locked files re-hash against committed bytes "
+          f"({n_superseded} superseded phase-0 seal disclosed); {len(ledger)} Table 5 frozen analysis specifications "
           f"cited and re-hashed.")
     return 0
 

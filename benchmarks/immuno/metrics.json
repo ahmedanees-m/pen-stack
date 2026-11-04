@@ -1,9 +1,9 @@
 {
   "bench": "Immuno-Bench (Stage G, immunogenicity)",
   "scope": "Stage G ships as a mechanism-grounded axis, not an outcome-validated one. This record exists so that status is a checkable artifact rather than prose.",
-  "preregistration": {
+  "analysis_specification": {
     "file": "prereg/ws_immune2.yaml",
-    "note": "Cited, not amended. The pre-registration names this directory as the deliverable."
+    "note": "Cited, not amended. The frozen analysis specification names this directory as the deliverable."
   },
   "G-G1_tolerance_filter_consistency": {
     "criterion": "G-G1: foreign writers rank above the human self control on the ADA-risk axis.",
@@ -76,7 +76,7 @@
       "reason": "insufficient paired outcome data (N=0 < 6)",
       "label": "ada_writer: mechanistic/population proxy, NOT outcome-validated"
     },
-    "interpretation": "This is the primary entry. No paired (proxy, observed ADA incidence) dataset exists at the pre-registered power, so the gate refuses to promote the axis and it ships as a mechanistic proxy. The refusal is the result: it is a recorded null, not a pending run."
+    "interpretation": "This is the primary entry. No paired (proxy, observed ADA incidence) dataset exists at the pre-specified power, so the gate refuses to promote the axis and it ships as a mechanistic proxy. The refusal is the result: it is a recorded null, not a pending run."
   },
   "G-G3_no_collapse_writer_antigen": {
     "criterion": "G-G3: writer_dominant_risk fires on a foreign writer and the axes are never collapsed into a single score.",

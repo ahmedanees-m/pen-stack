@@ -20,7 +20,7 @@ chromatin tracks. Chromosome-block CV; trained once, applied to any epigenome (t
   **ES-Bruce4** ENCODE bigWigs (mm10) at each lifted integration ( +/- 2.5 kb).
 
 ## Metrics (held-out, chromosome-block CV)
-| Metric | Model | Baseline | Pre-registered |
+| Metric | Model | Baseline | Pre-specified |
 |---|---|---|---|
 | expression Spearman rho | **0.423** | (ATAC n/a) | >= 0.30 (met) |
 | silenced/stable AUROC | **0.643** | H3K9me3-only 0.578 | beats baseline (met) |

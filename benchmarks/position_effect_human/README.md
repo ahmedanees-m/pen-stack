@@ -11,10 +11,10 @@ Every number in `metrics.json` is copied verbatim from a source file and each fi
 
 - **Held out by whole chromosome: `{chr3, chr8, chr12}`**, `n_test = 1506` (leakage control - nearby integrations
   share chromatin), frozen in `split.json` and checksummed in `SHA256SUMS`.
-- **Pre-registered + sealed before scoring.** `split.json` carries the prereg seal
+- **Pre-specified + sealed before scoring.** `split.json` carries the prereg seal
   `9a928f8c3129d07fdd427292663921fefb9dd59304838b2525a715329e4c05f5` (from `p2_head_prereg.sealed.json`). The split
   was untouched - never used as a test set - and the model was run on it **once**.
-- **Distinct from the mouse-axis null split.** The pre-registered *mouse-axis* `validated_null` (below) used a
+- **Distinct from the mouse-axis null split.** The pre-specified *mouse-axis* `validated_null` (below) used a
   different held-out split `{chr2, chr9, chr16}` (prereg `2a4c722a...`). Do not conflate the two.
 
 ## Result (fresh sealed held-out)
@@ -66,9 +66,9 @@ same 5 marks, z-scored within dataset) isolates two effects:
    train a head **per target cell type**. (An earlier confounded read of ρ 0.505 - human van-Steensel vs mouse ENCODE
    features - was a source artifact, corrected here.)
 
-## The pre-registered mouse-axis null (context)
+## The pre-specified mouse-axis null (context)
 
-The **shipped mouse-TRIP-trained axis applied cross-species to human K562** is a pre-registered clean negative:
+The **shipped mouse-TRIP-trained axis applied cross-species to human K562** is a pre-specified clean negative:
 ρ **0.137** vs best baseline `lad` **0.391** (margin −0.254, CI [−0.321, −0.181]) → **`validated_null`** (prereg
 `2a4c722a...`, held-out `{chr2, chr9, chr16}`). This is exactly what the two constraints above predict (coarse
 features × cross-species = the floor), and it is *why* a human-trained head was built. It is **not** "we
@@ -76,7 +76,7 @@ validated `p_durable`."
 
 ## Result (the sentence to use)
 
-> The shipped **mouse-trained** durability axis **fails to transfer to human K562** (pre-registered `validated_null`,
+> The shipped **mouse-trained** durability axis **fails to transfer to human K562** (pre-specified `validated_null`,
 > ρ 0.14). A **human-trained head** - cross-validated on held-out human chromosomes, circularity-clean, on a fresh
 > sealed split - predicts K562 position-effect expression **beyond a learned heterochromatin model** (shipped ρ ≈ 0.57;
 > +0.065 over the heterochromatin baseline, CI clean). This is genuine human-cell headroom - **K562/Leemans only**,

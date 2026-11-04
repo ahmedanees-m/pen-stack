@@ -2,7 +2,7 @@
 
 Given a write request `(write-type, cargo size, cell type, optional target/donor sequences)`, returns ranked
 writer families with:
-  * the **KB readiness** (PRIMARY ranking, the curated Writer Atlas; retained per the pre-registered gate),
+  * the **KB readiness** (PRIMARY ranking, the curated Writer Atlas; retained per the pre-specified gate),
   * a **predicted efficiency + conformal interval**, candidate-flagged (the learned predictor, an advisory, NOT
     the authoritative ranking, because at N=42/4-families it does not beat the KB baseline on held-out family),
   * **cargo-capacity fit** (does the family carry this cargo?),

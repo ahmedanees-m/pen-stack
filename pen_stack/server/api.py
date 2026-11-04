@@ -242,7 +242,7 @@ def guide_design_endpoint(writer_family: str, target_seq: str | None = None,
 def writer_efficiency_endpoint():
     """The curated Writer-Efficiency dataset (real measured integration efficiencies, one row per condition
     with a DOI + verbatim quote) and the held-out Writer-Efficiency-Bench result (validation). The
-    pre-registered outcome: the learned predictor beats the KB family-mean baseline on held-out LOCUS (CI excludes
+    pre-specified outcome: the learned predictor beats the KB family-mean baseline on held-out LOCUS (CI excludes
     0) but NOT on held-out FAMILY at this N, so the KB ranking is retained as primary and the predictor ships as a
     candidate advisory."""
     from pen_stack.atlas import writer_efficiency as we

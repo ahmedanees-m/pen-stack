@@ -31,7 +31,7 @@ Bootstrap 95% CI of (model - baseline):
 - vs attP-similarity: **AUROC diff [-0.054, 0.065]** (includes 0), **AUPRC diff [0.051, 0.192]** (excludes 0).
 - vs palindrome: **AUROC diff [0.017, 0.170]** (excludes 0), **AUPRC diff [0.093, 0.240]** (excludes 0).
 
-**Sealed verdict: `learned_model_null`.** The strict pre-registered bar was *beat BOTH baselines on BOTH metrics
+**Sealed verdict: `learned_model_null`.** The strict pre-specified bar was *beat BOTH baselines on BOTH metrics
 with CI excluding 0*; the model does not clear it because it does not improve AUROC over attP-similarity.
 
 ## Interpretation
@@ -47,7 +47,7 @@ with CI excluding 0*; the model does not clear it because it does not improve AU
   separability, not an in-vivo integration-rate model or a genome-wide FDR.
 
 Reported as a truthful negative on the strict rule with a genuine, CI-clean precision-recall gain. Run once, not
-retuned. Pre-registered and sealed before scoring: `p3_prereg.sealed.json` =
+retuned. Pre-specified and sealed before scoring: `p3_prereg.sealed.json` =
 `405d740fe9ccb154a18f69aed9886c87586f2326ee851ed75c7fc8e42904f9fe`.
 
 ## Provenance

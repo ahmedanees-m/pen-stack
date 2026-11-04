@@ -8,9 +8,9 @@ Every released artifact is regenerable from public data by re-running the pipeli
 - Laptop runs only `tools/penctl.py` (paramiko SSH/SFTP); all heavy steps are `docker run` on the VM.
 - Pinned deps: `docker/requirements.txt`; pinned datasets/accessions: `configs/datasets.yaml`.
 
-## Pre-registration
+## Frozen analysis specification
 `prereg/paper1.yaml` records the success criteria, baselines and held-out sets fixed before models see
-test data. The SHA-256-locked pre-registrations and their digests are listed in
+test data. The SHA-256-locked frozen analysis specifications and their digests are listed in
 `prereg/PREREG_MANIFEST.md`, which `scripts/prereg_manifest.py --check` re-hashes against the
 committed bytes.
 

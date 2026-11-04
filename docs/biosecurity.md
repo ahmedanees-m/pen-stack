@@ -92,7 +92,7 @@ Mechanism / SecureDNA) over a much larger reference set.
   `sequence_homology`.
 - **Tune the policy:** edit `configs/safety/policy.yaml` (`severity_to_decision`, `ignore_framing_fields`).
 
-## Pre-registered acceptance (the bench `safety_screening` task)
+## Pre-specified acceptance (the bench `safety_screening` task)
 
 Benign therapeutics (FIX/FVIII/CAR-T/sickle-cell) pass with **0 false refusals**; hazard probes
 (ricin/botulinum/variola/transmissibility) refused/escalated at the **correct severity**; adversarial evasions

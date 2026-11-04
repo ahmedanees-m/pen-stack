@@ -136,7 +136,7 @@ export default function WriterAtlas() {
           { name: "Writer recommender", tells: "which writer families fit your write, by KB readiness", output: "ranked 0–1 · grounded primary" },
           { name: "Predicted efficiency", tells: "a candidate learned integration efficiency + interval", output: "% + conformal interval · candidate (labelled)" },
           { name: "Measured dataset", tells: "45 DOI-backed human-cell integration efficiencies", output: "table with clickable DOIs" },
-          { name: "Held-out validation", tells: "the pre-registered benchmark result, reported verbatim", output: "beats / does-not-beat baseline + CI" },
+          { name: "Held-out validation", tells: "the pre-specified benchmark result, reported verbatim", output: "beats / does-not-beat baseline + CI" },
           { name: "Variant critique", tells: "does a hyperactive variant recover known activity?", output: "fold-improvement + DOI" },
           { name: "Writer immunogenicity", tells: "the enzyme's own MHC-II + ADA load as an antigen", output: "per-axis · proxy (labelled)" },
         ]}
@@ -153,7 +153,7 @@ export default function WriterAtlas() {
           { term: "Variant critique", scale: "fold over WT", meaning: "For a chosen serine integrase, the measured hyperactive mutants ranked by fold-improvement over wild-type (each DOI-backed). A retrospective catalogue recovery, a blind sequence-only predictor is deferred, not faked." },
         ]}
         caveats={[
-          "Pre-registered result: the learned predictor beats the KB family-mean baseline on held-out LOCUS (CI excludes 0) but NOT on held-out FAMILY at N=42, so the KB ranking is retained as primary and the efficiency ships as a candidate.",
+          "Pre-specified result: the learned predictor beats the KB family-mean baseline on held-out LOCUS (CI excludes 0) but NOT on held-out FAMILY at N=42, so the KB ranking is retained as primary and the efficiency ships as a candidate.",
           "No efficiency is fabricated for a family the curated dataset never saw; those stay KB-only.",
         ]} />
 
@@ -307,7 +307,7 @@ export default function WriterAtlas() {
           )}
           {eff.benchmark?.gate_C_G2 && (
             <p className="mt-2 rounded-lg border border-warn/25 bg-warn/5 px-3 py-2 text-[11px] leading-relaxed text-fg-dim">
-              <strong className="text-warn">Acceptance gate (pre-registered):</strong> {eff.benchmark.gate_C_G2.verdict}
+              <strong className="text-warn">Acceptance gate (pre-specified):</strong> {eff.benchmark.gate_C_G2.verdict}
             </p>
           )}
           <div className="mt-3 overflow-x-auto">

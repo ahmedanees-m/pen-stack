@@ -1,6 +1,6 @@
 """End-to-end Write Planner.
 
-Pre-registered criterion: a goal returns ranked, traceable plans; every field has provenance.
+Pre-specified criterion: a goal returns ranked, traceable plans; every field has provenance.
 """
 from __future__ import annotations
 

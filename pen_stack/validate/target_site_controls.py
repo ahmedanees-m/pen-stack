@@ -1,6 +1,6 @@
 """Target-site filter positive/negative controls.
 
-Pre-registered acceptance (prereg/ws_mc.yaml):
+Pre-specified acceptance (prereg/ws_mc.yaml):
   * POSITIVE control, a site that carries the writer's required targeting element is AVAILABLE (the writer
     can engage it). Documented writes carry their element by construction (a Cas9 edit has an NGG PAM; a CAST
     insertion has a GTN PAM; a bridge target has the central CT core; a serine integrase write happens at an

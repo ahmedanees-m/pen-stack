@@ -73,5 +73,5 @@ The archived version of record and its supporting data are on Zenodo under the c
 [10.5281/zenodo.21787136](https://doi.org/10.5281/zenodo.21787136), which resolves to the newest version;
 the first release is pinned by its own version DOI, [10.5281/zenodo.21787137](https://doi.org/10.5281/zenodo.21787137).
 The deposit contains the derived data described above (atlases, tracks, models), the frozen
-benchmark splits with their SHA-256 locks, the pre-registrations, the data and model cards, the offline
+benchmark splits with their SHA-256 locks, the frozen analysis specifications, the data and model cards, the offline
 oracle cache, and a snapshot of the tagged source. Licensed raw data is listed by accession only.

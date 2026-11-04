@@ -120,7 +120,7 @@ def run() -> dict:
     """Emit the Stage G record: what is measured, what is only consistent, and what did not validate.
 
     This benchmark does not produce a validated immunogenicity result and does not claim one. Two of its
-    three pre-registered criteria are structural checks on the shipped axis, and the third, the only one
+    three pre-specified criteria are structural checks on the shipped axis, and the third, the only one
     that could promote the axis, is not met for want of paired outcome data. All three are recorded.
     """
     from pen_stack.planner.immune_profile import immune_profile
@@ -176,7 +176,7 @@ def run() -> dict:
         "calibrate_axis_output": cal,
         "interpretation": (
             "This is the primary entry. No paired (proxy, observed ADA incidence) dataset exists at "
-            "the pre-registered power, so the gate refuses to promote the axis and it ships as a "
+            "the pre-specified power, so the gate refuses to promote the axis and it ships as a "
             "mechanistic proxy. The refusal is the result: it is a recorded null, not a pending run."
         ),
     }
@@ -200,9 +200,9 @@ def run() -> dict:
             "Stage G ships as a mechanism-grounded axis, not an outcome-validated one. This record exists "
             "so that status is a checkable artifact rather than prose."
         ),
-        "preregistration": {
+        "analysis_specification": {
             "file": "prereg/ws_immune2.yaml",
-            "note": "Cited, not amended. The pre-registration names this directory as the deliverable.",
+            "note": "Cited, not amended. The frozen analysis specification names this directory as the deliverable.",
         },
         "G-G1_tolerance_filter_consistency": g1,
         "G-G2_ada_calibration": g2,

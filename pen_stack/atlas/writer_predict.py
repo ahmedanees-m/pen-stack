@@ -2,7 +2,7 @@
 
 Given `(family, variant-is-evolved, write-type, cargo size, locus context, cell-type class)`, predict the
 integration **efficiency (%)** with a conformal interval, candidate-flagged. The baseline-to-beat is the
-curated-KB prior (a writer's family-mean efficiency; the KB ranks by family). Pre-registered acceptance gate: the
+curated-KB prior (a writer's family-mean efficiency; the KB ranks by family). Pre-specified acceptance gate: the
 learned model ships ONLY if it beats the family-mean baseline on **held-out family AND held-out
 locus** (paired-bootstrap CI excludes 0); otherwise the KB ranking is retained and the negative is reported.
 Never tune to the test.
@@ -116,7 +116,7 @@ class WriterEfficiencyModel:
         # Integration efficiency is a percentage, so the SERVED point estimate is clamped to the physical [0, 100]
         # range (the regressor can extrapolate outside it on an out-of-distribution request), matching the interval
         # bounds. The interval stays centred on the raw prediction, and `predict` is left unclamped so the
-        # pre-registered held-out evaluation scores the model exactly as trained.
+        # pre-specified held-out evaluation scores the model exactly as trained.
         yhat = self.predict(df)
         if self.conformal is None or not np.isfinite(self.conformal.qhat):
             return {"yhat": np.clip(yhat, 0, 100), "lo": None, "hi": None, "interval_kind": "uncalibrated"}
@@ -206,7 +206,7 @@ def evaluate(df: pd.DataFrame | None = None, seed: int = 42) -> dict:
                     "serve it (candidate-flagged)" if (mf and ml) else
                     "learned predictor does NOT beat the KB baseline on both axes at this N, RETAIN the KB "
                     "ranking, report the negative; the curated dataset + Writer-Efficiency Bench are the "
-                    "contribution (the pre-registered outcome)")}
+                    "contribution (the pre-specified outcome)")}
     return out
 
 

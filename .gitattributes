@@ -17,7 +17,7 @@ benchmarks/**/split.json                   text eol=lf
 *.png     binary
 *.2bit    binary
 
-# Pre-registration-locked text inputs are pinned to LF so their frozen SHA-256 hashes verify on every platform.
+# Frozen analysis specification-locked text inputs are pinned to LF so their frozen SHA-256 hashes verify on every platform.
 prereg/*.yaml text eol=lf
 prereg/SHA256_LOCK_*.json text eol=lf
 prereg/PREREG_MANIFEST.md text eol=lf

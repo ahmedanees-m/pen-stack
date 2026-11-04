@@ -9,7 +9,7 @@ Selection rule (documented, not tuned): recommend the **smallest-capacity DSB-fr
 the cargo** (do not deploy a 50 kb integrase for a 2 kb insert when a programmable bridge suffices); ties
 broken by measured human-cell activity. This makes cargo size primary for the writer choice.
 
-Acceptance (prereg/ws_a.yaml): writer-family recovery@1 exceeds the prevalence baseline by a pre-registered
+Acceptance (prereg/ws_a.yaml): writer-family recovery@1 exceeds the prevalence baseline by a pre-specified
 margin on >= 8 entries spanning >= 3 families; reported per family.
 """
 from __future__ import annotations

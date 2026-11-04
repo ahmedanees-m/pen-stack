@@ -5,7 +5,7 @@ de-duplicate, and write a human-reviewed curation queue. The atlas is **never** 
 entries flow into the WT-KB/atlas with confidence=inferred only after a human accepts them.
 
 Back-test: with ``back_test=True`` and a date window covering March 2026, the engine must surface the
-known recent writer ISPpu10 (Europe PMC PPR1218813) into the queue - the pre-registered success check.
+known recent writer ISPpu10 (Europe PMC PPR1218813) into the queue - the pre-specified success check.
 """
 from __future__ import annotations
 

@@ -12,7 +12,7 @@ Documented safe sub-region coordinates (hg38, widely cited):
   - Keppel-19 = SAFB, chr19:5,401,450 (Lin 2024 eLife 79592, in-vitro validated)
 
 Acceptance (prereg/ws_a.yaml): the documented bin lands in the top quartile (>= 75th percentile of
-writability within the locus) for a pre-registered fraction of loci; reported per locus. Scaled
+writability within the locus) for a pre-specified fraction of loci; reported per locus. Scaled
 from 2 to 5 loci using the in-vitro-validated eLife universal-GSH sub-regions.
 """
 from __future__ import annotations

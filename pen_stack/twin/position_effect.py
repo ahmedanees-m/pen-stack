@@ -13,7 +13,7 @@ comparable across cassettes. A `silenced` classifier shares the same features. B
 *calibrated interval that widens out of distribution*, which is the "trained conformal" property,
 not a fixed +/-0.20 band.
 
-Pre-registered acceptance gate: the learned model ships ONLY if it beats the prior durability head
+Pre-specified acceptance gate: the learned model ships ONLY if it beats the prior durability head
 (context-only) AND the heuristic on chromosome-blocked CV; otherwise the baseline is retained and the negative is
 reported. Never tune to the test. No fabrication: every metric here comes from a real CV run on real supervision.
 """

@@ -8,7 +8,7 @@ quantile buckets). The planner SEARCHES rather than confirms, so this is predict
 Reports AUROC (planner writability vs a safety-only baseline) and recovery@k. The matched controls are
 frozen + SHA-locked before scoring (data/gsh_matched_controls.parquet) so they cannot be tuned to.
 
-Acceptance (pre-registered, prereg/ws_a.yaml): AUROC >= 0.70 vs matched controls AND recovery@10 beats the
+Acceptance (pre-specified, prereg/ws_a.yaml): AUROC >= 0.70 vs matched controls AND recovery@10 beats the
 safety-only baseline. If AUROC < 0.65, report and downgrade the discovery claim - do not tune.
 """
 from __future__ import annotations

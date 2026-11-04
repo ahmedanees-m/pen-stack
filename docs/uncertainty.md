@@ -23,7 +23,7 @@ is a real output, reported with N, never hidden.
 
 **Results (held-out TRIP, chromosome-grouped split): useful on the expression axis, near-vacuous on the
 silenced axis.** The durability **expression** interval covers **0.895** vs a 0.90 nominal (within the
-pre-registered ±3-pt tolerance); this axis is where calibrated UQ is genuinely useful. The **silenced**
+pre-specified ±3-pt tolerance); this axis is where calibrated UQ is genuinely useful. The **silenced**
 prediction set covers **0.996** but with **mean size 1.93 of 2**, i.e. it almost always returns the *full*
 label set {silenced, not}. Stated plainly: at this N the silenced-axis prediction set is
 informative in name only. The conformal *guarantee* holds, but because the head is weak (OOF AUROC 0.64),

@@ -1,7 +1,7 @@
 """Plan-confidence calibrated against documented outcomes.
 
 Verifier-backed + the DOI writer panel (data/writer_panel.csv); skips cleanly if the panel is absent.
-Asserts the pre-registered acceptance: a reliability diagram + ECE + a selective-prediction gap with a
+Asserts the pre-specified acceptance: a reliability diagram + ECE + a selective-prediction gap with a
 bootstrap CI are produced, the result is reported whatever its shape, and no-fabrication holds.
 """
 from __future__ import annotations

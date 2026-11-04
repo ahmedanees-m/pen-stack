@@ -95,13 +95,13 @@ def headline_metrics() -> None:
     ica = ic.get("metrics", {}).get("auroc", {})
     print(f"  Integrase off-target ({ic.get('benchmark', '')[:70]}): AUROC = {ica.get('model')} "
           f"(vs attP-similarity {ica.get('attp_sim_baseline')})")
-    print("    [sealed pre-registered metric; recomputation needs the hg17 genome, see that benchmark's "
+    print("    [sealed pre-specified metric; recomputation needs the hg17 genome, see that benchmark's "
           "README.md]")
     print("  (full metrics + confidence intervals in each benchmarks/<name>/metrics.json)")
 
 
 def prereg_manifest() -> None:
-    hr("5. Pre-registration integrity: every SHA-locked pre-registration re-hashes from committed source")
+    hr("5. Frozen analysis specification integrity: every SHA-locked frozen analysis specification re-hashes from committed source")
     import subprocess
     r = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "prereg_manifest.py")],
@@ -110,7 +110,7 @@ def prereg_manifest() -> None:
     for line in (r.stdout + r.stderr).splitlines():
         print(f"  {line}")
     if r.returncode != 0:
-        raise RuntimeError("pre-registration manifest verification failed; see scripts/prereg_manifest.py")
+        raise RuntimeError("frozen analysis specification manifest verification failed; see scripts/prereg_manifest.py")
 
 
 if __name__ == "__main__":

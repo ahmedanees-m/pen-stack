@@ -147,4 +147,4 @@ with the in-vivo magnitude a declared known-unknown. The safety↔efficacy balan
 where no one can yet predict.*
 
 See also: [Oracle mesh](oracles.md) · [Delivery palette & router](delivery.md) · [Verification](verify.md) ·
-[Scope & known-unknowns](scope.md). Pre-registrations: `prereg/ws_{immune,genotox,epitope,innate,seroprev}.yaml`.
+[Scope & known-unknowns](scope.md). Frozen analysis specifications: `prereg/ws_{immune,genotox,epitope,innate,seroprev}.yaml`.

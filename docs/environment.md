@@ -55,5 +55,5 @@ Gymnasium API can drive it. Reference policies live in `pen_stack/env/policies.p
 - The synthetic `demo_candidates` table lets the env run without the atlas; real use passes the
   writability-atlas rows as `candidates`.
 
-See also: `docs/verify.md` (the checking surface), `docs/rules.md` (the rule base), the pre-registered MDP in
+See also: `docs/verify.md` (the checking surface), `docs/rules.md` (the rule base), the pre-specified MDP in
 `prereg/ws_env.yaml`, and the Genome-Writing Bench (`benchmarks/genome_writing_bench/`).
