@@ -1,7 +1,7 @@
 """Cross-family off-target nomination.
 
 CI-safe: the Off-Target-Bench fixture (real validated off-targets + cached CRISOT scores) and the derived
-calibration/metrics are committed; the licensed CRISOT predictor runs only on the VM and is never redistributed.
+calibration/metrics are committed; the licensed CRISOT predictor runs only on the host and is never redistributed.
 Asserts: the real learned predictor beats the homology baseline (full-data primary); the nominator ranks
 validated off-targets, abstains without inputs, and never claims a clearance; the integrase pseudo-attB scan uses
 the real Bxb1 attB core; bridge delegates; the assay recommender is grounded; provenance DOIs grounded.
@@ -26,7 +26,7 @@ from pen_stack.wgenome.offtarget_predict import (
 
 # ---- dataset + bench --------------------------------------------------------------------
 def test_bench_real_crisot_beats_homology_full_data():
-    # the AUTHORITATIVE result (full real data, on-VM CRISOT vs homology): learned beats homology on ALL FOUR
+    # the AUTHORITATIVE result (full real data, host-side CRISOT vs homology): learned beats homology on ALL FOUR
     # unbiased assays (GUIDE/CIRCLE-seq canonical guides; CHANGE/SITE-seq independent broad panels), CI excludes 0
     for assay in ("guideseq", "circleseq", "changeseq", "siteseq"):
         s = BENCH_SUMMARY[assay]
@@ -234,7 +234,7 @@ def test_unsupported_integrase_abstains_rather_than_falling_back_to_bxb1():
 def test_nuclease_finder_chromatin_annotation_is_explicit_not_silent_null():
     # the finder must be EXPLICIT that chromatin is a validated annotation populated only when the accessibility track is
     # mounted, not silently null everywhere (the overclaim the tester flagged). CI has no enumeration cache -> the
-    # finder abstains; the VM full suite has the cache -> the chromatin-scope fields must be present.
+    # finder abstains; the host full suite has the cache -> the chromatin-scope fields must be present.
     from pen_stack.wgenome.offtarget_nuclease import find_nuclease_offtargets
     r = find_nuclease_offtargets("GAGTCCGAGCAGAAGAAGAAGGG", enzyme="SpCas9")
     if r.get("abstain"):

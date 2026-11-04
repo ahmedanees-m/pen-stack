@@ -3,7 +3,7 @@
 Refines the documented `adaptive_immune` (CD8 T-cell) tier with a DATA-COMPUTED signal for VIRAL vectors: the
 fraction of the capsid/envelope antigen presentable across a frequent HLA-I panel. **The PRIMARY
 predictor is the gold-standard licensed NetMHCpan-4.1** (eluted-ligand %Rank_EL <= 0.5, residue coverage union
-over a 12-allele frequent-HLA panel), computed on the VM and cached as derived fractions in
+over a 12-allele frequent-HLA panel), computed on the host and cached as derived fractions in
 `configs/mhc_epitope_oracle.yaml` (`mhc1`). The earlier MHCflurry %rank<=0.5 cache
 (`configs/capsid_epitope_oracle.yaml`) is retained as an explicit, reported **cross-check** (same residue-coverage
 metric, same panel), never silently substituted.

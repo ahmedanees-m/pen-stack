@@ -5,7 +5,7 @@ the derived risk calibration and the Off-Target-Bench primary (the REAL CRISOT p
 baseline) are embedded in-code so the axis is available everywhere (CI / bare install / live app), while the
 full sealed fixture + per-guide metrics live under ``benchmarks/offtarget/`` for the bench harness.
 
-LICENSING / SCOPE: the CRISOT predictor (Chen et al., Nat Commun 2023) is CC-BY-NC and runs ONLY on the VM,
+LICENSING / SCOPE: the CRISOT predictor (Chen et al., Nat Commun 2023) is CC-BY-NC and runs ONLY on the host,
 its binaries/weights are NEVER redistributed; only DERIVED scores are cached (exactly like the licensed MHC
 tools). Off-target SITE sequences are facts from the public assay supplements (cited below). A nominated
 off-target is a CANDIDATE, never a claim.
@@ -28,7 +28,7 @@ ASSAY_PROVENANCE = {
 PREDICTOR_PROVENANCE = {
     "crisot": {"name": "CRISOT-Score", "approach": "XGBoost RNA-DNA interaction fingerprint",
                "citation": "Chen et al., Nat Commun 2023", "doi": "10.1038/s41467-023-42695-4",
-               "license": "CC-BY-NC (run on the VM; only derived scores cached, weights never redistributed)"},
+               "license": "CC-BY-NC (run on the host; only derived scores cached, weights never redistributed)"},
 }
 # integrase off-target assays (large serine integrases), for the assay recommender; data-thin, preprints
 INTEGRASE_ASSAY_PROVENANCE = {
@@ -48,7 +48,7 @@ CANONICAL_GUIDES = {
 }
 
 # ---- DERIVED, real-data risk calibration: empirical active fraction by mismatch count -----------
-# (computed on the VM over ALL candidates per assay; the off-target nomination risk band is grounded in how often a
+# (computed on the host over ALL candidates per assay; the off-target nomination risk band is grounded in how often a
 # candidate at k mismatches was actually validated-active, not a guessed curve. Missing k -> abstain, not extrapolate.)
 MISMATCH_ACTIVE_FRACTION = {
     "guideseq": {0: 1.0, 1: 1.0, 2: 0.76471, 3: 0.23129, 4: 0.033, 5: 0.00276, 6: 0.00014},
@@ -58,7 +58,7 @@ MISMATCH_ACTIVE_FRACTION = {
 }
 
 # ---- chromatin-accessibility validation: a CONTROLLED test of whether accessibility predicts off-target activity
-# (Lazzarotto 2020). An earlier revision used a CROSS-CELL K562 proxy (weak/inconsistent); a later revision used a CELL-TYPE-MATCHED
+# (Lazzarotto 2020). A CROSS-CELL K562 proxy is weak and inconsistent here, so the shipped track is CELL-TYPE-MATCHED
 # ENCODE HEK293T DNase track and SETTLED it. VERDICT: VALIDATED (moderate, cell-type-matched) for WT-Cas9 cell-based
 # off-target activity, GUIDE-seq AUROC rises 0.58 (cross-cell) -> 0.671 (matched), in-vitro control null (method
 # sound). Moderate effect (sequence/CRISOT still dominates); TTISS is the expected outlier (a Cas9-VARIANT assay).
@@ -109,7 +109,7 @@ BENCH_SUMMARY = {
     "siteseq": {"n_guides": 11, "guide_panel": "independent_broad", "crisot_auprc": 0.5207, "homology_auprc": 0.2332,
                 "auprc_gap": 0.2874, "gap_ci95": [0.2388, 0.3354], "crisot_beats_homology": True},
     "metric": "per-guide AUPRC; baseline = ascending mismatch count; learned = real CRISOT-Score (assay-agnostic, "
-              "VM, cached); CRISOT beats homology on all 4 assays (bootstrap CI excludes 0)",
+              "host, cached); CRISOT beats homology on all 4 assays (bootstrap CI excludes 0)",
 }
 
 

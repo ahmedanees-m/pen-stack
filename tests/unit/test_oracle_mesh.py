@@ -149,7 +149,7 @@ def test_energetics_gate_defers_without_perry_data():
     from pen_stack.oracles import energetics
     r = energetics.gate()
     assert r.oracle == "energetics" and r.provenance.model == "bridge_energetics"
-    # off the VM the Perry tables are absent -> deferred (not a fabricated AUROC)
+    # off the host the Perry tables are absent -> deferred (not a fabricated AUROC)
     assert r.available in (True, False)
     if r.available:
         assert r.value["held_out_auroc"] is None or r.value["beats_0_77"] in (True, False)

@@ -1,5 +1,5 @@
 """Reproducible build: train the AAV capsid-fitness model on the FLIP-AAV benchmark and report the
-learned-vs-baseline result. Run on the VM (needs the FLIP-AAV splits + scikit-learn).
+learned-vs-baseline result. Run on the host (needs the FLIP-AAV splits + scikit-learn).
 
 Download FLIP-AAV splits: https://github.com/J-SNACKKB/FLIP/raw/main/splits/aav/splits.zip -> splits/{split}.csv
 (columns: sequence, target, set, validation). Built on Bryant et al. 2021 (Nat Biotechnol 10.1038/s41587-020-00793-4,

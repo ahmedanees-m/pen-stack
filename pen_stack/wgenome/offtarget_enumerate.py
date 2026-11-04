@@ -7,9 +7,9 @@ matched sequence, and mismatch count, so the downstream scorer ranks a genome-wi
 hand-typed one (the caller supplies a guide and gets the off-target sites back).
 
 **Where it runs.** A full GRCh38 scan is heavy, so enumeration executes ONLY where Cas-OFFinder + the genome are
-present, the VM, via the `casoffinder:tools` Docker image (Bae, Park & Kim, Bioinformatics 2014,
-10.1093/bioinformatics/btu048). A build-time script enumerates the canonical guides on the VM and commits the
-resulting coordinates to `data/offtarget/enumerated_cache.parquet`. Everywhere else (the live app, CI, the laptop)
+present, the host, via the `casoffinder:tools` Docker image (Bae, Park & Kim, Bioinformatics 2014,
+10.1093/bioinformatics/btu048). A build-time script enumerates the canonical guides on the host and commits the
+resulting coordinates to `data/offtarget/enumerated_cache.parquet`. Everywhere else (the live app, CI, a local checkout)
 this module REPLAYS that cache for a cached guide, or ABSTAINS with a pointer for a novel one, the same
 replay-or-abstain pattern the heavy structure oracles use. The enumerated coordinates are facts derivable from the
 public GRCh38 assembly (no license restriction, unlike the CRISOT weights), so committing the cache is clean.
@@ -102,13 +102,13 @@ def _casoffinder_bin() -> str | None:
 
 def scan_local(guide: str, enzyme: str, genome_path: str, max_mismatch: int = DEFAULT_MAX_MISMATCH,
                device: str = "C", workdir: str | None = None) -> list[dict]:
-    """Run Cas-OFFinder locally (VM / casoffinder:tools) and return the enumerated off-target records. Raises if
-    the binary or genome is absent, callers gate on `casoffinder_available()`. Used by the VM cache-build script."""
+    """Run Cas-OFFinder locally (host / casoffinder:tools) and return the enumerated off-target records. Raises if
+    the binary or genome is absent, callers gate on `casoffinder_available()`. Used by the host cache-build script."""
     import os
     import tempfile
     binary = _casoffinder_bin()
     if not binary:
-        raise RuntimeError("cas-offinder not on PATH (run inside casoffinder:tools on the VM)")
+        raise RuntimeError("cas-offinder not on PATH (run inside casoffinder:tools on the host)")
     wd = workdir or tempfile.mkdtemp(prefix="offtgt_")
     inp, outp = os.path.join(wd, "in.txt"), os.path.join(wd, "out.txt")
     with open(inp, "w", encoding="utf-8") as fh:
@@ -125,7 +125,7 @@ def casoffinder_available() -> bool:
 @lru_cache(maxsize=1)
 def _cache_df():
     """The committed genome-wide enumeration cache (enzyme, guide, chrom, position, strand, sequence, n_mismatch),
-    or None when absent (bare wheel). Enumerated on the VM over GRCh38; coordinates are public-genome facts."""
+    or None when absent (bare wheel). Enumerated on the host over GRCh38; coordinates are public-genome facts."""
     try:
         import pandas as pd
 
@@ -168,12 +168,12 @@ def parse_sequence_output(text: str, seq_len: int) -> list[dict]:
 
 def scan_sequence_local(seq: str, genome_path: str, max_mismatch: int, device: str = "C",
                         workdir: str | None = None) -> list[dict]:
-    """Run a fixed-sequence genome scan via Cas-OFFinder locally (VM). Raises if the binary/genome is absent."""
+    """Run a fixed-sequence genome scan via Cas-OFFinder locally (host). Raises if the binary/genome is absent."""
     import os
     import tempfile
     binary = _casoffinder_bin()
     if not binary:
-        raise RuntimeError("cas-offinder not on PATH (run inside casoffinder:tools on the VM)")
+        raise RuntimeError("cas-offinder not on PATH (run inside casoffinder:tools on the host)")
     s = "".join(c for c in (seq or "").upper() if c in "ACGT")
     wd = workdir or tempfile.mkdtemp(prefix="motif_")
     inp, outp = os.path.join(wd, "in.txt"), os.path.join(wd, "out.txt")
@@ -199,7 +199,7 @@ def _motif_cache_df():
 
 def enumerate_motif(label: str) -> dict:
     """Replay a cached genome-wide motif scan (pseudo-att for an integrase, or a CAST spacer) by label, or abstain
-    (its scan runs on the VM). Coordinates are public-genome facts; the app never fabricates sites."""
+    (its scan runs on the host). Coordinates are public-genome facts; the app never fabricates sites."""
     df = _motif_cache_df()
     if df is not None and not df.empty:
         sub = df[df["label"] == label]
@@ -211,7 +211,7 @@ def enumerate_motif(label: str) -> dict:
                     "n_sites": len(sub), "sites": sub.sort_values("n_mismatch")[cols].to_dict("records")}
     return {"available": False, "abstain": True, "label": label, "source": "none",
             "cached_motifs": sorted(df["label"].unique().tolist()) if df is not None and not df.empty else [],
-            "note": "genome-wide motif scan runs on the VM (casoffinder:tools over GRCh38); this surface replays "
+            "note": "genome-wide motif scan runs on the host (casoffinder:tools over GRCh38); this surface replays "
                     "the committed cache or abstains (no fabricated sites)."}
 
 
@@ -244,7 +244,7 @@ def enumerate_offtargets(guide: str, enzyme: str = "SpCas9", max_mismatch: int =
     strand + sequence + mismatch count) and the `source` (cache | scan), or an abstention.
 
     The live app calls with ``allow_scan=False`` (never runs a genome scan in-request): it replays the committed
-    cache for a cached guide, or abstains for a novel one. The VM cache-build script calls with ``allow_scan=True``
+    cache for a cached guide, or abstains for a novel one. The host cache-build script calls with ``allow_scan=True``
     inside ``casoffinder:tools`` to run the real scan. Never fabricates sites."""
     enz = resolve_enzyme(enzyme)
     if enz is None:
@@ -266,10 +266,10 @@ def enumerate_offtargets(guide: str, enzyme: str = "SpCas9", max_mismatch: int =
         sites = scan_local(g, enz, genome_path, max_mismatch)
         return {"available": True, "abstain": False, "enzyme": enz, "guide": g, "pam": spec["pam"],
                 "source": "scan", "max_mismatch": int(max_mismatch), "n_sites": len(sites), "sites": sites,
-                "note": "genome-wide Cas-OFFinder scan over GRCh38 (VM)"}
+                "note": "genome-wide Cas-OFFinder scan over GRCh38 (host)"}
 
     return {"available": False, "abstain": True, "enzyme": enz, "guide": g, "pam": spec["pam"],
             "source": "none", "cached_guides": [gg for (ee, gg) in enumerated_guides() if ee == enz],
-            "note": "genome-wide enumeration for a novel guide runs on the VM (casoffinder:tools over GRCh38); "
-                    "this surface replays the committed cache or abstains. Cached guides are listed; a VM scan "
+            "note": "genome-wide enumeration for a novel guide runs on the host (casoffinder:tools over GRCh38); "
+                    "this surface replays the committed cache or abstains. Cached guides are listed; a host scan "
                     "is required to enumerate a new guide (no fabrication of sites)."}

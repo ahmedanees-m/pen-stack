@@ -19,7 +19,7 @@ One interface over nucleases, serine integrases, and bridge recombinases. By con
 
 A nominated off-target is a CANDIDATE, never a claim, and nomination is **not** a safety clearance, every result
 ships with the empirical assay that would confirm it (`offtarget_assay`). Abstains without inputs; never invents
-sites. The CRISOT predictor (CC-BY-NC) runs only on the VM; only derived scores are cached.
+sites. The CRISOT predictor (CC-BY-NC) runs only on the host; only derived scores are cached.
 """
 from __future__ import annotations
 
@@ -58,7 +58,7 @@ def _risk_band(active_fraction: float | None) -> str:
 
 @lru_cache(maxsize=1)
 def _crisot_cache() -> dict:
-    """(On20, Off20) -> cached real CRISOT score, from the committed bench fixture (VM-computed)."""
+    """(On20, Off20) -> cached real CRISOT score, from the committed bench fixture (host-computed)."""
     out: dict = {}
     for r in bench_records():
         out[(r["On"][:20].upper(), r["Off"][:20].upper())] = r["crisot_score"]
@@ -135,7 +135,7 @@ def nominate_nuclease(guide: str, candidate_sites: list[str] | None, accessibili
     """Nominate + rank candidate nuclease off-target sites for a guide. ``candidate_sites`` are 20-23-nt genomic
     protospacers (e.g. from a Cas-OFFinder scan). ``loci`` (optional) is a per-candidate (chrom, bin) for the REAL
     chromatin-accessibility modifier; ``accessibility`` (optional) is a per-candidate 0..1 fallback scalar.
-    Abstains (no fabrication) when no candidates are supplied, genome-wide candidate ENUMERATION needs the on-VM
+    Abstains (no fabrication) when no candidates are supplied, genome-wide candidate ENUMERATION needs the host-side
     scan; this engine SCORES + RANKS + risk-bands them."""
     g = (guide or "").upper()
     if len(g) < 20:
@@ -143,7 +143,7 @@ def nominate_nuclease(guide: str, candidate_sites: list[str] | None, accessibili
                 "note": "guide must be >=20 nt (protospacer)"}
     if not candidate_sites:
         return {"family": "nuclease", "available": False, "abstain": True,
-                "note": "no candidate sites supplied, provide Cas-OFFinder/on-VM genome-scan candidates "
+                "note": "no candidate sites supplied, provide Cas-OFFinder/host-side genome-scan candidates "
                         "(20-23 nt protospacers); this engine scores+ranks+risk-bands them, it does not "
                         "fabricate sites", "method": "homology + real-data mismatch calibration + cached CRISOT"}
     cache = _crisot_cache()
@@ -160,7 +160,7 @@ def nominate_nuclease(guide: str, candidate_sites: list[str] | None, accessibili
         acc = accessibility[i] if (accessibility and i < len(accessibility)) else None
         noms.append({"site": s, "n_mismatch": nmm, "empirical_active_fraction": af,
                      "risk_band": _risk_band(af), "crisot_score": crisot,
-                     "crisot_source": ("cached_bench" if crisot is not None else "on-VM tool (not cached)"),
+                     "crisot_source": ("cached_bench" if crisot is not None else "host-side tool (not cached)"),
                      "chromatin": _chromatin_modifier(acc, locus_acc), "output_kind": "candidate"})
     # rank by the real CRISOT score when available, else by empirical risk (descending), then fewer mismatches
     noms.sort(key=lambda n: (n["crisot_score"] if n["crisot_score"] is not None else -1.0,
@@ -246,7 +246,7 @@ def nominate_offtargets(writer_family: str, guide: str | None = None, candidate_
         elif candidate_sites:  # score/rank the caller-supplied candidates
             res = nominate_nuclease(guide or "", candidate_sites, accessibility, assay, loci=loci,
                                     cell_type=cell_type)
-        else:  # finder: enumerate genome-wide, then score (replays the VM cache or abstains)
+        else:  # finder: enumerate genome-wide, then score (replays the host cache or abstains)
             res = find_nuclease_offtargets(guide or "", enzyme=enzyme or writer_family or "SpCas9",
                                            max_mismatch=max_mismatch, assay=assay, cell_type=cell_type)
     elif fam in _INTEGRASE or "integrase" in fam or "bxb1" in fam or "phic31" in fam:

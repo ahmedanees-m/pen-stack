@@ -5,19 +5,19 @@
 # from validated tools, so the model choice never affects scientific reproducibility - only orchestration /
 # prose quality. The core scientific compute uses no LLM at all.
 #
-# THREE-TIER reality (where each runs):
-# * VM (production: sjt418scope025, 62 GB RAM, RTX A4000 16 GB) - runs everything. Ollama service is up and
-# `qwen2.5:7b-instruct` is pulled; verified ~8 s cold / ~1-2 s warm with working tool-calling. The local
-# 7B is the default here: fast, private, free, no rate limits.
-# * Laptop (dev only: ~8 GB RAM, no GPU, no Ollama) - too small for a 7B. It hits the Nemotron FALLBACK
-# automatically; the cooldown cache (see llm.py) skips the dead Ollama after one quick failed attempt, so
-# there is no hang. Used only for code/small tests, not real runs.
+# WHERE EACH PROVIDER APPLIES:
+# * A GPU host with a 16 GB GPU runs everything: the Ollama service is up and `qwen2.5:7b-instruct` is
+# pulled, with working tool-calling at roughly 8 s cold and 1-2 s warm. The local 7B is the default
+# there: fast, private, free, no rate limits.
+# * A machine with no GPU is too small for a 7B and hits the Nemotron FALLBACK automatically; the
+# cooldown cache (see llm.py) skips the unreachable Ollama after one quick failed attempt, so there is
+# no hang.
 # * If you want a private OFFLINE model on a low-RAM box, use the TINY `ollama_small` (~1 GB), not the 7B.
 # Switching is a one-line change to `provider`. Secrets are read from an env var or a gitignored file;
 # keys are NEVER committed.
 
-provider: ollama # active provider: ollama | nvidia | ollama_small | openai (VM default = local 7B)
-fallback: nvidia # hosted Nemotron - used when Ollama is unreachable (laptop dev / VM Ollama down)
+provider: ollama # active provider: ollama | nvidia | ollama_small | openai (GPU-host default = local 7B)
+fallback: nvidia # hosted Nemotron - used when Ollama is unreachable (local dev / host Ollama down)
 temperature: 0.1
 embedding: ollama/nomic-embed-text # local embeddings for the RAG (Apache-2.0)
 
@@ -37,13 +37,13 @@ agent_call_timeout: 300 # per-step timeout inside the agent loop. Sized like cal
                           # so too small a budget silently understates how often the LLM drove the tools.
 
 providers:
-  ollama: # local/VM, free, private; default on the compute tier. Needs the model pulled +
-    style: ollama # ~6 GB free VRAM/RAM. On the VM: RTX A4000 16 GB, model present, tool-calling OK.
+  ollama: # local or host, free, private; default on the compute tier. Needs the model pulled +
+    style: ollama # ~6 GB free VRAM/RAM. On a 16 GB GPU, model present, tool-calling OK.
     api_base: http://localhost:11434
     model: qwen2.5:7b-instruct # Apache-2.0, native tool-calling, 4.68 GB (fits the A4000)
 
   nvidia: # NVIDIA NIM, OpenAI-compatible. Strong reasoning + tool-use; free, ~40 RPM. Hosted
-    style: openai # -> no local resources. The fallback (and the dev-laptop path). ~15-20 s cold.
+    style: openai # -> no local resources. The fallback (and the local-dev path). ~15-20 s cold.
     api_base: https://integrate.api.nvidia.com/v1
     model: nvidia/nemotron-3.5-super-vl-120b-a12b
     api_key_env: NVIDIA_API_KEY # checked first

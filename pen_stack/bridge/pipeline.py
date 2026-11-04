@@ -14,7 +14,7 @@ from pathlib import Path
 from pen_stack.bridge.fold_qc import qc_verdict
 from pen_stack.bridge.offtarget import scan_offtargets
 
-# default hg38 locations (VM); overridable
+# default hg38 locations (host); overridable
 _HG38_CANDIDATES = [
     Path.home() / "cast-bench" / "data" / "external" / "genomes" / "hg38.fa",
     Path("/work/data/external/genomes/hg38.fa"),

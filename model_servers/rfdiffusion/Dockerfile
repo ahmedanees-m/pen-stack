@@ -1,5 +1,5 @@
 # RFdiffusion model server, layers a FastAPI server on the rfdiffusion:base image (torch 1.12 + SE3 env).
-# rfdiffusion:base is built ON THE VM first (docker/Dockerfile from RosettaCommons/RFdiffusion).
+# rfdiffusion:base is built ON THE host first (docker/Dockerfile from RosettaCommons/RFdiffusion).
 # Then: docker build -t penmodel:rfdiffusion -f model_servers/rfdiffusion/Dockerfile .
 FROM rfdiffusion:base
 

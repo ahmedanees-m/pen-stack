@@ -93,7 +93,7 @@ def test_ada_abstains_when_origin_unknown_no_proxy():
 
 
 def test_real_human_proteome_self_match_crosscheck():
-    # the REAL human-proteome 9-mer self-match (computed on the VM over the full UniProt reference proteome) is
+    # the REAL human-proteome 9-mer self-match (computed on the host over the full UniProt reference proteome) is
     # reported as a cross-check: the human control is self (1.0), foreign writers are non-self (0.0)
     from pen_stack.planner.ada_risk import real_self_match
     alb, cas = real_self_match("HumanAlbumin"), real_self_match("SpCas9")

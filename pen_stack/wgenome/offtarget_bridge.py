@@ -6,7 +6,7 @@ wraps the existing genome-wide scanner (`pen_stack.bridge.offtarget`), which see
 each pseudosite by the **measured Perry-2025 DMS specificity landscape** (which target mismatches the recombinase
 tolerates), a held-out ranking AUROC of 0.88 on that in-vitro DMS data.
 
-**Status: mechanism_based_unvalidated (hard-locked).** Crucially, the DMS ranker being validated on *in-vitro
+**Status: mechanism_based_unvalidated (hard-locked).** The DMS ranker being validated on *in-vitro
 specificity* does NOT make the *genomic off-target predictions* validated: there is **no published genome-wide
 unbiased CELLULAR off-target assay** for bridge recombinases (the technology is ~2024), so the genomic pseudosite
 calls cannot be validated. The report is: a mechanism-based scan with a DMS-grounded mismatch-tolerance
@@ -27,7 +27,7 @@ _DISCLOSURE = (
 def nominate_bridge(target_core: str | None = None, writer_family: str = "bridge_IS110",
                     fasta=None, chroms: list[str] | None = None, top: int = 20) -> dict:
     """Genome-wide bridge off-target scan for a bridge-RNA target core, via the DMS-scored engine. Returns the
-    ranked pseudosites when a genome + target core are supplied (VM), else reports the engine is ready and how to
+    ranked pseudosites when a genome + target core are supplied (host), else reports the engine is ready and how to
     run the scan. Always carries the hard-locked unvalidated status + the no-genome-wide-assay disclosure."""
     from pen_stack.bridge.offtarget import predict_offtargets
     fam = "seek_IS1111" if ("seek" in (writer_family or "").lower() or "is1111" in (writer_family or "").lower()) \

@@ -12,7 +12,7 @@ be checked computationally). We **score and critique** proposed/variant writers 
   *critiqued*, does it fold? plausible active site? deliverable form? reachable target?, returning
   pass/flag + reasons; it is **never** returned as "a working new pen" (`no_claim=True`, `claimable=False`).
 
-When the Perry DMS is absent (off the VM) a small **frozen documented panel** keeps WV1 exercisable and the
+When the Perry DMS is absent (off the host) a small **frozen documented panel** keeps WV1 exercisable and the
 blind-recovery criterion deterministic, labelled as a retrospective panel, never presented as a blind
 sequence predictor.
 """
@@ -59,7 +59,7 @@ def _dms_lookup():
         from pen_stack.atlas.variant_propose import DMSVariantEffectModel
         m = DMSVariantEffectModel()
         return m.name, m._z
-    except Exception: # noqa: BLE001 - Perry tables absent off the VM
+    except Exception: # noqa: BLE001 - Perry tables absent off the host
         return "frozen_retrospective_panel", dict(_FROZEN_DMS_Z)
 
 
@@ -106,7 +106,7 @@ def blind_recovery(top_k: int = 5) -> dict:
 
 def real_dms_recovery(top: int = 20) -> dict:
     """Recovery against the FULL Perry-2025 ISCro4 DMS via the existing validated harness; deferred (and the
-    frozen panel stands in) when the Perry tables are absent off the VM."""
+    frozen panel stands in) when the Perry tables are absent off the host."""
     try:
         from pen_stack.atlas.variant_propose import iscro4_dms_recovery
         rep = iscro4_dms_recovery(top=top)
@@ -114,7 +114,7 @@ def real_dms_recovery(top: int = 20) -> dict:
             return {"available": True, **rep}
     except Exception: # noqa: BLE001
         pass
-    return {"available": False, "note": "Perry 2025 DMS absent (runs on the VM); see blind_recovery (frozen)"}
+    return {"available": False, "note": "Perry 2025 DMS absent (runs on the host); see blind_recovery (frozen)"}
 
 
 def critique_candidate(candidate_seq: str, writer_family: str = "bridge_IS110",

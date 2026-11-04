@@ -31,7 +31,7 @@ def calibration() -> dict:
     from pen_stack.validate.uncertainty_eval import durability_conformal
     rep = durability_conformal()
     if not rep.get("available"):
-        return {"available": False, "note": "TRIP feature store absent (T8 runs on VM/local-with-data)"}
+        return {"available": False, "note": "TRIP feature store absent (T8 runs on host/local-with-data)"}
     cov = rep["expression_interval"]["empirical_coverage"]
     nominal = rep["nominal_coverage"]
     # uncalibrated baseline: a naive +/- fixed band targets no coverage guarantee; report its miss as the gap
@@ -48,7 +48,7 @@ def selective_prediction() -> dict:
     from pen_stack.validate.uncertainty_eval import risk_coverage
     rep = risk_coverage()
     if not rep.get("available"):
-        return {"available": False, "note": "TRIP feature store absent (T9 runs on VM/local-with-data)"}
+        return {"available": False, "note": "TRIP feature store absent (T9 runs on host/local-with-data)"}
     return {"available": True, "accuracy_high_confidence": rep["accuracy_min_coverage"],
             "accuracy_no_abstention": rep["accuracy_full_coverage"],
             "useful": float(rep["useful"]), "monotone_improving": float(rep["monotone_improving"]),

@@ -2,7 +2,7 @@
 
 Pre-specified criteria: every numeric field in an agent plan comes from a tool call (no-fabrication);
 plan-equivalence holds (agent top site == plan_write); clinical-directive prompts are refused. Runs in
-the deterministic fallback (no LLM needed); the LLM tool-calling path is verified on the VM with Ollama.
+the deterministic fallback (no LLM needed); the LLM tool-calling path is verified on the host with Ollama.
 """
 from __future__ import annotations
 

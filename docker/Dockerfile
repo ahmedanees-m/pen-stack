@@ -1,5 +1,5 @@
-# PEN-STACK single project image, built ON THE VM from a CUDA base.
-# Docker-only policy: nothing installs on the VM host; everything lives in this image.
+# PEN-STACK single project image, built ON THE host from a CUDA base.
+# Docker-only policy: nothing installs on the host; everything lives in this image.
 FROM nvidia/cuda:12.2.0-cudnn8-runtime-ubuntu22.04
 ENV DEBIAN_FRONTEND=noninteractive PYTHONUNBUFFERED=1
 RUN apt-get update && apt-get install -y --no-install-recommends \

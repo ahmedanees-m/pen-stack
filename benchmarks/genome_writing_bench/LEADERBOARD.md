@@ -1,6 +1,6 @@
 # Genome-Writing Bench v0.3.3 - Leaderboard
 
-Tasks: **17/17 available** in this run (unavailable = needs the atlas / Perry tables / an LLM, which run on the VM/local).
+Tasks: **17/17 available** in this run (unavailable = needs the atlas / Perry tables / an LLM, which run on the host/local).
 Deterministic planner beats the naive baseline on **13/13** grounded tasks with a baseline.
 
 | Solver | Tasks scored | Beats naive | No-fabrication | Note |
@@ -39,7 +39,7 @@ Each contrasts the **uncertainty-aware** agent (conformal coverage, selective pr
 | ood_honesty | OOD flag rate | True | 1.0 | 0.0 |
 | out_of_scope_refusal | deferral rate | True | 1.0 | 0.0 |
 
-_Uncertainty-aware beats the over-confident baseline on **4/4** available trust tasks: the calibration is not merely present, it is useful and legible._
+_Uncertainty-aware beats the over-confident baseline on **4/4** available trust tasks, so the calibration is useful and legible._
 
 ## Robustness tasks (v0.3) - multi-write-type + adversarial probes separate *robust* agents
 The verifier-backed agent routes every write type to its rule sub-graph and survives adversarial probes built to break a naive agent (out-of-scope-in-disguise, contradictory constraints, prompt injection, distribution shift). The over-confident ungrounded baseline has no router/rule base, obeys the injection, and ignores OOD.

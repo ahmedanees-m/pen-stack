@@ -6,9 +6,9 @@ pairing each with every *compatible* delivery vehicle from the curated palette (
 capacity). Every candidate carries the planner's grounded scores (safety / p_durable / writer_activity) so the
 verifier-as-discriminator can compute a calibrated confidence and the immune profile downstream.
 
-Atlas-dependent: when the writability atlas is absent (e.g. a bare laptop checkout), `plan_write`
+Atlas-dependent: when the writability atlas is absent (e.g. a bare local checkout), `plan_write`
 yields nothing and `candidate_space` returns []. The discriminator/Pareto logic is independent of the atlas and
-is exercised on explicit candidates (tests/bench fixtures); the atlas path runs on the VM/with data.
+is exercised on explicit candidates (tests/bench fixtures); the atlas path runs on the host/with data.
 """
 from __future__ import annotations
 

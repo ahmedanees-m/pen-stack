@@ -153,7 +153,7 @@ def _call_provider(name: str, cfg: dict, messages: list, tools: list | None, tim
         return None
 
 
-# Cooldown cache: once a provider fails (e.g. Ollama not installed on the laptop tier), skip it for
+# Cooldown cache: once a provider fails (e.g. Ollama not installed on the local tier), skip it for
 # `health_ttl` seconds instead of re-attempting it on every call. This is what prevents the multi-minute
 # stalls when a configured provider is absent/slow - we pay one failed attempt, then bypass it.
 _COOLDOWN: dict[str, float] = {}

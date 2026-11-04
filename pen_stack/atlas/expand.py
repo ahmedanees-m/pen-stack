@@ -1,6 +1,6 @@
 """Expand the Writer Atlas across families.
 
-Grow the curated 8-family core into a comprehensive cross-family catalogue: ingest ortholog
+Grow the curated 8-family core into a cross-family catalogue: ingest ortholog
 sets at scale (the IS110/IS1111 superfamily, CAST, large serine integrases, Cas12a, TnpB/Fanzor) from
 UniProt, place every entry on the WT-KB targeting axes by *inheriting* family-level metadata from the
 ``wtkb.parquet`` (single source of truth - the classifier/scorer must not re-derive it), and

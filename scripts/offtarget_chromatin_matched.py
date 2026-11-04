@@ -11,7 +11,7 @@ WT-Cas9 cell-based assay GUIDE-seq from AUROC 0.58 (cross-cell K562) to 0.671 (m
 the in-vitro control stays null (0.494). VERDICT: VALIDATED (moderate, cell-type-matched). TTISS stays an outlier
 (0.383), it is a Cas9-VARIANT specificity assay, driven by variant fidelity rather than WT chromatin.
 
-Usage (on the VM, container with pandas+numpy+pyBigWig):
+Usage (on the host, container with pandas+numpy+pyBigWig):
     FA=GRCh38.fa BW=hek293t_dnase.bigWig DS=datasets python offtarget_chromatin_matched.py
 """
 from __future__ import annotations

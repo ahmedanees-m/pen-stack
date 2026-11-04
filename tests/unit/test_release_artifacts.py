@@ -465,7 +465,7 @@ def test_verifier_and_rules():
 
 
 def test_core_docs_exist():
-    for p in ("docs/uncertainty.md", "docs/scope.md", "docs/mechanistic_constraints.md", "docs/BACKLOG.md"):
+    for p in ("docs/uncertainty.md", "docs/scope.md", "docs/mechanistic_constraints.md"):
         assert (_ROOT / p).exists(), p
 
 

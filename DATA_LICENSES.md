@@ -37,7 +37,7 @@ The table has two upstream sources, and every column is theirs:
 
 The 9,298 rows are the row count of the authors' own feature matrix, not a filter applied here: the hPGK pool is absent upstream. The barcode join to the coordinate table is exact at 9,298 of 9,298, and the coordinates are hg19 as the supplement states, with no liftover applied. Our only contribution is that join and the selection of five of their fourteen marks.
 
-`build_leemans_input.py` asserts the rebuilt table against a recorded content digest, so a reader can confirm they have the same values the paper used without this repository carrying them.
+`build_leemans_input.py` asserts the rebuilt table against a recorded content digest, so a reader can confirm they have the same values reported without this repository carrying them.
 
 `benchmarks/position_effect_human/leemans_scored_input.parquet` is a derived feature table: per-integration measured expression and the escaper/repressed call from Leemans et al., lifted to hg38 and joined to ENCODE chromatin signal computed here. It is committed for one purpose, to let `make repro-human` recompute the single reported correlation on a bare clone, and Leemans et al. are attributed wherever it is used.
 

@@ -18,7 +18,7 @@ So the contrast is:
 That is what shows the no-fabrication ARCHITECTURE is doing the work, not the model being trustworthy.
 
 Reproducibility: every (model, goal) transcript is cached under data/llm_bench_cache/ so the score replays
-offline (and in CI) without a live LLM. Run live once on the VM to populate the cache.
+offline (and in CI) without a live LLM. Run live once on the host to populate the cache.
 """
 from __future__ import annotations
 

@@ -164,13 +164,13 @@ oracles:
       Nucleases use the real CRISOT-Score (beats a homology baseline on held-out guides, CI excludes 0); serine
       integrases use a documented pseudo-attB cryptic scan; bridge recombinases delegate to the Perry-DMS engine"
     not_valid_for: "a safety CLEARANCE (nomination != validation; every result ships with the empirical assay
-      that would confirm it); genome-wide candidate ENUMERATION (needs the on-VM Cas-OFFinder/genome scan; this
+      that would confirm it); genome-wide candidate ENUMERATION (needs the host-side Cas-OFFinder/genome scan; this
       engine SCORES supplied candidates); a per-site cleavage/recombination PROBABILITY; bridge-recombinase
       off-target magnitude (NO published genome-wide unbiased assay/predictor exists -> extrapolative/abstains);
       structural variants/translocations beyond nominated sites"
     generalizes_to_unseen_loci: false
     license: "open (this work; GUIDE-seq 10.1038/nbt.3117, CIRCLE-seq 10.1038/nmeth.4278, CHANGE-seq
-      10.1038/s41587-020-0555-7, CRISOT 10.1038/s41467-023-42695-4 CC-BY-NC run on the VM only)"
+      10.1038/s41587-020-0555-7, CRISOT 10.1038/s41467-023-42695-4 CC-BY-NC run on the host only)"
 
   innate_sensing: # computed nucleic-acid innate-sensing motif load
     family: genome

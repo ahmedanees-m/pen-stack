@@ -18,16 +18,16 @@ guide panels** (not the canonical 8), a cross-assay generalization test. The har
 sourced from the CRISOT data release (Zenodo `10.5281/zenodo.8420032`), which redistributes the public assay
 supplements; PEN-STACK cites the **original assay papers** as the ground-truth provenance.
 
-## Learned predictor (real tool, VM-only)
+## Learned predictor (real tool, host-only)
 **CRISOT-Score** (Chen et al., *Nat Commun* 2023, `10.1038/s41467-023-42695-4`): an XGBoost RNA-DNA interaction
-fingerprint. **License: CC-BY-NC** → it runs only on the VM (`crisot:tools` Docker, `xgboost`/`pandas`/`numpy`);
+fingerprint. **License: CC-BY-NC** → it runs only on the host (`crisot:tools` Docker, `xgboost`/`pandas`/`numpy`);
 its weights are NEVER redistributed. Only DERIVED scores are cached/committed (CI-safe), exactly like the licensed
 NetMHC tools.
 
 ## Baseline (pre-specified)
 Sequence-homology nomination = ascending **mismatch count** (Hamming over the 20-nt protospacer).
 
-## Result (full real data, on the VM)
+## Result (full real data, on the host)
 CRISOT-Score is the MD-physics, **assay-agnostic** scorer (not fit on these labels) → a leakage-clean held-out
 evaluation on every assay.
 
@@ -45,7 +45,7 @@ including two independent broad guide panels (cross-assay generalization).
 The nominator applies a documented chromatin modifier (open chromatin raises realized off-target activity;
 Lazzarotto 2020). It reads the **real accessibility track** (`phase_1/features/chromatin_{ct}.parquet`,
 ATAC/DNase) when a candidate's genomic locus + cell type are supplied AND the feature store is present (verified on
-the VM), or accepts a caller-supplied scalar; it **abstains** otherwise (the bare wheel / CI / deployed atlas do not
+the host), or accepts a caller-supplied scalar; it **abstains** otherwise (the bare wheel / CI / deployed atlas do not
 ship the raw track).
 
 **Controlled validation** (`benchmarks/offtarget/chromatin_validation.json`): off-targets mapped to hg38 (98.5%),
@@ -86,7 +86,7 @@ Mismatch counts outside the calibrated range abstain rather than extrapolate.
 
 ## Limitations
 Nomination is **not** a clearance; every result ships with the empirical assay that would confirm it. Genome-wide
-candidate ENUMERATION needs the on-VM Cas-OFFinder/genome scan; this benchmark covers SCORING + RANKING of supplied
+candidate ENUMERATION needs the host-side Cas-OFFinder/genome scan; this benchmark covers SCORING + RANKING of supplied
 candidates. Bridge/integrase off-target is data-thin: there is **no published genome-wide unbiased off-target assay
 or predictor for bridge recombinases** (verified), and the large-serine-integrase assays (Cryptic-seq/HIDE-seq) and
 predictor (IntQuery) are recent single-company preprints. IntQuery publishes its trained weights;
@@ -96,7 +96,7 @@ it is not run here, and no head-to-head is claimed.
 
 ## Per-mechanism ground-truth status
 
-Off-target nomination is now a genome-wide **finder** (Cas-OFFinder over GRCh38; heavy scan on the VM, cached coordinates
+Off-target nomination is now a genome-wide **finder** (Cas-OFFinder over GRCh38; heavy scan on the host, cached coordinates
 replayed by the app). Each writer class applies the correct off-target mechanism and carries a **truthful
 validation status**, a sealed benchmark where ground truth exists, an explicit **no-genome-wide-ground-truth
 disclosure** where it does not. No mechanism is ever presented as validated where the data cannot support it.
@@ -106,7 +106,7 @@ disclosure** where it does not. No mechanism is ever presented as validated wher
 | **Nuclease** (SpCas9/SaCas9/Cas12a) | mismatch-tolerant cleavage at protospacer+PAM | Cas-OFFinder genome scan | **validated** | 4-assay Off-Target-Bench (above) + enumeration recovers 100% of EMX1's documented GUIDE-seq off-targets ≤5 mm |
 | **Serine integrase** (Bxb1, PhiC31) | recombination at genomic pseudo-attP | fixed-sequence att-window scan | **mechanism-based, sealed-NEGATIVE benchmark** | att verified (Bxb1: FlyBase FBto0000359 / Ghosh 2003 `10.1016/S1097-2765(03)00444-1`; PhiC31: **PDB 9U2T/9U2S** + Groth 2000 `10.1073/pnas.090527097`); the PhiC31 human pseudo-attP set is verified (Thyagarajan 2001, **GenBank AF333429/30/31**, `10.1128/MCB.21.12.3926-3934.2001`; chr8/16/15). The **SEALED recall benchmark** (`benchmarks/offtarget/integrase/`) is **NEGATIVE**: att-sequence-similarity does NOT recover the documented pseudo-attP above random background (all three at 14 mm / 30 bp = the background median). The genome-wide similarity RANKING is therefore **not predictive by sequence alone**. **Precise claim:** what failed is a specific *method* (attP sequence-similarity), NOT the existence of predictable pseudosites; the signal is real (Chalberg 2006's palindromic consensus `10.1016/j.jmb.2005.11.098`; IntQuery's 410,776 cryptic attB), just not capturable by simple identity. "Sequence similarity is insufficient," never "unpredictable." This negative is the empirical justification for a learned/DMS model (the indicated next step). **Update:** that next step is now done - the **full 115-site Chalberg 2006 genomic pseudo-attP set** (`mmc1.xls`, **PMID 16414067**, build **hg17**) was obtained and evaluated at proper power (leave-one-chromosome-out CV, 2,225 GC-matched genomic negatives), **superseding the earlier N=3 open GenBank subset** (`benchmarks/offtarget/integrase/`). Results in **`benchmarks/offtarget/integrase_chalberg/`**: sealed verdict `learned_model_null` on the strict beat-BOTH-baselines-on-BOTH-metrics rule (the learned model does **not** beat attP-similarity on AUROC - model 0.637 vs 0.632, CI includes 0), but a genuine CI-clean **AUPRC** gain over both baselines (0.215 vs attP-sim 0.094 / palindrome 0.055, CI excludes 0). At N=115 the attP-**similarity** baseline is itself a moderate ranker (AUROC 0.63), so the N=3 "similarity fails" null does **not** generalize; identity carries real ranking signal and the learned model matches it on AUROC while improving precision. Documented pseudosites surfaced as verified known loci; the negative is reported verbatim (a stronger result than an untested "semi-validated"). |
 | **Bridge** (IS110/IS621) | recombination at bridge-RNA target-loop matches | core-seeded genome scan (pysam) | **mechanism-based, unvalidated** | **NO genome-wide unbiased CELLULAR off-target assay exists** (technology ~2024). The mismatch-tolerance RANKER is validated on the measured Perry-2025 in-vitro DMS specificity (held-out ranking AUROC 0.88), but genomic recovery is unvalidated. |
-| **CAST** (ShCAST V-K / VchCAST I-F) | guide-directed integration + guide-independent untargeted transposition | spacer scan + per-system untargeted background | **mechanism-based, unvalidated** | untargeted-transposition rates documented per system (`data/curated/cast_systems.yaml`): ShCAST high/AT-biased (Strecker 2019 `10.1126/science.aax9181`; Science 2024 `10.1126/science.adj8543`), VchCAST >95–99% on-target (Klompe 2019 `10.1038/s41586-019-1323-z`; Vo 2021 `10.1038/s41587-020-00745-y`). No genome-wide cellular assay for human-cell CAST. |
+| **CAST** (ShCAST V-K / VchCAST I-F) | guide-directed integration + guide-independent untargeted transposition | spacer scan + per-system untargeted background | **mechanism-based, unvalidated** | untargeted-transposition rates documented per system (`data/curated/cast_systems.yaml`): ShCAST high/AT-biased (Strecker 2019 `10.1126/science.aax9181`; Science 2024 `10.1126/science.adj8543`), VchCAST >95-99% on-target (Klompe 2019 `10.1038/s41586-019-1323-z`; Vo 2021 `10.1038/s41587-020-00745-y`). No genome-wide cellular assay for human-cell CAST. |
 | **PASTE / (ee)PASSIGE** | Cas9-nickase off-target + integrase pseudo-attP | compose(nuclease, integrase) | composite (validated nickase + partial integrase) | inherits the nuclease benchmark for the nickase and the integrase status for the installed att; recommends BOTH a nuclease assay AND an integrase assay |
 
 Every mechanism has either a sealed benchmark (nuclease) or an explicit no-ground-truth /

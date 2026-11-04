@@ -41,7 +41,7 @@ export default function Challenge() {
       <ScoreGuide
         intro="The open, held-out Genome-Writing Challenge: public tasks and the reference leaderboard. The label is the measured wet-lab call, not a submitter's claim."
         items={[
-          { term: "Score / aggregate", scale: "0–1, higher = better", meaning: "Held-out performance on the sealed tasks (non-circular: the label is the measured outcome). The reference aggregate is the engine's own score, for comparison." },
+          { term: "Score / aggregate", scale: "0-1, higher = better", meaning: "Held-out performance on the sealed tasks (non-circular: the label is the measured outcome). The reference aggregate is the engine's own score, for comparison." },
         ]}
         caveats={[
           "Splits are sealed before model selection; no circular labels (a submitter claim is never the label).",

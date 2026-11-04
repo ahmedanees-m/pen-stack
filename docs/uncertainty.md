@@ -64,7 +64,7 @@ accuracy rises as coverage shrinks.
 
 **Results:** on the silenced head (held-out TRIP), accuracy rises **0.739 → 0.930** as the least-confident
 predictions are abstained (monotone, strictly improving). The model is reliably more accurate on the
-predictions it is more confident about, evidence that the uncertainty is actionable, not merely present. Plan-level
+predictions it is more confident about, evidence that the uncertainty is actionable. Plan-level
 confidence (`propagate_plan_confidence`) Monte-Carlos the per-axis intervals into a plan confidence + band,
 with OOD widening flipping a plan's epistemic status to *grounded-extrapolating*.
 

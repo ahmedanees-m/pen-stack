@@ -80,7 +80,7 @@ export default function Guardian() {
                 benign design being screened and passing. */}
             {res.provenance?.declared_signal === false && (
               <p className="rounded-lg border px-3 py-2 text-xs" style={{ borderColor: "var(--warn)55", background: "var(--warn)12", color: "var(--warn)" }}>
-                ⚠ Nothing was screened, no cargo function, sequence, domain tag, or taxon was declared. "Clear"
+                Nothing was screened, no cargo function, sequence, domain tag, or taxon was declared. "Clear"
                 here means there was no input to check, not a verified-safe result.
               </p>
             )}

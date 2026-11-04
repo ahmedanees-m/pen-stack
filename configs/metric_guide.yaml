@@ -85,7 +85,7 @@ metrics:
     means: "a RELATIVE, dimensionless expression estimate (promoter × copy number × accessibility, + a bounded
       modifier uplift range). It is NOT a phenotype, NOT a functional titer, and NOT a percent-of-normal, those
       are measured clinical endpoints."
-    computed: "closed-form mechanistic twin over a COMPREHENSIVE literature-cited palette (31 promoters,
+    computed: "closed-form mechanistic twin over a literature-cited palette (31 promoters,
       constitutive + tissue-specific, each with its context/assay/citation, configs/expression/promoters.yaml)
       plus modifier PRIORS (WPRE, intron, polyA, Kozak, codon-opt, CpG-silencing, configs/expression/modifiers.yaml,
       reported as a bounded uplift RANGE, never a point multiplier). Interval widens ~1.6× under OOD context."

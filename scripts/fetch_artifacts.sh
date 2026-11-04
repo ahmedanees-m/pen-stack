@@ -196,7 +196,7 @@ fi
 cat <<EOF
 
 Next:
-  make repro                 # run the headline benchmarks against the fetched atlas
+  make repro                 # run the benchmarks against the fetched atlas
   python -c "from pen_stack.atlas import crosslink; print(crosslink.writability_path('k562'))"
 
 The full deposit (supervision_features/, validation/, writer_kb/) is staged under:

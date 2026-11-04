@@ -2,7 +2,7 @@
 // human genome for every site the writer could also act on, then scores and ranks them, applying the CORRECT
 // off-target mechanism per writer class: nuclease cleavage, integrase pseudo-attP, bridge target-specificity,
 // CAST guide + untargeted transposition, PASTE composition. Each carries a truthful validation status. Genome-wide
-// enumeration runs on the VM; the app replays the committed cache or abstains. A result is a CANDIDATE, never a
+// enumeration runs on the host; the app replays the committed cache or abstains. A result is a CANDIDATE, never a
 // clearance, wet-lab confirmation with the named assay is required.
 import React, { useEffect, useRef, useState } from "react";
 import WhatYouGet from "../components/WhatYouGet.jsx";
@@ -78,12 +78,12 @@ export default function OffTarget() {
         features={[
           { name: "Genome-wide sites", tells: "the off-target loci for your guide across GRCh38", output: "ranked coordinates + risk band" },
           { name: "Per-mechanism status", tells: "the correct mechanism + a truthful validation label per writer class", output: "validated / semi / unvalidated" },
-          { name: "Nuclease risk / CRISOT", tells: "mismatch-calibrated risk + the learned CRISOT score", output: "band + 0–1" },
+          { name: "Nuclease risk / CRISOT", tells: "mismatch-calibrated risk + the learned CRISOT score", output: "band + 0-1" },
           { name: "Chromatin annotation", tells: "whether an off-target sits in open vs closed chromatin (validated annotation, HEK293T DNase)", output: "accessibility note (annotation-only, not a re-ranker)" },
           { name: "CAST untargeted background", tells: "the guide-independent transposition mode (V-K high, I-F low)", output: "tier + per-system note" },
           { name: "Confirming assay", tells: "the wet-lab assay that would confirm a nomination", output: "GUIDE / CHANGE / CIRCLE / SITE-seq / Cryptic-seq" },
         ]}
-        example="Pick Cas9 + the EMX1 guide → its genome-wide off-targets ranked by CRISOT and a real-data risk band, with GUIDE/CHANGE/CIRCLE/SITE-seq as the confirming assays. Cas12a is offered too, but its validated scorer is SpCas9-specific so the finder says so rather than mis-scoring. A novel guide → an abstain (the genome scan runs on the VM), never fabricated sites."
+        example="Pick Cas9 + the EMX1 guide → its genome-wide off-targets ranked by CRISOT and a real-data risk band, with GUIDE/CHANGE/CIRCLE/SITE-seq as the confirming assays. Cas12a is offered too, but its validated scorer is SpCas9-specific so the finder says so rather than mis-scoring. A novel guide → an abstain (the genome scan runs on the host), never fabricated sites."
       />
       {/* plain-language explainer: what an off-target is, what to enter, what you get back */}
       <Card title="Off-target effects, and how this finder works">
@@ -117,7 +117,7 @@ export default function OffTarget() {
           <b className="text-fg-dim">How it works:</b> the engine scans the whole human genome (GRCh38) for every
           site within the enzyme's mismatch tolerance, then scores and ranks each one, so you supply a guide and
           get the off-target sites back, rather than having to supply the candidate sites yourself. The genome scan
-          is heavy, so it runs on the VM; this page replays the committed results for the built-in guides and
+          is heavy, so it runs on the host; this page replays the committed results for the built-in guides and
           abstains for a novel guide rather than inventing sites.
         </p>
       </Card>
@@ -127,12 +127,12 @@ export default function OffTarget() {
         items={[
           { term: "Per-mechanism status", scale: "validated / semi / unvalidated", meaning: "Nuclease is VALIDATED (the CRISOT score beats a homology baseline on four independent assays; enumeration recovers the documented off-target set). Integrase, bridge and CAST are mechanism-based and labelled unvalidated where no genome-wide cellular off-target assay exists for them yet." },
           { term: "Genome-wide search", scale: "you give a guide", meaning: "The engine enumerates the candidate sites itself across GRCh38 (within the mismatch tolerance), then scores and ranks them, you do not have to supply the candidate sites." },
-          { term: "Nuclease risk / CRISOT", scale: "band + 0–1", meaning: "A mismatch-calibrated risk band from real assay data (grounded on four unbiased assays, GUIDE/CHANGE/CIRCLE/SITE-seq), plus the learned CRISOT off-target score." },
+          { term: "Nuclease risk / CRISOT", scale: "band + 0-1", meaning: "A mismatch-calibrated risk band from real assay data (grounded on four unbiased assays, GUIDE/CHANGE/CIRCLE/SITE-seq), plus the learned CRISOT off-target score." },
           { term: "Chromatin annotation", scale: "annotation-only", meaning: "Open chromatin predicts higher realized off-target activity for the same sequence match (validated: GUIDE-seq AUROC 0.671, cell-type-matched HEK293T DNase). It is surfaced per-site when the accessibility track is mounted and does NOT change the CRISOT-driven ranking, a validated annotation, not a re-ranker." },
           { term: "CAST untargeted", scale: "tier", meaning: "The guide-INDEPENDENT untargeted-transposition background, the distinctive CAST off-target mode (Type V-K high, Type I-F low), a documented per-system property." },
         ]}
         caveats={[
-          "The genome scan runs on the VM; this page replays the committed results or abstains for a novel input, it never fabricates sites.",
+          "The genome scan runs on the host; this page replays the committed results or abstains for a novel input, it never fabricates sites.",
           "Bridge and CAST off-target cannot yet be validated to the nuclease standard, the field has no genome-wide cellular off-target assay for these recent technologies, so the tool runs a mechanism-based scan with a truthful 'unvalidated' label rather than an over-confident number.",
           "Cas12a is offered for enumeration (TTTV PAM), but the validated CRISOT scorer and the mismatch-risk calibration are SpCas9-specific, the finder abstains for Cas12a rather than mis-scoring its sites with a SpCas9 model (a validated Cas12a scorer is future work).",
           "The engine nominates and ranks; it does NOT clear a design, wet-lab confirmation with the recommended assay is required.",
@@ -164,7 +164,7 @@ export default function OffTarget() {
             <SeqWarning seq={guide} /></Field></div>
         )}
         {isBridge && (
-          <div className="mt-3"><Field label="Bridge-RNA target core (optional, a genome scan needs the VM genome; otherwise the engine explains how to run it)">
+          <div className="mt-3"><Field label="Bridge-RNA target core (optional, a genome scan needs the host genome; otherwise the engine explains how to run it)">
             <input className="input font-mono text-xs" value={targetCore} onChange={(e) => setTargetCore(e.target.value.toUpperCase())} placeholder="bipartite ~14-nt target (central CT)…" />
             <SeqWarning seq={targetCore} /></Field></div>
         )}
@@ -195,7 +195,7 @@ export default function OffTarget() {
                 <td className="py-2 pr-3 tabular-nums">{n.strand}</td><td className="py-2 pr-3 tabular-nums">{n.n_mismatch}</td>
                 <td className="py-2 pr-3 tabular-nums">{n.empirical_active_fraction == null ? "n/a" : num(n.empirical_active_fraction)}</td>
                 <td className={`py-2 pr-3 font-medium ${BAND[n.risk_band] || ""}`}>{n.risk_band}</td>
-                <td className="py-2 pr-3 tabular-nums text-brand">{n.crisot_score == null ? "VM-only" : num(n.crisot_score)}</td>
+                <td className="py-2 pr-3 tabular-nums text-brand">{n.crisot_score == null ? "host-only" : num(n.crisot_score)}</td>
                 {res.chromatin_available && <td className="py-2 text-xs text-fg-dim">{n.chromatin == null ? "-" : (n.chromatin.raises_realized_risk ? "open" : "closed")}</td>}</tr>))}</tbody>
           </table></div>
           <p className="mt-2 text-[11px] text-fg-faint">{res.method}</p>
@@ -268,7 +268,7 @@ export default function OffTarget() {
           {res.engine?.status === "scanned" ? (
             <p className="text-sm text-fg-dim">{res.engine.n_candidates} candidate pseudosites ({res.engine.n_exact_matches} exact). Ranked by the measured DMS specificity.</p>
           ) : (
-            <p className="text-sm text-fg-dim">{res.engine?.note || "Provide a bridge-RNA target core + the VM genome for a genome-wide scan."}</p>
+            <p className="text-sm text-fg-dim">{res.engine?.note || "Provide a bridge-RNA target core + the host genome for a genome-wide scan."}</p>
           )}
           <p className="mt-2 rounded border border-warn/25 bg-warn/5 px-3 py-2 text-[11px] leading-relaxed text-amber-300/80">{res.no_ground_truth_disclosure}</p>
         </Card>

@@ -78,7 +78,7 @@ export default function Oracles() {
         features={[
           { name: "Per-oracle status", tells: "which models run live vs are cached or held, and how fast", output: "live / cached / held + latency" },
           { name: "Published reliability", tells: "each model's own reported accuracy, verbatim + cited", output: "e.g. Boltz-2 FEP+ Pearson 0.62" },
-          { name: "Binding affinity", tells: "a protein–small-molecule affinity query (Boltz-2)", output: "binder probability + value · candidate" },
+          { name: "Binding affinity", tells: "a protein-small-molecule affinity query (Boltz-2)", output: "binder probability + value · candidate" },
           { name: "Cross-oracle disagreement", tells: "how much the models disagree", output: "the consensus interval widens" },
         ]}
         example="Query 4-hydroxytamoxifen against the ERT2 domain → a Boltz-2 binder probability and value (a candidate), shown next to the model's published reliability, and left null where a number was never verified."

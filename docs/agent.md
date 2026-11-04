@@ -14,7 +14,7 @@ fabricate.
 | **LLM orchestrator** | `pen_stack/agent/orchestrator.py` | An optional conversational front-end. The LLM may obtain numbers **only** by calling the registered tools (`agent/tools.py`); the eval audits that every number in its trace equals a direct tool call. |
 
 The LLM is **non-primary**: with no provider reachable, the agent falls back to the deterministic path
-and the plan is unchanged. Provider config is `configs/llm.yaml` (VM: local Ollama 7B; laptop/fallback:
+and the plan is unchanged. Provider config is `configs/llm.yaml` (host: local Ollama 7B; local/fallback:
 hosted Nemotron).
 
 ## State machine

@@ -9,13 +9,13 @@ import pytest
 
 from pen_stack.atlas import writer_verify as WV
 
-# the Perry 2025 Table S3 DMS (verification only); present on the Drive/VM, absent in bare CI
+# the Perry 2025 Table S3 DMS (verification only); present on the Drive/host, absent in bare CI
 _PERRY_S3 = Path(__file__).resolve().parents[2].parent / "Perry_et_al" / "science.adz0276_table_s3.xlsx"
 
 
 def test_frozen_panel_matches_real_perry_dms_table_s3():
     """The frozen panel + catalytic residues must be VERBATIM from Perry Table S3 - never fabricated.
-    Skips when the (copyrighted, local) Perry table is absent; runs on the Drive/VM."""
+    Skips when the (copyrighted, local) Perry table is absent; runs on the Drive/host."""
     if not _PERRY_S3.exists() or os.environ.get("PEN_SKIP_PERRY"):
         pytest.skip("Perry 2025 Table S3 not present (local/Drive only)")
     pd = pytest.importorskip("pandas")

@@ -48,3 +48,16 @@ patient…"). Both end at the same place, a deferral with zero fabrication, but 
 matcher defers **100%** of curated out-of-scope probes and **0%** of curated in-scope genome-writing
 questions (no over-refusal). An ungrounded model with no scope layer answers the out-of-scope probes with a
 concrete value, exactly the fabrication the scope layer prevents.
+
+## Deliberate exclusions
+
+Two capabilities are reachable from what is here and are deliberately not built.
+
+**Instrument protocol export.** A write plan could be emitted as an OT-2 / Flex liquid-handling protocol.
+It is not, because that crosses the wet-lab boundary this project stays behind: PEN-STACK is
+decision-support, not an instrument controller. Were it added, it would emit a static, human-readable
+protocol with no execution hooks, carry the review and no-auto-run disclaimer, and sit behind an optional
+extra so the core install never pulls an instrument SDK.
+
+**Conditional conformal coverage.** The conformal intervals carry a marginal guarantee. Per-query
+conditional coverage is a research direction, not a committed deliverable, and is not claimed anywhere.

@@ -9,7 +9,7 @@ configs/delivery_vehicles.yaml for integrating vehicles:
     enrichment(class) = risk(class) / genome_background_frac [fold over a random-bin baseline]
     genotox_score = min(1, 1 / enrichment) [1 = safest; episomal/non-targeting ~ 1.0]
 
-Inputs (staged on the VM under /data; NOT shipped, this script runs where the data lives):
+Inputs (staged on the host under /data; NOT shipped, this script runs where the data lives):
   - /data/external/visdb/*.csv VISDB per-virus integration-site catalogues (hg38) [10.1093/nar/gkz867]
   - /data/features/safety_annot.parquet per-1kb-bin dist_oncogene + genotoxic_cis (COSMIC CGC v104)
                                                                                   [COSMIC 10.1038/s41568-018-0060-1]
@@ -17,10 +17,10 @@ HIV ~= lentiviral integration biology (favors active gene bodies) [10.1016/S0092
 MLV ~= gammaretroviral (favors TSS/enhancers -> the LMO2 / SCID-X1 genotoxicity) [10.1126/science.1083413].
 
 Output: a SMALL, committable YAML (configs/genotoxicity_oracle.yaml) of per-class summary statistics +
-provenance, the raw catalogues stay on the VM; only the auditable summary ships. Magnitude (in-vivo clonal
+provenance, the raw catalogues stay on the host; only the auditable summary ships. Magnitude (in-vivo clonal
 outcome) is NOT modelled here and stays the `in_vivo_immunogenicity` / clonal known-unknown.
 
-Run (on the VM, in the data-mounted image):
+Run (on the host, in the data-mounted image):
     docker run --rm --entrypoint "" -v ~/data:/data -v ~/penstack:/app -w /app penstack:phase1.5 \\
         python scripts/p52_build_genotox_oracle.py > configs/genotoxicity_oracle.yaml
 """

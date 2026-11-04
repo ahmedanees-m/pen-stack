@@ -1,7 +1,7 @@
 """Human K562 position-effect head (Leemans 2019) + cell-type-routed serving.
 
 Hermetic: builds a small model on synthetic human data and monkeypatches the loaders (no dependency on the
-VM data/artifact). Validates the loader schema, dataset availability, and that a human K562 design is served
+host data/artifact). Validates the loader schema, dataset availability, and that a human K562 design is served
 by the human head (flipped scope/provenance) while non-human designs fall back to the mESC model.
 """
 import numpy as np

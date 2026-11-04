@@ -425,7 +425,7 @@ def offtarget_endpoint(req: dict):
     (finder): for a nuclease guide with NO ``candidate_sites``, enumerates the genome-wide off-target set
     over GRCh38 (Cas-OFFinder, replayed from the committed cache) and ranks it by the real CRISOT-Score +
     mismatch-calibrated risk + chromatin annotation - the default. Supplying ``candidate_sites`` keeps the
-    score-my-candidates path. Abstains (never fabricates) for a novel guide with no VM scan."""
+    score-my-candidates path. Abstains (never fabricates) for a novel guide with no host scan."""
     from pen_stack.wgenome.offtarget_predict import nominate_offtargets
     return nominate_offtargets(
         req.get("writer_family", ""), guide=req.get("guide"), candidate_sites=req.get("candidate_sites"),
@@ -443,8 +443,8 @@ def offtarget_assay_endpoint(writer_family: str):
 
 @app.get("/offtarget/enumerated", tags=["off-target"])
 def offtarget_enumerated_endpoint():
-    """The guides whose genome-wide off-target enumeration is CACHED (so the finder works here without a VM
-    scan). A novel guide abstains (its scan runs on the VM). Enumerated coordinates are public-genome facts."""
+    """The guides whose genome-wide off-target enumeration is CACHED (so the finder works here without a host
+    scan). A novel guide abstains (its scan runs on the host). Enumerated coordinates are public-genome facts."""
     from pen_stack.wgenome.offtarget_data import CANONICAL_GUIDES
     from pen_stack.wgenome.offtarget_enumerate import enumerated_guides
     cached = enumerated_guides()
@@ -452,7 +452,7 @@ def offtarget_enumerated_endpoint():
     return {"enzyme": "SpCas9",
             "guides": [{"guide": g, "name": seq2name.get(g, g), "enzyme": e} for e, g in cached],
             "note": ("genome-wide enumeration for these guides is replayed from the committed GRCh38 Cas-OFFinder "
-                     "cache; a novel guide requires an on-VM scan (the finder abstains rather than fabricate).")}
+                     "cache; a novel guide requires an host-side scan (the finder abstains rather than fabricate).")}
 
 
 @app.get("/campaign", tags=["closed-loop"])

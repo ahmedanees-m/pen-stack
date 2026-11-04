@@ -3,7 +3,7 @@
 CI-safe: a synthetic position-effect table with a PLANTED signal (expression driven by chromatin marks; silencing
 by heterochromatin) exercises the data unification, the learned model, conformal calibration, the controls, and the
 outcome integration WITHOUT the gitignored TRIP data or model artifact. The REAL-data claim (the factored model
-beats the prior durability head on TRIP) runs only when the data is present (VM / local checkout), and is skipped,
+beats the prior durability head on TRIP) runs only when the data is present (host / local checkout), and is skipped,
 not faked, in CI.
 """
 from __future__ import annotations
@@ -181,7 +181,7 @@ def test_tpe_bench_split_is_sealed_and_sha_locked():
 # ---- real-data claim (skipped, not faked, in CI) ----------------------------------------------
 def test_real_trip_factored_beats_durability_head_when_available():
     if not ped.available_datasets():
-        pytest.skip("TRIP not present (CI / bare wheel), real-data claim runs on VM / local checkout only")
+        pytest.skip("TRIP not present (CI / bare wheel), real-data claim runs on host / local checkout only")
     from pen_stack.twin.position_effect import evaluate
     df = ped.load_position_effect(["TRIP_Akhtar2013"])
     e = evaluate(df)["expression"]

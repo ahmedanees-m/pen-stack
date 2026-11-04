@@ -22,7 +22,7 @@ import ScoreGuide from "../components/ScoreGuide.jsx";
 // The five-axis immune-risk guide, folded in from the former Delivery & Immunity page: one design surface
 // covers Verify / Generate AND the per-axis immune profile, so there is no separate delivery page to keep in sync.
 const IMMUNE_GUIDE = {
-  intro: "This is the DELIVERY immune profile: the vehicle/cargo axes, reported SEPARATELY (0–1, higher = lower risk), never collapsed into one number. Each is a mechanistic or population proxy, not a patient-specific prediction. An axis that lacks its input abstains and shows n/a, never a guessed value, supply a cargo sequence (innate) or a PEGylated vehicle (anti-PEG) to compute it. The WRITER enzyme's own immunogenicity (MHC-II + ADA) lives on the Writer Atlas page, where the writer is chosen.",
+  intro: "This is the DELIVERY immune profile: the vehicle/cargo axes, reported SEPARATELY (0-1, higher = lower risk), never collapsed into one number. Each is a mechanistic or population proxy, not a patient-specific prediction. An axis that lacks its input abstains and shows n/a, never a guessed value, supply a cargo sequence (innate) or a PEGylated vehicle (anti-PEG) to compute it. The WRITER enzyme's own immunogenicity (MHC-II + ADA) lives on the Writer Atlas page, where the writer is chosen.",
   items: [
     { term: "Genotoxicity", scale: "higher = safer", meaning: "1.0 = episomal / non-integrating (no insertional-oncogenesis mechanism); lower = an integrating vector enriched for integrations near oncogenes." },
     { term: "CD8 epitope", scale: "higher = less visible", meaning: "1 − fraction of the capsid presentable to cytotoxic T cells over a frequent HLA-I panel (NetMHCpan-4.1, MHCflurry cross-check). Sequence-intrinsic, CD8/MHC-I only." },
@@ -242,9 +242,9 @@ export default function DesignStudio() {
           { name: "Repair hint", tells: "why a design failed and how to fix it", output: "named rule + citation + repair" },
           { name: "Generate alternatives", tells: "legal, biosecurity-screened candidate designs for your goal", output: "ranked survivors + confidence band" },
           { name: "Assembled cassette", tells: "the donor construct (insulators, promoter, polyA) + codon-opt", output: "bp breakdown (expandable)" },
-          { name: "Immune & delivery profile", tells: "the 5-axis delivery immune-risk vector, never collapsed", output: "per-axis 0–1 + known-unknowns" },
+          { name: "Immune & delivery profile", tells: "the 5-axis delivery immune-risk vector, never collapsed", output: "per-axis 0-1 + known-unknowns" },
           { name: "Cargo-form / capacity", tells: "catches oversize cargo & mRNA-can't-carry-a-DNA-donor", output: "legal=false + citation + repair" },
-          { name: "Multiplex translocation risk", tells: "can concurrent double-strand breaks in a multi-edit plan mis-join?", output: "advisory flag (2–5 edits; DSB-free writers score ~zero)" },
+          { name: "Multiplex translocation risk", tells: "can concurrent double-strand breaks in a multi-edit plan mis-join?", output: "advisory flag (2-5 edits; DSB-free writers score ~zero)" },
           { name: "Capsid packaging fitness", tells: "will an AAV capsid variant package & assemble?", output: "learned FLIP-AAV score · candidate (AAV-only)" },
           { name: "Serotype → tissue tropism", tells: "which tissue an approved AAV serotype reaches", output: "grounded prior + product + DOI (or known-unknown)" },
         ]}
@@ -254,9 +254,9 @@ export default function DesignStudio() {
         intro="One design surface, three actions. VERIFY audits a single design and reports three axes separately, never collapsed, with a repairable proof. GENERATE plans real sites for your goal, sweeps the compatible vehicles, and returns the legal, screened survivors with a calibrated confidence band. PROFILE IMMUNE & DELIVERY returns the per-axis immune-risk profile for the design's vehicle, cargo and writer. Generate runs the same verifier on many candidates; Verify is the single-design check it is built on."
         items={[
           { term: "Legality", scale: "pass / fail", meaning: "A grounded rule-set check: physical feasibility (reachability, payload-vs-capacity, cargo-form ↔ vehicle, integration) plus scope-of-use compliance (heritable human germline editing is out of scope and rejected). On failure it names the rule, its citation, and a repair. It does NOT adjudicate jurisdiction-specific law or IP, dual-use hazard is the separate Biosecurity axis." },
-          { term: "Confidence", scale: "0–1, may abstain", meaning: "The calibrated confidence on the soft scores; it ABSTAINS rather than guess when uncalibrated. An abstain does not block, legality and biosecurity do." },
+          { term: "Confidence", scale: "0-1, may abstain", meaning: "The calibrated confidence on the soft scores; it ABSTAINS rather than guess when uncalibrated. An abstain does not block, legality and biosecurity do." },
           { term: "Biosecurity", scale: "clear / flag / escalate / refuse", meaning: "The dual-use screen over function / family / taxon signatures. A refuse short-circuits the design to a human." },
-          { term: "Multiplex translocation risk", scale: "advisory flag, doesn't block", meaning: "For a 2–5 edit plan, concurrent double-strand breaks at different loci can mis-join into a translocation. A soft penalty (never fails legality), shown as an advisory flag with its risk value. DSB-free writers (bridge/PE integrase) contribute no cut sites, so a plan built from them scores ~zero by construction." },
+          { term: "Multiplex translocation risk", scale: "advisory flag, doesn't block", meaning: "For a 2-5 edit plan, concurrent double-strand breaks at different loci can mis-join into a translocation. A soft penalty (never fails legality), shown as an advisory flag with its risk value. DSB-free writers (bridge/PE integrase) contribute no cut sites, so a plan built from them scores ~zero by construction." },
           { term: "Survivors (Generate)", scale: "table", meaning: "Each row is a CANDIDATE the verifier judged legal and the Guardian cleared, with a calibrated confidence band, never a claim it works in vivo. An empty/refused result is by design." },
         ]}
         caveats={[
@@ -272,7 +272,7 @@ export default function DesignStudio() {
         <div className="mt-3 rounded-lg border border-line bg-ink-900 p-3">
           <label className="flex items-center gap-2 text-sm text-fg-dim">
             <input type="checkbox" checked={multiplexOn} onChange={(e) => setMultiplexOn(e.target.checked)} />
-            Plan multiple simultaneous edits <span className="text-fg-faint">(2–5, enables the multiplex translocation-risk screen)</span>
+            Plan multiple simultaneous edits <span className="text-fg-faint">(2-5, enables the multiplex translocation-risk screen)</span>
           </label>
           {multiplexOn && (
             <>
@@ -296,7 +296,7 @@ export default function DesignStudio() {
                     </div>
                     {chromBad && (
                       <p className="mt-0.5 pl-7 text-[11px]" style={{ color: "var(--warn)" }}>
-                        ⚠ &quot;{e.chrom}&quot; is not a valid chromosome (chr1–chr22, chrX, chrY, chrM).
+                        &quot;{e.chrom}&quot; is not a valid chromosome (chr1-chr22, chrX, chrY, chrM).
                       </p>
                     )}
                   </div>
@@ -554,10 +554,10 @@ export default function DesignStudio() {
           <p className="mb-1.5 font-semibold text-fg">How it works</p>
           <ul className="space-y-1.5">
             <li><b className="text-fg">What it predicts, </b> whether an AAV capsid variant will <b>package &amp; assemble</b> the genome: one score (log-enrichment; <b>higher = more fit</b>). It does <b>not</b> predict tropism, transduction, or in-vivo behaviour.</li>
-            <li><b className="text-fg">How, </b> a gradient-boosting model trained on the <b>FLIP-AAV</b> benchmark reads VP1 <b>residues 555–595</b> (the mutagenised surface loop) and scores that window. It beats a mutation-burden baseline on both splits (ρ 0.92 &amp; 0.81; CI excludes 0), see the bench below.</li>
-            <li><b className="text-fg">What to give it, </b> a <b>full-length AAV VP1</b> capsid protein (≥ 595 aa, AAV2 numbering). It reads <b>only residues 555–595</b>, so changes elsewhere are invisible; novelty <i>within</i> that loop is supported (validated on the mutant→designed split). Too-short or non-protein inputs are <b>refused, not guessed</b>.</li>
+            <li><b className="text-fg">How, </b> a gradient-boosting model trained on the <b>FLIP-AAV</b> benchmark reads VP1 <b>residues 555-595</b> (the mutagenised surface loop) and scores that window. It beats a mutation-burden baseline on both splits (ρ 0.92 &amp; 0.81; CI excludes 0), see the bench below.</li>
+            <li><b className="text-fg">What to give it, </b> a <b>full-length AAV VP1</b> capsid protein (≥ 595 aa, AAV2 numbering). It reads <b>only residues 555-595</b>, so changes elsewhere are invisible; novelty <i>within</i> that loop is supported (validated on the mutant→designed split). Too-short or non-protein inputs are <b>refused, not guessed</b>.</li>
             <li><b className="text-fg">How to read it, </b> the result leads with a plain-language verdict + the <b>percentile</b> among measured FLIP-AAV variants (so "top 10%", not "−4.6"), the raw log-enrichment is shown small. It is <b>relative</b>, not an absolute pass/fail; every value is a labelled <b>candidate</b>.</li>
-            <li><b className="text-fg">Generate, </b> "Generate variants" proposes new VP1 555–595 variants of your sequence and keeps only those with <b>fitness ≥ WT</b> (the generator proposes, the model disposes). Packaging fitness only, assembly, tropism and <b>immunogenicity are not scored here</b> (deferred to the immune profile); run verify + biosecurity before any synthesis.</li>
+            <li><b className="text-fg">Generate, </b> "Generate variants" proposes new VP1 555-595 variants of your sequence and keeps only those with <b>fitness ≥ WT</b> (the generator proposes, the model disposes). Packaging fitness only, assembly, tropism and <b>immunogenicity are not scored here</b> (deferred to the immune profile); run verify + biosecurity before any synthesis.</li>
           </ul>
         </div>
         <div className="grid gap-3 sm:grid-cols-[200px_minmax(0,1fr)]">
@@ -572,7 +572,7 @@ export default function DesignStudio() {
           </div>
           <div>
             <label className="mb-1 block text-[11px] uppercase tracking-wide text-fg-faint">
-              {vector === "AAV" ? "Capsid VP1 sequence (the model reads residues 555–595)" : `${vector} capsid / envelope sequence`}
+              {vector === "AAV" ? "Capsid VP1 sequence (the model reads residues 555-595)" : `${vector} capsid / envelope sequence`}
             </label>
             <textarea className="input h-20 font-mono text-[11px]" placeholder="Paste the capsid protein sequence (amino acids)…"
                       value={vp1} onChange={(e) => setVp1(e.target.value)} />
@@ -598,7 +598,7 @@ export default function DesignStudio() {
                 </div>
                 {capFit.distribution && <CapsidDistribution dist={capFit.distribution} score={capFit.predicted_fitness} bucket={capFit.verdict_bucket} />}
                 {capFit.input_warning && (
-                  <p className="rounded border border-warn/30 bg-warn/5 px-2 py-1 text-[11px] leading-relaxed text-amber-200">⚠ {capFit.input_warning}</p>
+                  <p className="rounded border border-warn/30 bg-warn/5 px-2 py-1 text-[11px] leading-relaxed text-amber-200">{capFit.input_warning}</p>
                 )}
                 <p className="text-[11px] leading-relaxed text-fg-faint">{capFit.status}</p>
                 {capFit.bench && <CapsidBench bench={capFit.bench} />}
@@ -623,7 +623,7 @@ export default function DesignStudio() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-fg-faint">
-                      <th className="py-1.5 pr-3">#</th><th className="py-1.5 pr-3">VP1 555–595 variant window</th>
+                      <th className="py-1.5 pr-3">#</th><th className="py-1.5 pr-3">VP1 555-595 variant window</th>
                       <th className="py-1.5 pr-3">Mutations</th><th className="py-1.5 pr-3">Predicted fitness</th><th className="py-1.5">Δ vs WT</th></tr></thead>
                     <tbody>
                       {capGen.candidates.map((cand, i) => (

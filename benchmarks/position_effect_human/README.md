@@ -62,7 +62,7 @@ same 5 marks, z-scored within dataset) isolates two effects:
    the 0.57 requires **exact-site feature extraction at serve time** (a future target). The current head makes the serve-time
    scope flag **resolution-aware**: `human_K562_outcome_validated` fires only when the caller declares exact-site
    features; coarse/undeclared features get a downgraded flag.
-2. **Cross-species transfer is genuinely poor** (matched-source ~0.08–0.20) - the axis is cell-type/species-specific;
+2. **Cross-species transfer is genuinely poor** (matched-source ~0.08-0.20) - the axis is cell-type/species-specific;
    train a head **per target cell type**. (An earlier confounded read of ρ 0.505 - human van-Steensel vs mouse ENCODE
    features - was a source artifact, corrected here.)
 

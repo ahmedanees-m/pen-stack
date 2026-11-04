@@ -1,6 +1,6 @@
 """Reproducible analysis: does chromatin accessibility predict off-target activity? (Lazzarotto 2020).
 
-Run on the VM (needs hg38 GRCh38.fa, the chromatin_{ct}.parquet, and the harmonized assay CSVs). Maps each
+Run on the host (needs hg38 GRCh38.fa, the chromatin_{ct}.parquet, and the harmonized assay CSVs). Maps each
 off-target protospacer to hg38 coordinates by exact match on both strands (grep -F, one genome pass), intersects with
 the K562 ATAC/DNase accessibility at 1 kb bins, and computes the AUROC of accessibility for active-vs-inactive
 off-targets PER ASSAY. Cell-based assays (GUIDE-seq, TTISS) are the test; in-vitro assays (CHANGE/CIRCLE/SITE-seq) are
@@ -10,7 +10,7 @@ RESULT (committed in benchmarks/offtarget/chromatin_validation.json): WEAK / INC
 ~0.5 (method sound), GUIDE-seq is a textbook modest positive (0.58) but TTISS reverses (0.346); the cross-cell-type
 K562 accessibility proxy is the likely cause. Chromatin is therefore a documented annotation, NOT a validated axis.
 
-Usage (on the VM, inside a container with pandas+numpy):
+Usage (on the host, inside a container with pandas+numpy):
     FA=.../GRCh38.fa CHROM=.../chromatin_k562.parquet DS=.../datasets python offtarget_chromatin_validation.py
 """
 from __future__ import annotations

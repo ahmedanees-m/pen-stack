@@ -16,7 +16,7 @@ in [0, 1] with an interval and a scope flag:
 
 `blind_recovery()` is the deterministic retrospective criterion: ranking the documented panel, the known
 enhancers **N322P / H50K / R278M** land on top, above the measured-worse controls. `real_dms_recovery()`
-reports the same against the full Perry DMS when it is present (on the VM). This is a *catalogue* feature that
+reports the same against the full Perry DMS when it is present (on the host). This is a *catalogue* feature that
 recovers known enhancers, **not** a blind sequence-only predictor, and stated as such.
 
 ## WV2: critique, not invention

@@ -1,6 +1,6 @@
 """COMPUTED nucleic-acid innate-sensing scorer (CpG O/E + U/dsRNA).
 
-Fully CI-safe and deterministic: a pure sequence computation, no external data/model, no VM (the ViennaRNA
+Fully CI-safe and deterministic: a pure sequence computation, no external data/model, no host (the ViennaRNA
 dsRNA sub-signal degrades gracefully when absent). Asserts: CpG observed/expected is computed correctly and
 maps to a TLR9 score; DNA / mRNA / RNP forms are handled; the scorer abstains (never fabricates) on empty /
 bad input; verify() surfaces the cargo innate load when a cargo sequence is supplied; the realized in-vivo

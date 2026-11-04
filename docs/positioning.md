@@ -50,6 +50,6 @@ benchmark for the writing side. It is deliberately complementary, not competitiv
 
 ## Citing / contributing
 
-Preprint drafts are in `manuscripts/`. To put a solver on the leaderboard, see
+To put a solver on the leaderboard, see
 [`benchmarks/genome_writing_bench/SUBMISSIONS.md`](../benchmarks/genome_writing_bench/SUBMISSIONS.md). The
 no-fabrication gate (T6) is mandatory for any agent solver.

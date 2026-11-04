@@ -1,11 +1,11 @@
 """ProteinMPNN model server (PEN-STACK live oracle, local GPU).
 
 A tiny FastAPI wrapper around ProteinMPNN (dauparas/ProteinMPNN) so the pen_stack oracle adapter can call a
-REAL sequence-design backend over localhost, exactly like the hosted APIs, but on the VM's GPU. The adapter
+REAL sequence-design backend over localhost, exactly like the hosted APIs, but on the host's GPU. The adapter
 (`oracles/protein_design.py::design_sequence`) HTTP-POSTs a backbone PDB here and gets back designed sequences
 + scores; when this service is down the adapter defers (never fabricates). Output is still a CANDIDATE.
 
-Run (on the VM, in the proteinmpnn image): uvicorn server:app --host 0.0.0.0 --port 9011
+Run (on the host, in the proteinmpnn image): uvicorn server:app --host 0.0.0.0 --port 9011
 """
 from __future__ import annotations
 

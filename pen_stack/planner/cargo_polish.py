@@ -87,8 +87,8 @@ def mfe_per_nt(seq: str) -> dict:
         return {"available": False, "note": "sequence too short"}
     try:
         import RNA
-    except Exception: # noqa: BLE001 - ViennaRNA only in the bio extra / VM image
-        return {"available": False, "note": "ViennaRNA not installed (bio extra / VM image)"}
+    except Exception: # noqa: BLE001 - ViennaRNA only in the bio extra / host image
+        return {"available": False, "note": "ViennaRNA not installed (bio extra / host image)"}
     fc = RNA.fold_compound(s.replace("T", "U"))
     _struct, mfe = fc.mfe()
     return {"available": True, "mfe": round(float(mfe), 2), "mfe_per_nt": round(float(mfe) / len(s), 4)}

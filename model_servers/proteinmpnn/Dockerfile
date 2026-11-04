@@ -1,5 +1,5 @@
 # ProteinMPNN model server, reuses penstack:phase1.5 (torch 2.12 + CUDA already present).
-# Build ON THE VM: docker build -t penmodel:proteinmpnn -f model_servers/proteinmpnn/Dockerfile .
+# Build ON THE host: docker build -t penmodel:proteinmpnn -f model_servers/proteinmpnn/Dockerfile .
 FROM penstack:phase1.5
 
 # ProteinMPNN is pure-PyTorch; clone it + its (small, bundled) vanilla weights. FastAPI/uvicorn for the server.

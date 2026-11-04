@@ -1,4 +1,4 @@
-"""The comprehensive, literature-cited relative-expression model + its validation.
+"""The literature-cited relative-expression model + its validation.
 
 The hard gate (pre-specified, no-fabrication): the expanded promoter palette is RICHER but still a PROXY, it
 must NOT claim outcome-validation, because an independent promoter study (Damdindorj 2014) disagrees with the

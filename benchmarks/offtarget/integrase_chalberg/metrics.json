@@ -2,7 +2,7 @@
   "benchmark": "PhiC31 pseudo-attP learned predictor, full Chalberg 2006 115-site genomic set (O-G2 / P3)",
   "question": "Does a learned model over sequence/architecture features recover the documented human phiC31 genomic pseudo-attP sites above BOTH (a) canonical-attP sequence-similarity and (b) the palindrome-only feature, on a by-chromosome held-out split?",
   "provenance": {
-    "note": "Every value in this file is copied verbatim from the sealed P3 result set produced 2026-07-04 on the VM (penstack:phase1.5). This file redistributes those pre-specified, sealed numbers into the pen-stack benchmark tree; it performs no new computation. The frozen analysis specification was sealed BEFORE feature-scoring/fitting and run once (not retuned).",
+    "note": "Every value in this file is copied verbatim from the sealed P3 result set produced 2026-07-04 on the host (penstack:phase1.5). This file redistributes those pre-specified, sealed numbers into the pen-stack benchmark tree; it performs no new computation. The frozen analysis specification was sealed BEFORE feature-scoring/fitting and run once (not retuned).",
     "sources": {
       "result_json": "P3_RESULT.json",
       "result_md": "P3_RESULT.md",
@@ -17,7 +17,7 @@
     "citation": "Chalberg et al. 2006, J Mol Biol 357:28-48",
     "pmid": "16414067",
     "genome_build": "hg17",
-    "genome_source": "sequences extracted directly from hg17.2bit (VM ~/data/external/hg17.2bit), no liftover",
+    "genome_source": "sequences extracted directly from hg17.2bit (host ~/data/external/hg17.2bit), no liftover",
     "n_positive_sites": 115,
     "cell_lines": ["293", "D407", "HepG2"],
     "curated_positives_file": "Chalberg_2006/chalberg2006_pseudo_attp_sites.csv",

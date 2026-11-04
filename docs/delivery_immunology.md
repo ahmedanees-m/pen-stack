@@ -2,7 +2,7 @@
 
 PEN-STACK scores and constrains the **whole** delivery palette (8 vehicles), not just dual-AAV. Later work added
 a delivery **safety↔efficacy** layer: a per-vehicle immune / safety / efficacy profile, a user-weightable
-ranking, and, crucially, **four of the five immune/safety axes are now grounded in real data or sequence**
+ranking, and **four of the five immune/safety axes are grounded in real data or sequence**
 rather than hand-typed `low/moderate/high` tiers.
 
 > **The invariant (unchanged across the program).** The in-vivo immune *magnitude*, how strongly a
@@ -75,7 +75,7 @@ This release finishes the picture (`docs` + `pen_stack/planner/{antipeg_oracle,i
 
 Each computed signal answers through the `OracleResult` contract (value + provenance + native uncertainty
 + scope card + `output_kind="baseline"`), and the small committed artifacts (where any) keep the heavy
-data/models on the VM so the package and CI stay light.
+data/models on the host so the package and CI stay light.
 
 ### Genotoxicity: `genotoxicity_oracle.py`
 

@@ -90,11 +90,11 @@ export default function DesignForm({ design, onChange, showCargoFunction = true,
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       <Field label="Gene / target"><input className="input" autoComplete="off" value={design.gene} onChange={(e) => set("gene", e.target.value)} /></Field>
-      <Field label="Chromosome" hint={geneChrom ? `${design.gene} is on ${geneChrom}` : "chr1–chr22, chrX, chrY, chrM"}>
+      <Field label="Chromosome" hint={geneChrom ? `${design.gene} is on ${geneChrom}` : "chr1-chr22, chrX, chrY, chrM"}>
         <Select value={design.chrom} onChange={(v) => set("chrom", v)} options={CHROMS} />
         {mismatch && (
           <p className="mt-1 text-[12px]" style={{ color: "var(--warn)" }}>
-            ⚠ {design.gene} is on <strong>{geneChrom}</strong>, not {design.chrom}. The chromosome does not move the
+            {design.gene} is on <strong>{geneChrom}</strong>, not {design.chrom}. The chromosome does not move the
             scored locus (scoring uses the gene's canonical location).{" "}
             <button type="button" className="underline" onClick={() => set("chrom", geneChrom)}>Use {geneChrom}</button>
           </p>
@@ -123,12 +123,12 @@ export default function DesignForm({ design, onChange, showCargoFunction = true,
             cargo that overflows it (not deliverable as specified) or a nonsensical size (<=0). */}
         {VEHICLE_CAP_BP[design.delivery_vehicle] != null && design.cargo_bp > VEHICLE_CAP_BP[design.delivery_vehicle] && (
           <p className="mt-1 text-[12px]" style={{ color: "var(--warn)" }}>
-            ⚠ {design.cargo_bp} bp exceeds {design.delivery_vehicle.replace(/_/g, " ")} capacity
+            {design.cargo_bp} bp exceeds {design.delivery_vehicle.replace(/_/g, " ")} capacity
             (~{(VEHICLE_CAP_BP[design.delivery_vehicle] / 1000).toFixed(1)} kb), not deliverable as specified.
           </p>
         )}
         {design.cargo_bp <= 0 && (
-          <p className="mt-1 text-[12px]" style={{ color: "var(--warn)" }}>⚠ cargo size must be at least 1 bp.</p>
+          <p className="mt-1 text-[12px]" style={{ color: "var(--warn)" }}>cargo size must be at least 1 bp.</p>
         )}
       </Field>
       <Field label="Context">

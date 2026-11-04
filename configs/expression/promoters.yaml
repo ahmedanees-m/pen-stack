@@ -1,4 +1,4 @@
-# PEN-STACK, comprehensive relative-promoter-strength palette.
+# PEN-STACK, relative-promoter-strength palette.
 #
 # A RELATIVE, ordinal, dimensionless strength per named promoter (0-1, EF1a/CAG ≈ 1.0 as the reference top tier).
 # CRITICAL CAVEAT: promoter strength has NO universal scalar, it depends on cell type, vector backbone, and

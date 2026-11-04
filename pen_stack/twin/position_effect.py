@@ -292,7 +292,7 @@ _MODEL_CACHE: dict = {}
 
 
 def load_cached_model(root=None) -> "PositionEffectModel | None":
-    """Load the trained position-effect model if its artifact is present (VM/checkout); else None (installed
+    """Load the trained position-effect model if its artifact is present (host/checkout); else None (installed
     library / CI -> falls back to the heuristic). Cached per root."""
     from pen_stack._resources import project_root
     root = root or project_root()

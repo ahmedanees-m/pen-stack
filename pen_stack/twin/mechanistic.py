@@ -4,7 +4,7 @@ Computes the consequences MECHANISM allows, steady-state cassette expression in 
 nothing more. Physics where computable; explicitly NOT a phenotype, NOT in-vivo behaviour, NOT durability beyond
 the steady state. Assumptions and scope flags travel with every output.
 
-The promoter palette is a comprehensive, literature-cited table (configs/expression/promoters.yaml,
+The promoter palette is a literature-cited table (configs/expression/promoters.yaml,
 ~25 constitutive + tissue-specific promoters) and the cassette carries an MODIFIER profile (WPRE, intron,
 polyA, Kozak, codon-optimization, CpG-silencing, configs/expression/modifiers.yaml). Modifier effects are
 transgene-dependent PRIORS, so they are reported as a bounded uplift RANGE with wide uncertainty, never folded
@@ -25,7 +25,7 @@ _LEGACY_STRENGTH = {"ef1a": 1.0, "cag": 1.0, "cmv": 0.9, "pgk": 0.6, "ubc": 0.5,
 
 @lru_cache(maxsize=1)
 def _palette() -> dict:
-    """Flatten the comprehensive promoter palette (constitutive + tissue-specific) to {name: entry}."""
+    """Flatten the promoter palette (constitutive + tissue-specific) to {name: entry}."""
     try:
         cfg = yaml.safe_load(resource("configs/expression/promoters.yaml").read_text(encoding="utf-8"))
     except Exception: # noqa: BLE001 - config absent (shouldn't happen) -> legacy table only

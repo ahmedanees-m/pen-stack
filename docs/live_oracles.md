@@ -28,10 +28,10 @@ Query the live status any time: `GET /oracles` (add `?probe=true` to ping the lo
 
 ## Starting the local GPU model servers (on demand)
 
-The local models run as small FastAPI services on the VM GPU; start only what you need:
+The local models run as small FastAPI services on the host GPU; start only what you need:
 
 ```bash
-# build bases once (penstack:phase1.5 already on the VM; rfdiffusion:base from the RFdiffusion repo)
+# build bases once (penstack:phase1.5 already on the host; rfdiffusion:base from the RFdiffusion repo)
 docker compose -f docker-compose.models.yml up -d proteinmpnn esm3      # the fast ones
 docker compose -f docker-compose.models.yml up -d rfdiffusion           # the slow one (~1-2 min/run)
 ```
@@ -53,4 +53,4 @@ uvicorn pen_stack.web.server:app --port 8000
   never silently blocks the chat.
 
 The cloud-A100 structure models are **held on purpose** (see the release notes): they can be run via these same
-oracle adapters by pointing them at a cloud GPU, just not on the 16 GB VM and not in the request path.
+oracle adapters by pointing them at a cloud GPU, just not on the 16 GB host and not in the request path.

@@ -78,7 +78,7 @@ def headline_metrics() -> None:
           f"(independent variant {fh.get('independent_variant_rho')}); "
           f"best chromatin baseline {fh.get('best_baseline_rho')}")
     print("    ^ this primary primary is RE-DERIVED from the committed source table by `make repro-human` "
-          "(scripts/p2_build_human_head.py), not merely read from this file.")
+          "(scripts/p2_build_human_head.py), rather than read from this file.")
     null = peh.get("mouse_to_human_sealed_null", {})
     print(f"    cross-species null: shipped mouse axis rho = {null.get('shipped_mouse_axis_rho')} "
           f"vs LAD baseline {null.get('best_baseline_lad_rho')}")

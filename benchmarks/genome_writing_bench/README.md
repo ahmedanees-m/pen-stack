@@ -62,20 +62,20 @@ python bench/run.py --verify   # check the frozen reference SHA256SUMS
 
 Tasks that need the writability atlas (Zenodo), the copyrighted Perry 2025 tables (local), or an LLM
 server report `available: false` when those are absent, so the command runs on any machine and fully on the
-VM/local. The frozen reference inputs are SHA-locked in `SHA256SUMS`.
+host/local. The frozen reference inputs are SHA-locked in `SHA256SUMS`.
 
 ## External LLM-agent baseline (verified)
 
 The `llm_agent` row is the **real LLM orchestrator** (`agent/orchestrator.py`) driving the validated tools,
-audited so every number in its trace equals a direct tool call (no fabrication). Verified on the production
-VM (RTX A4000, local Ollama `qwen2.5:7b-instruct`):
+audited so every number in its trace equals a direct tool call (no fabrication). Verified on a GPU host
+with local Ollama `qwen2.5:7b-instruct`:
 
 ```
 provider: ollama   llm_driven: True   grounded tool calls: >=1   no_fabrication: True
 ```
 
 i.e. the LLM reaches the deterministic planner's numbers **only by grounding every value**, and is
-disqualified if it fabricates. On a machine without a fast local model (e.g. the dev laptop using the slow
+disqualified if it fabricates. On a machine without a fast local model (using the slow
 hosted fallback) the orchestrator may gracefully fall back to the grounded tools mid-run; the leaderboard
 note states how many goals were LLM-driven vs fell back, and the no-fabrication result holds either
 way. Run it yourself with `python bench/run.py --agent` (or `docker compose run --rm bench python bench/run.py --agent`).

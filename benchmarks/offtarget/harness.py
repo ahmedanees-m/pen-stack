@@ -3,7 +3,7 @@
 Scores a predictor on the immunogenic question of off-target NOMINATION: given a canonical Cas9 guide and its
 candidate sites (real, published, validated-off-target labels from GUIDE-seq / CIRCLE-seq), rank the candidates so
 the validated off-targets surface first. The engine must BEAT a sequence-homology baseline (mismatch
-count). The primary numbers (`offtarget_data.BENCH_SUMMARY`) are computed on the FULL real data on the VM with the
+count). The primary numbers (`offtarget_data.BENCH_SUMMARY`) are computed on the FULL real data on the host with the
 licensed CRISOT predictor; this harness re-derives the relative comparison on the committed, CI-safe fixture (real
 sites + cached CRISOT scores; the CC-BY-NC predictor is never redistributed).
 
@@ -73,6 +73,6 @@ def run() -> dict:
             "crisot_beats_homology": all(BENCH_SUMMARY[a]["crisot_beats_homology"] for a in bench_assays),
             "n_assays": len(bench_assays),
             "note": ("fixture re-derivation (inactives downsampled, CI-safe), the AUTHORITATIVE numbers are the "
-                     "full-data BENCH_SUMMARY computed on the VM across 4 unbiased assays (GUIDE/CIRCLE-seq "
+                     "full-data BENCH_SUMMARY computed on the host across 4 unbiased assays (GUIDE/CIRCLE-seq "
                      "canonical guides; CHANGE/SITE-seq independent broad panels); a nominated off-target is a "
                      "candidate, not a clearance.")}

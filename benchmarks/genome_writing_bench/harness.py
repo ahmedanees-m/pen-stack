@@ -8,7 +8,7 @@ Loads tasks.yaml, runs each task's deterministic scorer ONCE, and reports the sc
 
 A scorer that needs the atlas / Perry tables / an LLM returns `available: False` (or raises) when
 those are absent; the harness marks the task `available: False` rather than failing - so it runs anywhere,
-fully only on the VM/local. No task is scored against a circular label (the non-circular-label rule; `circular: false`
+fully only on the host/local. No task is scored against a circular label (the non-circular-label rule; `circular: false`
 is asserted per task).
 """
 from __future__ import annotations

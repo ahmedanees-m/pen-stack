@@ -37,7 +37,7 @@ fresh clone.
 ## Provenance
 
 Byte-identical `chrom=='chr19'` slice of `atlas_k562.parquet` from the release-of-record atlas build
-(K562 writability model; see `benchmarks/` and the manuscript Methods). Regenerate with:
+(K562 writability model; see `benchmarks/` and [`docs/REPRO.md`](../../docs/REPRO.md)). Regenerate with:
 
 ```python
 import pandas as pd

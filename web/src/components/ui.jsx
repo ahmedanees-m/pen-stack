@@ -8,7 +8,7 @@ import { invalidNucleotides } from "../lib/format.js";
 export function SeqWarning({ seq }) {
   const bad = invalidNucleotides(seq);
   if (!bad.length) return null;
-  return <p className="mt-1 text-[11px]" style={{ color: "var(--warn)" }}>⚠ non-nucleotide character(s): {bad.join(" ")}, expected A/C/G/T.</p>;
+  return <p className="mt-1 text-[11px]" style={{ color: "var(--warn)" }}>non-nucleotide character(s): {bad.join(" ")}, expected A/C/G/T.</p>;
 }
 
 export function Card({ title, subtitle, icon, right, hover = false, children, className = "" }) {
@@ -107,7 +107,7 @@ export function ErrorNote({ error }) {
     <div className="rounded-lg border border-bad/40 bg-bad/10 px-3 py-2 text-sm text-bad">
       <strong className="font-semibold">Engine error.</strong> {String(error.message || error)}
       <div className="mt-1 text-xs text-fg-dim">If a data file is missing, that endpoint needs the full data
-        mount (VM); the system never invents a value to fill the gap.</div>
+        mount (host); the system never invents a value to fill the gap.</div>
     </div>
   );
 }

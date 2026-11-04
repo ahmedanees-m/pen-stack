@@ -16,7 +16,7 @@ mutation-burden baseline on held-out FLIP-AAV on **both** splits (`benchmarks/de
 | `sampled` (random 80/20, in-distribution) | **0.920** | 0.522 | [0.387, 0.411] |
 | `mut_des` (mutant→designed, hard generalization) | **0.814** | 0.752 | [0.061, 0.064] |
 
-The licensed FLIP-AAV data (217 MB/split) stays on the VM; the **derived metrics + reproducible build script**
+The licensed FLIP-AAV data (217 MB/split) stays on the host; the **derived metrics + reproducible build script**
 (`scripts/build_capsid_fitness.py`) are committed. The trained model (`models/capsid_fitness.pkl`, ~3 MB) is
 **gitignored**, regenerated from the build script and **mounted into the deployed app** (the `position_effect.pkl`
 pattern), so CI stays lean and the axis **abstains gracefully** when the model is absent. **Scope:** predicted

@@ -2,7 +2,7 @@
 
 Resolves the ENCODE bigWig panel for a cell type, downloads tracks IN PARALLEL, bins each to the
 canonical 1 kb grid (mean signal per bin) IN PARALLEL across cores, merges into one feature-store
-parquet, and deletes the raw bigWigs (500 GB discipline). Run in Docker on the VM.
+parquet, and deletes the raw bigWigs (500 GB discipline). Run in Docker on the host.
 """
 from __future__ import annotations
 

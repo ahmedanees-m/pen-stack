@@ -2,12 +2,9 @@
 # PRE-SPECIFIED - SHA-256 locked at Step 8.
 # DO NOT EDIT AFTER LOCK.
 #
-# Pairs with: prereg/predictions_v3.yaml, prereg/methodology_v3.md
-# Manifesto reference: PEN-STACK v2.2 Section 1.4.3 (Molecular Pen Properties)
 
 schema_version: "3.2"
 truewriterscore_version: "3.2.0"
-manifesto_reference: "PEN-STACK v2.2 Section 1.4.3 (Molecular Pen Properties)"
 architecture: "hierarchical_with_necessary_gate"
 
 # ============================================================
@@ -22,7 +19,7 @@ necessary_gates:
     direction: ">="
     manifesto_property: "Property 1: DSB Avoidance"
     necessity_rationale: |
-      The pen-vs-scissors distinction is fundamentally about DSB. An editor
+      The pen-vs-scissors distinction is about DSB. An editor
       that induces double-strand breaks is, by definition, a scissor. SpCas9
       (S_DSB=0) and AsCas12a (S_DSB=0) auto-fail and are categorically
       NOT_WRITER regardless of other gates. Failing G1 is final.

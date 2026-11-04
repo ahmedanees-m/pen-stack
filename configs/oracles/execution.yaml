@@ -12,7 +12,7 @@
 # execution:
 # in_process, runs in the engine process (no extra service)
 # hosted_api, a free cloud API (no local GPU); needs a key
-# local_gpu, a local model server on the VM GPU (start on demand); needs PEN_STACK_ORACLE_NET=1
+# local_gpu, a local model server on the host GPU (start on demand); needs PEN_STACK_ORACLE_NET=1
 # cloud_a100, HELD: needs a rented A100/H100 (run separately, not active now)
 # deferred, not run here (would require a deeper pipeline; never fabricated)
 oracles:

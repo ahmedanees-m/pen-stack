@@ -1,4 +1,4 @@
-"""Re-score the committed fabrication transcripts under the dependence structure the reviewers ask for.
+"""Re-score the committed fabrication transcripts under a dependence structure that respects clustering.
 
 Three things the published analysis does not do:
   1. a response-level endpoint (at least one unsupported field per response), not only a field rate;
@@ -6,7 +6,7 @@ Three things the published analysis does not do:
   3. an outcome taxonomy that separates an unsupported assertion from a qualified estimate, an
      abstention, a missing field and a parse failure.
 
-The published rule is reproduced verbatim first, so the paper's numbers stay checkable, and the
+The published rule is reproduced verbatim first, so the released numbers stay checkable, and the
 refinement is reported alongside it rather than replacing it.
 
 Run from the repo root. Reads only committed bytes; no provider contact.
@@ -22,7 +22,7 @@ from collections import Counter, defaultdict
 
 CACHE = "data/llm_bench_cache"
 
-# The published rule is not reimplemented here. It is imported, so "reproduced" means the paper's own
+# The published rule is not reimplemented here. It is imported, so "reproduced" means the released
 # code ran, including its regex fallback for a response that is not valid JSON.
 from pen_stack.validate.ungrounded_baseline import (  # noqa: E402
     _NUMBER as NUMBER,

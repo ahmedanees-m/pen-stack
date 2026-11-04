@@ -1,6 +1,6 @@
 """Rule evaluators, the bridge from rules-as-data to the existing validated code.
 
-Each evaluator runs ONE rule against a ``Design`` and returns a ``RuleResult``. Crucially, evaluators
+Each evaluator runs ONE rule against a ``Design`` and returns a ``RuleResult``. Evaluators
 **delegate to the functions that already implement the logic** (``planner.target_site``, ``bridge.fold_qc``,
 ``planner.delivery_constraints``, ``planner.multiplex``, and the delivery-vehicle table), so lifting the
 rules into data changes no decision (a parity test covers it). An evaluator whose required inputs are

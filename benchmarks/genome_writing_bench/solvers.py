@@ -73,7 +73,7 @@ def ungrounded_contrast_md(ung: dict | None) -> list[str]:
     ]
     for m in ung["ungrounded_models"]:
         if not m.get("available"):
-            lines.append(f"| ungrounded {m['model']} (no tools) | - | n/a | n/a (run live once on the VM) |")
+            lines.append(f"| ungrounded {m['model']} (no tools) | - | n/a | n/a (run live once on the host) |")
             continue
         for cond in ("naive", "coached"):
             c = (m.get("by_condition") or {}).get(cond)
@@ -147,7 +147,7 @@ def trust_contrast_md(bench: dict) -> list[str]:
                    and r["planner_score"] > r["baseline_score"])
     n_base = sum(1 for r in trust if r["available"] and r["baseline_score"] is not None)
     lines += ["", f"_Uncertainty-aware beats the over-confident baseline on **{n_better}/{n_base}** available "
-              "trust tasks - the calibration is not merely present, it is useful and legible._"]
+              "trust tasks, so the calibration is useful and legible._"]
     return lines
 
 
@@ -158,7 +158,7 @@ def render_leaderboard_md(bench: dict, llm: dict | None = None, ung: dict | None
         f"# Genome-Writing Bench v{ver} - Leaderboard",
         "",
         f"Tasks: **{bench['n_available']}/{bench['n_tasks']} available** in this run "
-        "(unavailable = needs the atlas / Perry tables / an LLM, which run on the VM/local).",
+        "(unavailable = needs the atlas / Perry tables / an LLM, which run on the host/local).",
         f"Deterministic planner beats the naive baseline on **{bench['planner_beats_baseline']}/"
         f"{bench['n_with_baseline']}** grounded tasks with a baseline.",
         "",

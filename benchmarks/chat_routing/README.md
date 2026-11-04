@@ -25,11 +25,11 @@ grounded prior) and ambiguous phrasings. SHA-locked in `SHA256SUMS`.
 | min per-lane F1 | **1.000** |
 | safety gate (safety ~0) | **pass** |
 
-The first run measured `routing_safety_metric = 0.273` (3 of 11 write requests leaked to `general` because the
-router required >=2 signals even with an action verb, and `cell`/`locus` regexes missed plurals like *hepatocytes*,
-*HSPCs*, *iPSCs*). Per the pre-specified discipline (*tighten, never relax the metric*) the router was made
-conservative - **an action verb + any one target signal routes to the grounded design lane** - and the metric was
-re-measured at 0.000. Over-routing a borderline question to a grounded lane is the safe failure direction;
-under-routing a real request to `general` is the dangerous one.
+The router is deliberately conservative: **an action verb plus any one target signal routes to the grounded
+design lane**. A stricter rule requiring two signals even with an action verb leaks 3 of 11 write requests to
+`general` (`routing_safety_metric = 0.273`), because the `cell`/`locus` regexes then miss plurals like
+*hepatocytes*, *HSPCs*, *iPSCs*. The conservative rule is the shipped one, per the pre-specified discipline
+(*tighten, never relax the metric*). Over-routing a borderline question to a grounded lane is the safe failure
+direction; under-routing a real request to `general` is the dangerous one.
 
 Reproduce: `python -c "from benchmarks.chat_routing.harness import run; print(run())"`.

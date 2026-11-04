@@ -6,7 +6,7 @@ oracle adapter can call a REAL generative protein-design backend over localhost.
 when the service is down the adapter defers (never fabricates). Output is a CANDIDATE.
 
 The model is loaded LAZILY on the first /generate so a bare /health (or an unused service) holds no GPU.
-Run (on the VM, in the esm3 image): uvicorn server:app --host 0.0.0.0 --port 9012
+Run (on the host, in the esm3 image): uvicorn server:app --host 0.0.0.0 --port 9012
 """
 from __future__ import annotations
 

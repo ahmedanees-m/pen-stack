@@ -29,13 +29,13 @@ A nominated off-target is a candidate, and every result ships with the empirical
 - **Bridge recombinase:** delegates to the existing Perry-DMS pseudosite engine (`pen_stack.bridge.offtarget`).
 
 The engine **abstains without inputs** (no candidate sites → no fabricated sites) and is explicit that genome-wide
-candidate ENUMERATION needs the on-VM scan; this engine SCORES + RANKS + risk-bands supplied candidates.
+candidate ENUMERATION needs the host-side scan; this engine SCORES + RANKS + risk-bands supplied candidates.
 
 ## The benchmark (real data + real tool)
 
 `benchmarks/offtarget/` is a held-out-guide nomination benchmark over **four** unbiased assays: GUIDE-seq +
 CIRCLE-seq (canonical guides) and CHANGE-seq + SITE-seq (**independent broad guide panels**, a cross-assay test).
-The licensed **CRISOT-Score** predictor (CC-BY-NC, run on the VM; MD-physics and **assay-agnostic** → leakage-clean)
+The licensed **CRISOT-Score** predictor (CC-BY-NC, run on the host; MD-physics and **assay-agnostic** → leakage-clean)
 beats the sequence-homology baseline on **all four**: AUPRC 0.65/0.52/0.54/0.52 vs 0.47/0.27/0.25/0.23, with the
 per-guide bootstrap CI on the gap excluding 0 on each. The Off-Target-Bench also contributes a nomination task to the
 **Genome-Writing Challenge**. Only derived CRISOT scores are cached/committed; the weights are never redistributed.
@@ -56,4 +56,4 @@ REST `POST /offtarget` + `GET /offtarget/assay`, MCP `offtarget_scan`, manifest 
 ## Limitations
 Nomination ≠ validation. Bridge/integrase off-target is data-thin/unmodeled (verified) and flagged extrapolative.
 Chromatin-awareness depends on target-cell-type data. Translocations/structural variants beyond nominated sites are
-out of scope. The CRISOT learned predictor is CC-BY-NC and runs only on the VM; PEN-STACK ships only derived scores.
+out of scope. The CRISOT learned predictor is CC-BY-NC and runs only on the host; PEN-STACK ships only derived scores.

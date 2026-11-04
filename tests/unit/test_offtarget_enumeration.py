@@ -50,7 +50,7 @@ def test_resolve_enzyme_aliases():
 def test_finder_abstains_on_a_novel_guide():
     r = enumerate_offtargets("ACGTACGTACGTACGTACGTAGG", "SpCas9")
     assert r["abstain"] and r["source"] == "none"
-    assert "runs on the VM" in r["note"]  # VM/cache pointer, no fabricated sites
+    assert "runs on the host" in r["note"]  # host/cache pointer, no fabricated sites
 
 
 @pytest.mark.skipif(not _have_cache, reason="enumeration cache absent (bare wheel)")
@@ -125,7 +125,7 @@ def test_integrase_phic31_encoded_with_sealed_negative_recall_benchmark():
     __import__("pen_stack.wgenome.offtarget_enumerate", fromlist=["_motif_cache_df"])._motif_cache_df() is None,
     reason="integrase motif cache absent (bare wheel)")
 def test_integrase_bxb1_pseudo_attp_finder_reflects_high_specificity():
-    # the Bxb1 genome-wide pseudo-attP scan replays the VM cache. Bxb1 is highly specific, so the
+    # the Bxb1 genome-wide pseudo-attP scan replays the host cache. Bxb1 is highly specific, so the
     # scan returns very few candidates (the validated property), each with a coordinate + att similarity.
     from pen_stack.wgenome.offtarget_integrase import nominate_integrase
     r = nominate_integrase("Bxb1")

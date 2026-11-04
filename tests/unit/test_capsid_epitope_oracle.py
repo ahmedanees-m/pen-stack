@@ -1,7 +1,7 @@
 """COMPUTED capsid/envelope CD8 T-cell epitope-load oracle (MHCflurry).
 
 CI-safe: runs off the COMMITTED summary artifact configs/capsid_epitope_oracle.yaml (the MHCflurry run + raw
-sequences stay on the VM; only the per-vehicle statistics ship). Asserts: every viral vector gets a computed
+sequences stay on the host; only the per-vehicle statistics ship). Asserts: every viral vector gets a computed
 intrinsic-presentability score via the OracleResult contract; non-viral vectors are 1.0 by mechanism; ALL
 8 vehicles are covered (computed or by-mechanism); the computed signal is folded into the adaptive axis only
 for IN-VIVO vehicles (ex-vivo lentivirus is reported but muted); the realized patient-HLA-specific response

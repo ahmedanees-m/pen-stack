@@ -133,7 +133,7 @@ export default function WriterAtlas() {
       <WhatYouGet
         intro="Compare genome-writing enzymes across families and get a request-ranked recommendation, with a strict, visible split between what is measured and what is a labelled candidate."
         features={[
-          { name: "Writer recommender", tells: "which writer families fit your write, by KB readiness", output: "ranked 0–1 · grounded primary" },
+          { name: "Writer recommender", tells: "which writer families fit your write, by KB readiness", output: "ranked 0-1 · grounded primary" },
           { name: "Predicted efficiency", tells: "a candidate learned integration efficiency + interval", output: "% + conformal interval · candidate (labelled)" },
           { name: "Measured dataset", tells: "45 DOI-backed human-cell integration efficiencies", output: "table with clickable DOIs" },
           { name: "Held-out validation", tells: "the pre-specified benchmark result, reported verbatim", output: "beats / does-not-beat baseline + CI" },
@@ -149,7 +149,7 @@ export default function WriterAtlas() {
           { term: "Reachability tier", scale: "Tier-1 / 2 / 3", meaning: "How confidently the writer can be AIMED at an arbitrary target. Tier-1 (scannable) = a target-programmable writer whose site is found by scanning the genome (Cas9, Cas12a, bridge IS110), broadly reachable. Tier-2 (context-candidate) = reachable only in a permissive sequence/chromatin context, a candidate needing experimental confirmation. Tier-3 (not-predictable) = no reliable targeting rule yet, exploratory. Higher tier = more reach you can trust." },
           { term: "Cargo capacity", scale: "bp", meaning: "The per-family payload capacity from the curated atlas; pair it with your cargo size to see which families fit." },
           { term: "Predicted efficiency", scale: "% integration + conformal interval", meaning: "A learned predictor trained ONLY on the curated real dataset, emitted with a trained split-conformal interval. A candidate advisory, and only for families the dataset actually contains (never extrapolated to an unseen family)." },
-          { term: "KB readiness", scale: "0–1, the primary rank", meaning: "A transparent score from the curated atlas (DSB-free + measured activity + cargo headroom). This, not the learned efficiency, is the grounded ranking signal." },
+          { term: "KB readiness", scale: "0-1, the primary rank", meaning: "A transparent score from the curated atlas (DSB-free + measured activity + cargo headroom). This, not the learned efficiency, is the grounded ranking signal." },
           { term: "Variant critique", scale: "fold over WT", meaning: "For a chosen serine integrase, the measured hyperactive mutants ranked by fold-improvement over wild-type (each DOI-backed). A retrospective catalogue recovery, a blind sequence-only predictor is deferred, not faked." },
         ]}
         caveats={[
@@ -167,9 +167,9 @@ export default function WriterAtlas() {
           <Field label="Cargo bp">
             <input className="input" type="number" min={1} max={300000} step={100} value={recForm.cargo_bp}
                    onChange={(e) => { const { value, clamped } = clampInt(e.target.value || "1", 1, 300000, 1);
-                     setRecCargoNote(clamped ? `clamped to ${value.toLocaleString()} bp (allowed 1–300,000)` : null);
+                     setRecCargoNote(clamped ? `clamped to ${value.toLocaleString()} bp (allowed 1-300,000)` : null);
                      setRecForm((f) => ({ ...f, cargo_bp: value })); }} />
-            {recCargoNote && <p className="mt-1 text-[11px]" style={{ color: "var(--warn)" }}>⚠ {recCargoNote}</p>}
+            {recCargoNote && <p className="mt-1 text-[11px]" style={{ color: "var(--warn)" }}>{recCargoNote}</p>}
           </Field>
           <Field label="Cell type" hint="a feature of the efficiency model (free-form)">
             <input className="input" value={recForm.cell_type}
@@ -205,7 +205,7 @@ export default function WriterAtlas() {
                       {r.predicted_efficiency_pct == null
                         ? <span className="text-fg-faint">KB-only (family unseen)</span>
                         : <span><b>{r.predicted_efficiency_pct}%</b>
-                            <span className="text-fg-faint"> [{r.efficiency_interval_pct?.[0]}–{r.efficiency_interval_pct?.[1]}]</span>
+                            <span className="text-fg-faint"> [{r.efficiency_interval_pct?.[0]}-{r.efficiency_interval_pct?.[1]}]</span>
                             <Badge tone="warn">candidate</Badge></span>}
                     </td>
                     <td className="py-2 pr-3">{r.cargo_fit == null ? "n/a" : r.cargo_fit
@@ -364,7 +364,7 @@ export default function WriterAtlas() {
             </table>
           </div>
           <p className="mt-2 text-[11px] leading-relaxed text-fg-faint">
-            Scores are 0–1, higher = lower risk (1 = least presentable / least ADA-driving). {immune.method} The
+            Scores are 0-1, higher = lower risk (1 = least presentable / least ADA-driving). {immune.method} The
             highlighted bottom row is the <b className="text-ok">human self control</b> (albumin): despite a non-zero
             MHC-II load it scores <b>ADA 1.0</b> (no ADA risk), because a self protein is <b>tolerated</b> (origin =
             self → foreignness 0). This is the reference showing <b>ADA-risk = MHC-II density × foreignness(origin)</b>

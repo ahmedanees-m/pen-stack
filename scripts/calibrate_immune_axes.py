@@ -93,7 +93,7 @@ def main() -> None:
     print(f"\n[relative_expression] N={e['n']} promoters={e['entities']}")
     print(f" {e['note']}")
     print(f" Spearman rho = {e['spearman']} CI = {e['ci']} -> status = {e['status'].upper()}")
-    print(" => stays, the palette is now COMPREHENSIVE (31 promoters + 6 modifiers, all literature-cited),")
+    print(" => stays, the palette covers 31 promoters + 6 modifiers, all literature-cited,")
     print(" but it does NOT outcome-validate: an independent study (Damdindorj 2014) DISAGREES with the")
     print(" anchor (Qin 2010) on CMV/CAG/EF1a ordering. Promoter strength is genuinely CONTEXT-DEPENDENT")
     print(" (cell type × vector × readout), so a single context-free ordinal cannot be validated cross-study.")

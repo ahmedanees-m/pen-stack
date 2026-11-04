@@ -52,7 +52,7 @@ metric.
    loci, not that it *predicts* genotoxicity.
 2. **The genuine test exposes false-negatives.** There is **no non-obvious subset by annotation** - all 8 genotoxic
    genes are CancerMine oncogenes (SETBP1 and MN1 included, contrary to the plan's guess). But the loci **outside the
-   hard-coded label - SETBP1, BMI1, MN1 - are NOT flagged** (writ_pct 34–99.9, safety 1.0), despite documented trial
+   hard-coded label - SETBP1, BMI1, MN1 - are NOT flagged** (writ_pct 34-99.9, safety 1.0), despite documented trial
    genotoxicity. **BMI1 (severe, leukaemic in SCID-X1) ranks at the 99.9th writability percentile** - the clearest
    miss. The oncogene-distance layer registers all three as oncogenes (`dist_oncogene = 0`), but the integrated
    writability under-weights that annotation relative to chromatin for loci outside its hard-coded label.
@@ -66,7 +66,7 @@ metric.
 > genotoxic loci it **misses those outside its hard-coded label** - SETBP1, BMI1, MN1 are ranked writable/safe (BMI1
 > at the 99.9th percentile) despite causing trial genotoxicity - and its risk band **does not track documented
 > severity**. So the component is a **coarse reject-known-bad filter, not a calibrated genotoxicity predictor**, and
-> RB-2 sharpens rather than rubber-stamps the §3.5 claim. **The three learned-model false-negatives (SETBP1, BMI1,
+> RB-2 sharpens rather than confirms the reject-known-bad claim. **The three learned-model false-negatives (SETBP1, BMI1,
 > MN1) are now closed by a deterministic blocklist overlay - see *The fix* below; the deployed filter flags all
 > eight documented loci.**
 
@@ -103,7 +103,7 @@ rescue the false-negatives above.
 
 - **Confirmatory, not a novel AUROC.** Annotated oncogenes are flagged by construction; the informative content is the
   false-negatives and the calibration failure, not the separation number.
-- **Safe-harbor negatives overlap the §3.5 validated-GSH set** → not fully independent on the negative side.
+- **Safe-harbor negatives overlap the validated-GSH set** → not fully independent on the negative side.
 - **One representative bin per locus** (gene-TSS / coordinate bin); writability is the shipped K562 atlas score.
   Per-integration hg38 coordinate extraction for each trial insertion was not performed (TBD-extract per the corpus).
 - Annotation stack = GENCODE v46 + CancerMine (CC0, ≥3 citations) + DepMap-essential - the shipped license-clean

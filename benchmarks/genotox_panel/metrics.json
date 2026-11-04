@@ -5,7 +5,7 @@
   "corpus": "9 documented clinical insertional-oncogenesis loci from real gene-therapy trials (LMO2, CCND2, MECOM/EVI1, PRDM16, HMGA2, SETBP1, BMI1, MN1) + IKZF1 (Fabry non-persistent, near-oncogene negative-outcome control), versus 8 functionally-validated safe harbors (AAVS1, CLYBL, CCR5, hRosa26, H11, Pansio-1, Olonne-18, Keppel-19)",
   "anti_circularity_manifest_sealed_sha256": "fce43e1c68082b8a72f1a8a0492a08285a1954336bd6adc3e52a1be6281b9e38",
   "manifest_sealed_date": "2026-07-05",
-  "ran_on": "VM (penstack:phase1.5), 2026-07-05",
+  "ran_on": "host (penstack:phase1.5), 2026-07-05",
   "test_kind": "confirmatory face-validity, NOT a novel AUROC. Per the sealed anti-circularity manifest the score rejects annotated oncogenes BY CONSTRUCTION (the CancerMine dist_oncogene / genotoxic_cis layer), so the informative content is the non-obvious subset + the false-negatives + the calibration, not the separation number.",
   "verdict": "reject_known_bad_filter_not_calibrated_genotoxicity_predictor",
   "panel": {
@@ -289,10 +289,10 @@
     "auroc_safety_baseline": 0.5125,
     "writability_beats_safety": true
   },
-  "characterisation": "The integrated safety filter cleanly rejects the canonical genotoxic loci it ENCODES (LMO2/CCND2/MECOM/PRDM16/HMGA2, writ_pct <= 2.6, safety 0.0) -- but those five are exactly the genes hard-coded into the score's own genotoxic_cis label, so that separation confirms the filter encodes known-bad loci, it does not predict genotoxicity. On the documented clinical loci OUTSIDE its hard-coded label (SETBP1, BMI1, MN1) the filter produces real false-negatives: writ_pct 34-99.9, safety 1.0, despite documented trial genotoxicity, with severe-leukaemic BMI1 at the 99.9th writability percentile. The oncogene-distance layer registers all three as oncogenes (dist_oncogene = 0) but the integrated writability under-weights that annotation relative to chromatin. Calibration does not track severity (inverted here): the mildest event (benign HMGA2 clonal dominance) scores most extreme (writ_pct 0.0) while the most severe (BMI1 leukaemia) scores safest (99.9). So the component is a coarse reject-known-bad safety filter, not a calibrated genotoxicity predictor; RB-2 sharpens rather than rubber-stamps the manuscript section 3.5 claim.",
+  "characterisation": "The integrated safety filter cleanly rejects the canonical genotoxic loci it ENCODES (LMO2/CCND2/MECOM/PRDM16/HMGA2, writ_pct <= 2.6, safety 0.0) -- but those five are exactly the genes hard-coded into the score's own genotoxic_cis label, so that separation confirms the filter encodes known-bad loci, it does not predict genotoxicity. On the documented clinical loci OUTSIDE its hard-coded label (SETBP1, BMI1, MN1) the filter produces real false-negatives: writ_pct 34-99.9, safety 1.0, despite documented trial genotoxicity, with severe-leukaemic BMI1 at the 99.9th writability percentile. The oncogene-distance layer registers all three as oncogenes (dist_oncogene = 0) but the integrated writability under-weights that annotation relative to chromatin. Calibration does not track severity (inverted here): the mildest event (benign HMGA2 clonal dominance) scores most extreme (writ_pct 0.0) while the most severe (BMI1 leukaemia) scores safest (99.9). So the component is a coarse reject-known-bad safety filter, not a calibrated genotoxicity predictor; RB-2 sharpens rather than confirms the reject-known-bad claim.",
   "caveats": [
     "Confirmatory face-validity, NOT a novel AUROC. Annotated oncogenes are flagged by construction (CancerMine dist_oncogene layer).",
-    "Safe-harbor negatives overlap the section 3.5 validated-GSH set -> not fully independent on the negative side; disclosed.",
+    "Safe-harbor negatives overlap the validated-GSH set -> not fully independent on the negative side; disclosed.",
     "One representative bin per locus (gene TSS bin / coord bin). Writability is the shipped K562 atlas integrated score.",
     "Gene-level representative bins; per-integration hg38 coordinate extraction for each trial insertion was not performed (TBD-extract per rb_corpus_starter.csv)."
   ],
@@ -301,14 +301,14 @@
     "rb2_result.json": "the panel: full per-locus table (rows) + summary stats (n, medians, face_validity_separation_auroc, caveats). Reproducer rb_vm_scripts/rb2_score.py.",
     "rb_corpus_starter.csv": "the clinical-genotoxic corpus with trial citations/PMIDs, outcomes, and manifest_status per locus (RB2-001..009)",
     "RB2_RESULT.md": "the RB-2 result narrative + summary + disclosed caveats",
-    "RETROSPECTIVE_VALIDATION_EXECUTION_SUMMARY.md": "section 6 (RB-2) + section 7 (manuscript section 3.5 correction); manifest seal at line 68",
+    "RETROSPECTIVE_VALIDATION_EXECUTION_SUMMARY.md": "section 6 (RB-2) + section 7 (the reject-known-bad correction); manifest seal at line 68",
     "anti_circularity_manifest.sealed.json": "the SHA-lock (fce43e1c...) of the 9-source anti-circularity manifest sealed BEFORE any RB-2 scoring",
     "blind_gsh_discovery.json": "out/blind_gsh_discovery.json -- the companion safe-harbour discovery / feature-matched writability discriminability (all_curated_loci tier)"
   },
   "field_sources": {
     "anti_circularity_manifest_sealed_sha256": "anti_circularity_manifest.sealed.json -> sha256 (=fce43e1c...); also RB2_RESULT.md line 2 and EXECUTION_SUMMARY line 68",
     "manifest_sealed_date": "anti_circularity_manifest.sealed.json -> sealed_date",
-    "ran_on": "RB2_RESULT.md line 2 ('Ran 2026-07-05 on the VM'); EXECUTION_SUMMARY section 8 (VM penstack:phase1.5)",
+    "ran_on": "RB2_RESULT.md line 2 ('Ran 2026-07-05 on the host'); EXECUTION_SUMMARY section 8 (host penstack:phase1.5)",
     "verdict": "RB2_RESULT.md summary (lines 47-54) + EXECUTION_SUMMARY line 233-234 ('coarse reject-known-bad safety filter, not a calibrated genotoxicity predictor')",
     "panel.n_genotoxic": "rb2_result.json -> n_genotoxic (=8)",
     "panel.n_safe_harbor": "rb2_result.json -> n_safe_harbor (=8)",
@@ -325,7 +325,7 @@
     "panel.loci": "rb2_result.json -> rows (all 17 rows copied verbatim: class, locus, gene, cancermine, severity, writability, writ_pct, safety, safe_pct, dist_oncogene, genotoxic_cis). flagged_by_filter is the derived field per panel.flagged_rule; false_negative flags the three safety==1.0 genotoxic loci; control_note from rb_corpus_starter.csv RB2-009 notes",
     "companion_axis_discriminability_matched_controls.n_positives": "blind_gsh_discovery.json -> discrimination_by_tier.all_curated_loci.n_positives (=16)",
     "companion_axis_discriminability_matched_controls.n_controls": "blind_gsh_discovery.json -> discrimination_by_tier.all_curated_loci.n_controls (=800)",
-    "companion_axis_discriminability_matched_controls.auroc_writability": "blind_gsh_discovery.json -> discrimination_by_tier.all_curated_loci.auroc_writability (=0.6787; task/manuscript round to 0.679)",
+    "companion_axis_discriminability_matched_controls.auroc_writability": "blind_gsh_discovery.json -> discrimination_by_tier.all_curated_loci.auroc_writability (=0.6787; rounded to 0.679)",
     "companion_axis_discriminability_matched_controls.auroc_writability_ci95": "blind_gsh_discovery.json -> discrimination_by_tier.all_curated_loci.auroc_writability_ci95 (=[0.5358, 0.8254]; round to [0.536, 0.825])",
     "companion_axis_discriminability_matched_controls.auroc_safety_baseline": "blind_gsh_discovery.json -> discrimination_by_tier.all_curated_loci.auroc_safety_baseline (=0.5125)",
     "companion_axis_discriminability_matched_controls.writability_beats_safety": "blind_gsh_discovery.json -> discrimination_by_tier.all_curated_loci.writability_beats_safety (=true)",

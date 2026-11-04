@@ -1,4 +1,4 @@
-"""Headless Streamlit smoke test. Skips unless streamlit AND the atlas are present (the VM
+"""Headless Streamlit smoke test. Skips unless streamlit AND the atlas are present (the host
 image), where it confirms the app loads and every page renders without raising."""
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ pytestmark = pytest.mark.skipif(
     not (_HAS_ST and _ATLAS.exists()),
     reason="streamlit + writability atlas required - run 'make fetch' (scripts/fetch_artifacts.sh) for "
            "the atlas and pip install '.[services]' for streamlit; the science does not execute without them "
-           "(VM-image smoke test)")
+           "(host-image smoke test)")
 
 _V31_PAGES = ["Cargo Polish", "Multiplex risk", "Guide QC", "PEN-Agent", "Genome-Writing Bench"]
 

@@ -2,7 +2,7 @@
 
 A serine integrase recombines a donor attB with genomic **pseudo-attP** sites resembling the phage attP. This
 enumerates pseudo-attP genome-wide: a fixed-sequence Cas-OFFinder scan of the attP core window over GRCh38 (heavy;
-runs on the VM, replayed from cache here), scored by att-arm similarity.
+runs on the host, replayed from cache here), scored by att-arm similarity.
 
 **Status: mechanism-based, with a SEALED NEGATIVE recall benchmark.** Bxb1 and PhiC31 att are
 independently verified (Bxb1: FlyBase FBto0000359 / Ghosh 2003; PhiC31: PDB 9U2T/9U2S + Groth 2000), and the

@@ -35,8 +35,8 @@ function StageHCard({ pe }) {
         {/* Testing surfaced this and tempered the framing (tester found it usually reads ×3). THIS is the
             model's own OOD signal (Mahalanobis distance over the 5 marks), distinct from the top-level "OOD"
             stat (a different oracle's cell-type/perturbation scope card). It DOES vary (near ×1 for near-zero
-            input, ×2.4–×2.8 mid-range, ×3 cap for extreme), but the served head was trained on EXACT-SITE
-            NORMALIZED features, so typical coarse 1kb-atlas 0–1 marks sit outside that distribution and it
+            input, ×2.4-×2.8 mid-range, ×3 cap for extreme), but the served head was trained on EXACT-SITE
+            NORMALIZED features, so typical coarse 1kb-atlas 0-1 marks sit outside that distribution and it
             usually reads HIGH (near the cap). That high value is the widen CORRECTLY flagging OOD, the same
             root cause as outcome_validated:false at this resolution, not a stuck number. */}
         {pe.ood_widen != null && (
@@ -57,7 +57,7 @@ function StageHCard({ pe }) {
           flag reports <code>outcome_validated: false</code> (realized ρ≈0.16). Serve-time exact-site extraction
           reaches the validated regime.{" "}
           <b>This is also why the OOD-widen factor above usually reads near its ×3 ceiling:</b> the head was trained on
-          normalized exact-site features, so typical 0–1 histone inputs at this coarse resolution sit outside that
+          normalized exact-site features, so typical 0-1 histone inputs at this coarse resolution sit outside that
           distribution and the widen correctly flags them as out-of-distribution (near-zero inputs read ~×1; it is
           computed from your mark vector, not fixed).
         </p>
@@ -116,7 +116,7 @@ export default function Twin() {
           { name: "Outcome prediction", tells: "the relative molecular outcome (expression / durability) for a design", output: "point + uncertainty band" },
           { name: "Promoter palette", tells: "how the chosen promoter drives the mechanistic estimate (31 constitutive + tissue-specific, cited)", output: "a live lever on relative expression" },
           { name: "Cargo-capacity feasibility", tells: "whether the cargo fits the vehicle (relative expression is per-copy, cargo-size-independent)", output: "buildable / not-buildable note" },
-          { name: "OOD gating", tells: "how far the design is from what the model has seen, TWO separate checks: the response oracle's cell-type/perturbation scope card, and the position-effect chromatin model's own Mahalanobis-distance widen factor", output: "OOD (response model) yes/no + the position-effect card's OOD widen ×1–×3" },
+          { name: "OOD gating", tells: "how far the design is from what the model has seen, TWO separate checks: the response oracle's cell-type/perturbation scope card, and the position-effect chromatin model's own Mahalanobis-distance widen factor", output: "OOD (response model) yes/no + the position-effect card's OOD widen ×1-×3" },
           { name: "Learned position-effect head", tells: "which position-effect head served (human K562 / mESC) and its validation resolution", output: "served head + outcome_validated flag" },
           { name: "Known-unknowns", tells: "quantities it will never predict (in-vivo titer, phenotype, clinical durability)", output: "returned as known-unknowns, not guessed" },
         ]}
@@ -129,7 +129,7 @@ export default function Twin() {
           { term: "Outcome band", scale: "interval, WIDENS on OOD", meaning: "A heuristic interval that widens when the query leaves the model's validity envelope. interval_kind states exactly what kind of interval it is (it is not a trained conformal interval, no public perturbation-outcome calibration set exists)." },
           { term: "Learned position-effect head", scale: "served head + resolution", meaning: "When a chromatin context is supplied, a learned position-effect head serves. A human K562 design uses the human K562 head (Leemans 2019); its validated ρ≈0.57 is earned only at exact-site feature resolution, so at the app's coarse 1 kb resolution outcome_validated is false." },
           { term: "OOD (response model)", scale: "yes / no", meaning: "Checks the virtual-cell RESPONSE oracle's own scope card (documented in-distribution cell types + perturbation kinds). Every cell type this page's dropdown offers is on that list, so this reads \"no\" through this UI by construction, a different signal from the position-effect card's own OOD check below." },
-          { term: "OOD widen (position-effect head)", scale: "×1 – ×3", meaning: "The chromatin position-effect model's own out-of-distribution multiplier (Mahalanobis distance over the 5 supplied marks vs. its training distribution; near-zero input ≈ ×1, mid-range ≈ ×2.4–×2.8, cap ×3). It is computed from your mark vector, not fixed, but note the head was trained on normalized EXACT-SITE features, so typical 0–1 histone inputs at the app's coarse 1 kb resolution sit outside that distribution and usually read near the ×3 cap. That is the widen correctly flagging OOD, the same root cause as outcome_validated:false, not a stuck value." },
+          { term: "OOD widen (position-effect head)", scale: "×1 - ×3", meaning: "The chromatin position-effect model's own out-of-distribution multiplier (Mahalanobis distance over the 5 supplied marks vs. its training distribution; near-zero input ≈ ×1, mid-range ≈ ×2.4-×2.8, cap ×3). It is computed from your mark vector, not fixed, but note the head was trained on normalized EXACT-SITE features, so typical 0-1 histone inputs at the app's coarse 1 kb resolution sit outside that distribution and usually read near the ×3 cap. That is the widen correctly flagging OOD, the same root cause as outcome_validated:false, not a stuck value." },
         ]}
         caveats={[
           "Bounded by the structure→phenotype boundary: in-vivo titer, phenotype and clinical durability are known-unknowns, never predicted.",
@@ -150,7 +150,7 @@ export default function Twin() {
                 user is not misled into reading a maximally-optimistic number for a biologically inappropriate pick. */}
             {selPromoter?.group === "tissue_specific" && (
               <p className="mt-1 text-[12px]" style={{ color: "var(--warn)" }}>
-                ⚠ {selPromoter.name} is a <b>{selPromoter.context}</b>-specific promoter. The mechanistic estimate is
+                {selPromoter.name} is a <b>{selPromoter.context}</b>-specific promoter. The mechanistic estimate is
                 cell-type-agnostic, it applies the same strength whether or not <b>{selPromoter.context}</b> matches
                 your cell state (<b>{cellState}</b>), so confirm this promoter is actually active in your target cells.
               </p>
@@ -185,7 +185,7 @@ export default function Twin() {
                   (kept, not clamped, so the OOD-widen signal still reflects them). */}
               {marksOutOfRange.length > 0 && (
                 <p className="mt-2 text-[11px]" style={{ color: "var(--warn)" }}>
-                  ⚠ {marksOutOfRange.join(", ")} outside the documented normalized 0–1 range. The value is still fed
+                  {marksOutOfRange.join(", ")} outside the documented normalized 0-1 range. The value is still fed
                   to the model (and will read as strongly out-of-distribution), but it is outside the feature scale
                   the head was trained on.
                 </p>
@@ -215,7 +215,7 @@ export default function Twin() {
                 card (in-distribution cell types + perturbation kinds, every cell type this app's dropdown
                 offers is on that list, so it will read "no" through this UI by construction). It is NOT the
                 position-effect chromatin model's own OOD signal, that one is the "OOD widen" stat on the position-effect
-                card below, and it DOES move (verified: ×1–2 typical, saturating at ×3 under extreme marks). */}
+                card below, and it DOES move (verified: ×1-2 typical, saturating at ×3 under extreme marks). */}
             <p className="text-[11px] leading-relaxed text-fg-faint">
               The reported value is the <b>mechanistic</b> estimate, promoter strength × copy number × accessibility
               {res.conditioned_on_preexisting_nab != null ? " × pre-existing-NAb" : ""}. It reacts to <b>promoter</b> and

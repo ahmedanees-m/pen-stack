@@ -12,7 +12,7 @@ improvement over CRISOT (AUPRC gap CI includes 0 at both). DECISION: chromatin i
 re-ranker, the CRISOT sequence score already captures the practically-relevant ranking signal.
 
 Needs: the CRISOT repo (CRISOT-Score), hg38 GRCh38.fa, the HEK293T DNase bigWig, the GUIDE-seq CSV, plus
-xgboost / pyBigWig / scikit-learn. Run on the VM. (Inactive cap controls the candidate imbalance.)
+xgboost / pyBigWig / scikit-learn. Run on the host. (Inactive cap controls the candidate imbalance.)
 """
 from __future__ import annotations
 

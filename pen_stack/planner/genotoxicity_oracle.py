@@ -3,7 +3,7 @@
 Replaces the hard-coded `genotoxicity` ordinal tier (documented prior) with a DATA-COMPUTED signal for
 INTEGRATING vehicles: the observed enrichment of a vector class's integration sites near CancerMine (CC0)
 oncogenes, from VISDB integration catalogues x the oncogene annotation (configs/genotoxicity_oracle.yaml,
-built by scripts/p52_build_genotox_oracle.py on the VM where the data lives).
+built by scripts/p52_build_genotox_oracle.py on the host where the data lives).
 
     genotox_score = min(1, 1 / enrichment) # 1 = safest; episomal/non-targeting ~ 1.0
 

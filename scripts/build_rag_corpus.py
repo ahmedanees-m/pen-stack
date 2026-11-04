@@ -5,7 +5,7 @@ Run where the pinned embedder (Ollama `nomic-embed-text`) is reachable. Writes:
   * data/rag_corpus_emb.npy   - the corpus embedding matrix (committed for replay)
 Prints the chunk count, per-type breakdown, embedding shape, and the corpus SHA256.
 
-Usage (on the VM, via the engine image with host networking for Ollama):
+Usage (on the host, via the engine image with host networking for Ollama):
   docker run --rm --network host -e PYTHONPATH=/build -v ~/penstack:/build -w /build \\
       penstack:web python scripts/build_rag_corpus.py
 """

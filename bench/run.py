@@ -7,7 +7,7 @@
 Designed to be the reproducible entrypoint on a clean image: it loads the SHA-locked task set, runs each
 task's deterministic scorer, runs the agent's no-fabrication gate, and writes out/bench_results.json +
 benchmarks/genome_writing_bench/LEADERBOARD.md. Tasks needing the atlas / Perry tables / an LLM are
-reported `available: false` when those are absent, so the command succeeds anywhere (fully on the VM/local).
+reported `available: false` when those are absent, so the command succeeds anywhere (fully on the host/local).
 """
 from __future__ import annotations
 

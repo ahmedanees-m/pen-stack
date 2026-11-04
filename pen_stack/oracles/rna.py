@@ -1,7 +1,7 @@
 """RNA oracle, ViennaRNA secondary-structure fold, under the oracle contract.
 
 A thin contract wrapper over the EXISTING `bridge.fold_qc` (the ViennaRNA QC that already feeds the
-hard fold-legality rule). ViennaRNA is real and runs in the VM image; when absent the adapter returns a
+hard fold-legality rule). ViennaRNA is real and runs in the host image; when absent the adapter returns a
 deferred `OracleResult` (available=False) rather than a fabricated structure. Fold legality remains a HARD
 rule input (it does not become a soft signal here).
 """
@@ -18,7 +18,7 @@ def fold(scaffold_seq: str) -> OracleResult:
     inputs = {"scaffold_len": len(scaffold_seq), "scaffold_seq": scaffold_seq.upper()}
     if not r.get("available"):
         return build_result("rna", "viennarna", inputs=inputs, available=False,
-                            note=r.get("note", "ViennaRNA not installed (runs in the VM image)"))
+                            note=r.get("note", "ViennaRNA not installed (runs in the host image)"))
     # native uncertainty proxy: a less-negative MFE per nt = a weaker, less-certain fold
     mfe, n = float(r["mfe"]), max(1, int(r["length"]))
     unc = max(0.0, min(1.0, 1.0 + (mfe / n) / 0.5)) # ~0 for strong folds, ->1 as MFE/nt -> 0

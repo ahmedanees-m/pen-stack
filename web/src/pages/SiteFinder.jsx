@@ -52,7 +52,7 @@ export default function SiteFinder() {
     if (Number.isNaN(n)) { setCargo(1); setCargoNote(null); return; }
     const clamped = Math.min(CARGO_MAX, Math.max(1, n));  // real payload range [1, CARGO_MAX]
     setCargo(clamped);
-    setCargoNote(clamped !== n ? `clamped to ${clamped.toLocaleString()} bp (allowed 1–${CARGO_MAX.toLocaleString()})` : null);
+    setCargoNote(clamped !== n ? `clamped to ${clamped.toLocaleString()} bp (allowed 1-${CARGO_MAX.toLocaleString()})` : null);
   }
 
   async function run() {
@@ -83,10 +83,10 @@ export default function SiteFinder() {
       <WhatYouGet
         intro="Find the best places to write into a gene, every candidate 1-kb locus scored for genomic safety and expression durability, plus ready-to-use writer + site plans for your cargo and edit intent."
         features={[
-          { name: "Writable loci", tells: "the scored 1-kb bins in and around your gene, ranked", output: "table · safety / durability / writability (0–1)" },
-          { name: "Site safety", tells: "is the locus away from cancer & essential genes?", output: "0–1 · higher = safer" },
-          { name: "Durability", tells: "will an insert here keep expressing (resist silencing)?", output: "0–1 · higher = lasts" },
-          { name: "Writability", tells: "overall write-suitability (0.5·safety + 0.5·durability)", output: "0–1 · the composite" },
+          { name: "Writable loci", tells: "the scored 1-kb bins in and around your gene, ranked", output: "table · safety / durability / writability (0-1)" },
+          { name: "Site safety", tells: "is the locus away from cancer & essential genes?", output: "0-1 · higher = safer" },
+          { name: "Durability", tells: "will an insert here keep expressing (resist silencing)?", output: "0-1 · higher = lasts" },
+          { name: "Writability", tells: "overall write-suitability (0.5·safety + 0.5·durability)", output: "0-1 · the composite" },
           { name: "Ranked write plans", tells: "concrete writer × site combos for your cargo + intent", output: "ranked list · genotoxic sites flagged" },
           { name: "Cell-type coverage", tells: "which cell types have a measured atlas (refusal otherwise)", output: "K562/HepG2 full · HSPC partial · others disabled" },
         ]}
@@ -115,7 +115,7 @@ export default function SiteFinder() {
               {INTENTS.map((v) => <option key={v} value={v}>{v.replace(/_/g, " ")}</option>)}
             </select>
           </Field>
-          <Field label="Cargo bp" hint={`for the ranked plans (capacity/delivery) · 1–${CARGO_MAX.toLocaleString()} bp`}>
+          <Field label="Cargo bp" hint={`for the ranked plans (capacity/delivery) · 1-${CARGO_MAX.toLocaleString()} bp`}>
             <input className="input" type="number" min={1} max={CARGO_MAX} step={100} value={cargo}
                    onChange={(e) => setCargoSafe(e.target.value)} />
             {cargoNote && <p className="mt-1 text-[11px] text-amber-300/90">{cargoNote}</p>}
@@ -134,14 +134,14 @@ export default function SiteFinder() {
 
       <ScoreGuide
         defaultOpen
-        intro="Every locus is a 1-kb genomic bin. Each score is 0–1, higher is better. They are relative, calibrated estimates for decision-support, not guarantees: 1.0 means 'top of the modeled range', not 'perfect' or 'proven'."
+        intro="Every locus is a 1-kb genomic bin. Each score is 0-1, higher is better. They are relative, calibrated estimates for decision-support, not guarantees: 1.0 means 'top of the modeled range', not 'perfect' or 'proven'."
         items={[
-          { term: "Safety", scale: "0–1, higher = safer", meaning: "1 − P(genotoxic) from a model over chromatin marks + log-distance to the nearest oncogene (CancerMine), tumour-suppressor, essential gene (DepMap) and TSS, plus retroviral (MLV) integration density. ~1.0 = far from cancer/essential genes; low = near one (e.g. LMO2, MECOM)." },
-          { term: "Durability", scale: "0–1, higher = lasts", meaning: "P(durable) = 1 − P(silenced), from a TRIP-trained chromatin model (thousands of genome-integrated reporters scored for positional silencing), applied to this cell type's histone marks. The slider shows the modeled probability an insert here keeps expressing." },
-          { term: "Writability", scale: "0–1, the composite", meaning: "0.5·Safety + 0.5·Durability, a documented 50/50 blend, not a product. A 0.92 might be 'very safe, decent durability' or the reverse; the two columns tell you which trade-off you are getting." },
+          { term: "Safety", scale: "0-1, higher = safer", meaning: "1 − P(genotoxic) from a model over chromatin marks + log-distance to the nearest oncogene (CancerMine), tumour-suppressor, essential gene (DepMap) and TSS, plus retroviral (MLV) integration density. ~1.0 = far from cancer/essential genes; low = near one (e.g. LMO2, MECOM)." },
+          { term: "Durability", scale: "0-1, higher = lasts", meaning: "P(durable) = 1 − P(silenced), from a TRIP-trained chromatin model (thousands of genome-integrated reporters scored for positional silencing), applied to this cell type's histone marks. The slider shows the modeled probability an insert here keeps expressing." },
+          { term: "Writability", scale: "0-1, the composite", meaning: "0.5·Safety + 0.5·Durability, a documented 50/50 blend, not a product. A 0.92 might be 'very safe, decent durability' or the reverse; the two columns tell you which trade-off you are getting." },
         ]}
         caveats={[
-          "Validation: the learned writability separates curated safe harbours (AAVS1, CCR5, CLYBL…) from matched controls at AUROC 0.68 (95% CI 0.54–0.83, N=16), modest, above chance. Naive distance rules fail this (AUROC ~0.51) because real safe harbours sit inside genes.",
+          "Validation: the learned writability separates curated safe harbours (AAVS1, CCR5, CLYBL…) from matched controls at AUROC 0.68 (95% CI 0.54-0.83, N=16), modest, above chance. Naive distance rules fail this (AUROC ~0.51) because real safe harbours sit inside genes.",
           "Durability is trained on mouse TRIP and transferred to human; partial-coverage cell types degrade gracefully and are labelled, never silently extrapolated.",
           "A locus's writability is intrinsic to the gene × cell-type context. Cargo size and edit intent are properties of the strategy, so they shape the ranked plans, not the per-locus score.",
         ]}

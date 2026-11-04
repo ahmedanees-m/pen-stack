@@ -213,7 +213,7 @@ def deliberate(gene: str = "AAVS1", cargo_bp: int = 3000, cell_type: str = "K562
     deterministic baseline (pen_agent state machine). Reports both; no-fabrication holds for both."""
     delib = propose_strategies(gene, cargo_bp, cell_type, n=3)
     best = delib["strategies"][0] if delib["strategies"] else None
-    baseline = {"available": False, "note": "deterministic pen_agent baseline needs the writability atlas (VM/local)"}
+    baseline = {"available": False, "note": "deterministic pen_agent baseline needs the writability atlas (host/local)"}
     try:
         from pen_stack.agent.pen_agent import plan_write_session
         r = plan_write_session(gene, "safe_harbour_insertion", cargo_bp=cargo_bp, ct=cell_type.lower())

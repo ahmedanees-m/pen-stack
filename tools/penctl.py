@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""penctl - orchestrate the VM over SSH/SFTP from the laptop. Docker-only on the VM.
+"""penctl - orchestrate the remote GPU host over SSH/SFTP. Docker-only on the host.
 
-Laptop runs only this; all heavy compute is `docker run` on the VM, artifacts pulled to the
-Google Drive folder over SFTP (no rclone). See docs/INFRA.md.
+The local machine runs only this; all heavy compute is `docker run` on the host, artifacts pulled
+to durable storage over SFTP (no rclone). See docs/INFRA.md.
 """
 import os
 import sys
@@ -62,28 +62,28 @@ def _docker(inner, gpus=True):
 
 @click.group()
 def cli():
-    """penctl - laptop-side orchestrator for the PEN-STACK VM."""
+    """penctl - local orchestrator for the PEN-STACK GPU host."""
 
 
 @cli.command()
 def bootstrap():
-    """Create VM dirs (mkdir only - no installs)."""
+    """Create host directories (mkdir only - no installs)."""
     dirs = [WORK, f"{DATA}/raw", f"{DATA}/interim", f"{DATA}/features",
             f"{DATA}/models", f"{DATA}/out", f"{DATA}/logs"]
     _run("mkdir -p " + " ".join(dirs))
-    C.print("[green]VM dirs ready[/]")
+    C.print("[green]host directories ready[/]")
 
 
 @cli.command()
 @click.option("--repo", default="https://github.com/ahmedanees-m/pen-stack.git")
 def clone(repo):
     _run(f"test -d {WORK}/.git || git clone {repo} {WORK}")
-    C.print("[green]repo on VM[/]")
+    C.print("[green]repo on host[/]")
 
 
 @cli.command()
 def push():
-    """SFTP the local working tree (code only) to the VM. Excludes data/."""
+    """SFTP the local working tree (code only) to the host. Excludes data/."""
     sftp = _client().open_sftp()
     base = os.getcwd()
     EXC = {".git", "data", "__pycache__", ".venv", "node_modules"}
@@ -110,13 +110,13 @@ def build_img():
 @click.argument("inner", nargs=-1)
 @click.option("--cpu", is_flag=True, help="no GPU")
 def run(inner, cpu):
-    """Run a command INSIDE the Docker container on the VM."""
+    """Run a command INSIDE the Docker container on the host."""
     _docker(" ".join(inner), gpus=not cpu)
 
 
 @cli.command()
 def df():
-    """Check VM disk; warn if data dir > 400 GB."""
+    """Check host disk; warn if data dir > 400 GB."""
     C.print(_run(f"du -sh {DATA} && df -h {DATA}"))
 
 
@@ -124,7 +124,7 @@ def df():
 @click.argument("remote")
 @click.option("--dest", default="")
 def pull(remote, dest):
-    """SFTP-pull a VM artifact into the local Google Drive folder (auto-syncs to Drive)."""
+    """SFTP-pull a host artifact into the local synced storage folder."""
     sftp = _client().open_sftp()
     rpath = posixpath.join(DATA, remote)
     lpath = os.path.join(DRIVE, dest, os.path.basename(remote))
@@ -136,9 +136,9 @@ def pull(remote, dest):
 @cli.command()
 @click.argument("remote")
 def clean(remote):
-    """Delete a staged artifact on the VM after it is safely on Drive."""
+    """Delete a staged artifact on the host once it is safely in storage."""
     _run(f"rm -rf {posixpath.join(DATA, remote)}")
-    C.print("[green]cleaned on VM[/]")
+    C.print("[green]cleaned on host[/]")
 
 
 if __name__ == "__main__":

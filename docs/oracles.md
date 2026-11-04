@@ -45,7 +45,7 @@ grows with the cross-oracle spread); Principle 3.
 Heavy backends (AF3, Evo2, ESM3, …) run on-demand (hosted API / local GPU) and are cached + version-pinned
 under `oracle_cache/` (committed for offline CI). When a backend and a cache entry are both absent, the
 adapter returns a **deferred** result (`available=False`); it never fabricates a value. ViennaRNA and the
-bridge energetics model are real and run locally / on the VM.
+bridge energetics model are real and run locally / on the host.
 
 See `docs/writer_verification.md` (scoring/critiquing writers through the mesh), `prereg/ws_o.yaml`, and
 `pen_stack/oracles/`.

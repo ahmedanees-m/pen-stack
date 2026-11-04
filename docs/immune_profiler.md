@@ -7,7 +7,7 @@ driver **MHC-II/CD4 to ADA**, and it scores the **writer enzyme as a distinct an
 ## The MHC-II/CD4 axis (`planner/immune_mhc2.py`)
 
 > **Real predictor.** The MHC-II epitope load is computed with the **licensed NetMHCIIpan-4.0** (EL
-> %Rank≤2 over a frequent HLA-II panel; MHC-I via **NetMHCpan-4.1**), run inside `penmhc:tools` Docker on the VM
+> %Rank≤2 over a frequent HLA-II panel; MHC-I via **NetMHCpan-4.1**), run inside `penmhc:tools` Docker on the host
 > with the licensed tools **mounted** (never committed). Only the **derived fractions** are cached
 > (`configs/mhc_epitope_oracle.yaml`), exactly like the MHCflurry cache. Computed with the residue-coverage
 > metric (residues covered by ≥1 strong binder, union over the panel; matches the MHCflurry convention): the
@@ -38,7 +38,7 @@ ADA-risk = MHC-II epitope density × foreignness
 where `foreignness` is the **authoritative protein origin** (self vs bacterial/viral/phage), the definitive
 central-tolerance signal. The MHC-II density is the real NetMHCIIpan-4.0 value (by antigen name), and an
 **unknown origin abstains** (no k-mer guess, no heuristic). The **real full-human-proteome 9-mer self-match**
-(computed on the VM over the full UniProt reference proteome, 20 431 proteins / 10.4 M 9-mers) is reported as a
+(computed on the host over the full UniProt reference proteome, 20 431 proteins / 10.4 M 9-mers) is reported as a
 **cross-check**, not as a foreignness imputation. This **recovers immunogenic-vs-tolerated**:
 
 | Protein (real UniProt) | origin | MHC-II density (NetMHCIIpan-4.0) | ADA-risk | human-proteome self-match |
@@ -63,7 +63,7 @@ with `collapsed_score: None` (never fused).
 - Population-level proxies, never a patient-specific ADA titer / realized CD4 magnitude (out of scope).
 - The MHC-II method is presentation potential, not a trained allele-specific predictor.
 - The self-tolerance k-mer filter is seeded by the bundled human reference; the **full human proteome** is
-  substitutable on the VM (the authoritative foreignness signal is the protein origin).
+  substitutable on the host (the authoritative foreignness signal is the protein origin).
 - The ADA axis's `calibrate_axis` pass **stays a proxy**: no public observed-incidence set at N≥6 power (the standing
   wet-lab/clinical-data bottleneck), reported, never manufactured.
 

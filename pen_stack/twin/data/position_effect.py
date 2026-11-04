@@ -8,7 +8,7 @@ cassette identity + cross-dataset normalization + leakage-controlled splits.
 
 NO FABRICATION. Each dataset is registered with its verified accession/DOI and a loader. A dataset whose raw
 data is not present is reported `available=False` (an "not fetched"), never silently imputed. The only
-dataset wired live is **TRIP** (Akhtar 2013, on the VM + pulled locally); the additional human
+dataset wired live is **TRIP** (Akhtar 2013, on the host + pulled locally); the additional human
 position-effect sources (PatchMPRA, MPIRE, lentiMPRA, Leemans) are registered with their accessions and a
 loader contract, and become available when their raw data is fetched, the cross-cell-type *transfer* claim is
 explicitly gated on that acquisition (documented, not asserted).

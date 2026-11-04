@@ -35,7 +35,7 @@ def test_stratified_report_is_well_formed():
     # The discriminating recovery@k is circular/definitional and tie-break-sensitive - we do NOT
     # assert a performance ordering on it. The deterministic performance primary is the blind GSH
     # discovery AUROC (test_decircularized_benchmarks.py). Here we only check the report is well-formed for both
-    # strata so downstream code/manuscripts read valid fields.
+    # strata so downstream code reads valid fields.
     from pen_stack.validate.paper3_benchmark import recovery_at_k, stratified_report
     panel = pd.read_csv(_PANEL)
     rep = stratified_report(recovery_at_k(panel, k=10))

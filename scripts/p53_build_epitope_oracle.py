@@ -19,7 +19,7 @@ Sequences (UniProt, verified): AAV2 VP1 P03135; Ad5 hexon P04133; VSV-G Indiana 
 antigen); HSV-1 gD P57083 + gB P06437. Method: MHCflurry 2.0 [10.1016/j.cels.2020.06.010]; HLA-I frequent-
 allele panel / supertypes [10.1186/1471-2172-9-1].
 
-Run (on the VM, in the dedicated mhcflurry image):
+Run (on the host, in the dedicated mhcflurry image):
     docker run --rm -v ~/penstack:/app -w /app penstack:mhcflurry \\
         python scripts/p53_build_epitope_oracle.py > configs/capsid_epitope_oracle.yaml
 """

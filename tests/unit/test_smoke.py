@@ -1,4 +1,4 @@
-"""Tiny smoke tests runnable on the laptop (no GPU, no upstream data)."""
+"""Tiny smoke tests runnable locally (no GPU, no upstream data)."""
 import importlib
 
 import pen_stack
