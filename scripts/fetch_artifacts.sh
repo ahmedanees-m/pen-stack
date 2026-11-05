@@ -20,7 +20,7 @@
 # which documents your own registered download under your own license.
 #
 #     bash scripts/fetch_artifacts.sh              # fetch + verify + install into data/out/ and models/
-#     ZENODO_DOI=10.5281/zenodo.21787137 bash scripts/fetch_artifacts.sh   # pin the first release
+#     ZENODO_DOI=10.5281/zenodo.<record> bash scripts/fetch_artifacts.sh   # pin one release
 #     PEN_ATLAS_DIR=/some/other/dir bash scripts/fetch_artifacts.sh   # override the atlas destination
 # ---------------------------------------------------------------------------------------------------
 set -euo pipefail

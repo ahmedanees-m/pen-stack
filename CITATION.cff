@@ -13,9 +13,6 @@ identifiers:
   - type: doi
     value: 10.5281/zenodo.21787136
     description: Concept DOI (resolves to the newest version)
-  - type: doi
-    value: 10.5281/zenodo.21787137
-    description: Version DOI of the first release (v0.1.0)
   - type: other
     value: "arXiv:2608.20412"
     description: arXiv preprint identifier

@@ -329,8 +329,7 @@ If you use PEN-STACK, please cite the preprint:
 
 To cite this software, use the concept DOI
 [10.5281/zenodo.21787136](https://doi.org/10.5281/zenodo.21787136), which always resolves to the newest archived
-version. The first release is pinned by its own version DOI, [10.5281/zenodo.21787137](https://doi.org/10.5281/zenodo.21787137).
-Author and ORCID metadata is in [CITATION.cff](CITATION.cff).
+version. Author and ORCID metadata is in [CITATION.cff](CITATION.cff).
 
 ## License and attribution
 
