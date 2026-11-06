@@ -8,6 +8,9 @@ every row carries a DOI, a verbatim source quote, and a source-access grade.**
 `system, family, write_type, variant, cargo_bp, locus, cell_type, organism, delivery, efficiency_pct,
 efficiency_raw, specificity_pct, source_access, doi, quote`. `efficiency_pct` is % integration in the stated cell
 type; ranges (e.g. "~10-20%", "4-22%") are stored as their **midpoint** with the raw string in `efficiency_raw`.
+A one-sided bound (e.g. "up to 20%", ">6%") is stored as the stated bound itself, so 15 of the 45 rows
+carry a bounded rather than a point label, 11 of them `pmc_verbatim`. Read `efficiency_raw` wherever the
+distinction between a point value and a bound matters.
 
 ## Source-access grades (provenance quality, per row)
 | Grade | Meaning | n |
@@ -15,6 +18,21 @@ type; ranges (e.g. "~10-20%", "4-22%") are stored as their **midpoint** with the
 | `pmc_verbatim` | quoted from the open-access PMC full text (highest confidence) | 39 |
 | `abstract` | quoted from the published abstract | 1 |
 | `secondary` | reliable secondary source where the primary is paywalled (flagged; droppable via `strict=True`) | 5 |
+
+**Grade and family are not separable.** All six records that are not `pmc_verbatim` belong to `bridge_IS110`, and
+that family carries no `pmc_verbatim` record, so a subset taken on source grade is also a subset taken on family.
+`strict=True` is therefore a high-confidence subset and not a provenance control: it leaves `bridge_IS110` a
+single record and the cross-family fold degenerate. The structure and what it does and does not permit are set
+out in `benchmarks/writer_efficiency/provenance_sensitivity.json`. Two consequences carry into the evaluation:
+the held-out-locus axis contains no non-primary record at all, because every non-primary human record sits at an
+aggregate pseudo-locus that the specific-locus mask already excludes, and the held-out-family result spans zero
+both on the full table and on the three families carrying full primary-source provenance.
+
+**Figures confirmed against the primary texts.** The four `secondary` human-cell figures match their sources:
+6.82% and 14.76% are the enIS621-tebRNA averages over AAVS1 site3 and B2M intron 1 in HEK293T and in Jurkat T
+cells, open in PMC13396178; insertion above 6% is the ISCro4 figure in Pelea et al.; and up to 20% insertion with
+82% specificity is the engineered ISCro4 figure in Perry et al. The 27.75% figure appears in the enIS621 abstract
+and nowhere in that paper's results or methods, which is the grade the row carries.
 
 ## Coverage (~45 records, 42 human-cell, 9 DOIs, 4 families)
 | Family | n | Representative systems |
@@ -45,4 +63,8 @@ K562, Jurkat, HepG2, N2a, iPSC, primary T / hepatocyte / fibroblast, E. coli.
 - **Range-midpoint handling** for efficiencies reported as ranges (raw string retained).
 - **Heterogeneous assays/conditions** across papers (delivery, cargo, pre-installed vs PE-installed att): encoded
   as features (`variant`, `delivery`, `cargo_bp`) + a covariate, but cross-paper variance is real.
-- **secondary-source rows** (bridge ISCro4/IS621) are flagged and excluded under `strict=True`.
+- **secondary-source rows** (bridge ISCro4/IS621) are flagged and excluded under `strict=True`. Because they are
+  one family, excluding them removes that family rather than isolating provenance quality, so `strict=True` is a
+  confidence subset and not a provenance control.
+- **No per-row experimental uncertainty.** No column carries a replicate count, standard deviation or interval,
+  so measurement error cannot be propagated into a downstream analysis.

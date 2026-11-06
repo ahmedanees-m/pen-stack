@@ -1,0 +1,664 @@
+{
+  "A_grade_against_family": {
+    "crosstab": {
+      "CAST_VK": {
+        "abstract": 0,
+        "pmc_verbatim": 5,
+        "secondary": 0
+      },
+      "PE_integrase": {
+        "abstract": 0,
+        "pmc_verbatim": 23,
+        "secondary": 0
+      },
+      "bridge_IS110": {
+        "abstract": 1,
+        "pmc_verbatim": 0,
+        "secondary": 5
+      },
+      "serine_integrase": {
+        "abstract": 0,
+        "pmc_verbatim": 11,
+        "secondary": 0
+      }
+    },
+    "n_non_primary": 6,
+    "n_bridge_IS110": 6,
+    "non_primary_set_equals_bridge_set": true,
+    "bridge_IS110_primary_records": 0,
+    "non_primary_rows": [
+      {
+        "family": "bridge_IS110",
+        "system": "enIS621-tebRNA",
+        "organism": "human",
+        "cell_type": "HEK293T",
+        "locus": "endogenous_avg",
+        "efficiency_pct": 6.82,
+        "efficiency_raw": "6.82%",
+        "source_access": "secondary",
+        "doi": "10.1038/s41467-026-74164-z"
+      },
+      {
+        "family": "bridge_IS110",
+        "system": "enIS621-tebRNA",
+        "organism": "human",
+        "cell_type": "Jurkat",
+        "locus": "endogenous_avg",
+        "efficiency_pct": 14.76,
+        "efficiency_raw": "14.76%",
+        "source_access": "secondary",
+        "doi": "10.1038/s41467-026-74164-z"
+      },
+      {
+        "family": "bridge_IS110",
+        "system": "enIS621-tebRNA",
+        "organism": "human",
+        "cell_type": "multi_human",
+        "locus": "best_locus",
+        "efficiency_pct": 27.75,
+        "efficiency_raw": "up to 27.75%",
+        "source_access": "abstract",
+        "doi": "10.1038/s41467-026-74164-z"
+      },
+      {
+        "family": "bridge_IS110",
+        "system": "ISCro4",
+        "organism": "human",
+        "cell_type": "human_cells",
+        "locus": "human_genome",
+        "efficiency_pct": 6.0,
+        "efficiency_raw": ">6%",
+        "source_access": "secondary",
+        "doi": "10.1126/science.adz1884"
+      },
+      {
+        "family": "bridge_IS110",
+        "system": "ISCro4",
+        "organism": "human",
+        "cell_type": "human_cells",
+        "locus": "human_genome",
+        "efficiency_pct": 20.0,
+        "efficiency_raw": "up to 20%",
+        "source_access": "secondary",
+        "doi": "10.1126/science.adz0276"
+      },
+      {
+        "family": "bridge_IS110",
+        "system": "IS621",
+        "organism": "bacterial",
+        "cell_type": "E_coli",
+        "locus": "ecoli_genome",
+        "efficiency_pct": 60.0,
+        "efficiency_raw": ">60%",
+        "source_access": "secondary",
+        "doi": "10.1038/s41586-024-07552-4"
+      }
+    ]
+  },
+  "B_locus_basis": {
+    "n_human": 42,
+    "n_locus_basis": 35,
+    "n_removed_by_mask": 7,
+    "removed": [
+      {
+        "family": "PE_integrase",
+        "locus": "8loci_avg",
+        "source_access": "pmc_verbatim"
+      },
+      {
+        "family": "CAST_VK",
+        "locus": "14loci_avg",
+        "source_access": "pmc_verbatim"
+      },
+      {
+        "family": "bridge_IS110",
+        "locus": "endogenous_avg",
+        "source_access": "secondary"
+      },
+      {
+        "family": "bridge_IS110",
+        "locus": "endogenous_avg",
+        "source_access": "secondary"
+      },
+      {
+        "family": "bridge_IS110",
+        "locus": "best_locus",
+        "source_access": "abstract"
+      },
+      {
+        "family": "bridge_IS110",
+        "locus": "human_genome",
+        "source_access": "secondary"
+      },
+      {
+        "family": "bridge_IS110",
+        "locus": "human_genome",
+        "source_access": "secondary"
+      }
+    ],
+    "n_non_primary_on_locus_basis": 0,
+    "locus_basis_wholly_primary_source": true
+  },
+  "C_reproduces_released_result": true,
+  "D_axes": {
+    "full": {
+      "description": "every human-cell record, the released basis",
+      "n": 42,
+      "n_families": 4,
+      "family_composition": {
+        "PE_integrase": 22,
+        "serine_integrase": 11,
+        "bridge_IS110": 5,
+        "CAST_VK": 4
+      },
+      "axes": {
+        "held_out_family": {
+          "n": 42,
+          "n_folds": 4,
+          "folds": [
+            {
+              "group": "PE_integrase",
+              "n_train": 20,
+              "n_test": 22
+            },
+            {
+              "group": "serine_integrase",
+              "n_train": 31,
+              "n_test": 11
+            },
+            {
+              "group": "CAST_VK",
+              "n_train": 38,
+              "n_test": 4
+            },
+            {
+              "group": "bridge_IS110",
+              "n_train": 37,
+              "n_test": 5
+            }
+          ],
+          "mae_model": 11.371210558012818,
+          "mae_baseline_family_mean": 12.718180044597107,
+          "spearman_model": 0.5155668005858232,
+          "spearman_baseline": -0.2013765824577679,
+          "delta": {
+            "delta_mean_abs_err_reduction": 1.3560100178864591,
+            "ci95": [
+              -1.0899447700107028,
+              3.7457732007291438
+            ],
+            "model_beats_baseline": false
+          }
+        },
+        "held_out_locus": {
+          "n": 35,
+          "n_folds": 12,
+          "folds": [
+            {
+              "group": "ACTB",
+              "n_train": 26,
+              "n_test": 9
+            },
+            {
+              "group": "AAVS1",
+              "n_train": 29,
+              "n_test": 6
+            },
+            {
+              "group": "CCR5",
+              "n_train": 31,
+              "n_test": 4
+            },
+            {
+              "group": "GBA1",
+              "n_train": 34,
+              "n_test": 1
+            },
+            {
+              "group": "FANCA",
+              "n_train": 33,
+              "n_test": 2
+            },
+            {
+              "group": "B2M",
+              "n_train": 34,
+              "n_test": 1
+            },
+            {
+              "group": "ALB",
+              "n_train": 32,
+              "n_test": 3
+            },
+            {
+              "group": "COL7A1",
+              "n_train": 34,
+              "n_test": 1
+            },
+            {
+              "group": "Xq22.1",
+              "n_train": 33,
+              "n_test": 2
+            },
+            {
+              "group": "attP_preinstalled",
+              "n_train": 33,
+              "n_test": 2
+            },
+            {
+              "group": "ROSA26",
+              "n_train": 32,
+              "n_test": 3
+            },
+            {
+              "group": "TRAC",
+              "n_train": 34,
+              "n_test": 1
+            }
+          ],
+          "mae_model": 11.706939115281054,
+          "mae_baseline_family_mean": 15.225972735760969,
+          "spearman_model": 0.3813156471844334,
+          "spearman_baseline": -0.260982169984295,
+          "delta": {
+            "delta_mean_abs_err_reduction": 3.5257815852642618,
+            "ci95": [
+              0.41900722742963464,
+              6.285401438830988
+            ],
+            "model_beats_baseline": true
+          }
+        },
+        "held_out_study": {
+          "n": 42,
+          "n_folds": 7,
+          "folds": [
+            {
+              "group": "10.1038/s41587-022-01527-4",
+              "n_train": 33,
+              "n_test": 9
+            },
+            {
+              "group": "10.1038/s41551-024-01227-1",
+              "n_train": 26,
+              "n_test": 16
+            },
+            {
+              "group": "10.1093/nar/gkae534",
+              "n_train": 34,
+              "n_test": 8
+            },
+            {
+              "group": "10.1126/science.adt5199",
+              "n_train": 38,
+              "n_test": 4
+            },
+            {
+              "group": "10.1038/s41467-026-74164-z",
+              "n_train": 39,
+              "n_test": 3
+            },
+            {
+              "group": "10.1126/science.adz1884",
+              "n_train": 41,
+              "n_test": 1
+            },
+            {
+              "group": "10.1126/science.adz0276",
+              "n_train": 41,
+              "n_test": 1
+            }
+          ],
+          "mae_model": 11.819525983797039,
+          "mae_baseline_family_mean": 15.964544089925669,
+          "spearman_model": 0.31018233063945894,
+          "spearman_baseline": -0.24463019195902735,
+          "delta": {
+            "delta_mean_abs_err_reduction": 4.134569858972726,
+            "ci95": [
+              1.295953357612155,
+              6.9301485867052595
+            ],
+            "model_beats_baseline": true
+          }
+        }
+      }
+    },
+    "strict_grade": {
+      "description": "pmc_verbatim and abstract, which leaves bridge_IS110 a single record and the cross-family fold degenerate",
+      "n": 38,
+      "n_families": 4,
+      "family_composition": {
+        "PE_integrase": 22,
+        "serine_integrase": 11,
+        "CAST_VK": 4,
+        "bridge_IS110": 1
+      },
+      "axes": {
+        "held_out_family": {
+          "n": 38,
+          "n_folds": 4,
+          "folds": [
+            {
+              "group": "PE_integrase",
+              "n_train": 16,
+              "n_test": 22
+            },
+            {
+              "group": "serine_integrase",
+              "n_train": 27,
+              "n_test": 11
+            },
+            {
+              "group": "CAST_VK",
+              "n_train": 34,
+              "n_test": 4
+            },
+            {
+              "group": "bridge_IS110",
+              "n_train": 37,
+              "n_test": 1
+            }
+          ],
+          "mae_model": 15.037665883859,
+          "mae_baseline_family_mean": 13.336746318106032,
+          "spearman_model": 0.33310797636342404,
+          "spearman_baseline": -0.10128274523911855,
+          "delta": {
+            "delta_mean_abs_err_reduction": -1.7036128111528783,
+            "ci95": [
+              -4.863621437309869,
+              1.493915049705439
+            ],
+            "model_beats_baseline": false
+          }
+        },
+        "held_out_locus": {
+          "n": 35,
+          "n_folds": 12,
+          "folds": [
+            {
+              "group": "ACTB",
+              "n_train": 26,
+              "n_test": 9
+            },
+            {
+              "group": "AAVS1",
+              "n_train": 29,
+              "n_test": 6
+            },
+            {
+              "group": "CCR5",
+              "n_train": 31,
+              "n_test": 4
+            },
+            {
+              "group": "GBA1",
+              "n_train": 34,
+              "n_test": 1
+            },
+            {
+              "group": "FANCA",
+              "n_train": 33,
+              "n_test": 2
+            },
+            {
+              "group": "B2M",
+              "n_train": 34,
+              "n_test": 1
+            },
+            {
+              "group": "ALB",
+              "n_train": 32,
+              "n_test": 3
+            },
+            {
+              "group": "COL7A1",
+              "n_train": 34,
+              "n_test": 1
+            },
+            {
+              "group": "Xq22.1",
+              "n_train": 33,
+              "n_test": 2
+            },
+            {
+              "group": "attP_preinstalled",
+              "n_train": 33,
+              "n_test": 2
+            },
+            {
+              "group": "ROSA26",
+              "n_train": 32,
+              "n_test": 3
+            },
+            {
+              "group": "TRAC",
+              "n_train": 34,
+              "n_test": 1
+            }
+          ],
+          "mae_model": 11.706939115281054,
+          "mae_baseline_family_mean": 15.225972735760969,
+          "spearman_model": 0.3813156471844334,
+          "spearman_baseline": -0.260982169984295,
+          "delta": {
+            "delta_mean_abs_err_reduction": 3.5257815852642618,
+            "ci95": [
+              0.41900722742963464,
+              6.285401438830988
+            ],
+            "model_beats_baseline": true
+          }
+        },
+        "held_out_study": {
+          "n": 38,
+          "n_folds": 5,
+          "folds": [
+            {
+              "group": "10.1038/s41587-022-01527-4",
+              "n_train": 29,
+              "n_test": 9
+            },
+            {
+              "group": "10.1038/s41551-024-01227-1",
+              "n_train": 22,
+              "n_test": 16
+            },
+            {
+              "group": "10.1093/nar/gkae534",
+              "n_train": 30,
+              "n_test": 8
+            },
+            {
+              "group": "10.1126/science.adt5199",
+              "n_train": 34,
+              "n_test": 4
+            },
+            {
+              "group": "10.1038/s41467-026-74164-z",
+              "n_train": 37,
+              "n_test": 1
+            }
+          ],
+          "mae_model": 12.421601511102748,
+          "mae_baseline_family_mean": 16.883874682553472,
+          "spearman_model": 0.26541618185873256,
+          "spearman_baseline": -0.31660875420385026,
+          "delta": {
+            "delta_mean_abs_err_reduction": 4.462402889532303,
+            "ci95": [
+              1.7532184425992445,
+              7.254105594172944
+            ],
+            "model_beats_baseline": true
+          }
+        }
+      }
+    },
+    "primary_source": {
+      "description": "pmc_verbatim only, which is the three families carrying full primary-source provenance",
+      "n": 37,
+      "n_families": 3,
+      "family_composition": {
+        "PE_integrase": 22,
+        "serine_integrase": 11,
+        "CAST_VK": 4
+      },
+      "axes": {
+        "held_out_family": {
+          "n": 37,
+          "n_folds": 3,
+          "folds": [
+            {
+              "group": "PE_integrase",
+              "n_train": 15,
+              "n_test": 22
+            },
+            {
+              "group": "serine_integrase",
+              "n_train": 26,
+              "n_test": 11
+            },
+            {
+              "group": "CAST_VK",
+              "n_train": 33,
+              "n_test": 4
+            }
+          ],
+          "mae_model": 12.881069346267171,
+          "mae_baseline_family_mean": 13.461227121527124,
+          "spearman_model": 0.24327676327782158,
+          "spearman_baseline": -0.16889326634286236,
+          "delta": {
+            "delta_mean_abs_err_reduction": 0.6036636377010268,
+            "ci95": [
+              -2.283409892224878,
+              3.4219406045789946
+            ],
+            "model_beats_baseline": false
+          }
+        },
+        "held_out_locus": {
+          "n": 35,
+          "n_folds": 12,
+          "folds": [
+            {
+              "group": "ACTB",
+              "n_train": 26,
+              "n_test": 9
+            },
+            {
+              "group": "AAVS1",
+              "n_train": 29,
+              "n_test": 6
+            },
+            {
+              "group": "CCR5",
+              "n_train": 31,
+              "n_test": 4
+            },
+            {
+              "group": "GBA1",
+              "n_train": 34,
+              "n_test": 1
+            },
+            {
+              "group": "FANCA",
+              "n_train": 33,
+              "n_test": 2
+            },
+            {
+              "group": "B2M",
+              "n_train": 34,
+              "n_test": 1
+            },
+            {
+              "group": "ALB",
+              "n_train": 32,
+              "n_test": 3
+            },
+            {
+              "group": "COL7A1",
+              "n_train": 34,
+              "n_test": 1
+            },
+            {
+              "group": "Xq22.1",
+              "n_train": 33,
+              "n_test": 2
+            },
+            {
+              "group": "attP_preinstalled",
+              "n_train": 33,
+              "n_test": 2
+            },
+            {
+              "group": "ROSA26",
+              "n_train": 32,
+              "n_test": 3
+            },
+            {
+              "group": "TRAC",
+              "n_train": 34,
+              "n_test": 1
+            }
+          ],
+          "mae_model": 11.706939115281054,
+          "mae_baseline_family_mean": 15.225972735760969,
+          "spearman_model": 0.3813156471844334,
+          "spearman_baseline": -0.260982169984295,
+          "delta": {
+            "delta_mean_abs_err_reduction": 3.5257815852642618,
+            "ci95": [
+              0.41900722742963464,
+              6.285401438830988
+            ],
+            "model_beats_baseline": true
+          }
+        },
+        "held_out_study": {
+          "n": 37,
+          "n_folds": 4,
+          "folds": [
+            {
+              "group": "10.1038/s41587-022-01527-4",
+              "n_train": 28,
+              "n_test": 9
+            },
+            {
+              "group": "10.1038/s41551-024-01227-1",
+              "n_train": 21,
+              "n_test": 16
+            },
+            {
+              "group": "10.1093/nar/gkae534",
+              "n_train": 29,
+              "n_test": 8
+            },
+            {
+              "group": "10.1126/science.adt5199",
+              "n_train": 33,
+              "n_test": 4
+            }
+          ],
+          "mae_model": 13.818126199288091,
+          "mae_baseline_family_mean": 17.13929023079023,
+          "spearman_model": 0.2512042023833213,
+          "spearman_baseline": -0.3050156595871368,
+          "delta": {
+            "delta_mean_abs_err_reduction": 3.3417633744389077,
+            "ci95": [
+              0.07001780062750709,
+              6.374936042439028
+            ],
+            "model_beats_baseline": true
+          }
+        }
+      }
+    }
+  },
+  "E_locus_axis_invariant": {
+    "strict_grade": true,
+    "primary_source": true
+  }
+}
