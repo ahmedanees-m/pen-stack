@@ -55,4 +55,4 @@ def cross_cell_type_ood(query_cell_type: str, scored_in_cell_type: str) -> dict:
             "ood": ood,
             "label": "extrapolating (cross-cell-type; chromatin conserved -> weak heuristic)"
                      if ood else "in-distribution",
-            "note": "cross-cell-type transfer is a heuristic signal, not a guarantee; reported, not hidden"}
+            "note": "cross-cell-type transfer is a heuristic signal, not a guarantee"}

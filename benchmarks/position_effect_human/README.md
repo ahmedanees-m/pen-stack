@@ -109,7 +109,7 @@ validated `p_durable`."
 |---|---|
 | `metrics.json` | all held-out numbers, each field annotated with its source file+path (`field_sources`) |
 | `split.json` | the sealed `{chr3, chr8, chr12}` held-out split (n=1506) + prereg seal + acceptance rule |
-| `SHA256SUMS` | integrity hashes. Two of its entries no longer match current bytes: this manifest was not regenerated as the benchmark evolved, so `sha256sum -c` reports those two as failures. Both are accounted for by name in the deposit's benchmark-manifest provenance record. The manifest enforced by `make repro` is `benchmarks/genome_writing_bench/SHA256SUMS`, which verifies clean. |
+| `SHA256SUMS` | integrity hashes. Two of its entries do not match current bytes, so `sha256sum -c` reports those two as failures. Both are accounted for by name in the deposit's benchmark-manifest provenance record. The manifest enforced by `make repro` is `benchmarks/genome_writing_bench/SHA256SUMS`, which verifies clean. |
 | `README.md` | this file |
 
 Shipped model `pen_stack.twin.position_effect`. Data license: see [`../../DATA_LICENSES.md`](../../DATA_LICENSES.md).

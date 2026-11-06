@@ -5,7 +5,7 @@
 # sourced from the independent 2025 Leukemia review of vector genotoxicity (which names all of these) plus the
 # primary trial reports -- NOT from any benchmark, so completing the list is documented-list-completion, not
 # overfitting. A bin within `cis_window_bp` of any of these genes is flagged unsafe by rule, overriding the
-# soft atlas safety score. This closes the false negatives (BMI1/SETBP1/MN1 were previously scored safe).
+# soft atlas safety score, which on its own does not flag BMI1, SETBP1 or MN1.
 #
 # SCOPE: this blocklist rejects DOCUMENTED-bad loci; it does NOT predict genotoxicity for novel loci. A
 # blocklist cannot be validated on its own contents. A generalizing predictor is a separate effort (the

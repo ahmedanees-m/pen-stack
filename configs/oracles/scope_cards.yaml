@@ -1,6 +1,6 @@
 # Oracle scope cards. What each wrapped foundation model is VALID for, and what it
 # is NOT, so the substrate can gate and label outputs (the field's evidence that these models do not
-# generalize to unseen loci is made legible here, not hidden). `output_kind`: claim (a checkable prediction),
+# generalize to unseen loci is recorded here). `output_kind`: claim (a checkable prediction),
 # candidate (a generative proposal that must pass writer-verification), baseline (a comparator).
 version: "1.0"
 

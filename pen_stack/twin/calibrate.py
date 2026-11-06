@@ -53,7 +53,7 @@ def calibrate_outcome(predictions, observations, *, intervals=None, reps: int = 
         "mae_gap_naive_minus_twin": round(gap, 4), "gap_ci": ci,
         "beats_naive_baseline": beats,
         "note": ("twin beats naive (CI excludes 0)" if beats
-                        else "twin does NOT beat naive on this data (CI spans 0) - reported, not hidden"),
+                        else "twin does not beat naive on this data (CI spans 0)"),
         "no_fabrication": True,
     }
     if intervals is not None:

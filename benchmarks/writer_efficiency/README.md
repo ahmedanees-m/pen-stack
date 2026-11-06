@@ -30,7 +30,7 @@ verbatim source quote + a source-access grade**) so others can build a calibrate
 held-out **locus** (CI excludes 0) and **ranks** families far better (ρ +0.52 vs −0.20), but at N=42 across only
 **4 families** the held-out-**family** MAE improvement is not statistically distinguishable from zero. So the **KB
 ranking is retained as primary**, the learned predictor ships **candidate-flagged**, and the **curated dataset +
-this benchmark are the standalone contribution**, not a manufactured win. Reproduce:
+this benchmark are the standalone contribution**. Reproduce:
 `python -c "from benchmarks.writer_efficiency.harness import baseline_leaderboard as b; print(b())"`.
 
 ## Source provenance against writer family
@@ -66,12 +66,6 @@ Two consequences carry into the evaluation, both in `provenance_sensitivity.json
 released `result.json` metrics exactly before it reports any subset, and withholds the subset metrics otherwise.
 Regenerate: `python benchmarks/writer_efficiency/provenance_sensitivity.py`.
 
-The four `secondary` human-cell figures match their primary texts: 6.82% and 14.76% are the enIS621-tebRNA
-averages over AAVS1 site3 and B2M intron 1 in HEK293T and in Jurkat T cells; insertion above 6% is the ISCro4
-figure in Pelea et al.; up to 20% with 82% specificity is the engineered ISCro4 figure in Perry et al. The 27.75%
-figure appears in the enIS621 abstract and nowhere in that paper's results or methods, which is the grade the row
-carries.
-
 ## Submit
 
 ```python
@@ -88,7 +82,7 @@ print(evaluate(Submission("my-model", predict)))
 - **Provenance per row**: DOI + verbatim quote + `source_access` ∈ {pmc_verbatim, abstract, secondary}; the
   strict subset drops secondary-source rows, which also removes a family, so read it as a confidence subset and
   not as a provenance control.
-- **Data-thinness**: 4 families is the binding limit; reported, not hidden.
+- **Data-thinness**: 4 families is the binding statistical limit.
 
 Sources: PASTE (Yarnall *Nat Biotechnol* 2023), (ee)PASSIGE (Pandey/Liu *Nat Biomed Eng* 2025), hyperactive
 integrases (Hew *Nucleic Acids Res* 2024), evoCAST (*Science* 2025), ShCAST (Strecker *Science* 2019), enIS621

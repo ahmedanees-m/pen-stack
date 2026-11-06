@@ -90,7 +90,7 @@ export default function SiteFinder() {
           { name: "Ranked write plans", tells: "concrete writer × site combos for your cargo + intent", output: "ranked list · genotoxic sites flagged" },
           { name: "Cell-type coverage", tells: "which cell types have a measured atlas (refusal otherwise)", output: "K562/HepG2 full · HSPC partial · others disabled" },
         ]}
-        example="Enter CCR5 in K562 → 7 candidate loci with safety / durability / writability, plus ranked bridge-IS110 write plans sized to your cargo. Pick an oncogene like LMO2 and the unsafe sites are flagged genotoxic, not hidden."
+        example="Enter CCR5 in K562 → 7 candidate loci with safety / durability / writability, plus ranked bridge-IS110 write plans sized to your cargo. Pick an oncogene like LMO2 and the unsafe sites are flagged genotoxic."
       />
       <Card title="Find writable sites" subtitle="Loci scored by safety and durability for a target gene in a chosen cell type.">
         <div className="grid gap-3 sm:grid-cols-4">

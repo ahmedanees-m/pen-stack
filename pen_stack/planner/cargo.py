@@ -11,7 +11,7 @@ cassette); element lengths are nominal, documented constants.
 """
 from __future__ import annotations
 
-# nominal element sizes (bp) for the assembled donor; documented, not hidden
+# nominal element sizes (bp) for the assembled donor
 _ELEMENTS = {"insulator_5": 250, "promoter": 600, "polyA": 250, "insulator_3": 250}
 
 

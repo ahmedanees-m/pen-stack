@@ -87,7 +87,7 @@ export default function Oracles() {
         intro="Every oracle answers through one contract: a value, its provenance, its OWN native uncertainty, and a scope card. Outputs are candidates / hypotheses, never ground truth."
         items={[
           { term: "Reliability", scale: "published, verbatim", meaning: "The wrapped model's PUBLISHED benchmark accuracy, reported verbatim WITH a citation. It is NOT a claim about this stack's accuracy and is NOT re-computed here; null means a verbatim score was not verified." },
-          { term: "Native uncertainty", scale: "the model's own", meaning: "Surfaced, not hidden (e.g. half the spread between Boltz-2's two affinity heads). Cross-oracle disagreement widens the reported interval." },
+          { term: "Native uncertainty", scale: "the model's own", meaning: "Surfaced on every result (e.g. half the spread between Boltz-2's two affinity heads). Cross-oracle disagreement widens the reported interval." },
           { term: "Affinity value", scale: "log(IC50), lower = stronger", meaning: "A binder probability + a predicted affinity (a prediction, not a measured Kd). Protein-protein / protein-DNA pairs are out of scope (flagged)." },
         ]}
         caveats={[

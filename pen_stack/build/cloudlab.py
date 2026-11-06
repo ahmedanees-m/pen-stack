@@ -4,7 +4,7 @@ Bridges the build interface to a cloud lab (Ginkgo / Emerald / Strateos style). 
 biosecurity gate runs BEFORE any submission. A flagged or illegal design makes ``export_protocol`` raise, so no
 protocol is emitted and nothing hazardous can be submitted through the loop. Submission is mock / dry-run
 (the executable spec is the deliverable; a real wet run needs a partner and budget, the standing
-bottleneck, surfaced not hidden). A returned readout is ingested only through an explicit human-in-control gate
+bottleneck). A returned readout is ingested only through an explicit human-in-control gate
 (Level 3). Nothing is fabricated: a mock job carries a deterministic receipt, never a pretend measurement.
 """
 from __future__ import annotations

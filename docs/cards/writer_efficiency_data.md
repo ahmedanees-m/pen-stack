@@ -28,12 +28,6 @@ the held-out-locus axis contains no non-primary record at all, because every non
 aggregate pseudo-locus that the specific-locus mask already excludes, and the held-out-family result spans zero
 both on the full table and on the three families carrying full primary-source provenance.
 
-**Figures confirmed against the primary texts.** The four `secondary` human-cell figures match their sources:
-6.82% and 14.76% are the enIS621-tebRNA averages over AAVS1 site3 and B2M intron 1 in HEK293T and in Jurkat T
-cells, open in PMC13396178; insertion above 6% is the ISCro4 figure in Pelea et al.; and up to 20% insertion with
-82% specificity is the engineered ISCro4 figure in Perry et al. The 27.75% figure appears in the enIS621 abstract
-and nowhere in that paper's results or methods, which is the grade the row carries.
-
 ## Coverage (~45 records, 42 human-cell, 9 DOIs, 4 families)
 | Family | n | Representative systems |
 |---|---|---|
@@ -59,7 +53,7 @@ K562, Jurkat, HepG2, N2a, iPSC, primary T / hepatocyte / fibroblast, E. coli.
 
 ## Limitations
 - **Small & literature-sourced.** ~42 human-cell records / 4 families: the binding statistical limit for the
-  cross-family transfer claim (reported, not hidden). The dataset + bench are the contribution.
+  cross-family transfer claim. The dataset + bench are the contribution.
 - **Range-midpoint handling** for efficiencies reported as ranges (raw string retained).
 - **Heterogeneous assays/conditions** across papers (delivery, cargo, pre-installed vs PE-installed att): encoded
   as features (`variant`, `delivery`, `cargo_bp`) + a covariate, but cross-paper variance is real.

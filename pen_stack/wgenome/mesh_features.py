@@ -28,7 +28,7 @@ def attach_oracle_features(rows: list[dict], in_distribution: bool = True) -> di
             row["mesh_native_uncertainty"] = ve.native_uncertainty
             added += 1
         elif ve.extrapolating or not ve.in_scope:
-            ood_skipped += 1 # OOD-gated: not scored without a flag (labelled, not hidden)
+            ood_skipped += 1 # OOD-gated: not scored without a flag
         augmented.append(row)
     return {"rows": augmented, "n": len(rows), "mesh_features_added": added, "ood_skipped": ood_skipped,
             "mesh_features_available": added > 0,
@@ -40,7 +40,7 @@ def revalidate_atlas(in_distribution: bool = True) -> dict[str, Any]:
     """Re-run the blind atlas validation with the mesh-augmented features and report the delta vs the prior baseline.
 
     By construction: when the oracle backends are deferred, no new features are added, so the atlas is
-    unchanged and the delta is **parity** (delta = 0.0), reported, not hidden. The full oracle re-source +
+    unchanged and the delta is **parity** (delta = 0.0). The full oracle re-source +
     blind re-validation (validated GSH recovered, clinical genotoxic loci non-writable) runs on the host with
     the oracles live; the prior baseline AUROC is carried for the comparison."""
     # the SHA-locked blind-GSH baseline (README / paper1): AUROC 0.68, CI 0.54-0.83, N small

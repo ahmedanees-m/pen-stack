@@ -11,7 +11,7 @@ type itself:
 2. One contract for every oracle. Provenance and the oracle's native uncertainty are always carried; every call
    is cache-keyed on inputs, model and version.
 3. Scope is explicit. Each result names its scope card and carries an `extrapolating` flag, so the evidence that
-   these models do not generalize outside their training envelope is labelled, not hidden.
+   these models do not generalize outside their training envelope is labelled on every result.
 
 ## Binding affinity (Boltz-2)
 

@@ -82,6 +82,5 @@ deprecation-policed under the **1.0 commitment**; see [API stability](STABILITY.
 
 ## The bottleneck
 
-This surface makes integration **easy and dependable**; it does not, by itself, create adoption. Landing a first
-external integration and a demonstrated real-world result remain the standing outreach work. The surface is
-shipped; `benchmarks/genome_writing_challenge/SUBMISSIONS.md` records external entries as they arrive.
+The submission surface, the runner and the Model Context Protocol integration are documented here.
+`benchmarks/genome_writing_challenge/SUBMISSIONS.md` records entries.

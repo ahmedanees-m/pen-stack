@@ -12,7 +12,7 @@ Three invariants are encoded in the type itself:
   2. **One contract for every oracle**, provenance (model+version) and the oracle's *native* uncertainty are
      always carried, never discarded; every call is cache-keyed on inputs+model+version.
   3. **Scope is explicit**, each result carries the id of its oracle's scope card and an `extrapolating`
-     flag; the field's evidence that these models do not generalize to unseen loci is *labelled*, not hidden.
+     flag; the field's evidence that these models do not generalize to unseen loci is *labelled*.
 """
 from __future__ import annotations
 
@@ -65,7 +65,7 @@ class OracleResult(BaseModel):
     oracle: str # family: genome | structure | protein_design | rna | energetics
     value: Any | None # the prediction (kind depends on the oracle)
     provenance: Provenance
-    native_uncertainty: float | None = None # the oracle's OWN uncertainty (e.g. 1 - pLDDT), surfaced not hidden
+    native_uncertainty: float | None = None # the oracle's OWN uncertainty (e.g. 1 - pLDDT), surfaced
     scope_card: str | None = None # id of the scope card stating what this oracle is valid for
     in_scope: bool = True # input falls within the scope card
     extrapolating: bool = False # OOD relative to the oracle's training/validity envelope

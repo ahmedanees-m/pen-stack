@@ -5,7 +5,7 @@ documented and frozen, with a deprecation policy. "First Stable" is **earned, no
 after the closed loop is demonstrated, the benchmark is public, and the integration surface ships.
 
 > The first stable release is a commitment to **API stability**, not a claim of solving genetic engineering. The
-> unknown funnel remains, made legible (scope flags, known-unknowns, baselines), not hidden.
+> unknown funnel remains, made legible through scope flags, known-unknowns and baselines.
 
 ## Versioning
 

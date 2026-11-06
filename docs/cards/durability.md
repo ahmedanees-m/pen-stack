@@ -28,7 +28,7 @@ chromatin tracks. Chromosome-block CV; trained once, applied to any epigenome (t
 Top features: H3K4me3 (active promoter, ^ expression), H3K9me3 (heterochromatin, ^ silencing), H3K4me1,
 H3K27me3, H3K27ac - biologically sensible.
 
-## Transfer & graceful degradation (reported, not hidden)
+## Transfer and graceful degradation
 Applied to human K562/HepG2/HSPC epigenomes via the **same 5 histone marks**. **Robust to partial panels:**
 missing tracks are passed as NaN (LightGBM-native) - CD34+ HSPC lacks ATAC yet has all 5 histones, so durability
 runs at full strength there (HSPC validated *best* of the three cell types).

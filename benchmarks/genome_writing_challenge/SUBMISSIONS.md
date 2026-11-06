@@ -1,16 +1,12 @@
-# Genome-Writing Challenge, Leaderboard (round 2026R1)
+# Genome-Writing Challenge, round 2026R1
 
-| Rank | Submission | Aggregate | legality | safety | immune_risk | No-fabrication |
-|---|---|---|---|---|---|---|
-|, | **pen-stack-reference** (anchor) | 1.00 | 1.00 | 1.00 | 1.00 |  |
+| Rank | Submission | Aggregate | legality | safety | immune_risk |
+|---|---|---|---|---|---|
+| anchor | `pen-stack-reference` | 1.00 | 1.00 | 1.00 | 1.00 |
 
-*The reference (PEN-STACK itself) is the leaderboard anchor, it answers from the same validated layers the
-held-out labels come from, so it scores 1.00 by construction. External submissions are scored on the held-out
-private labels released after the round.*
+The reference is the anchor rather than a competitor: it answers from the same validated layers the held-out
+labels are drawn from, so it scores 1.00 by construction and that score carries no information about predictive
+quality. A submitted agent is scored on the held-out private labels, which are released once the round closes.
 
-**Standing adoption criterion (the non-code bottleneck):** ≥1 external integration + ≥1
-external submission. The submission surface, the runner, and the MCP integration are shipped and documented
-(`docs/integrations.md`); landing an external participant depends on outreach. This file is updated as external
-submissions arrive.
-
-To submit, see [README.md](README.md) and [`docs/integrations.md`](../../docs/integrations.md).
+Entries are recorded here. To submit, see [README.md](README.md) and
+[`docs/integrations.md`](../../docs/integrations.md).

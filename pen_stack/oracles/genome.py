@@ -2,7 +2,7 @@
 
 AlphaGenome (regulatory tracks + variant effect) is **OOD-gated**: scoring a locus outside the model's
 training distribution sets `extrapolating=True` / `in_scope=False` (the model does not generalize to unseen
-loci, labelled, not hidden). Evo2 supplies a likelihood/zero-shot *claim*-scope scalar and, separately,
+loci, labelled on every result). Evo2 supplies a likelihood/zero-shot *claim*-scope scalar and, separately,
 *generated DNA candidates* (output_kind=candidate → cannot enter a claim path). ChromBPNet/Borzoi are kept as
 baselines. Heavy backends run on-demand and are cached; when absent the adapter defers (or replays a
 committed cache entry) rather than fabricating a value.

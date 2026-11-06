@@ -60,7 +60,7 @@ def benchmark(*, reps: int = 20, rounds: int = 6) -> dict[str, Any]:
         "references": _REFERENCES,
         "baybe_installed": baybe_available(),
         "result": ("EIG/VOI beats random on the shared task (curve-area CI excludes 0)" if r["active_beats_random"]
-                   else "EIG/VOI does NOT beat random on this task (CI spans 0) - reported, not hidden"),
+                   else "EIG/VOI does not beat random on this task (CI spans 0)"),
     }
     h2h = _baybe_head_to_head(reps, rounds)
     if h2h is not None:

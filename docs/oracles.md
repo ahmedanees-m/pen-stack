@@ -22,7 +22,7 @@ Three invariants are encoded in the type:
 2. **One contract for every oracle.** Provenance (model + version) and the model's *native* uncertainty are
    always carried; every call is cache-keyed on `(oracle, model, version, inputs)` and replayable offline.
 3. **Scope is explicit.** Each result carries its scope-card id and an `extrapolating` flag; the field's
-   evidence that these models do not generalize to unseen loci is **labelled**, not hidden.
+   evidence that these models do not generalize to unseen loci is **labelled** on every result.
 
 ## Wrapped models (scope cards in `configs/oracles/scope_cards.yaml`)
 

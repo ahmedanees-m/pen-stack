@@ -6,9 +6,9 @@ on a held-out round whose labels it never sees.
 
 ## Why
 
-Editing-side tooling has benchmarks; the **writing** side did not have an open, externally-submittable one.
-PEN-STACK's internal Genome-Writing Bench (v0.3.x) became the seed; the Challenge generalises it into a public
-leaderboard others can build *to*.
+Editing-side tooling has established benchmarks; the **writing** side has no open, externally submittable
+one. This track scores an external agent on where, what and how to write, against held-out labels drawn from the
+validated layers rather than from the submitter.
 
 ## How to submit
 
@@ -36,7 +36,6 @@ Run the reference: `python benchmarks/genome_writing_challenge/run.py`.
 | `safety` | a design | clear/flag/escalate/refuse (from the Guardian) |
 | `immune_risk` | a design | the highest-risk immune axis (from the profile) |
 
-*(Future rounds add write-types, adversarial, outcome, experiment-design, and closed-loop families.)*
 
 ## Rules
 
