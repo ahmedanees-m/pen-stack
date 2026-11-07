@@ -5,8 +5,8 @@ Builds per-bin safety features from CancerMine (CC0; oncogene/TSG loci, the defa
   - dist_oncogene, dist_tsg, dist_essential, dist_tss (bp to nearest, via bedtools closest)
   - genotoxic_cis flag (bins within a window of LMO2/MECOM/CCND2/PRDM16/HMGA2)
 
-Inputs are staged on the host under /data/external (COSMIC tsv, DepMap csv); GENCODE is downloaded.
-Runs CPU-only in the penstack:phase1 image (bedtools in-image). Output keyed on (chrom, bin).
+Inputs are staged under /data/external (COSMIC tsv, DepMap csv); GENCODE is downloaded.
+Runs CPU-only in the project image (bedtools in-image). Output keyed on (chrom, bin).
 """
 from __future__ import annotations
 

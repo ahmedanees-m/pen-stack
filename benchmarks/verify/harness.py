@@ -6,7 +6,7 @@ Reports the three verification gates from committed, deterministic code (no exte
   2. proof-object repair: a design that fails on legality is repaired using ONLY the proof object and
      re-verifies to a pass, and the three axes are reported separately (never collapsed).
   3. biosecurity standards concordance: the Guardian decisions, expressed as Common Mechanism ScreenStatus,
-     are concordant with the expected status on the labelled probe set (reported verbatim).
+     are concordant with the expected status on the labelled probe set.
 """
 from __future__ import annotations
 

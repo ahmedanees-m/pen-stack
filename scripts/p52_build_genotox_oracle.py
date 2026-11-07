@@ -20,8 +20,8 @@ Output: a SMALL, committable YAML (configs/genotoxicity_oracle.yaml) of per-clas
 provenance, the raw catalogues stay on the host; only the auditable summary ships. Magnitude (in-vivo clonal
 outcome) is NOT modelled here and stays the `in_vivo_immunogenicity` / clonal known-unknown.
 
-Run (on the host, in the data-mounted image):
-    docker run --rm --entrypoint "" -v ~/data:/data -v ~/penstack:/app -w /app penstack:phase1.5 \\
+Run in the data-mounted image:
+    docker run --rm --entrypoint "" -v <data>:/data -v <repo>:/app -w /app <image> \\
         python scripts/p52_build_genotox_oracle.py > configs/genotoxicity_oracle.yaml
 """
 from __future__ import annotations

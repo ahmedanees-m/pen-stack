@@ -7,18 +7,17 @@ driver **MHC-II/CD4 to ADA**, and it scores the **writer enzyme as a distinct an
 ## The MHC-II/CD4 axis (`planner/immune_mhc2.py`)
 
 > **Real predictor.** The MHC-II epitope load is computed with the **licensed NetMHCIIpan-4.0** (EL
-> %Rank≤2 over a frequent HLA-II panel; MHC-I via **NetMHCpan-4.1**), run inside `penmhc:tools` Docker on the host
+> %Rank≤2 over a frequent HLA-II panel; MHC-I via **NetMHCpan-4.1**), run inside a Docker image
 > with the licensed tools **mounted** (never committed). Only the **derived fractions** are cached
 > (`configs/mhc_epitope_oracle.yaml`), exactly like the MHCflurry cache. Computed with the residue-coverage
 > metric (residues covered by ≥1 strong binder, union over the panel; matches the MHCflurry convention): the
-> gold-standard tool discriminates self from foreign (human-self albumin **0.319** vs foreign writers **0.56-0.65**;
-> the earlier heuristic proxy gave ~0.08-0.10 for all). Still a population-level proxy (frequent-HLA panel, not a
-> patient-HLA magnitude).
+> gold-standard tool discriminates self from foreign (human-self albumin **0.319** vs foreign writers
+> **0.56-0.65**). Still a population-level proxy (frequent-HLA panel, not a patient-HLA magnitude).
 >
-> **No production proxy.** For a sequence **not** in the real cache the axis now **abstains** (out of
-> scope) rather than emitting a proxy number; the documented promiscuous-binder density below is retained
-> only as `mhc2_proxy_estimate` for **offline triage** (explicitly labelled, never the production axis). The **capsid
-> MHC-I axis** is likewise re-grounded on **NetMHCpan-4.1** as the primary, with MHCflurry kept as a reported cross-check.
+> **No production proxy.** For a sequence **not** in the real cache the axis **abstains** (out of scope)
+> rather than emitting a proxy number; the documented promiscuous-binder density below serves only as
+> `mhc2_proxy_estimate` for **offline triage** (explicitly labelled, never the production axis). The **capsid
+> MHC-I axis** uses **NetMHCpan-4.1** as the primary, with MHCflurry as a cross-check.
 
 A grounded, dependency-free **promiscuous MHC-II binder density** (`mhc2_proxy_estimate`, offline triage only): MHC-II presents a 9-mer core in an open groove
 whose **P1 pocket is deep and hydrophobic**, the single dominant anchor (M/F/Y/W/L/I/V; Stern & Wiley, *Nature*
@@ -64,7 +63,7 @@ with `collapsed_score: None` (never fused).
 - The MHC-II method is presentation potential, not a trained allele-specific predictor.
 - The self-tolerance k-mer filter is seeded by the bundled human reference; the **full human proteome** is
   substitutable on the host (the authoritative foreignness signal is the protein origin).
-- The ADA axis's `calibrate_axis` pass **stays a proxy**: no public observed-incidence set at N≥6 power (the standing
-  wet-lab/clinical-data bottleneck), reported, never manufactured.
+- The ADA axis's `calibrate_axis` pass **stays a proxy**: no public observed-incidence set at N≥6 power
+  (the standing wet-lab/clinical-data bottleneck).
 
 See `benchmarks/immuno/` (Immuno-Bench) and `prereg/ws_immune2.yaml`.

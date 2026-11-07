@@ -3,8 +3,7 @@
 **The rule:** the released artifact ships **open data only** (CC0 / CC-BY / public-domain). License-restricted
 sources (**OncoKB, COSMIC**) are **never committed, never used as training data**; they are *optional, local-only*
 enrichers a registered user pulls under **their own license** via `scripts/fetch_licensed_sources.py`, for validation
-only. A CI test (`tests/unit/test_data_licenses.py`) fails if a restricted source appears as a shipped *derived-data*
-source.
+only.
 
 > Not legal advice. The "is a derived statistic / trained model a redistribution?" question is genuinely unsettled;
 > this is a conservative engineering policy. Everything shipped is CC0/open.
@@ -47,7 +46,7 @@ Any use beyond reproducing the result reported here should take the data from it
 
 **gnomAD.** This project includes data from the gnomAD release (Karczewski et al. 2020, [10.1038/s41586-020-2308-7](https://doi.org/10.1038/s41586-020-2308-7)); the gnomAD team requests this acknowledgment.
 
-## Restricted sources, NOT shipped (local-only, your own license, validation-only)
+## Restricted sources, NOT shipped
 
 | Source | License | Status in PEN-STACK |
 |---|---|---|
@@ -59,7 +58,7 @@ Any use beyond reproducing the result reported here should take the data from it
 gitignored `licensed_data/`. The repo never contains that data. Re-run the safety build with `--source cosmic` to use it
 locally. This swaps only the *source* of the same facts, with no capability changes.
 
-## Provenance note (the legal crux)
+## Provenance note
 Copyright/IP does **not** protect the *fact* that a gene is an oncogene, only the *compiled database* (and, in the EU,
 the *sui generis database right* over substantial extractions). PEN-STACK sources the oncogene/TSG **list** from a **CC0
 compilation (CancerMine)** instead of COSMIC's file. CancerMine catalogues more genes than CGC (text-mined; ~2,400

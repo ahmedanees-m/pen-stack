@@ -13,7 +13,7 @@ A nominated off-target is a candidate, and every result ships with the empirical
   **mismatch-calibrated empirical risk** (the real active fraction at *k* mismatches, not a guessed curve), the
   **real CRISOT-Score** when the (guide, site) is in the cached bench, and a documented **chromatin-accessibility
   modifier** (open chromatin raises realized off-target activity; Lazzarotto 2020). The modifier reads the **real
-  accessibility track** (`phase_1/features/chromatin_{ct}.parquet`) when a candidate's genomic locus + cell
+  accessibility track** (the `chromatin_{ct}.parquet` feature store) when a candidate's genomic locus + cell
   type are supplied and the store is present, accepts a caller-supplied scalar otherwise, and **abstains** when
   neither is available (the bare wheel / current deployed atlas do not ship the raw track). A controlled validation
   (off-targets mapped to hg38; AUROC of accessibility for active-vs-inactive off-targets, in-vitro negative

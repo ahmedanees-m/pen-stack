@@ -27,7 +27,7 @@ NetMHC tools.
 ## Baseline (pre-specified)
 Sequence-homology nomination = ascending **mismatch count** (Hamming over the 20-nt protospacer).
 
-## Result (full real data, on the host)
+## Result (full real data)
 CRISOT-Score is the MD-physics, **assay-agnostic** scorer (not fit on these labels) → a leakage-clean held-out
 evaluation on every assay.
 
@@ -43,9 +43,9 @@ including two independent broad guide panels (cross-assay generalization).
 
 ## Chromatin-accessibility modifier: VALIDATED (moderate, cell-type-matched)
 The nominator applies a documented chromatin modifier (open chromatin raises realized off-target activity;
-Lazzarotto 2020). It reads the **real accessibility track** (`phase_1/features/chromatin_{ct}.parquet`,
-ATAC/DNase) when a candidate's genomic locus + cell type are supplied AND the feature store is present (verified on
-the host), or accepts a caller-supplied scalar; it **abstains** otherwise (the bare wheel / CI / deployed atlas do not
+Lazzarotto 2020). It reads the **real accessibility track** (the `chromatin_{ct}.parquet` feature store,
+ATAC/DNase) when a candidate's genomic locus + cell type are supplied AND the feature store is present, or
+accepts a caller-supplied scalar; it **abstains** otherwise (the bare wheel / CI / deployed atlas do not
 ship the raw track).
 
 **Controlled validation** (`benchmarks/offtarget/chromatin_validation.json`): off-targets mapped to hg38 (98.5%),
@@ -57,9 +57,9 @@ AUROC of accessibility for active-vs-inactive off-targets per assay, with in-vit
 | TTISS | cell-based (Cas9 *variants*) | 0.346 | 0.383 (outlier) | [0.362, 0.405] |
 | SITE-seq | in-vitro control | 0.469 | 0.494 (null) | [0.475, 0.514] |
 
-An earlier pass used a cross-cell K562 proxy → weak/inconsistent. The current pass used a CELL-TYPE-MATCHED ENCODE HEK293T
-DNase track (`ENCFF529BOG`, matching GUIDE-seq's HEK293 and TTISS's HEK293T): **cell-type matching lifts the
-canonical WT-Cas9 cell-based assay from 0.58 → 0.671** (the cross-cell proxy was dampening a real effect), with the
+The matched track is a CELL-TYPE-MATCHED ENCODE HEK293T DNase track (`ENCFF529BOG`, matching GUIDE-seq's
+HEK293 and TTISS's HEK293T); the cross-cell K562 proxy is the weaker comparator and dampens the effect.
+**Cell-type matching raises the canonical WT-Cas9 cell-based assay from 0.58 to 0.671**, with the
 in-vitro control still null. **Verdict: VALIDATED (moderate, cell-type-matched)** for WT-Cas9 cell-based off-target
 activity. Caveats: the effect is **moderate** (the sequence/CRISOT score dominates nomination); it does
 **not** transfer to TTISS (a Cas9-variant specificity assay, the expected outlier).

@@ -27,7 +27,7 @@ _DISCLOSURE = (
 def nominate_bridge(target_core: str | None = None, writer_family: str = "bridge_IS110",
                     fasta=None, chroms: list[str] | None = None, top: int = 20) -> dict:
     """Genome-wide bridge off-target scan for a bridge-RNA target core, via the DMS-scored engine. Returns the
-    ranked pseudosites when a genome + target core are supplied (host), else reports the engine is ready and how to
+    ranked pseudosites when a genome + target core are supplied, else reports the engine is ready and how to
     run the scan. Always carries the hard-locked unvalidated status + the no-genome-wide-assay disclosure."""
     from pen_stack.bridge.offtarget import predict_offtargets
     fam = "seek_IS1111" if ("seek" in (writer_family or "").lower() or "is1111" in (writer_family or "").lower()) \

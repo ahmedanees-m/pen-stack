@@ -43,7 +43,7 @@ def test_pypi_packaging_ready():
     r = (_ROOT / "README.md").read_text(encoding="utf-8")
     assert "pypi/v/pen-stack" in r # PyPI badge present
     assert (_ROOT / ".github/workflows/publish.yml").exists() # automated publish workflow
-    assert (_ROOT / "MANIFEST.in").exists() and (_ROOT / "docs/RELEASING.md").exists()
+    assert (_ROOT / "MANIFEST.in").exists()
     pp = (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert "Development Status :: 5 - Production/Stable" in pp and "Issues =" in pp # production-stable release
 

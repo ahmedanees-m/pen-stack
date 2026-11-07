@@ -292,7 +292,7 @@ _MODEL_CACHE: dict = {}
 
 
 def load_cached_model(root=None) -> "PositionEffectModel | None":
-    """Load the trained position-effect model if its artifact is present (host/checkout); else None (installed
+    """Load the trained position-effect model if its artifact is present; else None (installed
     library / CI -> falls back to the heuristic). Cached per root."""
     from pen_stack._resources import project_root
     root = root or project_root()
@@ -366,7 +366,7 @@ def predict_stage_h(design: dict, root=None, cell_type=None) -> dict | None:
 
     A human K562 design is served by the human K562 head (Leemans 2019) when its artifact is present,
     falling back to the mESC model otherwise -- so the served provenance/scope reflect which
-    supervision was used (cross-species transfer no longer silently asserted)."""
+    supervision was used, and cross-species transfer is never asserted silently."""
     hmodel = load_human_k562_model(root) if _is_human_k562(design, cell_type) else None
     model = hmodel or load_cached_model(root)
     served_human = hmodel is not None

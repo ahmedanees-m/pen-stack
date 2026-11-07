@@ -9,7 +9,7 @@ On a shared set of K562 loci, is the PEN-STACK **durability** score (`p_durable`
 signal, or is it largely **re-deriving** ePRIDICT's **efficiency** score? Endpoints differ (efficiency vs
 durability); this measures *distinctness only*, never superiority on either tool's own endpoint.
 
-## Result (reported verbatim)
+## Result
 
 | statistic | value | 95% CI (10,000-resample bootstrap) |
 |---|---|---|
@@ -39,8 +39,8 @@ proceed to GSH-recovery + GEG-SH concordance.
    `p_durable` read directly from the atlas (the committed model output; no re-scoring). See
    [`data/priorart/loci_gen.csv`](../../../data/priorart/loci_gen.csv) +
    [`loci_pdurable_gen.parquet`](../../../data/priorart/loci_pdurable_gen.parquet).
-2. **ePRIDICT efficiency**, ePRIDICT-light (6 K562 ENCODE bigWig tracks) run on the VM in the
-   `epridict:tools` Docker image over the 8,000 loci (16-way parallel), output column
+2. **ePRIDICT efficiency**, ePRIDICT-light (6 K562 ENCODE bigWig tracks) run in a Docker image
+   over the 8,000 loci, output column
    `ePRIDICT score (light model)`. Raw output: `epridict_raw_output.csv`.
 3. **Distinctness**, inner-join on (chromosome, position_hg38), drop ePRIDICT feature-missing rows, then
    Spearman/Pearson + OLS variance partition + 10,000-resample bootstrap CIs. See `epridict_orthogonality_metrics.json`.

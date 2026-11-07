@@ -19,7 +19,7 @@ there **false-negatives**, and does the risk band **track severity**?
 ## The panel
 
 - **8 genotoxic loci** (real trial insertional-oncogenesis): LMO2, CCND2, MECOM/EVI1, PRDM16, HMGA2, SETBP1, BMI1,
-  MN1 (corpus + trial citations in `../../../Retrospective_validation/rb_corpus_starter.csv`).
+  MN1 (corpus and per-locus trial citations in `metrics.json`).
 - **1 control**: IKZF1 (Fabry non-persistent integration near IKZF1, <0.15%, did not persist - a near-oncogene
   negative-outcome control).
 - **8 functionally-validated safe harbors**: AAVS1, CLYBL, CCR5, hRosa26, H11, Pansio-1, Olonne-18, Keppel-19.

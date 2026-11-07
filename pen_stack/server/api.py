@@ -65,9 +65,8 @@ def _records(df: pd.DataFrame) -> list[dict]:
 def health():
     """Liveness + a DATA-PRESENCE check. `atlas_present` is the writer atlas (bundled); `writability_atlas`
     reports the per-cell-type writable-genome atlases that Site Finder / the cell-type dropdown depend on and
-    that are provided at runtime (mounted), NOT bundled. Reporting only the writer atlas here once masked a
-    deploy that dropped the writability-atlas mount: health stayed green while Site Finder was 100% broken and
-    every cell type read 'no atlas'. Surfacing measured_count makes that failure visible (0 = misconfigured)."""
+    that are provided at runtime (mounted), NOT bundled. `measured_count` is 0 when no writability atlas is
+    mounted, so a deployment missing that mount reports as misconfigured rather than healthy."""
     from pen_stack.atlas.crosslink import writability_path
     measured = []
     for ct in _CELLTYPES:
@@ -268,9 +267,9 @@ def writer_variants_endpoint(integrase: str | None = None, system: str | None = 
     target = integrase or system  # accept either name; the panel is keyed by serine-integrase
     return {"hyperactive_recovery": wv.hyperactive_recovery(target),
             "blind_lm_recovery": wv.lm_recovery(),
-            "panel": wv.hyperactive_panel(target),  # honour the integrase filter (was: always the full panel)
-            "note": "Retrospective catalogue recovery is real and DOI-backed; the blind LM predictor is deferred "
-                    "(reported as a known limitation, never a manufactured positive)."}
+            "panel": wv.hyperactive_panel(target),  # honour the integrase filter
+            "note": "Retrospective catalogue recovery is DOI-backed; the blind LM predictor is deferred "
+                    "(a stated limitation)."}
 
 
 @app.get("/writer/immune", tags=["writer atlas"])
@@ -425,7 +424,7 @@ def offtarget_endpoint(req: dict):
     (finder): for a nuclease guide with NO ``candidate_sites``, enumerates the genome-wide off-target set
     over GRCh38 (Cas-OFFinder, replayed from the committed cache) and ranks it by the real CRISOT-Score +
     mismatch-calibrated risk + chromatin annotation - the default. Supplying ``candidate_sites`` keeps the
-    score-my-candidates path. Abstains (never fabricates) for a novel guide with no host scan."""
+    score-my-candidates path. Abstains (never fabricates) for a novel guide with no offline scan."""
     from pen_stack.wgenome.offtarget_predict import nominate_offtargets
     return nominate_offtargets(
         req.get("writer_family", ""), guide=req.get("guide"), candidate_sites=req.get("candidate_sites"),
@@ -443,8 +442,8 @@ def offtarget_assay_endpoint(writer_family: str):
 
 @app.get("/offtarget/enumerated", tags=["off-target"])
 def offtarget_enumerated_endpoint():
-    """The guides whose genome-wide off-target enumeration is CACHED (so the finder works here without a host
-    scan). A novel guide abstains (its scan runs on the host). Enumerated coordinates are public-genome facts."""
+    """The guides whose genome-wide off-target enumeration is CACHED (so the finder works here without an
+    offline scan). A novel guide abstains (its scan runs offline). Enumerated coordinates are public-genome facts."""
     from pen_stack.wgenome.offtarget_data import CANONICAL_GUIDES
     from pen_stack.wgenome.offtarget_enumerate import enumerated_guides
     cached = enumerated_guides()
@@ -452,14 +451,14 @@ def offtarget_enumerated_endpoint():
     return {"enzyme": "SpCas9",
             "guides": [{"guide": g, "name": seq2name.get(g, g), "enzyme": e} for e, g in cached],
             "note": ("genome-wide enumeration for these guides is replayed from the committed GRCh38 Cas-OFFinder "
-                     "cache; a novel guide requires an host-side scan (the finder abstains rather than fabricate).")}
+                     "cache; a novel guide requires an offline scan (the finder abstains rather than fabricate).")}
 
 
 @app.get("/campaign", tags=["closed-loop"])
 def campaign_endpoint():
     """The validation-campaign engine. Returns the expression-validation campaign: the next batch of
     (cassette x locus x cell type) measurements ordered by expected information gain, the calibrate_axis gate it
-    targets, and the active-vs-random result (reported verbatim). Cloud-lab-executable; Level 3, human in control;
+    targets, and the active-vs-random result. Cloud-lab-executable; Level 3, human in control;
     the experiments are candidates, the wet run is the standing bottleneck."""
     from pen_stack.active.campaign import design_campaign
     return design_campaign()

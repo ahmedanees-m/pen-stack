@@ -34,7 +34,7 @@ _KEY_ENV = "ALPHAGENOME_API_KEY"
 # 1 Mb is AlphaGenome's max; expression/structural features use it for full regulatory context.
 SEQ_LEN_1MB = 1_048_576
 
-# Model version recorded in track-cache keys + artifacts (C1 reproducibility). Bump when the served model
+# Model version recorded in track-cache keys + artifacts. Bump when the served model
 # changes so stale predictions are not silently reused.
 MODEL_VERSION = "alphagenome-2025-06"
 

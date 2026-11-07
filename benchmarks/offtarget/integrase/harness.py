@@ -4,10 +4,10 @@ Does attP-sequence-similarity recover the documented human pseudo-attP (Thyagara
 GenBank AF333429/30/31) above length-matched random GRCh38 background? Positives are the verified GenBank
 sequences; the query is the verified phage attP (PDB 9U2T attP60, central 30 bp); background is sampled from
 GRCh38. Result (committed in phic31_recall_metrics.json): NEGATIVE, the positives sit at the background median,
-so sequence identity to attP is NOT a validated PhiC31 pseudo-attP predictor. Reported verbatim.
+so sequence identity to attP is NOT a validated PhiC31 pseudo-attP predictor.
 
-Run on the VM (needs GRCh38 + pysam): docker run --rm --entrypoint bash -v <genomes>:/genome -v <bench>:/work
--w /work penstack:phase1.5 -lc 'python harness.py'. Deterministic (seed=20260701).
+Run (needs GRCh38 + pysam): docker run --rm --entrypoint bash -v <genomes>:/genome -v <bench>:/work
+-w /work <image> -lc 'python harness.py'. Deterministic (seed=20260701).
 """
 import json
 import os

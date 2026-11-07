@@ -1,7 +1,7 @@
 # PEN-STACK local GPU model servers (start ON DEMAND; the "run separately" latency policy).
 # Each is a small FastAPI service the oracle adapters call over localhost when PEN_STACK_ORACLE_NET=1.
 # They reuse penstack:phase1.5 (torch+CUDA) / rfdiffusion:base, so build those on the host first:
-# docker build -t penstack:phase1.5 -f docker/Dockerfile.phase1 . # (already on the host)
+# docker build -t penstack:phase1.5 -f docker/Dockerfile.phase1 .
 # git clone --depth 1 https://github.com/RosettaCommons/RFdiffusion /tmp/RFdiffusion \
 # && docker build -t rfdiffusion:base -f /tmp/RFdiffusion/docker/Dockerfile /tmp/RFdiffusion
 # bash /tmp/RFdiffusion/scripts/download_models.sh ~/models/rfdiffusion

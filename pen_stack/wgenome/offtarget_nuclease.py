@@ -6,7 +6,7 @@ UNCHANGED from the prior release, the real CRISOT-Score, the mismatch-calibrated
 (validated, not a re-ranker). v2 only adds the enumeration front end. Status: **validated** (CRISOT beats
 homology on four unbiased assays; enumeration reproduces the documented off-target set).
 
-Enumeration runs on the host; this surface replays the committed cache or abstains (so the finder works for the
+Enumeration runs offline; this surface replays the committed cache or abstains (so the finder works for the
 cached guides and abstains for a novel one), exactly like the heavy oracles.
 """
 from __future__ import annotations
@@ -65,7 +65,7 @@ def find_nuclease_offtargets(guide: str, enzyme: str = "SpCas9", max_mismatch: i
     (Cas-OFFinder over GRCh38, replayed from cache), scores each with the real CRISOT-Score + the mismatch-
     calibrated empirical risk band, and annotates chromatin accessibility (from the accessibility track when present). Returns
     the genome-wide ranked candidates with coordinates, or an abstention when the guide is not cached and no
-    host scan is available. Never fabricates sites."""
+    offline scan is available. Never fabricates sites."""
     declined = unsupported_nuclease_abstention(enzyme, mode="finder")
     if declined is not None:
         return declined
@@ -87,7 +87,7 @@ def find_nuclease_offtargets(guide: str, enzyme: str = "SpCas9", max_mismatch: i
         noms.append({"chrom": s["chrom"], "position": s["position"], "strand": s["strand"], "site": seq,
                      "n_mismatch": nmm, "empirical_active_fraction": af, "risk_band": _risk_band(af),
                      "crisot_score": crisot,
-                     "crisot_source": "cached_bench" if crisot is not None else "host-side tool (not cached)",
+                     "crisot_source": "cached_bench" if crisot is not None else "offline tool (not cached)",
                      "chromatin": _chromatin_modifier(None, locus_acc), "output_kind": "candidate"})
     # rank by the real CRISOT score where cached, else by empirical risk (descending), then fewer mismatches
     noms.sort(key=lambda n: (n["crisot_score"] if n["crisot_score"] is not None else -1.0,

@@ -43,8 +43,8 @@ Designs are candidates requiring empirical validation; recovery tests check roun
 `design/writer_variants.py` extends writer-verification to the **serine-integrase hyperactive mutants** (Hew
 *Nucleic Acids Res* 2024 / Keravala 2009). It recovers Bxb1 `c22` (I87L/H95Y/V122M/A369P/E434G, 11.2× over WT) and
 the PhiC31 P2/P3 evolved variants retrospectively, and **defers** the LM-vs-conservation *blind* claim:
-protein-LM naturalness need not recover engineered **gain-of-function** hyperactivity. This is reported as a limitation,
-never a manufactured positive.
+protein-LM naturalness need not recover engineered **gain-of-function** hyperactivity. This is a stated
+limitation.
 
 ## The recommender surface
 

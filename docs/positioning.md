@@ -10,8 +10,8 @@ clinically transformative modality, and it has **no canonical reference layer an
 re-derives an ad-hoc safe-harbour shortlist, picks a writer from scattered papers, and has no genome-wide
 off-target screen for the most programmable writers.
 
-PEN-STACK fills the reference layer (the Writable Genome, the Writer Atlas, the Write Planner, the bridge
-off-target engine). This release adds the missing **evaluation layer**.
+PEN-STACK provides the reference layer (the Writable Genome, the Writer Atlas, the Write Planner, the
+bridge off-target engine) and the **evaluation layer**.
 
 ## M2: the Genome-Writing Bench complements editing-side benchmarks
 

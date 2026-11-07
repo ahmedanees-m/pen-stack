@@ -2,7 +2,7 @@
 
 CI-safe: the grounded MHC-II method is pure-Python and the writer/control sequences are committed (real UniProt).
 Asserts the immunogenic-vs-tolerated recovery (foreign writers > human self), the never-collapsed profile, the
-writer-as-antigen dominant-risk flag, and that the ADA axis stays a proxy (no manufactured ).
+writer-as-antigen dominant-risk flag, and that the ADA axis stays a proxy.
 """
 from __future__ import annotations
 
@@ -93,7 +93,7 @@ def test_ada_abstains_when_origin_unknown_no_proxy():
 
 
 def test_real_human_proteome_self_match_crosscheck():
-    # the REAL human-proteome 9-mer self-match (computed on the host over the full UniProt reference proteome) is
+    # the REAL human-proteome 9-mer self-match (computed offline over the full UniProt reference proteome) is
     # reported as a cross-check: the human control is self (1.0), foreign writers are non-self (0.0)
     from pen_stack.planner.ada_risk import real_self_match
     alb, cas = real_self_match("HumanAlbumin"), real_self_match("SpCas9")
@@ -124,5 +124,5 @@ def test_writer_dominant_risk_on_nonviral_delivery():
 # ---- Bench recovery + ADA calibration -------------------------------------------
 def test_immuno_bench_recovery_and_calibration():
     assert recovery()["immunogenic_above_tolerated"] is True
-    # the ADA axis stays a proxy at public-data power, no manufactured
+    # the ADA axis stays a proxy at public-data power
     assert ada_calibration()["status"] == "mechanistic_proxy"

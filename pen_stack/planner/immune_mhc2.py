@@ -7,7 +7,7 @@ protein itself is immunogenic** (Cas9 elicits MHC-II-presented CD4 responses, Si
 profile scored only the capsid. This module adds an MHC-II epitope-load axis over the **writer** as a distinct antigen.
 
 PRODUCTION method: the **real, licensed NetMHCIIpan-4.0** eluted-ligand %Rank over a frequent HLA-II
-panel (residue-coverage metric), run on the host with only the derived fractions cached (`configs/mhc_epitope_oracle.yaml`);
+panel (residue-coverage metric), run offline with only the derived fractions cached (`configs/mhc_epitope_oracle.yaml`);
 `mhc2_epitope_load(seq, name)` returns the real value for a cached antigen and otherwise **abstains** (no production
 proxy). A population-level proxy, never a patient-HLA-specific magnitude (a known-unknown). Whether the epitopes
 drive ADA depends on self-tolerance (foreign vs self), handled in `ada_risk`.
@@ -59,7 +59,7 @@ def mhc2_binder_cores(seq: str) -> list[tuple[int, str, float]]:
 @lru_cache(maxsize=1)
 def _real_cache() -> dict:
     """The REAL NetMHCIIpan-4.0 EL %Rank epitope-load cache (configs/mhc_epitope_oracle.yaml), computed over a
-    frequent HLA-II panel on the host. Only the derived fractions are shipped (the licensed binary is never
+    frequent HLA-II panel offline. Only the derived fractions are shipped (the licensed binary is never
     distributed). Empty dict if the cache is absent (then the documented proxy is used)."""
     try:
         import yaml
@@ -86,7 +86,7 @@ def real_mhc2_load(name: str) -> dict | None:
 def mhc2_epitope_load(seq: str, name: str | None = None) -> dict:
     """MHC-II epitope load, the REAL NetMHCIIpan-4.0 cache when the antigen `name` is cached; otherwise ABSTAINS
     (no proxy: an uncached sequence is a known-unknown, not a guessed number). To ground a new sequence,
-    add it to configs/writer_sequences.fasta and re-run scripts/p1_build_mhc.py on the host. Score convention:
+    add it to configs/writer_sequences.fasta and re-run scripts/p1_build_mhc.py where the licensed predictor is installed. Score convention:
     1 = least presentable (matches the MHC-I axis)."""
     if name:
         real = real_mhc2_load(name)
@@ -95,7 +95,7 @@ def mhc2_epitope_load(seq: str, name: str | None = None) -> dict:
     return {"epitope_density": None, "mhc2_immune_score": None, "backend": "abstain",
             "method": "NetMHCIIpan-4.0 (real)", "available": False,
             "status": "NetMHCIIpan-4.0 not run for this sequence, NO proxy (abstains, known-unknown). Run "
-                      "scripts/p1_build_mhc.py over its FASTA on the host to ground it."}
+                      "scripts/p1_build_mhc.py over its FASTA to ground it."}
 
 
 def mhc2_proxy_estimate(seq: str) -> dict:

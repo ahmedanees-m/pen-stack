@@ -2,7 +2,7 @@
 
 Three tables supervise the engine: the measured **off-target profile** (per-position mismatch tolerance),
 the **DMS** (variant->activity), and the **72-system human-cell activity screen**. The Perry 2025
-supplementary (Science adz0276) is paywalled and not bulk-downloadable from the build environment; the
+supplementary (Science adz0276) is paywalled and not bulk-downloadable; the
 loaders below read the real tables when supplied, and otherwise fall back to the literature-grounded
 position-weight profile (`configs/bridge_offtarget_profile.yaml`) so the engine runs end-to-end.
 
@@ -22,7 +22,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 _CFG = _ROOT / "configs" / "bridge_offtarget_profile.yaml"
 
 # Perry 2025 supplementary (Science adz0276) - copyrighted; kept LOCAL, never committed/redistributed.
-# Default location: Final_Part_v3.0/Perry_et_al/ (override with PEN_PERRY_DIR).
+# Read from PEN_PERRY_DIR, else a Perry_et_al/ directory beside the repository root.
 _PERRY_FILES = {
     "orthologs": "science.adz0276_table_s1.xlsx", # S1: 72 bridge recombinase orthologs
     "offtargets": "science.adz0276_table_s2.xlsx", # S2: genome-wide insertion sites (off-targets)

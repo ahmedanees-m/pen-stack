@@ -1,4 +1,4 @@
-# PEN-STACK - one-command reproduction (GigaScience reproducibility criterion).
+# PEN-STACK - one-command reproduction.
 #
 #   make install      install the package (editable) with dev extras
 #   make test         run the unit test suite

@@ -23,7 +23,7 @@ ePRIDICT (Mathis et al., *Nat Biotechnol* 2025, `10.1038/s41587-024-02268-2`) pr
 **efficiency** from K562 chromatin; PEN-STACK's atlas predicts **durability** (`p_durable = 1 - P(silenced)`).
 Both map a genomic location → a chromatin-derived score, so they are comparable *as scores* even though the
 endpoints differ. On **7,295 shared K562 loci** (ePRIDICT-light, 6 ENCODE tracks, vs the atlas value read
-directly from `phase_1/out/atlas_k562.parquet`):
+directly from `atlas_k562.parquet`):
 
 - Spearman **ρ = 0.212** [0.188, 0.235]; Pearson r = 0.202 [0.179, 0.224]
 - Variance partition **R² = 0.041** [0.032, 0.050] → ePRIDICT explains ~4% of durability variance; **96% unexplained**

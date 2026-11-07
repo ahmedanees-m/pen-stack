@@ -1,6 +1,6 @@
 """Bridge-RNA fold / cross-loop QC.
 
-Predict whether a designed bridge RNA folds correctly (ViennaRNA, in the host image) and flag DBL-DBL /
+Predict whether a designed bridge RNA folds correctly (ViennaRNA, when installed) and flag DBL-DBL /
 TBL-TBL self/cross-recombination risk from guide complementarity - an experimentally observed failure
 mode where the target- and donor-binding loops recombine with each other instead of the genome.
 
@@ -16,8 +16,8 @@ def fold(scaffold_seq: str) -> dict:
     """MFE fold of the bridge-RNA scaffold. Returns {structure, mfe} or {available: False}."""
     try:
         import RNA
-    except Exception: # noqa: BLE001 - ViennaRNA only in the host image
-        return {"available": False, "note": "ViennaRNA not installed (runs in the host image)"}
+    except Exception: # noqa: BLE001 - ViennaRNA may not be installed
+        return {"available": False, "note": "ViennaRNA not installed"}
     fc = RNA.fold_compound(scaffold_seq.upper().replace("T", "U"))
     struct, mfe = fc.mfe()
     return {"available": True, "structure": struct, "mfe": round(float(mfe), 2),

@@ -15,7 +15,7 @@ from pen_stack.oracles.schema import OracleResult
 
 
 def _oracle_net_enabled() -> bool:
-    """Live oracle calls are opt-in (the host sets it; CI/offline leave it unset → deferred)."""
+    """Live oracle calls are opt-in (the operator sets it; CI/offline leave it unset → deferred)."""
     return os.getenv("PEN_STACK_ORACLE_NET") == "1"
 
 

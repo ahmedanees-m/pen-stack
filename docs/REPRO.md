@@ -2,12 +2,6 @@
 
 Every released artifact is regenerable from public data by re-running the pipeline.
 
-## Environment
-- One Docker image on a single GPU host (16 GB GPU). Build: `penctl build` ->
-  `docker/Dockerfile.phase1` (CUDA base + LightGBM/torch + pyBigWig/pybedtools/biopython/pyliftover).
-- The local machine runs only `tools/penctl.py` (paramiko SSH/SFTP); all heavy steps are `docker run` on the host.
-- Pinned deps: `docker/requirements.txt`; pinned datasets/accessions: `configs/datasets.yaml`.
-
 ## Frozen analysis specification
 `prereg/paper1.yaml` records the success criteria, baselines and held-out sets fixed before models see
 test data. The SHA-256-locked frozen analysis specifications and their digests are listed in
@@ -32,8 +26,8 @@ python scripts/p1_validation_report.py --cts k562 hepg2 hspc    # -> validation_
 ```
 
 ## Tests & CI
-`pytest -q` runs the full suite (currently more than 650 unit tests). GitHub Actions runs
-`ruff check pen_stack tests` + `pytest` with coverage on every push (green). Heavy integration steps run on the host, not CI.
+`pytest -q` runs the full suite. GitHub Actions runs `ruff check pen_stack tests` + `pytest` with
+coverage on every push.
 
 ## Model / data cards
 `docs/cards/{safety,durability,atlas}.md` - intended use, training data, metrics, **known failure modes**

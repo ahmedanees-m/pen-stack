@@ -163,7 +163,7 @@ def offtarget_scan(writer_family: str, guide: str | None = None, candidate_sites
     (validated); serine integrase = genome-wide pseudo-attP scan (semi-validated); bridge = DMS-scored scan
     (mechanism-based, unvalidated); CAST = guide-directed + untargeted-transposition background (unvalidated);
     PASTE = nuclease + integrase composition. Each carries a truthful status label + the confirming assay.
-    Abstains for a novel input (host scan); never fabricates sites."""
+    Abstains for a novel input that needs an offline scan; never fabricates sites."""
     from pen_stack.wgenome.offtarget_predict import nominate_offtargets
     return nominate_offtargets(writer_family, guide=guide, candidate_sites=candidate_sites,
                                sequence=sequence, assay=assay, enzyme=enzyme, max_mismatch=max_mismatch)

@@ -1,8 +1,5 @@
 # The circularity in the recovery@k benchmark (and how it is fixed)
 
-**Status:** acknowledged defect. A second reader should be able to
-reproduce the argument from this document and the code alone.
-
 ## The defect
 
 The "two-stratum recovery@k benchmark" (`pen_stack/validate/paper3_benchmark.py`) reported a

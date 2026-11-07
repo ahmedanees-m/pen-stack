@@ -124,7 +124,7 @@ def design_pegrna_attb(target_site: str, integrase: str = "Bxb1") -> PegRNAAttDe
     spacer = ts[:20] if len(ts) >= 20 else ts
     att = _INTEGRASE_ATT.get(integrase)
     if att:
-        attb = att["attB"] # REAL documented minimal attB (verbatim), no schematic arms
+        attb = att["attB"] # documented minimal attB, not schematic arms
         note = (f"pegRNA 3' extension writes the REAL documented {integrase} minimal attB ({len(attb)} bp; central "
                 f"crossover {att['central_dinucleotide']}, 8-bp common core {att['core']}; {att['source']}) at the "
                 f"nick; cargo is delivered flanked by the cognate attP. Candidate scaffold, empirical validation "

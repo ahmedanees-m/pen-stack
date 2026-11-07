@@ -5,7 +5,7 @@ a delivery **safety↔efficacy** layer: a per-vehicle immune / safety / efficacy
 ranking, and **four of the five immune/safety axes are grounded in real data or sequence**
 rather than hand-typed `low/moderate/high` tiers.
 
-> **The invariant (unchanged across the program).** The in-vivo immune *magnitude*, how strongly a
+> **The invariant.** The in-vivo immune *magnitude*, how strongly a
 > given patient or construct will actually react, is a declared **known-unknown**
 > (`configs/known_unknowns.yaml: in_vivo_immunogenicity`) and is **never predicted**. Every oracle below
 > abstains rather than fabricate when it lacks data, and each carries a scope card stating exactly what it is

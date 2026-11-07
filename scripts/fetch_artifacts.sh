@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------------------------------------------------------
-# fetch_artifacts.sh - one-command fetch of the PEN-STACK released atlas + model artifacts (GigaScience
-# reproducibility). Downloads the OPEN "Writable Genome" data release from Zenodo into the two locations
-# the package + benchmarks read from:
+# fetch_artifacts.sh - one-command fetch of the PEN-STACK released atlas + model artifacts.
+# Downloads the OPEN "Writable Genome" data release from Zenodo into the two locations the package
+# and benchmarks read from:
 #
 #     data/out/   <- atlas_tracks/*  (atlas_<ct>.parquet, *_writability/_safety/_p_durable.bw, *_top5000.bed,
 #                                     gene_coords.parquet)   [resolved by pen_stack.atlas.crosslink + the UI]

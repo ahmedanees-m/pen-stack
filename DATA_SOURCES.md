@@ -1,7 +1,6 @@
 # Data sources and provenance
 
-This file is the human-readable index of every external dataset PEN-STACK uses, with its accession or DOI and
-its role. Machine-readable pins (versions, retrieval dates, checksums) are in
+Machine-readable pins (versions, retrieval dates, checksums) are in
 [`configs/datasets.yaml`](configs/datasets.yaml); licensing and the open-data policy are in
 [`DATA_LICENSES.md`](DATA_LICENSES.md).
 
@@ -64,13 +63,9 @@ its role. Machine-readable pins (versions, retrieval dates, checksums) are in
 | OncoKB | OncoKB licence | optional, local-only benchmark reference |
 
 These are pulled by a registered user with `scripts/fetch_licensed_sources.py` under the user's own licence,
-for local validation only. A CI test (`tests/unit/test_data_licenses.py`) fails if a restricted source ever
-appears as a shipped derived-data source. See [`DATA_LICENSES.md`](DATA_LICENSES.md) for the full policy.
+for local validation only. See [`DATA_LICENSES.md`](DATA_LICENSES.md) for the full policy.
 
 ## The Zenodo deposit
 
 The archived version of record and its supporting data are on Zenodo under the concept DOI
 [10.5281/zenodo.21787136](https://doi.org/10.5281/zenodo.21787136), which resolves to the newest version.
-The deposit contains the derived data described above (atlases, tracks, models), the frozen
-benchmark splits with their SHA-256 locks, the frozen analysis specifications, the data and model cards, the offline
-oracle cache, and a snapshot of the tagged source. Licensed raw data is listed by accession only.

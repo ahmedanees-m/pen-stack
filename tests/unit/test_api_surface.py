@@ -1,12 +1,12 @@
 """AI Integration Surface unit tests (manifests, framework tool wrapper, REST + MCP endpoints).
 
 The manifests + the framework tool wrapper are pure-Python (CI-safe). The FastAPI endpoint tests are guarded by
-`pytest.importorskip("fastapi")` so they skip on a bare local/CI and run on the host (server extra). Asserts:
+`pytest.importorskip("fastapi")` so they skip unless the server extra is installed. Asserts:
   * the capability manifest lists the tools, all fabricates=False, versioned, JSON-serializable;
   * the SCOPE manifest exposes every known-unknown + every oracle scope card as machine-readable data (the
     differentiator), with a policy and no internal matcher fields leaked;
   * the framework tool wrapper builds specs from the live manifest and dispatches to the validated engine;
-  * (host) the /capabilities, /scope, /verify, /safety endpoints answer and openapi.json validates as 3.1.
+  * the /capabilities, /scope, /verify, /safety endpoints answer and openapi.json validates as 3.1.
 """
 from __future__ import annotations
 
@@ -75,7 +75,7 @@ def test_dispatch_routes_to_the_validated_engine():
     assert scope_tools()["known_unknowns"]
 
 
-# --- REST + MCP endpoints (host / server extra) ---------------------------------
+# --- REST + MCP endpoints (server extra) ---------------------------------
 
 def test_scope_defers_titer_and_durability_questions():
     # acceptance T14/T15: the classic measured endpoints (functional titer, in-vivo durability) must be

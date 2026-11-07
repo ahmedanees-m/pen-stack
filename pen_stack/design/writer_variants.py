@@ -97,8 +97,8 @@ def lm_recovery(model: str = "esm3") -> dict:
         # endpoint is not exposed -> we do not fabricate a score. Defer with the scientific caveat.
         return {"available": False, "model": model,
                 "note": "deferred: the protein-LM oracle is generative (no blind per-variant fitness endpoint). "
-                        "Scientifically, LM naturalness need NOT recover gain-of-function hyperactivity, this is "
-                        "reported as a known limitation, not a manufactured positive."}
+                        "Scientifically, LM naturalness need NOT recover gain-of-function hyperactivity, "
+                        "which is a stated limitation."}
     except Exception: # noqa: BLE001
         return {"available": False, "model": model,
                 "note": "deferred (model server / oracle net absent); see hyperactive_recovery (retrospective). "

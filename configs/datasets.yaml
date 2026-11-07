@@ -1,6 +1,5 @@
 # Pinned datasets, sources, and verified identifiers.
 # Every external dataset is pinned to a version/accession + retrieval date + checksum (filled at fetch time).
-# Identifiers below were independently verified 2026-06-01 (see Final_Part_v3.0/VERIFICATION_REPORT_v3.0.md).
 # Large data are fetched-not-committed; only manifests + small curated tables live in git.
 
 genome:
@@ -109,7 +108,7 @@ bridge_recombinase_data: # bridge-recombinase supervision
     perry_2025_supp:
       doi: "10.1126/science.adz0276"
       tables: { S1: "72 orthologs (seqs, target/donor)", S2: "genome-wide insertion sites = measured off-targets (6865 rows)", S3: "deep mutational scan (Z-scores)" }
-      local_dir: "Final_Part_v3.0/Perry_et_al/ (PEN_PERRY_DIR; copyrighted - NOT committed/redistributed)"
+      local_dir: "a Perry_et_al/ directory given by PEN_PERRY_DIR (copyrighted; never committed or redistributed)"
       derived: "data/curated/bridge_offtarget_profile_measured.parquet (per-position weights, committable)"
     pelea_2025: { journal: Science, doi: "10.1126/science.adz1884", note: "programmable editing in human cells (labelled 'Pelea 2026' in plan; published 2025)" }
 

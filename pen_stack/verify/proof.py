@@ -239,8 +239,8 @@ def _biosecurity_axis(v: Verdict) -> AxisProof:
     # declared so nothing ran. The verdict distinguishes them through provenance.declared_signal, which
     # a caller branching on a status cannot see, so the second case gets its own status here.
     # `ok` stays True because it does not block: a design whose cargo is not yet declared is a normal
-    # intermediate state, and no hazard was found. What changes is that the axis no longer reports a
-    # clearance it did not make.
+    # intermediate state, and no hazard was found. The point of the separate status is that the axis
+    # never reports a clearance it did not make.
     unassessed = s.decision == "clear" and s.provenance.get("declared_signal") is False
     if unassessed:
         return AxisProof(

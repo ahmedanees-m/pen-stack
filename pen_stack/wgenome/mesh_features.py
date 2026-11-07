@@ -33,7 +33,7 @@ def attach_oracle_features(rows: list[dict], in_distribution: bool = True) -> di
     return {"rows": augmented, "n": len(rows), "mesh_features_added": added, "ood_skipped": ood_skipped,
             "mesh_features_available": added > 0,
             "note": "oracle-mesh features attached where available + in-scope; OOD loci skipped (gated). "
-                    "Backends absent -> features unchanged (parity); full re-source runs on the host."}
+                    "Backends absent -> features unchanged (parity); full re-source runs as a separate step."}
 
 
 def revalidate_atlas(in_distribution: bool = True) -> dict[str, Any]:
@@ -41,7 +41,7 @@ def revalidate_atlas(in_distribution: bool = True) -> dict[str, Any]:
 
     By construction: when the oracle backends are deferred, no new features are added, so the atlas is
     unchanged and the delta is **parity** (delta = 0.0). The full oracle re-source +
-    blind re-validation (validated GSH recovered, clinical genotoxic loci non-writable) runs on the host with
+    blind re-validation (validated GSH recovered, clinical genotoxic loci non-writable) runs as a separate step with
     the oracles live; the prior baseline AUROC is carried for the comparison."""
     # the SHA-locked blind-GSH baseline (README / paper1): AUROC 0.68, CI 0.54-0.83, N small
     v3x_auroc = 0.68
@@ -53,9 +53,9 @@ def revalidate_atlas(in_distribution: bool = True) -> dict[str, Any]:
                 "delta": 0.0, "verdict": "parity",
                 "ood_gated": True,
                 "note": "oracle backends deferred (offline/CI) -> features unchanged -> atlas re-validation is "
-                        "PARITY with the prior baseline (delta 0.0). The mesh re-source + blind re-validation runs on the host "
+                        "PARITY with the prior baseline (delta 0.0). The mesh re-source + blind re-validation runs as a separate step "
                         "with the oracles live; any improvement/regression will be reported there with N/CI. "
                         "OOD-gating applies (loci outside oracle scope are flagged, not silently scored)."}
-    # (live host path), would recompute the blind-GSH AUROC on the mesh features and report the true delta
+    # (the live path), would recompute the blind-GSH AUROC on the mesh features and report the true delta
     return {"available": True, "mesh_features_available": True, "v3x_blind_gsh_auroc": v3x_auroc,
-            "note": "mesh features present; recompute the blind-GSH AUROC on the host and report delta + N/CI"}
+            "note": "mesh features present; recompute the blind-GSH AUROC and report delta + N/CI"}

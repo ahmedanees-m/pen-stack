@@ -8,7 +8,7 @@ verifier-as-discriminator can compute a calibrated confidence and the immune pro
 
 Atlas-dependent: when the writability atlas is absent (e.g. a bare local checkout), `plan_write`
 yields nothing and `candidate_space` returns []. The discriminator/Pareto logic is independent of the atlas and
-is exercised on explicit candidates (tests/bench fixtures); the atlas path runs on the host/with data.
+is exercised on explicit candidates (tests/bench fixtures); the atlas path needs the atlas data.
 """
 from __future__ import annotations
 

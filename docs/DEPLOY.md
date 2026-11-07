@@ -12,7 +12,7 @@ set `provider: ollama`. The LLM is non-primary - all numbers/citations come from
 
 ## Prerequisites
 - Docker + Docker Compose, an NVIDIA GPU (16 GB is enough) with the NVIDIA Container Toolkit.
-- The project image `penstack:phase1` (or build via `docker/Dockerfile`).
+- The project image, built via `docker/Dockerfile`.
 
 ## Bring it up
 ```bash
@@ -20,13 +20,6 @@ docker compose up -d
 # first run only - pull the local model once (~4.7 GB):
 docker compose exec ollama ollama pull qwen2.5:7b-instruct
 ```
-
-| Service | URL | What |
-|---|---|---|
-| API | http://localhost:8000 | REST: `/atlas`, `/crosslink/*`, `/writable`, `/plan`, `/ask` |
-| UI | http://localhost:8501 | Streamlit platform (Writable Genome, Writer Atlas, Planner, Ask, **Agent**) |
-| MCP | localhost:8765 | Model Context Protocol server (see `docs/MCP.md`) |
-| Ollama | http://localhost:11434 | local LLM backing the RAG + agent |
 
 ## Data
 Mount the writability atlas (`atlas_<ct>.parquet`) under `./data/out/` (fetched from the Zenodo

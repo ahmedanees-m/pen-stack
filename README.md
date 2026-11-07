@@ -269,7 +269,6 @@ pen-stack/
     verify/  writespec/  delivery/  immuno/  loop/  oracle/  writer_efficiency/  priorart/   per-stage benchmarks and prior-art positioning
   scripts/              reproducible pipeline drivers (fetch_artifacts.sh installs the Zenodo release; prereg_manifest.py re-hashes every lock)
   bench/                the benchmark runner (bench/run.py; also the compose `bench` service)
-  tools/                developer command-line helper (penctl.py)
   examples/             worked integration examples (external agent, MCP client, agent tool specs)
   schemas/              JSON schema for the typed WriteSpec intent layer
   Makefile              one-command reproduction (make fetch, make repro, make repro-human, make repro-full)
@@ -298,17 +297,7 @@ Large artifacts (multi-million-row atlases, BigWig tracks, trained models) and a
 
 All public, and license-clean by policy. Genome and annotation: hg38 (UCSC), GENCODE v46. Chromatin: ENCODE and Roadmap (ATAC/DNase and histone marks for K562, HepG2, CD34+ progenitor, and mouse ES-Bruce4). Position-effect: TRIP (Akhtar 2013, GEO GSE49806/GSE49807) and the Leemans 2019 K562 TRIP data, which is the external validation of the expression-robustness axis. Safety: **CancerMine (CC0)** is the default oncogene and tumour-suppressor source; DepMap Public 26Q1 essentiality; LaFave 2014 MLV integrations; VISDB. Enzymes: UniProt orthologs, Pfam and InterPro. Off-target: the Perry 2025 bridge-recombinase off-target and DMS data (copyrighted, kept local, only derived products released) and the Chalberg 2006 genomic pseudo-attP set. Literature and reagents: Europe PMC, Addgene.
 
-License-restricted sources (COSMIC Cancer Gene Census, OncoKB) are **never committed and never used as training data**; they are optional, local-only enrichers a registered user pulls under their own license, and a CI test fails if a restricted source appears as a shipped derived-data source. Every accession and DOI is pinned in [`configs/datasets.yaml`](configs/datasets.yaml) and indexed in [`DATA_SOURCES.md`](DATA_SOURCES.md); the full open-data policy is in [`DATA_LICENSES.md`](DATA_LICENSES.md).
-
-## Validation approach
-
-- Pre-specify before training: success criteria, baselines, and held-out sets are SHA-locked in `prereg/` before any model sees the test data.
-- Always report a baseline: a safety-only far-from-oncogene prior and CancerMine oncogene distance for the integrated score; a learned lamina-associated-domain chromatin baseline and ePRIDICT for the expression-robustness axis; intent-blind ranking for the planner; and attP-similarity, palindrome, or Hamming-distance baselines for the per-mechanism off-target paths.
-- Guard against circularity: the expression-robustness axis is validated with lamina and heterochromatin features removed, so it cannot restate a chromatin baseline, and no task is scored against a label derived from the model's own features (asserted by a dedicated de-circularization test).
-- Blind external concordance: recover validated safe harbours, clinical genotoxic loci, documented writes, and measured off-targets the model never trained on.
-- Report failure: cross-cell-type degradation, the exact-site-versus-served-resolution gap, small benchmark sizes, and the limits of sequence-only off-target magnitude prediction are reported as results, not footnotes.
-- Every estimate carries its sample size and confidence interval. The validated gold sets are small, and statistical power is a stated limitation; scaling them is the top priority for turning the proof of concept into an adopted resource.
-- Grounded services: every quantitative answer comes from a validated tool call, never a language model, verified with the model live; the living database never auto-edits the atlas; clinical directives are refused.
+License-restricted sources (COSMIC Cancer Gene Census, OncoKB) are **never committed and never used as training data**; they are optional, local-only enrichers a registered user pulls under their own license. Every accession and DOI is pinned in [`configs/datasets.yaml`](configs/datasets.yaml) and indexed in [`DATA_SOURCES.md`](DATA_SOURCES.md); the full open-data policy is in [`DATA_LICENSES.md`](DATA_LICENSES.md).
 
 ## Citation
 
@@ -338,10 +327,9 @@ MIT licensed. Developed at Vellore Institute of Technology, Vellore. Authors and
 
 ## API stability
 
-0.2.0 is the current release and 0.1.0 was the first. The committed public API is the SDK functions, the
-44 REST endpoints, the 22 MCP tools, and the 20-entry capability manifest. These follow semantic versioning, with a
-one-minor-version deprecation warning before any breaking change. Stable surfaces carry calibrated uncertainty and an explicit
-validation status. The mechanism-based off-target paths (serine-integrase, bridge, and CAST) are marked
+0.2.0 is the current release. The committed public API is the SDK functions, the 44 REST endpoints, the
+22 MCP tools, and the 20-entry capability manifest. Stable surfaces carry calibrated uncertainty and an
+explicit validation status. The mechanism-based off-target paths (serine-integrase, bridge, and CAST) are marked
 experimental and may change as measured data becomes available.
 
 Decision-support, not a clinical directive. Every score is traceable to public data and a pre-specified model.

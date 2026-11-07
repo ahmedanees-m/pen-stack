@@ -74,7 +74,7 @@ The **shipped mouse-TRIP-trained axis applied cross-species to human K562** is a
 features × cross-species = the floor), and it is *why* a human-trained head was built. It is **not** "we
 validated `p_durable`."
 
-## Result (the sentence to use)
+## Result
 
 > The shipped **mouse-trained** durability axis **fails to transfer to human K562** (pre-specified `validated_null`,
 > ρ 0.14). A **human-trained head** - cross-validated on held-out human chromosomes, circularity-clean, on a fresh

@@ -48,8 +48,9 @@ Chromosome-blocked GroupKFold; paired bootstrap 95% CIs. *Every number is from a
 
 - **Single-context supervision.** TRIP is mESC. The cross-cell-type **transfer** claim is **data-gated**: see
   [tpe_bench.md](tpe_bench.md); no transfer number is fabricated until PatchMPRA/MPIRE/lentiMPRA/Leemans are fetched.
-- **Public data cannot earn a validated-axis grade** (the wall). This release ships the learned+calibrated upgrade + the
-  benchmark, not a manufactured validated axis. Titer / absolute expression / phenotype stay **out of scope**.
+- **Public data cannot earn a validated-axis grade** (the wall). The axis ships as a learned, calibrated
+  model with its benchmark; a validated-axis grade is not claimed. Titer / absolute expression / phenotype
+  stay **out of scope**.
 - The model artifact (`models/position_effect.pkl`) is gitignored; regenerate it with
   `python scripts/p1_build_position_effect.py` (the shipped calibration `configs/twin/position_effect_conformal.json`
   is committed). Without the artifact, the model falls back to the heuristic.

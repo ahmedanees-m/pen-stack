@@ -2,7 +2,7 @@
 
 CAST off-target is two mechanisms, and their balance is system-dependent:
   * **guide-directed**, integration at genomic sites matching the crRNA spacer (a sequence-match scan; the
-    transposon inserts a fixed distance downstream of the protospacer). Enumerated genome-wide on the host (or
+    transposon inserts a fixed distance downstream of the protospacer). Enumerated genome-wide offline (or
     replayed from cache); abstains for a novel spacer.
   * **guide-INDEPENDENT untargeted transposition**, the Tn7-like machinery (TnsB/TnsC/TniQ) inserting without the
     CRISPR effector. This is the DISTINCTIVE, dominant off-target mode for **Type V-K** (ShCAST) and is largely
@@ -69,7 +69,7 @@ def nominate_cast(system: str = "ShCAST", spacer: str | None = None,
                  "per-system property, NOT a genome-wide prediction."),
     }
 
-    # guide-directed: a spacer-match genome scan (enumerated on the host; replayed from cache or abstains).
+    # guide-directed: a spacer-match genome scan (enumerated offline; replayed from cache or abstains).
     guided = None
     if spacer:
         enum = enumerate_motif(f"CAST_{key}_{spacer.upper()}")
@@ -89,7 +89,7 @@ def nominate_cast(system: str = "ShCAST", spacer: str | None = None,
     return {"family": "cast", "system": key, "cast_type": rec.get("cast_type"), "available": True, "abstain": False,
             "status": _STATUS, "untargeted_background": untargeted, "guide_directed": guided,
             "confirm_assay": tbl.get("confirm_assay"),
-            "method": ("CAST off-target = guide-directed spacer-match enumeration (genome-wide, host) + the "
+            "method": ("CAST off-target = guide-directed spacer-match enumeration (genome-wide) + the "
                        "guide-independent untargeted-transposition background (documented per-system property). "
                        "No genome-wide unbiased cellular assay exists -> mechanism-based, unvalidated."),
             "scope_note": "CANDIDATES + a documented untargeted-transposition risk; NOT a clearance and NOT a "

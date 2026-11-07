@@ -216,7 +216,7 @@ def test_web_platform():
     for p in ("pen_stack/web/__init__.py", "pen_stack/web/tools.py", "pen_stack/web/llm.py",
               "pen_stack/web/server.py", "tests/unit/test_grounded_chat.py", "docker/web.Dockerfile",
               "web/package.json", "web/src/App.jsx", "web/src/components/ConfidenceBand.jsx",
-              "web/src/pages/CoScientist.jsx", "web/README.md",
+              "web/src/pages/CoScientist.jsx",
               "prereg/ws_chat.yaml", "prereg/SHA256_LOCK_ws_chat.json",
               "prereg/ws_frontend.yaml", "prereg/SHA256_LOCK_ws_frontend.json"):
         assert (_ROOT / p).exists(), p

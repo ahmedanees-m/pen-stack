@@ -22,7 +22,7 @@ A scientific Streamlit front-end over the genome-wide writability atlas.
 ```bash
 pip install streamlit plotly pandas pyarrow numpy
 # point at the atlas outputs (must contain atlas_<ct>.parquet, gene_coords.parquet, validation_report.json)
-export PEN_ATLAS_DIR=/path/to/phase_1/out
+export PEN_ATLAS_DIR=/path/to/atlas/out
 streamlit run pen_stack/ui/app.py
 ```
 Data files: `atlas_k562.parquet`, `atlas_hepg2.parquet`, `gene_coords.parquet`, `validation_report.json`.

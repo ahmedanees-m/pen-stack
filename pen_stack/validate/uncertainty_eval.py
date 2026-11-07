@@ -13,7 +13,7 @@ Heads evaluated:
 OOD: fit on one cell type's chromatin features, separate held-out in-distribution bins from a
 different cell type (a real distribution shift), report the separation AUROC + monotone widening.
 
-Run on the host in Docker (lightgbm + sklearn present). Data paths follow the repo convention;
+Run in Docker (lightgbm + sklearn present). Data paths follow the repo convention;
 when a store is absent the corresponding block reports
 ``available: false`` so the driver never crashes.
 """

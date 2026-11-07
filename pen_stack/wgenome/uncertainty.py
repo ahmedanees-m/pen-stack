@@ -16,7 +16,7 @@ never hidden. When marginal coverage fails under the chromosome-grouped distribu
 **group / Mondrian (class- or group-conditional) conformal** and report the gap rather than relax the target.
 
 Design: model-agnostic - the calibrators take arrays of (prediction, truth), so the same code calibrates a
-synthetic head in a unit test and the real OOF predictions on the host. Reuses ``adapt.report`` for ECE /
+synthetic head in a unit test and the real OOF predictions from the full data. Reuses ``adapt.report`` for ECE /
 reliability so there is one calibration vocabulary across the stack.
 """
 from __future__ import annotations

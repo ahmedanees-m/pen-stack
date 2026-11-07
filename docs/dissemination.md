@@ -17,11 +17,3 @@ Where PEN-STACK and its benchmark are published, and what each channel carries.
   `CITATION.cff`.
 - **Positioning.** How the writing-side benchmark relates to editing-side tooling is set out in
   [`positioning.md`](positioning.md).
-
-## Release checklist
-
-1. Tests and CI green; single contributor; frozen analysis specifications SHA-locked and re-hashing.
-2. Version bumped consistently across `pyproject.toml`, `pen_stack/__init__.py` and `CITATION.cff`;
-   README and badges updated.
-3. Tagged GitHub release; Zenodo deposit minted and its DOI recorded.
-4. Leaderboard refreshed; the submission guide reachable from the release notes.

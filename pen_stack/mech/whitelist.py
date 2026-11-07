@@ -6,8 +6,7 @@ Tier-A of MECH-CLASS: maps a Pfam domain architecture to a mechanism bucket
 both PF01548 and PF02371). Domain evidence is the primary mechanism signal; the ESM-2 discovery
 head is not used.
 
-The source YAML ``pfam_whitelist.yaml`` is the genome-atlas asset, accessions verified against InterPro
-on 2026-04-22 (v1.2.1 corrected three v1.2.0 accession errors).
+The source YAML ``pfam_whitelist.yaml`` is the genome-atlas asset, with accessions verified against InterPro.
 """
 from __future__ import annotations
 

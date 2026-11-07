@@ -1,4 +1,4 @@
-"""Uncertainty-quantification unit tests: pure-logic, synthetic data, run everywhere (no real atlas/host needed).
+"""Uncertainty-quantification unit tests: pure-logic, synthetic data, run everywhere (no real atlas needed).
 
 Asserts the *properties* the frozen analysis specification locks: conformal coverage hits the nominal target on a
 held-out synthetic set; the OOD detector separates a deliberately-shifted set and widens monotonically;

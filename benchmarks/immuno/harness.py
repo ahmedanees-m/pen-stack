@@ -54,8 +54,8 @@ def recovery() -> dict:
 
 def ada_calibration() -> dict:
     """Run the EXISTING calibrate_axis gate for the ADA axis. No public paired (proxy, observed-ADA-incidence)
-    dataset is bundled at the N>=6 power the gate requires, so this returns mechanistic_proxy, reported,
-    never a manufactured (the standing data limit, identical to the finding for the other axes)."""
+    dataset is bundled at the N>=6 power the gate requires, so this returns mechanistic_proxy (the
+    standing data limit, identical to the finding for the other axes)."""
     from pen_stack.validate.immune_calibration import calibrate_axis
     res = calibrate_axis([], [], axis="ada_writer")
     return {"status": res["status"], "label": res["label"],

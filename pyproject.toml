@@ -46,7 +46,6 @@ bio = ["biopython>=1.84", "pysam>=0.22", "pyBigWig>=0.3", "pybedtools>=0.10", "V
 bridge = ["bridgernadesigner>=0.1.1", "ViennaRNA>=2.6", "pysam>=0.22"]
 server = ["fastapi>=0.111", "uvicorn>=0.30"]
 services = ["litellm>=1.44", "paper-qa>=5.10", "streamlit>=1.37", "plotly>=5", "fastmcp>=2.3", "beautifulsoup4>=4.12"]
-orchestrate = ["paramiko>=3.4", "scp>=0.15", "rich>=13.7", "python-dotenv>=1.0"]
 docs = ["mkdocs>=1.6", "mkdocs-material>=9.5"]
 env = ["gymnasium>=0.29"] # optional Gymnasium interface (pen_stack/env/); interface only
 spec = ["sbol3>=1.1"] # WriteSpec - optional SBOL3 round-trip (the JSON round-trip is always available)
@@ -81,12 +80,12 @@ addopts = "-q"
 
 [tool.coverage.run]
 source = ["pen_stack"]
-# exclude code that REQUIRES external resources (GPU/host/network/LLM/browser) and so cannot be unit-tested
-# in CI; it is integration-tested on the host instead. Coverage reflects the unit-tested core logic.
+# exclude code that REQUIRES external resources (GPU/network/LLM/browser) and so cannot be unit-tested
+# in CI; it is integration-tested separately. Coverage reflects the unit-tested core logic.
 omit = [
-    "pen_stack/data/*", # dataset ingestion (network, bedtools, host)
-    "pen_stack/wgenome/*", # genotoxicity/durability model training (GPU/host)
-    "pen_stack/ui/*", # Streamlit app (tested headless via AppTest on the host)
+    "pen_stack/data/*", # dataset ingestion (network, bedtools)
+    "pen_stack/wgenome/*", # genotoxicity/durability model training (GPU)
+    "pen_stack/ui/*", # Streamlit app (tested headless via AppTest)
     "pen_stack/server/*", # FastAPI service (integration)
     "pen_stack/monitor/*", # Europe PMC polling (network)
     "pen_stack/rag/llm.py", # Ollama LLM client (needs a model server)

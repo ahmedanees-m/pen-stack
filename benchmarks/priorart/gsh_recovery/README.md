@@ -18,7 +18,7 @@ insertional-oncogenesis loci **low**?
 - **5 known-unsafe hard negatives:** LMO2, MECOM, CCND2, HMGA2, PRDM16 (insertional-oncogenesis gene TSS).
 - **2,000 background:** uniform random atlas bins (seed 20260702), excluding ±10 bins of any pos/unsafe.
 
-## Result (reported verbatim)
+## Result
 
 **Primary, recovery above background (pre-registered): `NULL`.**
 

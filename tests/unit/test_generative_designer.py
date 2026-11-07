@@ -1,7 +1,7 @@
 """Generative-designer unit tests: verifier-as-discriminator, Pareto frontier, orchestration.
 
 CI-safe: the discriminator + Pareto + orchestrator logic is exercised on EXPLICIT candidate fixtures (no atlas
-needed; the planner-backed candidate_space is the data/host path). Audit writes go to a tmp file. Asserts:
+needed; the planner-backed candidate_space is the data path). Audit writes go to a tmp file. Asserts:
   * verifier-as-discriminator: hazardous (safety refuse) AND illegal candidates are DISCARDED, never returned;
   * survivors are legal + safe, each output_kind="candidate" with a calibrated confidence + an immune profile;
   * Pareto frontier is non-dominated and the neg_immune_risk axis is GROUNDED by the profile (uncertainty

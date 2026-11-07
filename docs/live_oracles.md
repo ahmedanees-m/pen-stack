@@ -31,7 +31,7 @@ Query the live status any time: `GET /oracles` (add `?probe=true` to ping the lo
 The local models run as small FastAPI services on the host GPU; start only what you need:
 
 ```bash
-# build bases once (penstack:phase1.5 already on the host; rfdiffusion:base from the RFdiffusion repo)
+# build bases once (penstack:phase1.5; rfdiffusion:base from the RFdiffusion repo)
 docker compose -f docker-compose.models.yml up -d proteinmpnn esm3      # the fast ones
 docker compose -f docker-compose.models.yml up -d rfdiffusion           # the slow one (~1-2 min/run)
 ```

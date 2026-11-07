@@ -1,6 +1,6 @@
 """Cross-modality deliverability + learned capsid-fitness + serotype tropism priors.
 
-CI-safe: the FLIP-AAV data stays on the host; the trained model (~3 MB) + derived bench metrics + the approved-therapy
+CI-safe: the FLIP-AAV data is never redistributed; the trained model (~3 MB) + derived bench metrics + the approved-therapy
 serotype registry ship. Asserts: the learned capsid-fitness beats the mutation-burden baseline on held-out FLIP-AAV;
 serotype->tissue priors are grounded for approved serotypes and a known-unknown for novel capsids; the
 dose<->immune tradeoff is surfaced and NEVER collapsed; generative capsids are verify-gated candidates; no fabrication.

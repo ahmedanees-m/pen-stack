@@ -4,7 +4,7 @@ The unified table behind the position-effect model (`pen_stack/twin/data/positio
 element measurement. Schema: `dataset, organism, cell_type, chrom, pos, cassette, expression_raw, expression_z,
 silenced, <chromatin features>`. `expression_z` is z-scored within (dataset × cassette).
 
-## Dataset registry (verified accessions, 2026-06-19 verification pass)
+## Dataset registry
 
 | Dataset | Citation | DOI | Accession | Cell types | Status |
 |---|---|---|---|---|---|
@@ -14,8 +14,7 @@ silenced, <chromatin features>`. `expression_z` is z-scored within (dataset × c
 | lentiMPRA | Agarwal et al., *Nature* **639**:411-420 (2025) | 10.1038/s41586-024-08430-9 | ENCODE + GEO; bioRxiv 2023.03.05.531189 | HepG2, K562, WTC11 | registered, data-gated |
 | Leemans | Leemans et al., *Cell* 2019 | 10.1016/j.cell.2019.03.009 | GEO (per paper); van Steensel lab | K562 | registered, data-gated |
 
-> The bioRxiv id `2023.03.05.531189` is **lentiMPRA's** (Agarwal → *Nature* 2025), not e2MPRA/ccMPRA, corrected
-> in the 2026-06-19 citation verification pass.
+> The bioRxiv id `2023.03.05.531189` is **lentiMPRA's** (Agarwal → *Nature* 2025), not e2MPRA/ccMPRA.
 
 ## TRIP (the LIVE supervision)
 

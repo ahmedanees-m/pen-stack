@@ -69,7 +69,7 @@ def test_resolvers_ground_or_abstain():
     assert resolve_phenotype("sickle cell").id == "MONDO:0011382"
     assert resolve_chem("doxycycline").id == "CHEBI:50845"
     # locus resolution is atlas-gated: it returns the GRCh38 region when the writable-genome atlas is present
-    # (host/local), and abstains (id None) when it is absent (CI does not ship the atlas) - never invented
+    # (when present), and abstains (id None) when it is absent (CI does not ship the atlas) - never invented
     loc = resolve_locus("CFTR")
     assert loc.ontology == "GRCh38"
     assert loc.id is None or loc.id.startswith("chr7:")

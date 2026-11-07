@@ -20,4 +20,4 @@ background, consistent with the field (φC31 pseudosite recognition depends on p
 **Limits:** N=3 (the open GenBank subset; the full Chalberg 19-site set is paywalled); tests
 sequence-identity only (no palindrome/learned model); deterministic (seed 20260701), pysam over GRCh38.
 
-Run: `docker run --rm --entrypoint bash -v <genomes>:/genome -v $PWD:/work -w /work penstack:phase1.5 -lc 'python harness.py'`
+Run: `docker run --rm --entrypoint bash -v <genomes>:/genome -v $PWD:/work -w /work <image> -lc 'python harness.py'`

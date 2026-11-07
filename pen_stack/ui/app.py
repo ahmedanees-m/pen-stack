@@ -6,7 +6,7 @@ A scientific front-end over the 3M-locus Writable Genome atlas. Two core queries
 Plus an atlas genome browser, the blind-validation dashboard, and cross-cell-type comparison.
 
 Run: streamlit run pen_stack/ui/app.py
-Data: set PEN_ATLAS_DIR (default: ./data or Final_Part_v3.0/phase_1/out). Needs atlas_<ct>.parquet,
+Data: set PEN_ATLAS_DIR (default: ./data). Needs atlas_<ct>.parquet,
       gene_coords.parquet, and (optional) validation_report.json.
 """
 from __future__ import annotations
@@ -58,7 +58,7 @@ CT_LABEL = {"k562": "K562 (erythroleukemia)", "hepg2": "HepG2 (hepatocellular)",
 
 # ----------------------------------------------------------------------------- data loading
 def _data_dir() -> Path:
-    for c in [os.environ.get("PEN_ATLAS_DIR"), "data", "Final_Part_v3.0/phase_1/out",
+    for c in [os.environ.get("PEN_ATLAS_DIR"), "data",
               str(Path(__file__).resolve().parents[2] / ".." / "phase_1" / "out")]:
         if c and (Path(c) / "atlas_k562.parquet").exists():
             return Path(c)

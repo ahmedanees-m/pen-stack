@@ -20,7 +20,7 @@ _EVO2_URL = "https://health.api.nvidia.com/v1/biology/arc/evo2-40b/generate"
 
 
 def _oracle_net_enabled() -> bool:
-    """Live oracle network calls are opt-in (the deployed host sets it; CI/offline leave it unset → deferred)."""
+    """Live oracle network calls are opt-in (the operator sets it; CI/offline leave it unset → deferred)."""
     return os.getenv("PEN_STACK_ORACLE_NET") == "1"
 
 

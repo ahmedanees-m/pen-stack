@@ -3,7 +3,7 @@ name: Publish to PyPI
 # Builds the package and publishes it to PyPI on a version tag (v*), or on a manual run. Authentication
 # uses an API token stored as the repo secret PYPI_API_TOKEN (encrypted). `skip-existing: true` means a
 # version already on PyPI is skipped, not treated as a failure - so re-runs and already-published versions
-# do not fail the workflow. (To switch to tokenless Trusted Publishing instead, see docs/RELEASING.md.)
+# do not fail the workflow.
 #
 # The jobs declare no `environment:`. A GitHub environment's branch and tag policy can block a
 # tag-triggered publish, so adding one requires a policy that allows tags.

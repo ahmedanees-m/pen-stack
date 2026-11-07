@@ -8,7 +8,7 @@ cells). What drives ADA is **non-self** (foreign) presentable epitopes. So:
 
 where **foreignness is the protein ORIGIN** (self vs bacterial/viral/phage), the authoritative, definitive
 self/non-self signal (central tolerance), not a heuristic. The **real human-proteome 9-mer self-match** (computed
-on the host against the full UniProt human reference proteome) is reported as a cross-check. NO heuristic fallback:
+offline against the full UniProt human reference proteome) is reported as a cross-check. NO heuristic fallback:
 when the MHC-II density is not cached (NetMHCIIpan not run) OR the origin is unknown, ADA-risk **abstains** (an
 known-unknown) rather than guessing.
 
@@ -24,7 +24,7 @@ _FOREIGN = {"self": 0.0, "foreign": 1.0}
 
 
 def real_self_match(name: str) -> dict | None:
-    """The REAL human-proteome 9-mer self-match for a bundled antigen (cross-check; computed on the host against the
+    """The REAL human-proteome 9-mer self-match for a bundled antigen (cross-check; computed offline against the
     full UniProt human reference proteome). Foreign proteins ~0, human ~1. None if not in the cache."""
     rec = (_real_cache().get("self_match") or {}).get(name)
     if rec is None:

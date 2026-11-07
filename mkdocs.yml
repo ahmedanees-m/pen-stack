@@ -6,7 +6,6 @@ theme:
   name: readthedocs
 nav:
   - Home: index.md
-  - Infrastructure: INFRA.md
   - Reproducibility: REPRO.md
   - Writer-Targeting KB: wtkb.md
   - Scorecard: scorecard.md

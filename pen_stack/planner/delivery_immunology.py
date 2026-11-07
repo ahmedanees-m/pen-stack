@@ -5,7 +5,7 @@ neutralising antibodies, lentivirus integrates efficiently with a worse safety p
 turns the per-vehicle ``immune_safety`` block in configs/delivery_vehicles.yaml into an
 inspectable, user-weightable ranking of the delivery palette.
 
-SCOPE NOTE (unchanged across the program): the immune MAGNITUDE, how strongly a given patient or
+SCOPE NOTE: the immune MAGNITUDE, how strongly a given patient or
 construct will react in vivo, is a declared known-unknown (configs/known_unknowns.yaml: ``in_vivo_immunogenicity``)
 and is NEVER predicted here. What this module exposes is strictly:
 

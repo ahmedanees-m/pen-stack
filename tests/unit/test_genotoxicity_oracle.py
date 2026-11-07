@@ -2,7 +2,7 @@
 (integration-site x CancerMine-oncogene proximity).
 
 CI-safe: runs entirely off the COMMITTED summary artifact configs/genotoxicity_oracle.yaml (the raw VISDB
-catalogues stay on the host; only the auditable per-class statistics ship). Asserts: integrating vectors get a
+catalogues are never redistributed; only the auditable per-class statistics ship). Asserts: integrating vectors get a
 data-derived score via the OracleResult contract; non-integrating vectors are 1.0 by mechanism; the
 oracle abstains (never fabricates) when it has no computed class; the ROBUST integrating classes are enriched
 near oncogenes from data and the lentiviral score validates the documented tier; the in-vivo clonal OUTCOME
