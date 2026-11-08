@@ -327,7 +327,7 @@ MIT licensed. Developed at Vellore Institute of Technology, Vellore. Authors and
 
 ## API stability
 
-0.2.0 is the current release. The committed public API is the SDK functions, the 44 REST endpoints, the
+0.2.1 is the current release. The committed public API is the SDK functions, the 44 REST endpoints, the
 22 MCP tools, and the 20-entry capability manifest. Stable surfaces carry calibrated uncertainty and an
 explicit validation status. The mechanism-based off-target paths (serine-integrase, bridge, and CAST) are marked
 experimental and may change as measured data becomes available.

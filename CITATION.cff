@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you use PEN-STACK, please cite it as below."
 title: "PEN-STACK: open infrastructure for genome writing"
-version: 0.2.0
-date-released: 2026-10-27
+version: 0.2.1
+date-released: 2026-11-08
 identifiers:
   - type: other
     value: "RRID:SCR_028786"

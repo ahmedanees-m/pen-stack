@@ -144,7 +144,7 @@ def track_fig(sub, center=None):
 
 # ----------------------------------------------------------------------------- sidebar
 st.sidebar.markdown("## PEN-STACK")
-st.sidebar.caption("The Writable Genome | v0.2.0")
+st.sidebar.caption("The Writable Genome | v0.2.1")
 page = st.sidebar.radio("Navigate", ["Overview", "Forward query", "Site finder (inverse)",
                                      "Atlas browser", "Validation", "Cross-cell-type",
                                      "Writer Atlas", "Write Planner", "Bridge design", "Guide QC",
@@ -708,6 +708,6 @@ elif page == "Genome-Writing Bench":
                "Submissions: benchmarks/genome_writing_bench/SUBMISSIONS.md.")
 
 st.markdown("---")
-st.caption("PEN-STACK v0.2.0 | Writable Genome + Writer Atlas + Write Planner + Genome-Writing Bench + "
+st.caption("PEN-STACK v0.2.1 | Writable Genome + Writer Atlas + Write Planner + Genome-Writing Bench + "
            "PEN-Agent | decision-support, not a clinical directive | every score traceable to public data "
            "+ a pre-specified model.")
