@@ -31,18 +31,33 @@ FULL = ["H3K27ac", "H3K4me1", "H3K9me3", "H3K27me3", "H3K36me3"]
 INDEPENDENT = ["H3K27ac", "H3K4me1", "H3K36me3"]            # lamina/heterochromatin marks removed (de-circular)
 
 
-def _ensure_input() -> bool:
-    """Build the upstream table if it is not present. It is fetched, not committed."""
+SOURCE_UNAVAILABLE = 3        # build_leemans_input.py's exit code for an unreachable source
+
+
+def _ensure_input() -> int:
+    """Build the upstream table if it is not present. It is fetched, not committed.
+
+    Returns 0 when the table is available, SOURCE_UNAVAILABLE when neither upstream source could be
+    reached, and 2 for any other failure.
+    """
     if INPUT.exists():
-        return True
+        return 0
     print(f"[fetch] {INPUT.name} is not committed; rebuilding it from the two upstream sources")
     import subprocess
     r = subprocess.run([sys.executable, str(ROOT / "scripts" / "build_leemans_input.py")])
-    return r.returncode == 0 and INPUT.exists()
+    if INPUT.exists():
+        return 0
+    return SOURCE_UNAVAILABLE if r.returncode == SOURCE_UNAVAILABLE else 2
 
 
 def main() -> int:
-    if not _ensure_input():
+    state = _ensure_input()
+    if state == SOURCE_UNAVAILABLE:
+        print(f"[data-gated] {INPUT.name} is fetched rather than committed, and its upstream "
+              "source is unreachable, so this result is not recomputed on this run and no number "
+              "is reported. Rerun when the source is available.")
+        return 0
+    if state:
         print(f"[fail] could not obtain {INPUT.name}. Run "
               "`python scripts/build_leemans_input.py` (needs network and pyreadr).",
               file=sys.stderr)

@@ -27,13 +27,20 @@ Usage
     python scripts/build_leemans_input.py --check         # rebuild and compare, write nothing
     python scripts/build_leemans_input.py --rdata F.Rdata --supplement mmc4.zip
                                                           # use local copies instead of fetching
+
+A fetched source is cached under data/external/leemans_sources/ (gitignored), so a rebuild does not
+download it again. PEN_LEEMANS_CACHE relocates that directory; an empty value fetches every time.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import io
+import os
 import sys
+import time
+import urllib.error
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -55,10 +62,77 @@ COLUMNS = ["barcode", "chrom", "pos"] + MARKS + ["LMNB1_DamID", "prom_name", "cl
 EXPECTED_CONTENT_SHA256 = "2662adf8f2c39a934a2d326ecb32b73b5607ee1a50ac4c667687ffd73c64e9c0"
 
 
-def _get(url: str, timeout: int = 600) -> bytes:
+# HTTP statuses worth another attempt; anything else is reported as it is.
+_RETRY_STATUS = (408, 425, 429, 500, 502, 503, 504)
+# Exit code for "the upstream source could not be reached". Callers use it to treat the result as
+# data-gated rather than as a reproduction failure.
+EXIT_SOURCE_UNAVAILABLE = 3
+# A fetched source is kept here so a rebuild does not download it again. The directory is
+# gitignored, so nothing upstream is redistributed. Set PEN_LEEMANS_CACHE to another directory, or
+# to an empty value to fetch every time.
+_CACHE_DEFAULT = ROOT / "data" / "external" / "leemans_sources"
+
+
+def _cache_path(url: str) -> Path | None:
+    loc = os.environ.get("PEN_LEEMANS_CACHE", str(_CACHE_DEFAULT))
+    if not loc:
+        return None
+    return Path(loc) / (hashlib.sha256(url.encode("utf-8")).hexdigest()[:16] + ".bin")
+
+
+def _describe(data: bytes) -> str:
+    """A short, readable account of a body that is not what was asked for."""
+    head = data[:300]
+    try:
+        text = head.decode("utf-8").strip()
+    except UnicodeDecodeError:
+        return "%d bytes, not text" % len(data)
+    return "%d bytes: %s" % (len(data), " ".join(text.split())[:200])
+
+
+def _get(url: str, timeout: int = 600, attempts: int = 5, *,
+         magic: bytes | None = None, min_bytes: int = 1024) -> bytes:
+    """Fetch a URL, reusing a local copy when there is one and retrying a bad response.
+
+    Two things have to be tolerated. A partial chunked response raises
+    http.client.IncompleteRead, so one attempt is not enough even from a healthy source. And the
+    supplement endpoint can answer 200 with a short XML error document instead of the archive, so
+    the body is checked against `magic` and `min_bytes` rather than merely being non-empty.
+
+    Exits with EXIT_SOURCE_UNAVAILABLE when every attempt fails, so a caller can tell a
+    third-party outage apart from a reproduction failure.
+    """
+    cache = _cache_path(url)
+    if cache is not None and cache.is_file() and cache.stat().st_size >= min_bytes:
+        return cache.read_bytes()
     req = urllib.request.Request(url, headers={"User-Agent": "pen-stack-build-leemans"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read()
+    last = ""
+    for attempt in range(1, attempts + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                data = r.read()
+            if len(data) < min_bytes or (magic is not None and not data.startswith(magic)):
+                last = "the response is not the expected payload (%s)" % _describe(data)
+            else:
+                if cache is not None:
+                    cache.parent.mkdir(parents=True, exist_ok=True)
+                    cache.write_bytes(data)
+                return data
+        except urllib.error.HTTPError as e:
+            last = "HTTP %d %s" % (e.code, e.reason)
+            if e.code not in _RETRY_STATUS:
+                print("[fail] %s: %s" % (url, last), file=sys.stderr)
+                raise SystemExit(EXIT_SOURCE_UNAVAILABLE)
+        except (http.client.HTTPException, OSError) as e:
+            last = "%s: %s" % (type(e).__name__, e)
+        if attempt < attempts:
+            wait = 2 ** attempt
+            print("[retry %d/%d] %s: %s; waiting %ds" % (attempt, attempts, url, last, wait),
+                  file=sys.stderr)
+            time.sleep(wait)
+    print("[unavailable] %s could not be fetched in %d attempts: %s" % (url, attempts, last),
+          file=sys.stderr)
+    raise SystemExit(EXIT_SOURCE_UNAVAILABLE)
 
 
 def load_features(path: Path | None) -> pd.DataFrame:
@@ -88,7 +162,7 @@ def load_coordinates(path: Path | None) -> pd.DataFrame:
         outer = None
         inner = zipfile.ZipFile(path)
     else:
-        outer = zipfile.ZipFile(io.BytesIO(_get(SUPP_URL)))
+        outer = zipfile.ZipFile(io.BytesIO(_get(SUPP_URL, magic=b"PK\x03\x04")))
         inner = zipfile.ZipFile(io.BytesIO(outer.read("mmc4.zip")))
     tsv = inner.read("Dataset_S2_TRIP.tsv")
     s2 = pd.read_csv(io.BytesIO(tsv), sep="\t", low_memory=False)
